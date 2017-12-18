@@ -185,7 +185,7 @@ class SliderValueFormatter: Formatter {
 		}
 
 		// This is a floating point number, do not allow more than one dots
-		let allDots = partialString.characters.filter { $0 == "." }
+		let allDots = partialString.filter { $0 == "." }
 		if allDots.count > 1 {
 			return false
 		}
