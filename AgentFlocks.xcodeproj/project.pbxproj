@@ -64,6 +64,10 @@
 		D442561A1FE7A19000FC454B /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = D44256191FE7A19000FC454B /* GameScene.sks */; };
 		D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561D1FE7A2F000FC454B /* SceneController.swift */; };
 		D44256201FE7A41800FC454B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561F1FE7A41800FC454B /* GameScene.swift */; };
+		D44256231FE7FA0000FC454B /* Minion.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256221FE7FA0000FC454B /* Minion.swift */; };
+		D44256251FE8048100FC454B /* AFEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256241FE8048100FC454B /* AFEntity.swift */; };
+		D44256271FE804F000FC454B /* AFAgent2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256261FE804F000FC454B /* AFAgent2D.swift */; };
+		D44256291FE808FF00FC454B /* AFMotivator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256281FE808FF00FC454B /* AFMotivator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -127,6 +131,10 @@
 		D44256191FE7A19000FC454B /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		D442561D1FE7A2F000FC454B /* SceneController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneController.swift; sourceTree = "<group>"; };
 		D442561F1FE7A41800FC454B /* GameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
+		D44256221FE7FA0000FC454B /* Minion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Minion.swift; sourceTree = "<group>"; };
+		D44256241FE8048100FC454B /* AFEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFEntity.swift; sourceTree = "<group>"; };
+		D44256261FE804F000FC454B /* AFAgent2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFAgent2D.swift; sourceTree = "<group>"; };
+		D44256281FE808FF00FC454B /* AFMotivator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFMotivator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,6 +173,7 @@
 				744D8F231F91E38300D4B048 /* AppDelegate.swift */,
 				744D8F311F91E40200D4B048 /* Components */,
 				74622E7F1F927D3900690C3C /* Resources */,
+				D44256211FE7F9DE00FC454B /* Source */,
 				744D8F251F91E38300D4B048 /* Assets.xcassets */,
 				744D8F271F91E38300D4B048 /* MainMenu.xib */,
 				744D8F2A1F91E38300D4B048 /* Info.plist */,
@@ -252,6 +261,17 @@
 				745F8F341F929AAC006B08AF /* Obstacle29.png */,
 			);
 			path = Obstacles;
+			sourceTree = "<group>";
+		};
+		D44256211FE7F9DE00FC454B /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				D44256261FE804F000FC454B /* AFAgent2D.swift */,
+				D44256241FE8048100FC454B /* AFEntity.swift */,
+				D44256281FE808FF00FC454B /* AFMotivator.swift */,
+				D44256221FE7FA0000FC454B /* Minion.swift */,
+			);
+			path = Source;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -375,10 +395,14 @@
 				744D8F241F91E38300D4B048 /* AppDelegate.swift in Sources */,
 				D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */,
 				745F8F591F93A491006B08AF /* SliderController.swift in Sources */,
+				D44256251FE8048100FC454B /* AFEntity.swift in Sources */,
 				74ECDF661F9B132C0096468F /* AgentGoalsController.swift in Sources */,
 				74622E7B1F9249CA00690C3C /* ImagesListController.swift in Sources */,
+				D44256291FE808FF00FC454B /* AFMotivator.swift in Sources */,
 				74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */,
+				D44256271FE804F000FC454B /* AFAgent2D.swift in Sources */,
 				74ECDF6A1F9B1C630096468F /* AgentEditorController.swift in Sources */,
+				D44256231FE7FA0000FC454B /* Minion.swift in Sources */,
 				744D8F341F91E53A00D4B048 /* TopBarController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

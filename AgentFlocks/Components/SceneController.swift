@@ -62,10 +62,13 @@ class SceneController: NSViewController {
 	// MARK: - Public methods
 	
 	func addNode(image: NSImage) {
-		let sprite = SKSpriteNode(texture: SKTexture(image: image))
-		sprite.anchorPoint = NSMakePoint(0.5, 0.5)
-		sceneNode.addChild(sprite)
-		nodes.append(sprite)
+        let entity = AFEntity(scene: sceneNode, position: CGPoint.zero)
+        sceneNode.entities.append(entity)
+
+//        let sprite = SKSpriteNode(texture: SKTexture(image: image))
+//        sprite.anchorPoint = NSMakePoint(0.5, 0.5)
+//        sceneNode.addChild(sprite)
+//        nodes.append(sprite)
 	}
 	
 	// MARK: - Mouse handling
