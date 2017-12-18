@@ -43,7 +43,6 @@
 		745F8F561F929AB4006B08AF /* Obstacle29.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F341F929AAC006B08AF /* Obstacle29.png */; };
 		745F8F591F93A491006B08AF /* SliderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 745F8F571F93A491006B08AF /* SliderController.swift */; };
 		745F8F5A1F93A491006B08AF /* SliderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F581F93A491006B08AF /* SliderView.xib */; };
-		74616DEA1FA9994F00C9E23D /* SceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74616DE91FA9994F00C9E23D /* SceneController.swift */; };
 		74616DEC1FA9997800C9E23D /* SceneView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 74616DEB1FA9997800C9E23D /* SceneView.xib */; };
 		74622E7B1F9249CA00690C3C /* ImagesListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74622E791F9249CA00690C3C /* ImagesListController.swift */; };
 		74622E7C1F9249CA00690C3C /* ImagesListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 74622E7A1F9249CA00690C3C /* ImagesListView.xib */; };
@@ -62,6 +61,9 @@
 		74ECDF711F9C8ED40096468F /* Objects.txt in Resources */ = {isa = PBXBuildFile; fileRef = 74ECDF701F9C8ED40096468F /* Objects.txt */; };
 		74ECDF741F9CB5610096468F /* ItemEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 74ECDF721F9CB5610096468F /* ItemEditorView.xib */; };
 		74ECDF751F9CB5610096468F /* ItemEditorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74ECDF731F9CB5610096468F /* ItemEditorController.swift */; };
+		D442561A1FE7A19000FC454B /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = D44256191FE7A19000FC454B /* GameScene.sks */; };
+		D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561D1FE7A2F000FC454B /* SceneController.swift */; };
+		D44256201FE7A41800FC454B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561F1FE7A41800FC454B /* GameScene.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -104,7 +106,6 @@
 		745F8F391F929AAC006B08AF /* Obstacle22.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle22.png; sourceTree = "<group>"; };
 		745F8F571F93A491006B08AF /* SliderController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderController.swift; sourceTree = "<group>"; };
 		745F8F581F93A491006B08AF /* SliderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SliderView.xib; sourceTree = "<group>"; };
-		74616DE91FA9994F00C9E23D /* SceneController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneController.swift; sourceTree = "<group>"; };
 		74616DEB1FA9997800C9E23D /* SceneView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SceneView.xib; sourceTree = "<group>"; };
 		74622E791F9249CA00690C3C /* ImagesListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListController.swift; sourceTree = "<group>"; };
 		74622E7A1F9249CA00690C3C /* ImagesListView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImagesListView.xib; sourceTree = "<group>"; };
@@ -123,6 +124,9 @@
 		74ECDF701F9C8ED40096468F /* Objects.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Objects.txt; sourceTree = "<group>"; };
 		74ECDF721F9CB5610096468F /* ItemEditorView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ItemEditorView.xib; sourceTree = "<group>"; };
 		74ECDF731F9CB5610096468F /* ItemEditorController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemEditorController.swift; sourceTree = "<group>"; };
+		D44256191FE7A19000FC454B /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
+		D442561D1FE7A2F000FC454B /* SceneController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneController.swift; sourceTree = "<group>"; };
+		D442561F1FE7A41800FC454B /* GameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +159,8 @@
 		744D8F221F91E38300D4B048 /* AgentFlocks */ = {
 			isa = PBXGroup;
 			children = (
+				D442561F1FE7A41800FC454B /* GameScene.swift */,
+				D44256191FE7A19000FC454B /* GameScene.sks */,
 				74ECDF701F9C8ED40096468F /* Objects.txt */,
 				744D8F231F91E38300D4B048 /* AppDelegate.swift */,
 				744D8F311F91E40200D4B048 /* Components */,
@@ -184,7 +190,7 @@
 				74ECDF691F9B1C630096468F /* AgentEditorView.xib */,
 				74ECDF731F9CB5610096468F /* ItemEditorController.swift */,
 				74ECDF721F9CB5610096468F /* ItemEditorView.xib */,
-				74616DE91FA9994F00C9E23D /* SceneController.swift */,
+				D442561D1FE7A2F000FC454B /* SceneController.swift */,
 				74616DEB1FA9997800C9E23D /* SceneView.xib */,
 			);
 			path = Components;
@@ -310,6 +316,7 @@
 				745F8F401F929AB4006B08AF /* Obstacle07.png in Resources */,
 				74622E9A1F927FBE00690C3C /* Agent06.png in Resources */,
 				745F8F4D1F929AB4006B08AF /* Obstacle20.png in Resources */,
+				D442561A1FE7A19000FC454B /* GameScene.sks in Resources */,
 				74622E981F927FBE00690C3C /* Agent04.png in Resources */,
 				74616DEC1FA9997800C9E23D /* SceneView.xib in Resources */,
 				745F8F4C1F929AB4006B08AF /* Obstacle19.png in Resources */,
@@ -363,9 +370,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D44256201FE7A41800FC454B /* GameScene.swift in Sources */,
 				74ECDF751F9CB5610096468F /* ItemEditorController.swift in Sources */,
-				74616DEA1FA9994F00C9E23D /* SceneController.swift in Sources */,
 				744D8F241F91E38300D4B048 /* AppDelegate.swift in Sources */,
+				D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */,
 				745F8F591F93A491006B08AF /* SliderController.swift in Sources */,
 				74ECDF661F9B132C0096468F /* AgentGoalsController.swift in Sources */,
 				74622E7B1F9249CA00690C3C /* ImagesListController.swift in Sources */,

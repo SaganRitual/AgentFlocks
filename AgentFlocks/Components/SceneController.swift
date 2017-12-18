@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import GameplayKit
 import SpriteKit
 
 protocol SceneDelegate {
@@ -17,7 +18,8 @@ class SceneController: NSViewController {
 	
 	// MARK: - Attributes (public)
 	
-	let scene = SKScene()
+    var sceneNode: GameScene!
+    var scene: GKScene!
 	
 	// MARK: - Attributes (private)
 	
@@ -36,13 +38,14 @@ class SceneController: NSViewController {
 	
     override func viewDidLoad() {
         super.viewDidLoad()
-		
-		scene.backgroundColor = NSColor(red:0.93, green:0.93, blue:0.93, alpha:1.00)
+        
+        scene = GKScene(fileNamed: "GameScene")
+        sceneNode = scene.rootNode as! GameScene?
 		
 		if let sceneView = view as? SKView {
-			// Add SpriteKit scene to sceneView (SKView)
-			scene.size = view.bounds.size
-			sceneView.presentScene(scene)
+			// Add SpriteKit root node to sceneView (SKView)
+			sceneNode.size = view.bounds.size
+			sceneView.presentScene(sceneNode)
 			
 			// Sprite Kit applies additional optimizations to improve rendering performance
 			sceneView.ignoresSiblingOrder = true
@@ -53,7 +56,7 @@ class SceneController: NSViewController {
     }
 	
 	override func viewDidLayout() {
-		scene.size = view.frame.size
+		sceneNode.size = view.frame.size
 	}
 	
 	// MARK: - Public methods
@@ -61,16 +64,15 @@ class SceneController: NSViewController {
 	func addNode(image: NSImage) {
 		let sprite = SKSpriteNode(texture: SKTexture(image: image))
 		sprite.anchorPoint = NSMakePoint(0.5, 0.5)
-		sprite.position = NSMakePoint(scene.size.width/2, scene.size.height/2)
-		scene.addChild(sprite)
+		sceneNode.addChild(sprite)
 		nodes.append(sprite)
 	}
 	
 	// MARK: - Mouse handling
 
 	override func mouseDown(with event: NSEvent) {
-		let location = event.location(in: scene)
-		let touchedNodes = scene.nodes(at: location)
+		let location = event.location(in: sceneNode)
+		let touchedNodes = sceneNode.nodes(at: location)
 		for (index, node) in nodes.enumerated() {
 			if touchedNodes.contains(node) {
 				draggedNodeIndex = index
@@ -85,7 +87,7 @@ class SceneController: NSViewController {
 	
 	override func mouseDragged(with event: NSEvent) {
 		if let draggedIndex = draggedNodeIndex {
-			nodes[draggedIndex].position = event.location(in: scene)
+			nodes[draggedIndex].position = event.location(in: sceneNode)
 		}
 	}
 	
