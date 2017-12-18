@@ -64,10 +64,10 @@
 		D442561A1FE7A19000FC454B /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = D44256191FE7A19000FC454B /* GameScene.sks */; };
 		D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561D1FE7A2F000FC454B /* SceneController.swift */; };
 		D44256201FE7A41800FC454B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561F1FE7A41800FC454B /* GameScene.swift */; };
-		D44256231FE7FA0000FC454B /* Minion.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256221FE7FA0000FC454B /* Minion.swift */; };
 		D44256251FE8048100FC454B /* AFEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256241FE8048100FC454B /* AFEntity.swift */; };
 		D44256271FE804F000FC454B /* AFAgent2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256261FE804F000FC454B /* AFAgent2D.swift */; };
 		D44256291FE808FF00FC454B /* AFMotivator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256281FE808FF00FC454B /* AFMotivator.swift */; };
+		D442562B1FE80FA000FC454B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D442562A1FE80FA000FC454B /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -131,10 +131,10 @@
 		D44256191FE7A19000FC454B /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		D442561D1FE7A2F000FC454B /* SceneController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneController.swift; sourceTree = "<group>"; };
 		D442561F1FE7A41800FC454B /* GameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
-		D44256221FE7FA0000FC454B /* Minion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Minion.swift; sourceTree = "<group>"; };
 		D44256241FE8048100FC454B /* AFEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFEntity.swift; sourceTree = "<group>"; };
 		D44256261FE804F000FC454B /* AFAgent2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFAgent2D.swift; sourceTree = "<group>"; };
 		D44256281FE808FF00FC454B /* AFMotivator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFMotivator.swift; sourceTree = "<group>"; };
+		D442562A1FE80FA000FC454B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +151,7 @@
 		744D8F171F91E38200D4B048 = {
 			isa = PBXGroup;
 			children = (
+				D442562A1FE80FA000FC454B /* README.md */,
 				744D8F221F91E38300D4B048 /* AgentFlocks */,
 				744D8F211F91E38300D4B048 /* Products */,
 			);
@@ -269,7 +270,6 @@
 				D44256261FE804F000FC454B /* AFAgent2D.swift */,
 				D44256241FE8048100FC454B /* AFEntity.swift */,
 				D44256281FE808FF00FC454B /* AFMotivator.swift */,
-				D44256221FE7FA0000FC454B /* Minion.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -339,6 +339,7 @@
 				D442561A1FE7A19000FC454B /* GameScene.sks in Resources */,
 				74622E981F927FBE00690C3C /* Agent04.png in Resources */,
 				74616DEC1FA9997800C9E23D /* SceneView.xib in Resources */,
+				D442562B1FE80FA000FC454B /* README.md in Resources */,
 				745F8F4C1F929AB4006B08AF /* Obstacle19.png in Resources */,
 				745F8F471F929AB4006B08AF /* Obstacle14.png in Resources */,
 				74622E951F927FB600690C3C /* Agent01.png in Resources */,
@@ -402,7 +403,6 @@
 				74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */,
 				D44256271FE804F000FC454B /* AFAgent2D.swift in Sources */,
 				74ECDF6A1F9B1C630096468F /* AgentEditorController.swift in Sources */,
-				D44256231FE7FA0000FC454B /* Minion.swift in Sources */,
 				744D8F341F91E53A00D4B048 /* TopBarController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
