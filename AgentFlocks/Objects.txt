@@ -1,0 +1,57 @@
+Following ASCII picture shows elements and also it's dependencies.
+A box (object) containing other box is dependent on it.
+
++-------------------------------------------------------------------------------------+
+| TopBar                                                     +-----------------------+|
+|                                                            | Slider                ||
+|                                                            +-----------------------+|
++-------------------------------------------------------------------------------------+
++------------------------------+
+| AgentEditor                  |                /\
+|+----------------------------+|     +----------  ----------+
+|| AgentAttributes            ||     | Popover              |  <- Popover is a standard Cocoa element (NSPopover)
+|| +------------------------+ ||     |+--------------------+|
+|| | Slider                 | ||     || ImagesList         ||
+|| +------------------------+ ||     ||                    ||
+|| +------------------------+ ||     ||                    ||
+|| | Slider                 | ||     ||                    ||
+|| +------------------------+ ||     ||                    ||
+|+----------------------------+|     |+--------------------+|
+|+----------------------------+|     +----------------------+
+|| AgentGoals                 ||
+||                            ||
+||                            ||
+||                            ||     +----------------------+
+||                            ||     | Popover              |
+||                            ||    < +--------------------+|
+||                            ||     || BehaviorEditor     ||
+||                            ||     || +----------------+ ||
+||                            ||     || | Slider         | ||
+||                            ||     || +----------------+ ||
+||                            ||     |+--------------------+|
+||                            ||     +----------------------+
+||                            ||
+|+----------------------------+|
++------------------------------+
+
+Slider:
+=======
+
+Public attributes:
+  - sliderName			String displayed in slider's view
+  - minValue			Minimum value
+  - maxValue			Maximum value
+  - maxMaxValue			Maximum settable value for maxValue (settable by stepper)
+  - value				Actual value
+  - incrementValue		Valule and maxValue increments by this value
+  - delegate			Object receiving delegated events
+
+Public methods:
+  - addToView()			Add slider to view (will fully occupy the view)
+
+Delegated methods:
+  - slider(_ controller: SliderController, newValue value:Double)
+    Method called when slider value changed
+  - slider(_ controller: SliderController, newMaxValue maxValue:Double)
+    Method called when slider's maximum value changed
+

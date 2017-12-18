@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13196" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13196"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="AgentGoalsController" customModule="AgentFlocks" customModuleProvider="target">
+            <connections>
+                <outlet property="addButton" destination="R9b-hx-W8v" id="1u6-9W-xyv"/>
+                <outlet property="addContextMenu" destination="JVR-AK-ZWM" id="kTq-Hm-J8o"/>
+                <outlet property="outlineView" destination="88F-gC-oPm" id="nda-hI-JVO"/>
+                <outlet property="playButton" destination="u1k-Jp-EPm" id="vc0-MO-c76"/>
+                <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="Hz6-mo-xeY">
+            <rect key="frame" x="0.0" y="0.0" width="300" height="272"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fIE-O3-fJy">
+                    <rect key="frame" x="8" y="37" width="284" height="227"/>
+                    <clipView key="contentView" id="Mid-yf-OoY">
+                        <rect key="frame" x="1" y="1" width="282" height="225"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" floatsGroupRows="NO" indentationPerLevel="16" outlineTableColumn="a9I-Ya-OUn" id="88F-gC-oPm">
+                                <rect key="frame" x="0.0" y="0.0" width="282" height="225"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <size key="intercellSpacing" width="3" height="2"/>
+                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                <tableColumns>
+                                    <tableColumn identifier="" width="279" minWidth="40" maxWidth="1000" id="a9I-Ya-OUn">
+                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
+                                            <font key="font" metaFont="smallSystem"/>
+                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
+                                        </tableHeaderCell>
+                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" title="Text" id="yfX-cE-zMn">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                        <prototypeCellViews>
+                                            <tableCellView identifier="GoalsCellView" id="A7A-dA-dcK" customClass="AgentGoalsCellView" customModule="AgentFlocks" customModuleProvider="target">
+                                                <rect key="frame" x="1" y="1" width="279" height="17"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SvF-wf-911">
+                                                        <rect key="frame" x="0.0" y="0.0" width="279" height="17"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="RAk-kZ-tTa">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <button translatesAutoresizingMaskIntoConstraints="NO" id="QLi-cX-Ol7" customClass="AgentGoalsCheckButton" customModule="AgentFlocks" customModuleProvider="target">
+                                                        <rect key="frame" x="259" y="0.0" width="22" height="18"/>
+                                                        <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="yYq-eX-UZY">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="system"/>
+                                                        </buttonCell>
+                                                    </button>
+                                                </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="trailing" secondItem="QLi-cX-Ol7" secondAttribute="trailing" id="diW-9T-P8Y"/>
+                                                    <constraint firstItem="QLi-cX-Ol7" firstAttribute="centerY" secondItem="A7A-dA-dcK" secondAttribute="centerY" id="zOx-w8-nhS"/>
+                                                </constraints>
+                                                <connections>
+                                                    <outlet property="checkButton" destination="QLi-cX-Ol7" id="yq1-fl-kfC"/>
+                                                    <outlet property="textField" destination="SvF-wf-911" id="MD1-Nc-7f3"/>
+                                                </connections>
+                                            </tableCellView>
+                                        </prototypeCellViews>
+                                    </tableColumn>
+                                </tableColumns>
+                                <connections>
+                                    <outlet property="dataSource" destination="-2" id="blH-Kn-Hlc"/>
+                                    <outlet property="delegate" destination="-2" id="mSS-G4-E3l"/>
+                                </connections>
+                            </outlineView>
+                        </subviews>
+                    </clipView>
+                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="GSz-CQ-iqh">
+                        <rect key="frame" x="1" y="210" width="282" height="16"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="Xjv-yo-e7u">
+                        <rect key="frame" x="224" y="17" width="15" height="102"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                </scrollView>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="R9b-hx-W8v">
+                    <rect key="frame" x="2" y="1" width="47" height="32"/>
+                    <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" image="NSAddTemplate" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="vNY-LD-Wo1">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="addButtonPressed:" target="-2" id="5d1-G0-8kh"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="u1k-Jp-EPm">
+                    <rect key="frame" x="245" y="1" width="53" height="32"/>
+                    <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" image="NSSlideshowTemplate" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="K6c-5d-GaZ">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="playButtonPressed:" target="-2" id="90s-kX-bLd"/>
+                    </connections>
+                </button>
+            </subviews>
+            <constraints>
+                <constraint firstItem="R9b-hx-W8v" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="8" id="0Kw-bX-Gc8"/>
+                <constraint firstAttribute="bottom" secondItem="u1k-Jp-EPm" secondAttribute="bottom" constant="8" id="31W-2P-hkg"/>
+                <constraint firstAttribute="trailing" secondItem="fIE-O3-fJy" secondAttribute="trailing" constant="8" id="5uS-WD-q1S"/>
+                <constraint firstAttribute="trailing" secondItem="u1k-Jp-EPm" secondAttribute="trailing" constant="8" id="8Iy-AA-Dhc"/>
+                <constraint firstAttribute="bottom" secondItem="R9b-hx-W8v" secondAttribute="bottom" constant="8" id="Ght-Ua-Que"/>
+                <constraint firstItem="u1k-Jp-EPm" firstAttribute="top" secondItem="fIE-O3-fJy" secondAttribute="bottom" constant="8" id="MUN-D6-Mkz"/>
+                <constraint firstItem="fIE-O3-fJy" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="8" id="ORi-LS-0uv"/>
+                <constraint firstItem="fIE-O3-fJy" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="8" id="WV6-m5-7xF"/>
+                <constraint firstItem="R9b-hx-W8v" firstAttribute="top" secondItem="fIE-O3-fJy" secondAttribute="bottom" constant="8" id="f1T-Kt-lTZ"/>
+            </constraints>
+            <point key="canvasLocation" x="77" y="226"/>
+        </customView>
+        <menu id="JVR-AK-ZWM">
+            <items>
+                <menuItem title="Add behavior" id="4rt-9x-d0k">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addBehaviorItemSelected:" target="-2" id="qh2-da-SLp"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="fHE-DW-lAx"/>
+                <menuItem title="Add goal: Wander" tag="1" id="guR-i3-43a">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addGoalItemSelected:" target="-2" id="fXr-mw-Ru5"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Add goal: Align" tag="2" id="Ucx-6U-6WE">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addGoalItemSelected:" target="-2" id="eg4-xz-PjG"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Add goal: Cohere" tag="3" id="Kdp-D0-eDK">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addGoalItemSelected:" target="-2" id="tDK-GK-buc"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Add goal: Avoid" tag="4" id="EO4-oG-iNa">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addGoalItemSelected:" target="-2" id="q9H-wu-vHW"/>
+                    </connections>
+                </menuItem>
+            </items>
+            <point key="canvasLocation" x="-7" y="472"/>
+        </menu>
+    </objects>
+    <resources>
+        <image name="NSAddTemplate" width="11" height="11"/>
+        <image name="NSSlideshowTemplate" width="17" height="14"/>
+    </resources>
+</document>

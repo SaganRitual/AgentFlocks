@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13196" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13196"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="AgentAttributesController" customModule="AgentFlocks" customModuleProvider="target">
+            <connections>
+                <outlet property="massSliderContainer" destination="zj5-MM-Z6w" id="c1o-9y-eP9"/>
+                <outlet property="speedSliderContainer" destination="Mnf-AN-rrH" id="Cvl-sQ-0tD"/>
+                <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="Hz6-mo-xeY">
+            <rect key="frame" x="0.0" y="0.0" width="300" height="230"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="Mnf-AN-rrH">
+                    <rect key="frame" x="8" y="119" width="284" height="103"/>
+                </customView>
+                <customView translatesAutoresizingMaskIntoConstraints="NO" id="zj5-MM-Z6w">
+                    <rect key="frame" x="8" y="8" width="284" height="103"/>
+                </customView>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="Mnf-AN-rrH" secondAttribute="trailing" constant="8" id="CaO-8a-IKG"/>
+                <constraint firstItem="zj5-MM-Z6w" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="8" id="MHV-ir-KGt"/>
+                <constraint firstItem="Mnf-AN-rrH" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="8" id="VKs-Gv-sZs"/>
+                <constraint firstItem="zj5-MM-Z6w" firstAttribute="top" secondItem="Mnf-AN-rrH" secondAttribute="bottom" constant="8" id="YLa-co-LeR"/>
+                <constraint firstItem="Mnf-AN-rrH" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="8" id="b2h-mz-cNZ"/>
+                <constraint firstItem="zj5-MM-Z6w" firstAttribute="height" secondItem="Mnf-AN-rrH" secondAttribute="height" id="dic-ht-3O6"/>
+                <constraint firstAttribute="bottom" secondItem="zj5-MM-Z6w" secondAttribute="bottom" constant="8" id="fZt-IM-7Y8"/>
+                <constraint firstAttribute="trailing" secondItem="zj5-MM-Z6w" secondAttribute="trailing" constant="8" id="j6y-CZ-lGd"/>
+            </constraints>
+            <point key="canvasLocation" x="52" y="148"/>
+        </customView>
+    </objects>
+</document>

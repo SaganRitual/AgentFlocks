@@ -1,0 +1,556 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		744D8F241F91E38300D4B048 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744D8F231F91E38300D4B048 /* AppDelegate.swift */; };
+		744D8F261F91E38300D4B048 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 744D8F251F91E38300D4B048 /* Assets.xcassets */; };
+		744D8F291F91E38300D4B048 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 744D8F271F91E38300D4B048 /* MainMenu.xib */; };
+		744D8F341F91E53A00D4B048 /* TopBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744D8F321F91E53A00D4B048 /* TopBarController.swift */; };
+		744D8F351F91E53A00D4B048 /* TopBarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 744D8F331F91E53A00D4B048 /* TopBarView.xib */; };
+		745F8F3A1F929AB4006B08AF /* Obstacle01.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F2E1F929AAB006B08AF /* Obstacle01.png */; };
+		745F8F3B1F929AB4006B08AF /* Obstacle02.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F291F929AAA006B08AF /* Obstacle02.png */; };
+		745F8F3C1F929AB4006B08AF /* Obstacle03.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F361F929AAC006B08AF /* Obstacle03.png */; };
+		745F8F3D1F929AB4006B08AF /* Obstacle04.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F241F929AAA006B08AF /* Obstacle04.png */; };
+		745F8F3E1F929AB4006B08AF /* Obstacle05.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F381F929AAC006B08AF /* Obstacle05.png */; };
+		745F8F3F1F929AB4006B08AF /* Obstacle06.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F231F929AAA006B08AF /* Obstacle06.png */; };
+		745F8F401F929AB4006B08AF /* Obstacle07.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F301F929AAB006B08AF /* Obstacle07.png */; };
+		745F8F411F929AB4006B08AF /* Obstacle08.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F311F929AAB006B08AF /* Obstacle08.png */; };
+		745F8F421F929AB4006B08AF /* Obstacle09.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F331F929AAB006B08AF /* Obstacle09.png */; };
+		745F8F431F929AB4006B08AF /* Obstacle10.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F271F929AAA006B08AF /* Obstacle10.png */; };
+		745F8F441F929AB4006B08AF /* Obstacle11.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F1D1F929AAA006B08AF /* Obstacle11.png */; };
+		745F8F451F929AB4006B08AF /* Obstacle12.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F2A1F929AAB006B08AF /* Obstacle12.png */; };
+		745F8F461F929AB4006B08AF /* Obstacle13.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F221F929AAA006B08AF /* Obstacle13.png */; };
+		745F8F471F929AB4006B08AF /* Obstacle14.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F321F929AAB006B08AF /* Obstacle14.png */; };
+		745F8F481F929AB4006B08AF /* Obstacle15.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F1E1F929AAA006B08AF /* Obstacle15.png */; };
+		745F8F491F929AB4006B08AF /* Obstacle16.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F1F1F929AAA006B08AF /* Obstacle16.png */; };
+		745F8F4A1F929AB4006B08AF /* Obstacle17.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F351F929AAC006B08AF /* Obstacle17.png */; };
+		745F8F4B1F929AB4006B08AF /* Obstacle18.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F2F1F929AAB006B08AF /* Obstacle18.png */; };
+		745F8F4C1F929AB4006B08AF /* Obstacle19.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F2C1F929AAB006B08AF /* Obstacle19.png */; };
+		745F8F4D1F929AB4006B08AF /* Obstacle20.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F201F929AAA006B08AF /* Obstacle20.png */; };
+		745F8F4E1F929AB4006B08AF /* Obstacle21.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F2B1F929AAB006B08AF /* Obstacle21.png */; };
+		745F8F4F1F929AB4006B08AF /* Obstacle22.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F391F929AAC006B08AF /* Obstacle22.png */; };
+		745F8F501F929AB4006B08AF /* Obstacle23.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F251F929AAA006B08AF /* Obstacle23.png */; };
+		745F8F511F929AB4006B08AF /* Obstacle24.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F2D1F929AAB006B08AF /* Obstacle24.png */; };
+		745F8F521F929AB4006B08AF /* Obstacle25.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F211F929AAA006B08AF /* Obstacle25.png */; };
+		745F8F531F929AB4006B08AF /* Obstacle26.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F281F929AAA006B08AF /* Obstacle26.png */; };
+		745F8F541F929AB4006B08AF /* Obstacle27.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F371F929AAC006B08AF /* Obstacle27.png */; };
+		745F8F551F929AB4006B08AF /* Obstacle28.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F261F929AAA006B08AF /* Obstacle28.png */; };
+		745F8F561F929AB4006B08AF /* Obstacle29.png in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F341F929AAC006B08AF /* Obstacle29.png */; };
+		745F8F591F93A491006B08AF /* SliderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 745F8F571F93A491006B08AF /* SliderController.swift */; };
+		745F8F5A1F93A491006B08AF /* SliderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 745F8F581F93A491006B08AF /* SliderView.xib */; };
+		74616DEA1FA9994F00C9E23D /* SceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74616DE91FA9994F00C9E23D /* SceneController.swift */; };
+		74616DEC1FA9997800C9E23D /* SceneView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 74616DEB1FA9997800C9E23D /* SceneView.xib */; };
+		74622E7B1F9249CA00690C3C /* ImagesListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74622E791F9249CA00690C3C /* ImagesListController.swift */; };
+		74622E7C1F9249CA00690C3C /* ImagesListView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 74622E7A1F9249CA00690C3C /* ImagesListView.xib */; };
+		74622E951F927FB600690C3C /* Agent01.png in Resources */ = {isa = PBXBuildFile; fileRef = 74622E861F927EEA00690C3C /* Agent01.png */; };
+		74622E961F927FBE00690C3C /* Agent02.png in Resources */ = {isa = PBXBuildFile; fileRef = 74622E831F927EEA00690C3C /* Agent02.png */; };
+		74622E971F927FBE00690C3C /* Agent03.png in Resources */ = {isa = PBXBuildFile; fileRef = 74622E841F927EEA00690C3C /* Agent03.png */; };
+		74622E981F927FBE00690C3C /* Agent04.png in Resources */ = {isa = PBXBuildFile; fileRef = 74622E871F927EEB00690C3C /* Agent04.png */; };
+		74622E991F927FBE00690C3C /* Agent05.png in Resources */ = {isa = PBXBuildFile; fileRef = 74622E821F927EEA00690C3C /* Agent05.png */; };
+		74622E9A1F927FBE00690C3C /* Agent06.png in Resources */ = {isa = PBXBuildFile; fileRef = 74622E851F927EEA00690C3C /* Agent06.png */; };
+		74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74ECDF601F9913260096468F /* AgentAttributesController.swift */; };
+		74ECDF631F9913260096468F /* AgentAttributesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 74ECDF611F9913260096468F /* AgentAttributesView.xib */; };
+		74ECDF661F9B132C0096468F /* AgentGoalsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74ECDF641F9B132C0096468F /* AgentGoalsController.swift */; };
+		74ECDF671F9B132C0096468F /* AgentGoalsView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 74ECDF651F9B132C0096468F /* AgentGoalsView.xib */; };
+		74ECDF6A1F9B1C630096468F /* AgentEditorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74ECDF681F9B1C630096468F /* AgentEditorController.swift */; };
+		74ECDF6B1F9B1C630096468F /* AgentEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 74ECDF691F9B1C630096468F /* AgentEditorView.xib */; };
+		74ECDF711F9C8ED40096468F /* Objects.txt in Resources */ = {isa = PBXBuildFile; fileRef = 74ECDF701F9C8ED40096468F /* Objects.txt */; };
+		74ECDF741F9CB5610096468F /* ItemEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 74ECDF721F9CB5610096468F /* ItemEditorView.xib */; };
+		74ECDF751F9CB5610096468F /* ItemEditorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74ECDF731F9CB5610096468F /* ItemEditorController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		744D8F201F91E38300D4B048 /* AgentFlocks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AgentFlocks.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		744D8F231F91E38300D4B048 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		744D8F251F91E38300D4B048 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		744D8F281F91E38300D4B048 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		744D8F2A1F91E38300D4B048 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		744D8F2B1F91E38300D4B048 /* AgentFlocks.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AgentFlocks.entitlements; sourceTree = "<group>"; };
+		744D8F321F91E53A00D4B048 /* TopBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopBarController.swift; sourceTree = "<group>"; };
+		744D8F331F91E53A00D4B048 /* TopBarView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TopBarView.xib; sourceTree = "<group>"; };
+		745F8F1D1F929AAA006B08AF /* Obstacle11.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle11.png; sourceTree = "<group>"; };
+		745F8F1E1F929AAA006B08AF /* Obstacle15.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle15.png; sourceTree = "<group>"; };
+		745F8F1F1F929AAA006B08AF /* Obstacle16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle16.png; sourceTree = "<group>"; };
+		745F8F201F929AAA006B08AF /* Obstacle20.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle20.png; sourceTree = "<group>"; };
+		745F8F211F929AAA006B08AF /* Obstacle25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle25.png; sourceTree = "<group>"; };
+		745F8F221F929AAA006B08AF /* Obstacle13.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle13.png; sourceTree = "<group>"; };
+		745F8F231F929AAA006B08AF /* Obstacle06.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle06.png; sourceTree = "<group>"; };
+		745F8F241F929AAA006B08AF /* Obstacle04.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle04.png; sourceTree = "<group>"; };
+		745F8F251F929AAA006B08AF /* Obstacle23.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle23.png; sourceTree = "<group>"; };
+		745F8F261F929AAA006B08AF /* Obstacle28.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle28.png; sourceTree = "<group>"; };
+		745F8F271F929AAA006B08AF /* Obstacle10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle10.png; sourceTree = "<group>"; };
+		745F8F281F929AAA006B08AF /* Obstacle26.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle26.png; sourceTree = "<group>"; };
+		745F8F291F929AAA006B08AF /* Obstacle02.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle02.png; sourceTree = "<group>"; };
+		745F8F2A1F929AAB006B08AF /* Obstacle12.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle12.png; sourceTree = "<group>"; };
+		745F8F2B1F929AAB006B08AF /* Obstacle21.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle21.png; sourceTree = "<group>"; };
+		745F8F2C1F929AAB006B08AF /* Obstacle19.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle19.png; sourceTree = "<group>"; };
+		745F8F2D1F929AAB006B08AF /* Obstacle24.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle24.png; sourceTree = "<group>"; };
+		745F8F2E1F929AAB006B08AF /* Obstacle01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle01.png; sourceTree = "<group>"; };
+		745F8F2F1F929AAB006B08AF /* Obstacle18.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle18.png; sourceTree = "<group>"; };
+		745F8F301F929AAB006B08AF /* Obstacle07.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle07.png; sourceTree = "<group>"; };
+		745F8F311F929AAB006B08AF /* Obstacle08.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle08.png; sourceTree = "<group>"; };
+		745F8F321F929AAB006B08AF /* Obstacle14.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle14.png; sourceTree = "<group>"; };
+		745F8F331F929AAB006B08AF /* Obstacle09.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle09.png; sourceTree = "<group>"; };
+		745F8F341F929AAC006B08AF /* Obstacle29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle29.png; sourceTree = "<group>"; };
+		745F8F351F929AAC006B08AF /* Obstacle17.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle17.png; sourceTree = "<group>"; };
+		745F8F361F929AAC006B08AF /* Obstacle03.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle03.png; sourceTree = "<group>"; };
+		745F8F371F929AAC006B08AF /* Obstacle27.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle27.png; sourceTree = "<group>"; };
+		745F8F381F929AAC006B08AF /* Obstacle05.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle05.png; sourceTree = "<group>"; };
+		745F8F391F929AAC006B08AF /* Obstacle22.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Obstacle22.png; sourceTree = "<group>"; };
+		745F8F571F93A491006B08AF /* SliderController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SliderController.swift; sourceTree = "<group>"; };
+		745F8F581F93A491006B08AF /* SliderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SliderView.xib; sourceTree = "<group>"; };
+		74616DE91FA9994F00C9E23D /* SceneController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneController.swift; sourceTree = "<group>"; };
+		74616DEB1FA9997800C9E23D /* SceneView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SceneView.xib; sourceTree = "<group>"; };
+		74622E791F9249CA00690C3C /* ImagesListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListController.swift; sourceTree = "<group>"; };
+		74622E7A1F9249CA00690C3C /* ImagesListView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImagesListView.xib; sourceTree = "<group>"; };
+		74622E821F927EEA00690C3C /* Agent05.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent05.png; sourceTree = "<group>"; };
+		74622E831F927EEA00690C3C /* Agent02.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent02.png; sourceTree = "<group>"; };
+		74622E841F927EEA00690C3C /* Agent03.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent03.png; sourceTree = "<group>"; };
+		74622E851F927EEA00690C3C /* Agent06.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent06.png; sourceTree = "<group>"; };
+		74622E861F927EEA00690C3C /* Agent01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent01.png; sourceTree = "<group>"; };
+		74622E871F927EEB00690C3C /* Agent04.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent04.png; sourceTree = "<group>"; };
+		74ECDF601F9913260096468F /* AgentAttributesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentAttributesController.swift; sourceTree = "<group>"; };
+		74ECDF611F9913260096468F /* AgentAttributesView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AgentAttributesView.xib; sourceTree = "<group>"; };
+		74ECDF641F9B132C0096468F /* AgentGoalsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentGoalsController.swift; sourceTree = "<group>"; };
+		74ECDF651F9B132C0096468F /* AgentGoalsView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AgentGoalsView.xib; sourceTree = "<group>"; };
+		74ECDF681F9B1C630096468F /* AgentEditorController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentEditorController.swift; sourceTree = "<group>"; };
+		74ECDF691F9B1C630096468F /* AgentEditorView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AgentEditorView.xib; sourceTree = "<group>"; };
+		74ECDF701F9C8ED40096468F /* Objects.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Objects.txt; sourceTree = "<group>"; };
+		74ECDF721F9CB5610096468F /* ItemEditorView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ItemEditorView.xib; sourceTree = "<group>"; };
+		74ECDF731F9CB5610096468F /* ItemEditorController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemEditorController.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		744D8F1D1F91E38300D4B048 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		744D8F171F91E38200D4B048 = {
+			isa = PBXGroup;
+			children = (
+				744D8F221F91E38300D4B048 /* AgentFlocks */,
+				744D8F211F91E38300D4B048 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		744D8F211F91E38300D4B048 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				744D8F201F91E38300D4B048 /* AgentFlocks.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		744D8F221F91E38300D4B048 /* AgentFlocks */ = {
+			isa = PBXGroup;
+			children = (
+				74ECDF701F9C8ED40096468F /* Objects.txt */,
+				744D8F231F91E38300D4B048 /* AppDelegate.swift */,
+				744D8F311F91E40200D4B048 /* Components */,
+				74622E7F1F927D3900690C3C /* Resources */,
+				744D8F251F91E38300D4B048 /* Assets.xcassets */,
+				744D8F271F91E38300D4B048 /* MainMenu.xib */,
+				744D8F2A1F91E38300D4B048 /* Info.plist */,
+				744D8F2B1F91E38300D4B048 /* AgentFlocks.entitlements */,
+			);
+			path = AgentFlocks;
+			sourceTree = "<group>";
+		};
+		744D8F311F91E40200D4B048 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				744D8F321F91E53A00D4B048 /* TopBarController.swift */,
+				744D8F331F91E53A00D4B048 /* TopBarView.xib */,
+				74622E791F9249CA00690C3C /* ImagesListController.swift */,
+				74622E7A1F9249CA00690C3C /* ImagesListView.xib */,
+				745F8F571F93A491006B08AF /* SliderController.swift */,
+				745F8F581F93A491006B08AF /* SliderView.xib */,
+				74ECDF601F9913260096468F /* AgentAttributesController.swift */,
+				74ECDF611F9913260096468F /* AgentAttributesView.xib */,
+				74ECDF641F9B132C0096468F /* AgentGoalsController.swift */,
+				74ECDF651F9B132C0096468F /* AgentGoalsView.xib */,
+				74ECDF681F9B1C630096468F /* AgentEditorController.swift */,
+				74ECDF691F9B1C630096468F /* AgentEditorView.xib */,
+				74ECDF731F9CB5610096468F /* ItemEditorController.swift */,
+				74ECDF721F9CB5610096468F /* ItemEditorView.xib */,
+				74616DE91FA9994F00C9E23D /* SceneController.swift */,
+				74616DEB1FA9997800C9E23D /* SceneView.xib */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		74622E7F1F927D3900690C3C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				74622E801F927D4500690C3C /* Agents */,
+				74622E811F927D5400690C3C /* Obstacles */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		74622E801F927D4500690C3C /* Agents */ = {
+			isa = PBXGroup;
+			children = (
+				74622E861F927EEA00690C3C /* Agent01.png */,
+				74622E831F927EEA00690C3C /* Agent02.png */,
+				74622E841F927EEA00690C3C /* Agent03.png */,
+				74622E871F927EEB00690C3C /* Agent04.png */,
+				74622E821F927EEA00690C3C /* Agent05.png */,
+				74622E851F927EEA00690C3C /* Agent06.png */,
+			);
+			path = Agents;
+			sourceTree = "<group>";
+		};
+		74622E811F927D5400690C3C /* Obstacles */ = {
+			isa = PBXGroup;
+			children = (
+				745F8F2E1F929AAB006B08AF /* Obstacle01.png */,
+				745F8F291F929AAA006B08AF /* Obstacle02.png */,
+				745F8F361F929AAC006B08AF /* Obstacle03.png */,
+				745F8F241F929AAA006B08AF /* Obstacle04.png */,
+				745F8F381F929AAC006B08AF /* Obstacle05.png */,
+				745F8F231F929AAA006B08AF /* Obstacle06.png */,
+				745F8F301F929AAB006B08AF /* Obstacle07.png */,
+				745F8F311F929AAB006B08AF /* Obstacle08.png */,
+				745F8F331F929AAB006B08AF /* Obstacle09.png */,
+				745F8F271F929AAA006B08AF /* Obstacle10.png */,
+				745F8F1D1F929AAA006B08AF /* Obstacle11.png */,
+				745F8F2A1F929AAB006B08AF /* Obstacle12.png */,
+				745F8F221F929AAA006B08AF /* Obstacle13.png */,
+				745F8F321F929AAB006B08AF /* Obstacle14.png */,
+				745F8F1E1F929AAA006B08AF /* Obstacle15.png */,
+				745F8F1F1F929AAA006B08AF /* Obstacle16.png */,
+				745F8F351F929AAC006B08AF /* Obstacle17.png */,
+				745F8F2F1F929AAB006B08AF /* Obstacle18.png */,
+				745F8F2C1F929AAB006B08AF /* Obstacle19.png */,
+				745F8F201F929AAA006B08AF /* Obstacle20.png */,
+				745F8F2B1F929AAB006B08AF /* Obstacle21.png */,
+				745F8F391F929AAC006B08AF /* Obstacle22.png */,
+				745F8F251F929AAA006B08AF /* Obstacle23.png */,
+				745F8F2D1F929AAB006B08AF /* Obstacle24.png */,
+				745F8F211F929AAA006B08AF /* Obstacle25.png */,
+				745F8F281F929AAA006B08AF /* Obstacle26.png */,
+				745F8F371F929AAC006B08AF /* Obstacle27.png */,
+				745F8F261F929AAA006B08AF /* Obstacle28.png */,
+				745F8F341F929AAC006B08AF /* Obstacle29.png */,
+			);
+			path = Obstacles;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		744D8F1F1F91E38300D4B048 /* AgentFlocks */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 744D8F2E1F91E38300D4B048 /* Build configuration list for PBXNativeTarget "AgentFlocks" */;
+			buildPhases = (
+				744D8F1C1F91E38300D4B048 /* Sources */,
+				744D8F1D1F91E38300D4B048 /* Frameworks */,
+				744D8F1E1F91E38300D4B048 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AgentFlocks;
+			productName = AgentFlocks;
+			productReference = 744D8F201F91E38300D4B048 /* AgentFlocks.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		744D8F181F91E38200D4B048 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0900;
+				LastUpgradeCheck = 0900;
+				ORGANIZATIONNAME = TriKatz;
+				TargetAttributes = {
+					744D8F1F1F91E38300D4B048 = {
+						CreatedOnToolsVersion = 9.0;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 744D8F1B1F91E38200D4B048 /* Build configuration list for PBXProject "AgentFlocks" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 744D8F171F91E38200D4B048;
+			productRefGroup = 744D8F211F91E38300D4B048 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				744D8F1F1F91E38300D4B048 /* AgentFlocks */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		744D8F1E1F91E38300D4B048 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				745F8F401F929AB4006B08AF /* Obstacle07.png in Resources */,
+				74622E9A1F927FBE00690C3C /* Agent06.png in Resources */,
+				745F8F4D1F929AB4006B08AF /* Obstacle20.png in Resources */,
+				74622E981F927FBE00690C3C /* Agent04.png in Resources */,
+				74616DEC1FA9997800C9E23D /* SceneView.xib in Resources */,
+				745F8F4C1F929AB4006B08AF /* Obstacle19.png in Resources */,
+				745F8F471F929AB4006B08AF /* Obstacle14.png in Resources */,
+				74622E951F927FB600690C3C /* Agent01.png in Resources */,
+				745F8F3A1F929AB4006B08AF /* Obstacle01.png in Resources */,
+				745F8F4A1F929AB4006B08AF /* Obstacle17.png in Resources */,
+				745F8F451F929AB4006B08AF /* Obstacle12.png in Resources */,
+				74ECDF671F9B132C0096468F /* AgentGoalsView.xib in Resources */,
+				745F8F481F929AB4006B08AF /* Obstacle15.png in Resources */,
+				745F8F3F1F929AB4006B08AF /* Obstacle06.png in Resources */,
+				745F8F491F929AB4006B08AF /* Obstacle16.png in Resources */,
+				745F8F4B1F929AB4006B08AF /* Obstacle18.png in Resources */,
+				745F8F531F929AB4006B08AF /* Obstacle26.png in Resources */,
+				745F8F541F929AB4006B08AF /* Obstacle27.png in Resources */,
+				74ECDF631F9913260096468F /* AgentAttributesView.xib in Resources */,
+				745F8F3B1F929AB4006B08AF /* Obstacle02.png in Resources */,
+				745F8F431F929AB4006B08AF /* Obstacle10.png in Resources */,
+				74622E991F927FBE00690C3C /* Agent05.png in Resources */,
+				745F8F521F929AB4006B08AF /* Obstacle25.png in Resources */,
+				74622E7C1F9249CA00690C3C /* ImagesListView.xib in Resources */,
+				745F8F5A1F93A491006B08AF /* SliderView.xib in Resources */,
+				745F8F4F1F929AB4006B08AF /* Obstacle22.png in Resources */,
+				745F8F3E1F929AB4006B08AF /* Obstacle05.png in Resources */,
+				745F8F511F929AB4006B08AF /* Obstacle24.png in Resources */,
+				74ECDF741F9CB5610096468F /* ItemEditorView.xib in Resources */,
+				74622E961F927FBE00690C3C /* Agent02.png in Resources */,
+				745F8F421F929AB4006B08AF /* Obstacle09.png in Resources */,
+				744D8F351F91E53A00D4B048 /* TopBarView.xib in Resources */,
+				745F8F3C1F929AB4006B08AF /* Obstacle03.png in Resources */,
+				744D8F261F91E38300D4B048 /* Assets.xcassets in Resources */,
+				744D8F291F91E38300D4B048 /* MainMenu.xib in Resources */,
+				745F8F551F929AB4006B08AF /* Obstacle28.png in Resources */,
+				745F8F3D1F929AB4006B08AF /* Obstacle04.png in Resources */,
+				74ECDF711F9C8ED40096468F /* Objects.txt in Resources */,
+				745F8F441F929AB4006B08AF /* Obstacle11.png in Resources */,
+				745F8F411F929AB4006B08AF /* Obstacle08.png in Resources */,
+				745F8F501F929AB4006B08AF /* Obstacle23.png in Resources */,
+				745F8F561F929AB4006B08AF /* Obstacle29.png in Resources */,
+				745F8F4E1F929AB4006B08AF /* Obstacle21.png in Resources */,
+				74ECDF6B1F9B1C630096468F /* AgentEditorView.xib in Resources */,
+				745F8F461F929AB4006B08AF /* Obstacle13.png in Resources */,
+				74622E971F927FBE00690C3C /* Agent03.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		744D8F1C1F91E38300D4B048 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				74ECDF751F9CB5610096468F /* ItemEditorController.swift in Sources */,
+				74616DEA1FA9994F00C9E23D /* SceneController.swift in Sources */,
+				744D8F241F91E38300D4B048 /* AppDelegate.swift in Sources */,
+				745F8F591F93A491006B08AF /* SliderController.swift in Sources */,
+				74ECDF661F9B132C0096468F /* AgentGoalsController.swift in Sources */,
+				74622E7B1F9249CA00690C3C /* ImagesListController.swift in Sources */,
+				74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */,
+				74ECDF6A1F9B1C630096468F /* AgentEditorController.swift in Sources */,
+				744D8F341F91E53A00D4B048 /* TopBarController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		744D8F271F91E38300D4B048 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				744D8F281F91E38300D4B048 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		744D8F2C1F91E38300D4B048 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		744D8F2D1F91E38300D4B048 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+			};
+			name = Release;
+		};
+		744D8F2F1F91E38300D4B048 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = AgentFlocks/AgentFlocks.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = DD983V4X84;
+				INFOPLIST_FILE = AgentFlocks/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				PRODUCT_BUNDLE_IDENTIFIER = com.BoringSoftware.Goalkeeper;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+			};
+			name = Debug;
+		};
+		744D8F301F91E38300D4B048 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = AgentFlocks/AgentFlocks.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = DD983V4X84;
+				INFOPLIST_FILE = AgentFlocks/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				PRODUCT_BUNDLE_IDENTIFIER = com.BoringSoftware.Goalkeeper;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		744D8F1B1F91E38200D4B048 /* Build configuration list for PBXProject "AgentFlocks" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				744D8F2C1F91E38300D4B048 /* Debug */,
+				744D8F2D1F91E38300D4B048 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		744D8F2E1F91E38300D4B048 /* Build configuration list for PBXNativeTarget "AgentFlocks" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				744D8F2F1F91E38300D4B048 /* Debug */,
+				744D8F301F91E38300D4B048 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 744D8F181F91E38200D4B048 /* Project object */;
+}

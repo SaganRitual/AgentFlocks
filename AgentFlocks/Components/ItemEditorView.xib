@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13196" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13196"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+        <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="ItemEditorController" customModule="AgentFlocks" customModuleProvider="target">
+            <connections>
+                <outlet property="sliderStackView" destination="CKK-cL-S92" id="qgg-y5-Rd7"/>
+                <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="Hz6-mo-xeY">
+            <rect key="frame" x="0.0" y="0.0" width="300" height="145"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sRA-ed-hA2">
+                    <rect key="frame" x="2" y="1" width="75" height="32"/>
+                    <buttonCell key="cell" type="push" title="Apply" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Yl0-CA-qXG">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="applyButtonPressed:" target="-2" id="nuq-RB-0KH"/>
+                    </connections>
+                </button>
+                <button translatesAutoresizingMaskIntoConstraints="NO" id="8J2-wH-fB3">
+                    <rect key="frame" x="224" y="10" width="70" height="18"/>
+                    <buttonCell key="cell" type="check" title="Preview" bezelStyle="regularSquare" imagePosition="left" inset="2" id="7tr-c2-ggp">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <binding destination="-2" name="value" keyPath="self.preview" id="FsB-3R-5Qx"/>
+                    </connections>
+                </button>
+                <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CKK-cL-S92">
+                    <rect key="frame" x="8" y="37" width="284" height="100"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="100" placeholder="YES" id="z1L-W6-sL5"/>
+                    </constraints>
+                </stackView>
+            </subviews>
+            <constraints>
+                <constraint firstItem="8J2-wH-fB3" firstAttribute="centerY" secondItem="sRA-ed-hA2" secondAttribute="centerY" id="9pQ-L3-yil"/>
+                <constraint firstAttribute="trailing" secondItem="CKK-cL-S92" secondAttribute="trailing" constant="8" id="M8p-Eb-uD9"/>
+                <constraint firstAttribute="bottom" secondItem="sRA-ed-hA2" secondAttribute="bottom" constant="8" id="NGY-9r-uhL"/>
+                <constraint firstItem="sRA-ed-hA2" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="8" id="SIP-dX-8Uk"/>
+                <constraint firstItem="CKK-cL-S92" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="8" id="Zec-gE-RV4"/>
+                <constraint firstItem="sRA-ed-hA2" firstAttribute="top" secondItem="CKK-cL-S92" secondAttribute="bottom" constant="8" id="gYM-Tw-T9r"/>
+                <constraint firstItem="CKK-cL-S92" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="8" id="kxj-VF-3Vg"/>
+                <constraint firstAttribute="trailing" secondItem="8J2-wH-fB3" secondAttribute="trailing" constant="8" id="sUb-pC-xNs"/>
+            </constraints>
+            <point key="canvasLocation" x="3" y="53.5"/>
+        </customView>
+        <userDefaultsController representsSharedInstance="YES" id="02m-D4-mcK"/>
+    </objects>
+</document>
