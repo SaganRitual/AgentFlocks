@@ -68,6 +68,7 @@
 		D44256271FE804F000FC454B /* AFAgent2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256261FE804F000FC454B /* AFAgent2D.swift */; };
 		D44256291FE808FF00FC454B /* AFMotivator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256281FE808FF00FC454B /* AFMotivator.swift */; };
 		D442562B1FE80FA000FC454B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D442562A1FE80FA000FC454B /* README.md */; };
+		D47BC1F41FECCFE600B3CE6B /* Round2.txt in Resources */ = {isa = PBXBuildFile; fileRef = D47BC1F31FECCFE600B3CE6B /* Round2.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -135,6 +136,7 @@
 		D44256261FE804F000FC454B /* AFAgent2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFAgent2D.swift; sourceTree = "<group>"; };
 		D44256281FE808FF00FC454B /* AFMotivator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFMotivator.swift; sourceTree = "<group>"; };
 		D442562A1FE80FA000FC454B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		D47BC1F31FECCFE600B3CE6B /* Round2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Round2.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -171,6 +173,7 @@
 				D442561F1FE7A41800FC454B /* GameScene.swift */,
 				D44256191FE7A19000FC454B /* GameScene.sks */,
 				74ECDF701F9C8ED40096468F /* Objects.txt */,
+				D47BC1F31FECCFE600B3CE6B /* Round2.txt */,
 				744D8F231F91E38300D4B048 /* AppDelegate.swift */,
 				744D8F311F91E40200D4B048 /* Components */,
 				74622E7F1F927D3900690C3C /* Resources */,
@@ -369,6 +372,7 @@
 				744D8F351F91E53A00D4B048 /* TopBarView.xib in Resources */,
 				745F8F3C1F929AB4006B08AF /* Obstacle03.png in Resources */,
 				744D8F261F91E38300D4B048 /* Assets.xcassets in Resources */,
+				D47BC1F41FECCFE600B3CE6B /* Round2.txt in Resources */,
 				744D8F291F91E38300D4B048 /* MainMenu.xib in Resources */,
 				745F8F551F929AB4006B08AF /* Obstacle28.png in Resources */,
 				745F8F3D1F929AB4006B08AF /* Obstacle04.png in Resources */,

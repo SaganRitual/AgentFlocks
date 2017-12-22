@@ -1,0 +1,33 @@
+1a) The "draw" and "place" buttons are toggle-switches. That is, push "draw" to engage, push "draw" again to disengage.
+1b) Only one can be engaged. Engaging one disengages the other.
+
+2a) When "draw" is selected, "shape" and "count" items should be disabled
+2b) When "place" is selected, see below for details
+
+3a) When "place" is selected, the mouse cursor should change to crosshairs, but only when it's over the scene.
+    When the user clicks in the scene, the sprite represented in the "shape" menu should be
+    placed where the mouse is clicked.
+
+3b) When "draw" is selected, the mouse cursor should change to a pen, but only when it's over the scene
+
+3c) When neither is selected, the mouse cursor should be the usual kind everywhere
+
+4) There are three independent dropdown menus under the "shape" heading, one for each radio button selection. That is,
+    there is an "agents" dropdown with agent images in it, an "objects" dropdown with object images, etc. We will
+    show only one dropdown menu at a time; the other two will be hidden. We will show the dropdown for the selected
+    radio button: "agents" dropdown for "agents" radio button, etc. When a radio button is selected, we display the
+    corresponding dropdown in its closed state, showing the currently selected image.
+
+    It's ok to continue using the faces. I have an artist working on the final images. I just need three menus.
+
+5a) If the "agents" radio button is selected, the "Shape" label should change to "Avatar".
+5b) If the "agents" radio button is not selected, the "count" input field should be disabled, and "Avatar"
+    should change to "Shape".
+
+6) I was terrible at describing the spinner+input components. I've drawn some pictures to help make it more sensible.
+    The input field is an exponent that can be either negative or positive. The 10 is just fixed text. The reason for
+    this ugly contraption is that I want to enable the user to set the scale of the slider. He needs the flexibility
+    to slide in the milli range but also in the kilo range. If you have any better ideas on presenting an exponential
+    slider, I would love to hear them. If you don't have any ideas, please add the work of changing those
+    spinner+inputs to behave as in the drawing I've attached.
+
