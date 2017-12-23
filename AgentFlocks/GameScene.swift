@@ -24,6 +24,8 @@ class GameScene: SKScene {
 
     private var lastUpdateTime : TimeInterval = 0
     
+    var draggedNodeIndex: Int? = nil
+    
     override func didMove(to view: SKView) {
 //        agentControls = AgentControls(view: view)
 //        motivatorControls = MotivatorControls(view: view)
@@ -51,6 +53,7 @@ class GameScene: SKScene {
     
     override func sceneDidLoad() {
         self.lastUpdateTime = 0
+        self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -65,8 +68,10 @@ class GameScene: SKScene {
         let dt = currentTime - self.lastUpdateTime
         
         // Update entities
-        for entity in self.entities {
-            entity.update(deltaTime: dt)
+        for (index, entity) in self.entities.enumerated() {
+            if draggedNodeIndex != index {
+                entity.update(deltaTime: dt)
+            }
         }
         
         self.lastUpdateTime = currentTime

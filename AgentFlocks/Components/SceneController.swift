@@ -25,6 +25,7 @@ class SceneController: NSViewController {
 	
 	private var nodes = [SKSpriteNode]()
 	private var draggedNodeIndex:Int?
+    private var draggedNodeMouseOffset = CGPoint.zero
 	
 	// MARK: - Initialization
 	
@@ -75,22 +76,47 @@ class SceneController: NSViewController {
 
 	override func mouseDown(with event: NSEvent) {
 		let location = event.location(in: sceneNode)
-		let touchedNodes = sceneNode.nodes(at: location)
-		for (index, node) in nodes.enumerated() {
-			if touchedNodes.contains(node) {
-				draggedNodeIndex = index
-				break
-			}
-		}
+        let touchedNodes = sceneNode.nodes(at: location)
+        
+        for (index, entity_) in sceneNode.entities.enumerated() {
+            let entity = entity_ as! AFEntity
+            if touchedNodes.contains(entity.agent.spriteContainer) {
+                draggedNodeIndex = index
+                sceneNode.draggedNodeIndex = index
+                
+                let e = event.location(in: sceneNode)
+
+                draggedNodeMouseOffset.x = entity.agent.spriteContainer.position.x - e.x
+                draggedNodeMouseOffset.y = entity.agent.spriteContainer.position.y - e.y
+                break
+            }
+        }
 	}
 	
 	override func mouseUp(with event: NSEvent) {
+        if let draggedIndex = draggedNodeIndex {
+            if let entity = sceneNode.entities[draggedIndex] as? AFEntity {
+                let c = entity.agent
+                let p = event.location(in: sceneNode)
+                c.position = vector_float2(Float(p.x), Float(p.y))
+                c.position.x += Float(draggedNodeMouseOffset.x)
+                c.position.y += Float(draggedNodeMouseOffset.y)
+            }
+        }
+        
 		draggedNodeIndex = nil
+        sceneNode.draggedNodeIndex = nil
+        draggedNodeMouseOffset = CGPoint.zero
 	}
 	
 	override func mouseDragged(with event: NSEvent) {
 		if let draggedIndex = draggedNodeIndex {
-			nodes[draggedIndex].position = event.location(in: sceneNode)
+            if let entity = sceneNode.entities[draggedIndex] as? AFEntity {
+                let c = entity.agent.spriteContainer
+                c.position = event.location(in: sceneNode)
+                c.position.x += draggedNodeMouseOffset.x
+                c.position.y += draggedNodeMouseOffset.y
+            }
 		}
 	}
 	
