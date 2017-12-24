@@ -57,17 +57,5 @@ class SceneController: NSViewController {
 	override func viewDidLayout() {
 		sceneNode.size = view.frame.size
 	}
-	
-	// MARK: - Public methods
-	
-	func addNode(image: NSImage) {
-        let entity = AFEntity(scene: sceneNode, position: CGPoint.zero)
-        sceneNode.entities.append(entity)
-
-//        let sprite = SKSpriteNode(texture: SKTexture(image: image))
-//        sprite.anchorPoint = NSMakePoint(0.5, 0.5)
-//        sceneNode.addChild(sprite)
-//        nodes.append(sprite)
-	}
 }
 

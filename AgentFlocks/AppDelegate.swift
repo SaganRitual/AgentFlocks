@@ -8,6 +8,24 @@
 
 import Cocoa
 
+class UglyGlobals {
+    static var appDelegate: AppDelegate!
+    static var agentEditorController: AgentEditorController!
+    
+    static var editedAgentIndex:Int?
+    static var editedObstacleIndex:Int?
+
+    static var agents = [AppDelegate.AgentType]()
+    
+    static var topBarController = TopBarController()
+
+    static var obstacleImages = [NSImage]()
+}
+
+class Barf {
+    
+}
+
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 	
@@ -16,7 +34,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	@IBOutlet weak var settingsView: NSView!
 	@IBOutlet weak var sceneView: NSView!
 	
-	let topBarController = TopBarController()
 	let topBarControllerPadding:CGFloat = 10.0
 	
 	let agentEditorController = AgentEditorController()
@@ -28,14 +45,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	typealias AgentGoalType = (name:String, enabled:Bool)
 	typealias AgentBehaviorType = (name:String, enabled:Bool, goals:[AgentGoalType])
 	typealias AgentType = (name:String, image:NSImage, behaviors:[AgentBehaviorType])
-	
-	typealias ObstacleType = (name:String, image:NSImage)
-	
-	var agents = [AgentType]()
-	var obstacles = [ObstacleType]()
-	
-	var editedAgentIndex:Int?
-	var editedObstacleIndex:Int?
 	
 	private var activePopover:NSPopover?
 	
@@ -52,42 +61,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		// Visualise constraints when something is wrong
 		UserDefaults.standard.set(true, forKey: "NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints")
 		#endif
-		
-		agents = loadAgents()
-		obstacles = loadObstacles()
+        
+        UglyGlobals.appDelegate = self
+        UglyGlobals.agentEditorController = agentEditorController
+
+		UglyGlobals.agents = loadAgents()
 		
 		var agentImages = [NSImage]()
-		var obstacleImages = [NSImage]()
 		
-		for agent in agents {
+		for agent in UglyGlobals.agents {
 			agentImages.append(agent.image)
 		}
-		for obstacle in obstacles {
-			obstacleImages.append(obstacle.image)
-		}
+//        agentEditorController.goalsController.dataSource = self
+//        agentEditorController.goalsController.delegate = self
 		
-		agentEditorController.goalsController.dataSource = self
-		agentEditorController.goalsController.delegate = self
-		
-		topBarController.delegate = self
-		
-//		topBarController.animatePopovers = true
-//		topBarController.flocksMenuAtMousePosition = true
-		topBarController.agentImages = agentImages
-		topBarController.obstacleImages = obstacleImages
+//		UglyGlobals.topBarController.animatePopovers = true
+//		UglyGlobals.topBarController.flocksMenuAtMousePosition = true
+		UglyGlobals.topBarController.agentImages = agentImages
+		UglyGlobals.topBarController.obstacleImages = UglyGlobals.obstacleImages
 		
 		// Add TopBar to the main window content
-		topbarView.addSubview(topBarController.view)
+		topbarView.addSubview(UglyGlobals.topBarController.view)
 		// Set TopBar's layout (stitch to top and to both sides)
-		topBarController.view.translatesAutoresizingMaskIntoConstraints = false
-		NSLayoutConstraint(item: topBarController.view,
+		UglyGlobals.topBarController.view.translatesAutoresizingMaskIntoConstraints = false
+		NSLayoutConstraint(item: UglyGlobals.topBarController.view,
 		                   attribute: .top,
 		                   relatedBy: .equal,
 		                   toItem: topbarView,
 		                   attribute: .top,
 		                   multiplier: 1.0,
 		                   constant: topBarControllerPadding).isActive = true
-		NSLayoutConstraint(item: topBarController.view,
+		NSLayoutConstraint(item: UglyGlobals.topBarController.view,
 		                   attribute: .left,
 		                   relatedBy: .equal,
 		                   toItem: topbarView,
@@ -97,14 +101,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		NSLayoutConstraint(item: topbarView,
 		                   attribute: .right,
 		                   relatedBy: .equal,
-		                   toItem: topBarController.view,
+		                   toItem: UglyGlobals.topBarController.view,
 		                   attribute: .right,
 		                   multiplier: 1.0,
 		                   constant: topBarControllerPadding).isActive = true
 		NSLayoutConstraint(item: topbarView,
 		                   attribute: .bottom,
 		                   relatedBy: .equal,
-		                   toItem: topBarController.view,
+		                   toItem: UglyGlobals.topBarController.view,
 		                   attribute: .bottom,
 		                   multiplier: 1.0,
 		                   constant: topBarControllerPadding).isActive = true
@@ -179,25 +183,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		
 		return foundAgents
 	}
-	
-	func loadObstacles() -> [ObstacleType] {
-		
-		var foundObstacles = [ObstacleType]()
-		if let resourcesPath = Bundle.main.resourcePath {
-			do {
-				let fileNames = try FileManager.default.contentsOfDirectory(atPath: resourcesPath)
-				for fileName in fileNames.sorted() where fileName.hasPrefix("Obstacle") {
-					if let image = NSImage(contentsOfFile: "\(resourcesPath)/\(fileName)") {
-						foundObstacles.append((name:fileName, image:image))
-					}
-				}
-			} catch {
-				NSLog("Cannot read images from path '\(resourcesPath)'")
-			}
-		}
-		
-		return foundObstacles
-	}
 
 	func placeAgentFrames(agentIndex: Int) {
 		
@@ -247,7 +232,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		agentEditorController.view.translatesAutoresizingMaskIntoConstraints = true
 	}
 	
-	private func showPopover(withContentController contentController:NSViewController, forRect rect:NSRect, preferredEdge: NSRectEdge) {
+	/*private*/ func showPopover(withContentController contentController:NSViewController, forRect rect:NSRect, preferredEdge: NSRectEdge) {
 		
 		guard let mainView = window.contentView else { return }
 		
@@ -265,225 +250,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	
 }
 
-// MARK: - TopBarDelegate
-
-extension AppDelegate: TopBarDelegate {
-	
-	func topBarDrawPath(_ controller: TopBarController) {
-		NSLog("Draw path...")
-		self.removeAgentFrames()
-	}
-	
-	func topBar(_ controller: TopBarController, obstacleSelected index: Int) {
-		if 0..<obstacles.count ~= index {
-			NSLog("Obstacle selected")
-			editedObstacleIndex = index
-			self.removeAgentFrames()
-		}
-	}
-	
-	func topBar(_ controller: TopBarController, agentSelected index: Int) {
-		if 0..<agents.count ~= index {
-			NSLog("Agent selected")
-			editedAgentIndex = index
-			self.placeAgentFrames(agentIndex: index)
-		}
-	}
-	
-	func topBar(_ controller: TopBarController, flockSelected flock: TopBarController.FlockType) {
-		NSLog("Flock selected: \(flock)")
-		self.removeAgentFrames()
-	}
-	
-	func topBar(_ controller: TopBarController, statusChangedTo newStatus: TopBarController.Status) {
-		switch newStatus {
-		case .Running:
-			NSLog("START")
-		case .Paused:
-			NSLog("STOP")
-		}
-		self.removeAgentFrames()
-	}
-	
-	func topBar(_ controller: TopBarController, speedChangedTo newSpeed: Double) {
-		NSLog("Speed: %.2f%%", newSpeed)
-	}
-	
-}
-
-// MARK: - AgentGoalsDataSource
-
-extension AppDelegate: AgentGoalsDataSource {
-	
-	func agentGoals(_ agentGoalsController: AgentGoalsController, numberOfChildrenOfItem item: Any?) -> Int {
-		if let behaviorItem = item as? AgentBehaviorType {
-			// Child item: behavior
-			return behaviorItem.goals.count
-		}
-		// Root item
-		return (editedAgentIndex == nil) ? 0 : agents[editedAgentIndex!].behaviors.count
-	}
-	
-	func agentGoals(_ agentGoalsController: AgentGoalsController, isItemExpandable item: Any) -> Bool {
-		if item is AgentBehaviorType {
-			return true
-		}
-		return false
-	}
-	
-	func agentGoals(_ agentGoalsController: AgentGoalsController, child index: Int, ofItem item: Any?) -> Any {
-		if let behaviorItem = item as? AgentBehaviorType {
-			// Child item: AgentGoalType
-			return behaviorItem.goals[index]
-		}
-		// Root item
-		if let agentIndex = editedAgentIndex {
-			// Child item: AgentBehaviorType
-			return agents[agentIndex].behaviors[index]
-		}
-		// Child item: AgentBehaviorType
-		return agents[0].behaviors[0]
-	}
-	
-	func agentGoals(_ agentGoalsController: AgentGoalsController, labelOfItem item: Any) -> String {
-		if let behaviorItem = item as? AgentBehaviorType {
-			return behaviorItem.name
-		}
-		else if let goalItem = item as? AgentGoalType {
-			return goalItem.name
-		}
-		return ""
-	}
-	
-	func agentGoals(_ agentGoalsController: AgentGoalsController, isItemEnabled item: Any) -> Bool {
-		if let behaviorItem = item as? AgentBehaviorType {
-			return behaviorItem.enabled
-		}
-		else if let goalItem = item as? AgentGoalType {
-			return goalItem.enabled
-		}
-		return false
-	}
-	
-}
-
-// MARK: - AgentGoalsDelegate
-
-extension AppDelegate: AgentGoalsDelegate {
-	
-	func agentGoalsPlayClicked(_ agentGoalsController: AgentGoalsController) {
-		guard let agentIndex = editedAgentIndex else { return }
-		
-		sceneController.addNode(image: agents[agentIndex].image)
-		self.removeAgentFrames()
-	}
-	
-	func agentGoals(_ agentGoalsController: AgentGoalsController, itemDoubleClicked item: Any, inRect rect: NSRect) {
-		guard let mainView = window.contentView else { return }
-		if item is AgentBehaviorType {
-			
-			let editorController = ItemEditorController(withAttributes: ["Weight"])
-			editorController.delegate = self
-			editorController.editedItem = item
-			
-			// TODO: Set behavior values
-			editorController.setValue(ofSlider: "Weight", to: 5.6)
-			editorController.preview = true
-			
-			let itemRect = mainView.convert(rect, from: agentGoalsController.view)
-			self.showPopover(withContentController: editorController, forRect: itemRect, preferredEdge: .minX)
-		}
-		else if item is AgentGoalType {
-			// TODO: Get Goal's type (Wander, Align, Cohere or Avoid) from item
-			// based on that information create ItemEditorController with type's specific attributes
-			let editorController = ItemEditorController(withAttributes: ["Distance", "Angle", "Weight"])
-			editorController.delegate = self
-			editorController.editedItem = item
-			
-			// TODO: Set goal values
-			editorController.setValue(ofSlider: "Distance", to: 3.2)
-			editorController.setValue(ofSlider: "Angle", to: 4.8)
-			editorController.setValue(ofSlider: "Weight", to: 5.6)
-			editorController.preview = true
-			
-			let itemRect = mainView.convert(rect, from: agentGoalsController.view)
-			self.showPopover(withContentController: editorController, forRect: itemRect, preferredEdge: .minX)
-		}
-	}
-	
-	func agentGoals(_ agentGoalsController: AgentGoalsController, item: Any, setState state: NSControl.StateValue) {
-		if let behaviorItem = item as? AgentBehaviorType {
-			let enabled = (state == .on) ? true : false
-			NSLog("Behavior '\(behaviorItem.name)' " + (enabled ? "enabled" : "disabled"))
-		}
-		else if let goalItem = item as? AgentGoalType {
-			let enabled = (state == .on) ? true : false
-			NSLog("Goal '\(goalItem.name)' " + (enabled ? "enabled" : "disabled"))
-		}
-	}
-	
-	func agentGoals(_ agentGoalsController: AgentGoalsController, newBehaviorShowForRect rect: NSRect) {
-		guard let mainView = window.contentView else { return }
-		
-		let editorController = ItemEditorController(withAttributes: ["Weight"])
-		editorController.delegate = self
-		
-		let itemRect = mainView.convert(rect, from: agentGoalsController.view)
-		self.showPopover(withContentController: editorController, forRect: itemRect, preferredEdge: .minX)
-	}
-	
-	func agentGoals(_ agentGoalsController: AgentGoalsController, newGoalShowForRect rect: NSRect, goalType type: AgentGoalsController.GoalType) {
-		guard let mainView = window.contentView else { return }
-		
-		var attributeList = ["Weight"]
-		switch type {
-		case .Wander:
-			attributeList = ["Speed"] + attributeList
-		case .Align:
-			attributeList = ["Distance", "Angle"] + attributeList
-		case .Cohere:
-			attributeList = ["Cohere"] + attributeList
-		case .Avoid:
-			attributeList = ["Avoid"] + attributeList
-		}
-		
-		let editorController = ItemEditorController(withAttributes: attributeList)
-		editorController.delegate = self
-		
-		let itemRect = mainView.convert(rect, from: agentGoalsController.view)
-		self.showPopover(withContentController: editorController, forRect: itemRect, preferredEdge: .minX)
-	}
-	
-	func agentGoals(_ agentGoalsController: AgentGoalsController, dragIdentifierForItem item: Any) -> String? {
-		if let behaviorItem = item as? AgentBehaviorType {
-			return behaviorItem.name
-		}
-		else if let goalItem = item as? AgentGoalType {
-			return goalItem.name
-		}
-		return nil
-	}
-	
-	func agentGoals(_ agentGoalsController: AgentGoalsController, validateDrop info: NSDraggingInfo, toParentItem parentItem: Any?, proposedItem item: Any?, proposedChildIndex index: Int) -> NSDragOperation {
-		if index == NSOutlineViewDropOnItemIndex {
-			// Don't allow to drop on item
-			return NSDragOperation.init(rawValue: 0)
-		}
-		return NSDragOperation.move
-	}
-	
-	func agentGoals(_ agentGoalsController: AgentGoalsController, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
-		return false
-	}
-	
-}
-
 // MARK: - ItemEditorDelegate
 
 extension AppDelegate: ItemEditorDelegate {
 	
 	func itemEditorApplyPressed(_ controller: ItemEditorController) {
-		guard let agentIndex = editedAgentIndex else { return }
+		guard let agentIndex = UglyGlobals.editedAgentIndex else { return }
 		
 		if let _ = controller.editedItem {
 			// Edit existing behavior:
@@ -495,7 +267,7 @@ extension AppDelegate: ItemEditorDelegate {
 		else {
 			// Add new behavior
 			let selectedIndex = agentEditorController.selectedIndex()
-			agents[agentIndex].behaviors.insert((name: "New behavior", enabled: true, goals: []), at: selectedIndex+1)
+			UglyGlobals.agents[agentIndex].behaviors.insert((name: "New behavior", enabled: true, goals: []), at: selectedIndex+1)
 			agentEditorController.refresh()
 		}
 		activePopover?.close()
@@ -512,3 +284,4 @@ extension AppDelegate: NSPopoverDelegate {
 	}
 	
 }
+
