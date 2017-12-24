@@ -101,6 +101,9 @@ class TopBarController: NSViewController {
 	private func showPopover(withTitle title:String, andImages images:[NSImage], forButton button:NSButton) {
 		
 		guard let mainView = NSApp.mainWindow?.contentView else { return }
+        
+        UglyGlobals.topBar = self
+        UglyGlobals.topBarDelegate = delegate
 		
 		// Create popover content
 		let contentController = ImagesListController()

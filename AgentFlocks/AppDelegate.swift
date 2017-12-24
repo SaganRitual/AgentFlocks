@@ -18,6 +18,8 @@ class UglyGlobals {
     static var agents = [AppDelegate.AgentType]()
     
     static var topBarController = TopBarController()
+    static var topBarDelegate: TopBarDelegate?
+    static var topBar: TopBarController?
 
     static var obstacleImages = [NSImage]()
 }

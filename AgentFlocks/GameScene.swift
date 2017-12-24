@@ -99,24 +99,26 @@ class GameScene: SKScene, SKViewDelegate {
             }
         }
     }
-    
+
     override func mouseUp(with event: NSEvent) {
         if let draggedIndex = draggedNodeIndex {
             if let entity = self.entities[draggedIndex] as? AFEntity {
                 UglyGlobals.agentEditorController.goalsController.dataSource = entity
-                UglyGlobals.agentEditorController.goalsController.delegate = entity
+//                UglyGlobals.agentEditorController.goalsController.delegate = entity
 
                 let c = entity.agent
                 let p = event.location(in: self)
                 c.position = vector_float2(Float(p.x), Float(p.y))
                 c.position.x += Float(draggedNodeMouseOffset.x)
                 c.position.y += Float(draggedNodeMouseOffset.y)
+
+                UglyGlobals.topBarDelegate!.topBar(UglyGlobals.topBar!, statusChangedTo: TopBarController.Status.Running)
             }
-        }
         
-        didDrag = false
-        draggedNodeIndex = nil
-        draggedNodeMouseOffset = CGPoint.zero
+            didDrag = false
+            draggedNodeIndex = nil
+            draggedNodeMouseOffset = CGPoint.zero
+        }
     }
     
     override func mouseDragged(with event: NSEvent) {
@@ -190,9 +192,9 @@ extension GameScene: TopBarDelegate {
             UglyGlobals.editedAgentIndex = index
             UglyGlobals.appDelegate.placeAgentFrames(agentIndex: index)
 
-            guard let agentIndex = UglyGlobals.editedAgentIndex else { return }
-            addNode(image: UglyGlobals.agents[agentIndex].image)
-            UglyGlobals.appDelegate.removeAgentFrames()
+//            guard let agentIndex = UglyGlobals.editedAgentIndex else { return }
+            addNode(image: UglyGlobals.agents[index].image)
+//            UglyGlobals.appDelegate.removeAgentFrames()
         }
     }
     
