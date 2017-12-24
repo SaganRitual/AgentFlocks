@@ -9,7 +9,7 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKViewDelegate {
     
     var entities = [GKEntity]()
     var graphs = [String : GKGraph]()
@@ -24,8 +24,9 @@ class GameScene: SKScene {
 
     private var lastUpdateTime : TimeInterval = 0
     
-    var draggedNodeIndex: Int? = nil
-    
+    private var draggedNodeIndex: Int? = nil
+    private var draggedNodeMouseOffset = CGPoint.zero
+
     override func didMove(to view: SKView) {
 //        agentControls = AgentControls(view: view)
 //        motivatorControls = MotivatorControls(view: view)
@@ -49,6 +50,53 @@ class GameScene: SKScene {
         right.fillColor = .green
         right.strokeColor = .black
         self.addChild(right)
+    }
+    
+    // MARK: - Mouse handling
+    
+    override func mouseDown(with event: NSEvent) {
+        let location = event.location(in: self)
+        let touchedNodes = self.nodes(at: location)
+        
+        for (index, entity_) in self.entities.enumerated() {
+            let entity = entity_ as! AFEntity
+            if touchedNodes.contains(entity.agent.spriteContainer) {
+                draggedNodeIndex = index
+//                self.draggedNodeIndex = index
+                
+                let e = event.location(in: self)
+                
+                draggedNodeMouseOffset.x = entity.agent.spriteContainer.position.x - e.x
+                draggedNodeMouseOffset.y = entity.agent.spriteContainer.position.y - e.y
+                break
+            }
+        }
+    }
+    
+    override func mouseUp(with event: NSEvent) {
+        if let draggedIndex = draggedNodeIndex {
+            if let entity = self.entities[draggedIndex] as? AFEntity {
+                let c = entity.agent
+                let p = event.location(in: self)
+                c.position = vector_float2(Float(p.x), Float(p.y))
+                c.position.x += Float(draggedNodeMouseOffset.x)
+                c.position.y += Float(draggedNodeMouseOffset.y)
+            }
+        }
+        
+        draggedNodeIndex = nil
+        draggedNodeMouseOffset = CGPoint.zero
+    }
+    
+    override func mouseDragged(with event: NSEvent) {
+        if let draggedIndex = draggedNodeIndex {
+            if let entity = self.entities[draggedIndex] as? AFEntity {
+                let c = entity.agent.spriteContainer
+                c.position = event.location(in: self)
+                c.position.x += draggedNodeMouseOffset.x
+                c.position.y += draggedNodeMouseOffset.y
+            }
+        }
     }
     
     override func sceneDidLoad() {
