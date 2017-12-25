@@ -31,6 +31,7 @@ protocol AFMotivatorCollection: AFMotivator {
 }
 
 class AFBehavior: AFMotivatorCollection {
+    var enabled = true
     var goals: [AFGoal]
     let motivatorType: AFMotivatorType
     var weight: Float
@@ -74,6 +75,7 @@ class AFBehavior: AFMotivatorCollection {
 }
 
 class AFCompositeBehavior: AFMotivatorCollection {
+    var enabled = true
     var behaviors: [AFBehavior]
     let motivatorType: AFMotivatorType
     
@@ -114,6 +116,7 @@ enum AFGoalType {
 }
 
 class AFGoal: AFMotivator {
+    var enabled = true
     var goal: GKGoal!
     let goalType: AFGoalType
     let motivatorType: AFMotivatorType

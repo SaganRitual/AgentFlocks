@@ -10,6 +10,7 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene, SKViewDelegate {
+    static var selfScene: GameScene?
     
     var entities = [GKEntity]()
     var graphs = [String : GKGraph]()
@@ -24,40 +25,13 @@ class GameScene: SKScene, SKViewDelegate {
 
     private var lastUpdateTime : TimeInterval = 0
     
-    private var didDrag = false
     private var draggedNodeIndex: Int? = nil
     private var draggedNodeMouseOffset = CGPoint.zero
     
-    typealias ObstacleType = (name:String, image:NSImage)
-    
-    var obstacles = [ObstacleType]()
-    
-    func loadObstacles() -> [GameScene.ObstacleType] {
-        
-        var foundObstacles = [GameScene.ObstacleType]()
-        if let resourcesPath = Bundle.main.resourcePath {
-            do {
-                let fileNames = try FileManager.default.contentsOfDirectory(atPath: resourcesPath)
-                for fileName in fileNames.sorted() where fileName.hasPrefix("Obstacle") {
-                    if let image = NSImage(contentsOfFile: "\(resourcesPath)/\(fileName)") {
-                        foundObstacles.append((name:fileName, image:image))
-                    }
-                }
-            } catch {
-                NSLog("Cannot read images from path '\(resourcesPath)'")
-            }
-        }
-        
-        return foundObstacles
-    }
-
     override func didMove(to view: SKView) {
+        GameScene.selfScene = self
 //        agentControls = AgentControls(view: view)
 //        motivatorControls = MotivatorControls(view: view)
-        obstacles = loadObstacles()
-        for obstacle in obstacles {
-            UglyGlobals.obstacleImages.append(obstacle.image)
-        }
 
         top = SKShapeNode(rect: CGRect(origin: CGPoint(x: -512, y: 384 - (50 + 40)), size: CGSize(width: 1024, height: 50)))
         top.fillColor = .blue
@@ -89,7 +63,6 @@ class GameScene: SKScene, SKViewDelegate {
         for (index, entity_) in self.entities.enumerated() {
             let entity = entity_ as! AFEntity
             if touchedNodes.contains(entity.agent.spriteContainer) {
-                didDrag = false
                 draggedNodeIndex = index
                 
                 let e = event.location(in: self)
@@ -103,27 +76,19 @@ class GameScene: SKScene, SKViewDelegate {
     override func mouseUp(with event: NSEvent) {
         if let draggedIndex = draggedNodeIndex {
             if let entity = self.entities[draggedIndex] as? AFEntity {
-                UglyGlobals.agentEditorController.goalsController.dataSource = entity
-//                UglyGlobals.agentEditorController.goalsController.delegate = entity
-
                 let c = entity.agent
                 let p = event.location(in: self)
                 c.position = vector_float2(Float(p.x), Float(p.y))
                 c.position.x += Float(draggedNodeMouseOffset.x)
                 c.position.y += Float(draggedNodeMouseOffset.y)
-
-                UglyGlobals.topBarDelegate!.topBar(UglyGlobals.topBar!, statusChangedTo: TopBarController.Status.Running)
             }
         
-            didDrag = false
             draggedNodeIndex = nil
             draggedNodeMouseOffset = CGPoint.zero
         }
     }
     
     override func mouseDragged(with event: NSEvent) {
-        didDrag = true
-        
         if let draggedIndex = draggedNodeIndex {
             if let entity = self.entities[draggedIndex] as? AFEntity {
                 let c = entity.agent.spriteContainer
@@ -137,7 +102,7 @@ class GameScene: SKScene, SKViewDelegate {
     override func sceneDidLoad() {
         self.lastUpdateTime = 0
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        UglyGlobals.topBarController.delegate = self
+        topBarController.delegate = self
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -162,59 +127,3 @@ class GameScene: SKScene, SKViewDelegate {
     }
 }
 
-// MARK: - TopBarDelegate
-
-extension GameScene: TopBarDelegate {
-    
-    func topBarDrawPath(_ controller: TopBarController) {
-        NSLog("Draw path...")
-        UglyGlobals.appDelegate.removeAgentFrames()
-    }
-    
-    func topBar(_ controller: TopBarController, obstacleSelected index: Int) {
-        if 0..<obstacles.count ~= index {
-            NSLog("Obstacle selected")
-            UglyGlobals.editedObstacleIndex = index
-            UglyGlobals.appDelegate.removeAgentFrames()
-        }
-    }
-    
-    // MARK: - Public methods
-    
-    func addNode(image: NSImage) {
-        let entity = AFEntity(scene: self, position: CGPoint.zero)
-        entities.append(entity)
-    }
-
-    func topBar(_ controller: TopBarController, agentSelected index: Int) {
-        if 0..<UglyGlobals.agents.count ~= index {
-            NSLog("Agent selected")
-            UglyGlobals.editedAgentIndex = index
-            UglyGlobals.appDelegate.placeAgentFrames(agentIndex: index)
-
-//            guard let agentIndex = UglyGlobals.editedAgentIndex else { return }
-            addNode(image: UglyGlobals.agents[index].image)
-//            UglyGlobals.appDelegate.removeAgentFrames()
-        }
-    }
-    
-    func topBar(_ controller: TopBarController, flockSelected flock: TopBarController.FlockType) {
-        NSLog("Flock selected: \(flock)")
-        UglyGlobals.appDelegate.removeAgentFrames()
-    }
-    
-    func topBar(_ controller: TopBarController, statusChangedTo newStatus: TopBarController.Status) {
-        switch newStatus {
-        case .Running:
-            NSLog("START")
-        case .Paused:
-            NSLog("STOP")
-        }
-        UglyGlobals.appDelegate.removeAgentFrames()
-    }
-    
-    func topBar(_ controller: TopBarController, speedChangedTo newSpeed: Double) {
-        NSLog("Speed: %.2f%%", newSpeed)
-    }
-    
-}

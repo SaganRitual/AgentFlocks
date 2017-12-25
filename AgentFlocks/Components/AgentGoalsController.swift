@@ -8,6 +8,25 @@
 
 import Cocoa
 
+protocol AgentGoalsDelegate {
+    func agentGoalsPlayClicked(_ agentGoalsController: AgentGoalsController)
+    func agentGoals(_ agentGoalsController: AgentGoalsController, newBehaviorShowForRect rect: NSRect)
+    func agentGoals(_ agentGoalsController: AgentGoalsController, newGoalShowForRect rect: NSRect, goalType type:AgentGoalsController.GoalType)
+    func agentGoals(_ agentGoalsController: AgentGoalsController, itemDoubleClicked item: Any, inRect rect: NSRect)
+    func agentGoals(_ agentGoalsController: AgentGoalsController, item: Any, setState state: NSControl.StateValue )
+    // Drag & Drop
+    func agentGoals(_ agentGoalsController: AgentGoalsController, dragIdentifierForItem item: Any) -> String?
+    func agentGoals(_ agentGoalsController: AgentGoalsController, validateDrop info: NSDraggingInfo, toParentItem parentItem: Any?, proposedItem item: Any?, proposedChildIndex index: Int) -> NSDragOperationsController: AgentGoalsController, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool
+}
+
+protocol AgentGoalsDataSource {
+    func agentGoals(_ agentGoalsController: AgentGoalsController, numberOfChildrenOfItem item: Any?) -> Int
+    func agentGoals(_ agentGoalsController: AgentGoalsController, isItemExpandable item: Any) -> Bool
+    func agentGoals(_ agentGoalsController: AgentGoalsController, child index: Int, ofItem item: Any?) -> Any
+    func agentGoals(_ agentGoalsController: AgentGoalsController, labelOfItem item: Any) -> String
+    func agentGoals(_ agentGoalsController: AgentGoalsController, isItemEnabled item: Any) -> Bool
+}
+
 class AgentGoalsController: NSViewController {
 	
 	enum GoalType {
