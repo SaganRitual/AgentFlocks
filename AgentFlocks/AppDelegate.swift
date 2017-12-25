@@ -461,25 +461,23 @@ extension AppDelegate: AgentGoalsDelegate {
     func agentGoals(_ agentGoalsController: AgentGoalsController, dragIdentifierForItem item: Any) -> String? {
         if let behaviorItem = item as? AgentBehaviorType {
             return behaviorItem.name
-            
-            else if let goalItem = item as? AgentGoalType {
-                return goalItem.name
-            }
+        } else if let goalItem = item as? AgentGoalType {
+            return goalItem.name
+        } else {
             return nil
         }
+    }
     
-        func agentGoals(_ agentGoalsController: AgentGoalsController, validateDrop info: NSDraggingInfo, toParentItem parentItem: Any?, proposedItem item: Any?, proposedChildIndex index: Int) -> NSDragOperation {
-            if index == NSOutlineViewDropOnItemIndex {
-                // Don't allow to drop on item
-                return NSDragOperation.init(rawValue: 0)
-            }
-            return NSDragOperation.move
+    func agentGoals(_ agentGoalsController: AgentGoalsController, validateDrop info: NSDraggingInfo, toParentItem parentItem: Any?, proposedItem item: Any?, proposedChildIndex index: Int) -> NSDragOperation {
+        if index == NSOutlineViewDropOnItemIndex {
+            // Don't allow to drop on item
+            return NSDragOperation.init(rawValue: 0)
         }
-    
-        func agentGoals(_ agentGoalsController: AgentGoalsController, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
-            return false
-        }
-    
+        return NSDragOperation.move
+    }
+
+    func agentGoals(_ agentGoalsController: AgentGoalsController, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
+        return false
     }
 }
 
