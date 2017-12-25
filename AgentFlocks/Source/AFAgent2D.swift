@@ -120,3 +120,16 @@ extension AFAgent2D {
     }
 }
 
+extension AFAgent2D: AgentAttributesDelegate {
+    func agent(_ controller: AgentAttributesController, newValue value: Double, ofAttribute: AgentAttributesController.Attribute) {
+        let v = Float(value)
+        switch ofAttribute {
+        case .mass: mass = v; break
+        case .maxAcceleration: maxAcceleration = v; break
+        case .maxSpeed: maxSpeed = v; break
+        case .radius: radius = v; break
+        case .scale: scale = v; break
+        }
+    }
+}
+

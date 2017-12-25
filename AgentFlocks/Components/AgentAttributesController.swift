@@ -10,7 +10,6 @@ import Cocoa
 
 protocol AgentAttributesDelegate {
 	func agent(_ controller: AgentAttributesController, newValue value:Double, ofAttribute:AgentAttributesController.Attribute)
-	func agent(_ controller: AgentAttributesController, newMaxValue maxValue:Double, ofAttribute:AgentAttributesController.Attribute)
 }
 
 class AgentAttributesController: NSViewController {
@@ -100,6 +99,7 @@ class AgentAttributesController: NSViewController {
         for s in attributeSets {
             s.1.sliderName = s.2
             s.1.addToView(s.0)
+            s.1.delegate = self
         }
     }
     
@@ -126,21 +126,5 @@ extension AgentAttributesController: SliderDelegate {
 		}
 	}
 	
-	func slider(_ controller: SliderController, newMaxValue maxValue: Double) {
-		switch controller {
-		case massSliderController:
-			delegate?.agent(self, newMaxValue: maxValue, ofAttribute: .mass)
-        case maxAccelerationSliderController:
-            delegate?.agent(self, newMaxValue: maxValue, ofAttribute: .maxAcceleration)
-        case maxSpeedSliderController:
-            delegate?.agent(self, newMaxValue: maxValue, ofAttribute: .maxSpeed)
-        case radiusSliderController:
-            delegate?.agent(self, newMaxValue: maxValue, ofAttribute: .radius)
-        case scaleSliderController:
-            delegate?.agent(self, newMaxValue: maxValue, ofAttribute: .scale)
-		default:
-			return
-		}
-	}
-	
 }
+

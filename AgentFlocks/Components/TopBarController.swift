@@ -170,9 +170,6 @@ extension TopBarController: SliderDelegate {
 		delegate?.topBar(self, speedChangedTo: self.speed)
 	}
 	
-	func slider(_ controller: SliderController, newMaxValue maxValue: Double) {
-	}
-	
 }
 
 // MARK: -

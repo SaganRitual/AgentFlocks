@@ -10,7 +10,6 @@ import Cocoa
 
 protocol SliderDelegate {
 	func slider(_ controller: SliderController, newValue value:Double)
-	func slider(_ controller: SliderController, newMaxValue maxValue:Double)
 }
 
 class SliderController: NSViewController {
@@ -98,7 +97,6 @@ class SliderController: NSViewController {
 		slider.altIncrementValue = incrementValue
 		maxStepper.increment = incrementValue
 		valueEntry.formatter = SliderValueFormatter()
-		maxValueEntry.formatter = SliderValueFormatter()
     }
 	
 	// MARK: - Public methods
@@ -144,10 +142,6 @@ class SliderController: NSViewController {
 	
 	@IBAction func valueDidChange(_ sender: NSTextField) {
 		delegate?.slider(self, newValue: value)
-	}
-	
-	@IBAction func maxValueDidChange(_ sender: NSTextField) {
-		delegate?.slider(self, newMaxValue: maxValue)
 	}
 	
 }

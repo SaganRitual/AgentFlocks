@@ -285,6 +285,7 @@ extension AppDelegate: TopBarDelegate {
             AppDelegate.editedAgentIndex = index
             let entity = sceneController.addNode(image: agents[index].image)
             AppDelegate.agentEditorController.goalsController.dataSource = entity
+            AppDelegate.agentEditorController.attributesController.delegate = entity.agent
             
             self.placeAgentFrames(agentIndex: index)
         }
