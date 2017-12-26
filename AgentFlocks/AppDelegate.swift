@@ -384,20 +384,20 @@ extension AppDelegate: AgentGoalsDelegate {
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemDoubleClicked item: Any, inRect rect: NSRect) {
         guard let mainView = window.contentView else { return }
-        if item is AgentBehaviorType {
+        if item is AFBehavior {
             
             let editorController = ItemEditorController(withAttributes: ["Weight"])
             editorController.delegate = self
             editorController.editedItem = item
             
-                // TODO: Set behavior values
-                editorController.setValue(ofSlider: "Weight", to: 5.6)
+            // TODO: Set behavior values
+            editorController.setValue(ofSlider: "Weight", to: 5.6)
             editorController.preview = true
         
             let itemRect = mainView.convert(rect, from: agentGoalsController.view)
             self.showPopover(withContentController: editorController, forRect: itemRect, preferredEdge: .minX)
         }
-        else if item is AgentGoalType {
+        else if item is AFGoal {
             // TODO: Get Goal's type (Wander, Align, Cohere or Avoid) from item
             // based on that information create ItemEditorController with type's specific attributes
             let editorController = ItemEditorController(withAttributes: ["Distance", "Angle", "Weight"])
