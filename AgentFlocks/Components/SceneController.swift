@@ -43,7 +43,6 @@ class SceneController: NSViewController {
 		
 		if let sceneView = view as? SKView {
 			// Add SpriteKit root node to sceneView (SKView)
-			sceneNode.size = view.bounds.size
 			sceneView.presentScene(sceneNode)
 			
 			// Sprite Kit applies additional optimizations to improve rendering performance

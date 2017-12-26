@@ -18,40 +18,17 @@ class GameScene: SKScene, SKViewDelegate {
 //    var agentControls: AgentControls!
 //    var motivatorControls: MotivatorControls!
 
-    var top: SKShapeNode!
-    var bottom: SKShapeNode!
-    var left: SKShapeNode!
-    var right: SKShapeNode!
-
     private var lastUpdateTime : TimeInterval = 0
     
     private var draggedNodeIndex: Int? = nil
     private var draggedNodeMouseOffset = CGPoint.zero
     
+    var corral = [SKShapeNode]()
+    
     override func didMove(to view: SKView) {
         GameScene.selfScene = self
 //        agentControls = AgentControls(view: view)
 //        motivatorControls = MotivatorControls(view: view)
-
-        top = SKShapeNode(rect: CGRect(origin: CGPoint(x: -512, y: 384 - (50 + 40)), size: CGSize(width: 1024, height: 50)))
-        top.fillColor = .blue
-        top.strokeColor = .black
-        self.addChild(top)
-        
-        bottom = SKShapeNode(rect: CGRect(origin: CGPoint(x: -512, y: -384 - -40), size: CGSize(width: 1024, height: 50)))
-        bottom.fillColor = .green
-        bottom.strokeColor = .black
-        self.addChild(bottom)
-        
-        left = SKShapeNode(rect: CGRect(origin: CGPoint(x: -512 - 40, y: -384), size: CGSize(width: 50, height: 768)))
-        left.fillColor = .blue
-        left.strokeColor = .black
-        self.addChild(left)
-        
-        right = SKShapeNode(rect: CGRect(origin: CGPoint(x: 512 - (50 - 40), y: -384), size: CGSize(width: 50, height: 768)))
-        right.fillColor = .green
-        right.strokeColor = .black
-        self.addChild(right)
     }
     
     // MARK: - Mouse handling
@@ -102,6 +79,25 @@ class GameScene: SKScene, SKViewDelegate {
     override func sceneDidLoad() {
         self.lastUpdateTime = 0
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        let w = 1400/*frame.size.width*/, h = 700/*frame.size.height*/
+        let x = -w / 2/*frame.origin.x*/, y = -h / 2/*frame.origin.y*/
+        
+        var specs: [(CGPoint, CGSize, NSColor)] = [
+            (CGPoint(x: x, y: -y), CGSize(width: w, height: 5), .red),
+            (CGPoint(x: -x, y: y), CGSize(width: 5, height: h), .yellow),
+            (CGPoint(x: x, y: y), CGSize(width: w, height: 5), .blue),
+            (CGPoint(x: x - 1, y: y), CGSize(width: 5, height: h), .green)
+        ]
+        
+        func drawShape(_ ss: Int) {
+            let shapeNode = SKShapeNode(rect: CGRect(origin: specs[ss].0, size: specs[ss].1))
+            shapeNode.fillColor = specs[ss].2
+            shapeNode.strokeColor = .black
+            self.addChild(shapeNode)
+            corral.append(shapeNode)
+        }
+        
+        for i in 0..<4 { drawShape(i) }
     }
     
     override func update(_ currentTime: TimeInterval) {
