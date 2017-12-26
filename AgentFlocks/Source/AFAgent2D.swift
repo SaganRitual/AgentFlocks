@@ -12,7 +12,7 @@ class AFAgent2D: GKAgent2D {
     var motivator: AFMotivatorCollection?
     let originalSize: CGSize
     let spriteContainer: SKNode
-    let radiusIndicator: SKSpriteNode
+    let radiusIndicator: SKShapeNode
     let radiusIndicatorRadius: CGFloat = 100.0
     let sprite: SKSpriteNode
     
@@ -46,13 +46,14 @@ class AFAgent2D: GKAgent2D {
         
         sprite = SKSpriteNode(imageNamed: "Agent01")
         sprite.name = AFAgent2D.makeUniqueName()
+        sprite.zPosition = 0
         spriteContainer.addChild(sprite)
         
         // 0.5 is the default radius for agents
-        radiusIndicator = SKSpriteNode(imageNamed: "Agent01")
+        radiusIndicator = SKShapeNode(circleOfRadius: 25)
+        radiusIndicator.fillColor = .red
         radiusIndicator.alpha = 0.5
         radiusIndicator.zPosition = 1
-        radiusIndicator.setScale(1 / (radiusIndicatorRadius * 2))
         spriteContainer.addChild(radiusIndicator)
         
         scene.addChild(spriteContainer)
