@@ -23,6 +23,10 @@ class GameScene: SKScene, SKViewDelegate {
     private var draggedNodeIndex: Int? = nil
     private var draggedNodeMouseOffset = CGPoint.zero
     
+    var selectionIndicator: SKShapeNode!
+    var mouseWasDragged = false
+    var showingSelection = false
+    
     var corral = [SKShapeNode]()
     
     override func didMove(to view: SKView) {
@@ -48,6 +52,8 @@ class GameScene: SKScene, SKViewDelegate {
                 break
             }
         }
+
+        mouseWasDragged = false
     }
 
     override func mouseUp(with event: NSEvent) {
@@ -58,8 +64,20 @@ class GameScene: SKScene, SKViewDelegate {
                 c.position = vector_float2(Float(p.x), Float(p.y))
                 c.position.x += Float(draggedNodeMouseOffset.x)
                 c.position.y += Float(draggedNodeMouseOffset.y)
+            
+                if !mouseWasDragged {
+                    if showingSelection {
+                        entity.agent.spriteContainer.addChild(selectionIndicator)
+                        selectionIndicator.zPosition = 2
+                    } else {
+                        selectionIndicator.removeFromParent()
+                    }
+                    
+                    showingSelection = !showingSelection
+                }
             }
-        
+
+            mouseWasDragged = false
             draggedNodeIndex = nil
             draggedNodeMouseOffset = CGPoint.zero
         }
@@ -68,6 +86,8 @@ class GameScene: SKScene, SKViewDelegate {
     override func mouseDragged(with event: NSEvent) {
         if let draggedIndex = draggedNodeIndex {
             if let entity = self.entities[draggedIndex] as? AFEntity {
+                mouseWasDragged = true
+                
                 let c = entity.agent.spriteContainer
                 c.position = event.location(in: self)
                 c.position.x += draggedNodeMouseOffset.x
@@ -81,6 +101,9 @@ class GameScene: SKScene, SKViewDelegate {
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         let w = 1400/*frame.size.width*/, h = 700/*frame.size.height*/
         let x = -w / 2/*frame.origin.x*/, y = -h / 2/*frame.origin.y*/
+        
+        selectionIndicator = SKShapeNode(circleOfRadius: 15)
+        selectionIndicator.fillColor = .red
         
         var specs: [(CGPoint, CGSize, NSColor)] = [
             (CGPoint(x: x, y: -y), CGSize(width: w, height: 5), .red),
