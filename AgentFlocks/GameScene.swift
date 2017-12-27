@@ -99,17 +99,19 @@ class GameScene: SKScene, SKViewDelegate {
     override func sceneDidLoad() {
         self.lastUpdateTime = 0
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        let w = 1400/*frame.size.width*/, h = 700/*frame.size.height*/
+        let w = 1500, h = 740/*frame.size.height*/
+        print(w, h)
         let x = -w / 2/*frame.origin.x*/, y = -h / 2/*frame.origin.y*/
         
         selectionIndicator = SKShapeNode(circleOfRadius: 15)
         selectionIndicator.fillColor = .red
         
+        let thickness = 5
         var specs: [(CGPoint, CGSize, NSColor)] = [
-            (CGPoint(x: x, y: -y), CGSize(width: w, height: 5), .red),
-            (CGPoint(x: -x, y: y), CGSize(width: 5, height: h), .yellow),
-            (CGPoint(x: x, y: y), CGSize(width: w, height: 5), .blue),
-            (CGPoint(x: x - 1, y: y), CGSize(width: 5, height: h), .green)
+            (CGPoint(x: x, y: -y + thickness), CGSize(width: w, height: thickness), .red),
+            (CGPoint(x: -x, y: y), CGSize(width: thickness, height: h), .yellow),
+            (CGPoint(x: x, y: y), CGSize(width: w, height: thickness), .blue),
+            (CGPoint(x: x - thickness, y: y), CGSize(width: thickness, height: h), .green)
         ]
         
         func drawShape(_ ss: Int) {
