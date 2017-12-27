@@ -24,13 +24,7 @@ class AFAgent2D: GKAgent2D {
             sprite.scale(to: CGSize(width: originalSize.width * v, height: originalSize.height * v))
         }
     }
-    
-    override var radius: Float {
-        willSet(newValue) {
-            radiusIndicator.setScale(CGFloat(newValue) / 0.5 / (radiusIndicatorRadius * 2))
-        }
-    }
-    
+
     static var uniqueNameBase = 0
     
     class func makeUniqueName() -> String {
@@ -74,6 +68,12 @@ class AFAgent2D: GKAgent2D {
         b.addGoal(g)
 
         applyMotivator()
+        
+        mass = 0.1
+        maxAcceleration = 1000
+        maxSpeed = 1000
+        radius = 1
+        scale = 1
     }
     
     deinit {

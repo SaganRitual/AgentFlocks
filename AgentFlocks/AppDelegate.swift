@@ -203,7 +203,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	func placeAgentFrames(agentIndex: Int) {
 		
 		// TODO: Set values of agentAttributesController based on agent with index 'agentIndex'
-		
+        
+        let entity = GameScene.selfScene!.entities[agentIndex] as! AFEntity
+        let agent = entity.agent
+        let ac = AppDelegate.agentEditorController.attributesController
+        
+        ac.mass = Double(agent.mass)
+        ac.maxAcceleration = Double(agent.maxAcceleration)
+        ac.maxSpeed = Double(agent.maxSpeed)
+        ac.radius = Double(agent.radius)
+        ac.scale = Double(agent.scale)
+        
 		settingsView.addSubview(AppDelegate.agentEditorController.view)
 		AppDelegate.agentEditorController.view.translatesAutoresizingMaskIntoConstraints = false
 		NSLayoutConstraint(item: AppDelegate.agentEditorController.view,
