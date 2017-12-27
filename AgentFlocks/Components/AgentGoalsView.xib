@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13196" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13196"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -24,7 +25,7 @@
                     <rect key="frame" x="8" y="37" width="284" height="227"/>
                     <clipView key="contentView" id="Mid-yf-OoY">
                         <rect key="frame" x="1" y="1" width="282" height="225"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" floatsGroupRows="NO" indentationPerLevel="16" outlineTableColumn="a9I-Ya-OUn" id="88F-gC-oPm">
                                 <rect key="frame" x="0.0" y="0.0" width="282" height="225"/>
@@ -138,32 +139,74 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="fHE-DW-lAx"/>
-                <menuItem title="Add goal: Wander" tag="1" id="guR-i3-43a">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="addGoalItemSelected:" target="-2" id="fXr-mw-Ru5"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Add goal: Align" tag="2" id="Ucx-6U-6WE">
+                <menuItem title="Align" tag="2" id="Ucx-6U-6WE">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="addGoalItemSelected:" target="-2" id="eg4-xz-PjG"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Add goal: Cohere" tag="3" id="Kdp-D0-eDK">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="addGoalItemSelected:" target="-2" id="tDK-GK-buc"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Add goal: Avoid" tag="4" id="EO4-oG-iNa">
+                <menuItem title="Avoid" tag="4" id="EO4-oG-iNa">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="addGoalItemSelected:" target="-2" id="q9H-wu-vHW"/>
                     </connections>
                 </menuItem>
+                <menuItem title="Cohere" tag="3" id="Kdp-D0-eDK">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addGoalItemSelected:" target="-2" id="tDK-GK-buc"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Flee" tag="1" id="guR-i3-43a">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addGoalItemSelected:" target="-2" id="fXr-mw-Ru5"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Follow path" id="WdA-r6-pG0">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addGoalItemSelected:" target="-2" id="xTM-Mj-Hda"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Intercept" id="ynu-AM-rbr">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addGoalItemSelected:" target="-2" id="eVg-YY-yZu"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Seek" id="zdw-CT-wSR">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addGoalItemSelected:" target="-2" id="BMl-3m-1zr"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Separate" id="dUg-Pl-qhZ">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addGoalItemSelected:" target="-2" id="6YA-5t-aeg"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Stay on path" id="WpT-WI-aAN">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addGoalItemSelected:" target="-2" id="Jw6-pq-0jk"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Target speed" id="m88-Ko-BPw">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addGoalItemSelected:" target="-2" id="iOq-0m-fQX"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Wander" id="MyZ-87-Yez">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addGoalItemSelected:" target="-2" id="dTs-F0-RYr"/>
+                    </connections>
+                </menuItem>
             </items>
-            <point key="canvasLocation" x="-7" y="472"/>
+            <point key="canvasLocation" x="-8" y="541.5"/>
         </menu>
     </objects>
     <resources>

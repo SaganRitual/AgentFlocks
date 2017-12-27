@@ -443,14 +443,21 @@ extension AppDelegate: AgentGoalsDelegate {
     
         var attributeList = ["Weight"]
         switch type {
-        case .Wander:
-            attributeList = ["Speed"] + attributeList
         case .Align:
             attributeList = ["Distance", "Angle"] + attributeList
-        case .Cohere:
-            attributeList = ["Cohere"] + attributeList
         case .Avoid:
             attributeList = ["Avoid"] + attributeList
+        case .Cohere:
+            attributeList = ["Cohere"] + attributeList
+        case .Flee: break
+        case .FollowPath: break
+        case .Intercept: break
+        case .Seek: break
+        case .Separate: break
+        case .StayOnPath: break
+        case .TargetSpeed: break
+        case .Wander:
+            attributeList = ["Speed"] + attributeList
         }
     
         let editorController = ItemEditorController(withAttributes: attributeList)
@@ -530,6 +537,13 @@ extension AppDelegate: ItemEditorDelegate {
                 case .Align:  break;
                 case .Avoid:  break;
                 case .Cohere: break;
+                case .Flee:   break
+                case .FollowPath:   break
+                case .Intercept:   break
+                case .Seek:   break
+                case .Separate:   break
+                case .StayOnPath:   break
+                case .TargetSpeed:   break
                 case .Wander: goal = AFGoal(toWander: Float(speed!), weight: Float(weight!))
                 }
 

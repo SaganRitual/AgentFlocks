@@ -31,12 +31,7 @@ protocol AgentGoalsDataSource {
 class AgentGoalsController: NSViewController {
     static var selfController: AgentGoalsController!
 	
-	enum GoalType {
-		case Wander
-		case Align
-		case Cohere
-		case Avoid
-	}
+    enum GoalType { case Align, Avoid, Cohere, Flee, FollowPath, Intercept, Seek, Separate, StayOnPath, TargetSpeed, Wander }
 
 	// MARK: - Attributes (public)
 	
@@ -122,16 +117,18 @@ class AgentGoalsController: NSViewController {
 	@IBAction func addGoalItemSelected(_ sender: NSMenuItem) {
 		var goalType = GoalType.Wander
 		switch sender.tag {
-		case 1:
-			goalType = GoalType.Wander
-		case 2:
-			goalType = GoalType.Align
-		case 3:
-			goalType = GoalType.Cohere
-		case 4:
-			goalType = GoalType.Avoid
-		default:
-			goalType = GoalType.Wander
+		case 1: goalType = GoalType.Align
+		case 2: goalType = GoalType.Avoid
+        case 3: goalType = GoalType.Cohere
+        case 4: goalType = GoalType.Flee
+        case 5: goalType = GoalType.FollowPath
+        case 6: goalType = GoalType.Intercept
+        case 7: goalType = GoalType.Seek
+        case 8: goalType = GoalType.Separate
+        case 9: goalType = GoalType.StayOnPath
+        case 10: goalType = GoalType.TargetSpeed
+        case 11: goalType = GoalType.Wander
+		default: goalType = GoalType.Wander
 		}
 		delegate?.agentGoals(self, newGoalShowForRect: addButton.bounds, goalType: goalType)
 	}
