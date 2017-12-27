@@ -307,7 +307,6 @@ extension AppDelegate: TopBarDelegate {
         case .Paused:
             NSLog("STOP")
         }
-        self.removeAgentFrames()
     }
 
     func topBar(_ controller: TopBarController, speedChangedTo newSpeed: Double) {

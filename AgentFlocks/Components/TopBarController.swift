@@ -65,7 +65,7 @@ class TopBarController: NSViewController {
 		}
 	}
 	
-	var play:Bool = false {
+	var play:Bool = true {
 		didSet {
 			if let image = play ? pauseImage : playImage {
 				playPauseButton.image = image
@@ -155,6 +155,7 @@ class TopBarController: NSViewController {
 	}
 	
 	@IBAction private func playClicked(_ sender: NSButton) {
+        GameScene.selfScene!.isPaused = !GameScene.selfScene!.isPaused
 		self.play = !self.play
 		delegate?.topBar(self, statusChangedTo: self.play ? TopBarController.Status.Running : TopBarController.Status.Paused)
 	}
