@@ -65,11 +65,13 @@ class AFAgent2D: GKAgent2D {
         let c = AFCompositeBehavior(agent: self)
         motivator = c
         
-//        let g = AFGoal(toWander: 100, weight: 100)
-//        let m = AFBehavior(agent: self)
-//
-//        m.addGoal(g)
-//        c.addBehavior(m)
+        let b = AFBehavior(agent: self)
+        c.addBehavior(b)
+        
+        walls = SKNode.obstacles(fromNodeBounds: scene.corral)
+        let g = AFGoal(toAvoidObstacles: walls, maxPredictionTime: 1, weight: 10)
+        
+        b.addGoal(g)
 
         applyMotivator()
     }
