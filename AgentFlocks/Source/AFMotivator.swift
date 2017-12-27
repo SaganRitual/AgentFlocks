@@ -46,7 +46,7 @@ class AFBehavior: AFMotivatorCollection {
         self.agent = agent
         goals = [AFGoal]()
         motivatorType = .behavior
-        weight = 0
+        weight = 100
     }
     
     init(agent: AFAgent2D, goal: AFGoal) {
@@ -60,6 +60,7 @@ class AFBehavior: AFMotivatorCollection {
     func addGoal(_ goal: AFGoal) {
         goals.append(goal)
         weight = goal.weight
+        agent.applyMotivator()
     }
     
     func getChild(at: Int) -> AFMotivator {
@@ -100,6 +101,8 @@ class AFCompositeBehavior: AFMotivatorCollection {
     func addBehavior(_ behavior: AFBehavior) {
         behaviors.append(behavior)
         weight = behavior.weight
+        if weight == 0 { weight = 100 } // Until I can retrieve the weight from the UI
+        agent.applyMotivator()
     }
     
     func getChild(at: Int) -> AFMotivator {

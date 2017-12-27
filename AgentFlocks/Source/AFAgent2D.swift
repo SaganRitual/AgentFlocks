@@ -65,12 +65,11 @@ class AFAgent2D: GKAgent2D {
         let c = AFCompositeBehavior(agent: self)
         motivator = c
         
-        let g = AFGoal(toWander: 100, weight: 100)
-        let m = AFBehavior(agent: self)
-        m.weight = 100
-
-        m.addGoal(g)
-        c.addBehavior(m)
+//        let g = AFGoal(toWander: 100, weight: 100)
+//        let m = AFBehavior(agent: self)
+//
+//        m.addGoal(g)
+//        c.addBehavior(m)
 
         applyMotivator()
     }
@@ -120,7 +119,7 @@ extension AFAgent2D {
         
         for mvBehavior in from.behaviors {
             let gkBehavior = createBehavior(from: mvBehavior)
-            composite.setWeight(mvBehavior.weight, for: gkBehavior)
+            composite.setWeight(100/*mvBehavior.weight*/, for: gkBehavior)
         }
         
         return composite
