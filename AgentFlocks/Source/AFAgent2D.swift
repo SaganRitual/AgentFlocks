@@ -60,19 +60,18 @@ class AFAgent2D: GKAgent2D {
         
         originalSize = sprite.size
         
-        let m = AFBehavior(goal: AFGoal(toWander: 100, weight: 100))
-        let c = AFCompositeBehavior()
-        c.addBehavior(m)
+        super.init()
 
-        walls = SKNode.obstacles(fromNodeBounds: scene.corral)
-        m.addGoal(AFGoal(toAvoidObstacles: walls, maxPredictionTime: 5, weight: 10000))
-
-        m.addGoal(AFGoal(toReachTargetSpeed: 200, weight: 50))
-
+        let c = AFCompositeBehavior(agent: self)
         motivator = c
         
-        super.init()
-        
+        let g = AFGoal(toWander: 100, weight: 100)
+        let m = AFBehavior(agent: self)
+        m.weight = 100
+
+        m.addGoal(g)
+        c.addBehavior(m)
+
         applyMotivator()
     }
     
@@ -96,8 +95,11 @@ extension AFAgent2D {
         guard motivator != nil else { return }
 
         switch motivator {
-        case let m as AFBehavior:          behavior = createBehavior(from: m)
-        case let m as AFCompositeBehavior: behavior = createComposite(from: m)
+        case let m as AFBehavior:
+            behavior = createBehavior(from: m)
+
+        case let m as AFCompositeBehavior:
+            behavior = createComposite(from: m)
 
         default: fatalError()
         }

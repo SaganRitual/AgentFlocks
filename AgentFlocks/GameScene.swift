@@ -100,7 +100,6 @@ class GameScene: SKScene, SKViewDelegate {
         self.lastUpdateTime = 0
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         let w = 1500, h = 740/*frame.size.height*/
-        print(w, h)
         let x = -w / 2/*frame.origin.x*/, y = -h / 2/*frame.origin.y*/
         
         selectionIndicator = SKShapeNode(circleOfRadius: 15)

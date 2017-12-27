@@ -551,7 +551,7 @@ extension AppDelegate: ItemEditorDelegate {
                     (parentOfNewMotivator as! AFBehavior).addGoal(goal!)
                 }
             } else {
-                let behavior = AFBehavior()
+                let behavior = AFBehavior(agent: entity.agent)
                 behavior.weight = Float(weight!)
                 (parentOfNewMotivator as! AFCompositeBehavior).addBehavior(behavior)
             }

@@ -31,6 +31,7 @@ protocol AFMotivatorCollection: AFMotivator {
 }
 
 class AFBehavior: AFMotivatorCollection {
+    let agent: AFAgent2D
     var enabled = true
     var goals: [AFGoal]
     let motivatorType: AFMotivatorType
@@ -41,20 +42,24 @@ class AFBehavior: AFMotivatorCollection {
     var predictionTime: Float = 0
     var speed: Float = 0
     
-    init() {
+    init(agent: AFAgent2D) {
+        self.agent = agent
         goals = [AFGoal]()
         motivatorType = .behavior
         weight = 0
     }
     
-    init(goal: AFGoal) {
-        goals = [goal]
+    init(agent: AFAgent2D, goal: AFGoal) {
+        self.agent = agent
+        goals = [AFGoal]()
+        goals.append(goal)
         motivatorType = .behavior
-        weight = 1
+        weight = goal.weight
     }
     
     func addGoal(_ goal: AFGoal) {
         goals.append(goal)
+        weight = goal.weight
     }
     
     func getChild(at: Int) -> AFMotivator {
@@ -75,6 +80,7 @@ class AFBehavior: AFMotivatorCollection {
 }
 
 class AFCompositeBehavior: AFMotivatorCollection {
+    let agent: AFAgent2D
     var enabled = true
     var behaviors: [AFBehavior]
     let motivatorType: AFMotivatorType
@@ -85,13 +91,15 @@ class AFCompositeBehavior: AFMotivatorCollection {
     var speed: Float = 0
     var weight: Float = 0
     
-    init() {
+    init(agent: AFAgent2D) {
+        self.agent = agent
         behaviors = [AFBehavior]()
         motivatorType = .compositeBehavior
     }
     
     func addBehavior(_ behavior: AFBehavior) {
         behaviors.append(behavior)
+        weight = behavior.weight
     }
     
     func getChild(at: Int) -> AFMotivator {
