@@ -20,6 +20,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	let topBarControllerPadding:CGFloat = 10.0
 	
 	static let agentEditorController = AgentEditorController()
+    static var myself: AppDelegate!
 	let leftBarWidth:CGFloat = 250.0
 	
 	let sceneController = SceneController()
@@ -51,6 +52,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		// Visualise constraints when something is wrong
 		UserDefaults.standard.set(true, forKey: "NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints")
 		#endif
+        
+        AppDelegate.myself = self
 		
         agents = loadAgents()
         obstacles = loadObstacles()
@@ -287,6 +290,7 @@ extension AppDelegate: TopBarDelegate {
             AppDelegate.agentEditorController.goalsController.dataSource = entity
             AppDelegate.agentEditorController.attributesController.delegate = entity.agent
             
+            GameScene.selfScene!.selectScenoid(new: index, old: nil)
             self.placeAgentFrames(agentIndex: index)
         }
     }
@@ -379,7 +383,7 @@ extension AppDelegate: AgentGoalsDelegate {
         let entity = sceneController.addNode(image: agents[agentIndex].image)
         AppDelegate.agentEditorController.goalsController.dataSource = entity
         
-            self.removeAgentFrames()
+        self.removeAgentFrames()
     }
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemDoubleClicked item: Any, inRect rect: NSRect) {

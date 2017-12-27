@@ -20,6 +20,7 @@ class GameScene: SKScene, SKViewDelegate {
 
     private var lastUpdateTime : TimeInterval = 0
     
+    private var selectedNodeIndex: Int? = nil
     private var draggedNodeIndex: Int? = nil
     private var draggedNodeMouseOffset = CGPoint.zero
     
@@ -55,6 +56,24 @@ class GameScene: SKScene, SKViewDelegate {
 
         mouseWasDragged = false
     }
+    
+    func selectScenoid(new: Int?, old: Int?) {
+        if old != nil {
+            selectionIndicator.removeFromParent()
+            AppDelegate.myself.removeAgentFrames()
+        }
+        
+        if let toSelect = new, old != new {
+            let entity = self.entities[toSelect] as! AFEntity
+            entity.agent.spriteContainer.addChild(selectionIndicator)
+            selectionIndicator.zPosition = 2
+            
+            AppDelegate.myself.placeAgentFrames(agentIndex: toSelect)
+            selectedNodeIndex = toSelect
+        } else {
+            selectedNodeIndex = nil
+        }
+    }
 
     override func mouseUp(with event: NSEvent) {
         if let draggedIndex = draggedNodeIndex {
@@ -66,19 +85,12 @@ class GameScene: SKScene, SKViewDelegate {
                 c.position.y += Float(draggedNodeMouseOffset.y)
             
                 if !mouseWasDragged {
-                    if showingSelection {
-                        entity.agent.spriteContainer.addChild(selectionIndicator)
-                        selectionIndicator.zPosition = 2
-                    } else {
-                        selectionIndicator.removeFromParent()
-                    }
-                    
-                    showingSelection = !showingSelection
+                    selectScenoid(new: draggedIndex, old: selectedNodeIndex)
                 }
             }
 
-            mouseWasDragged = false
             draggedNodeIndex = nil
+            mouseWasDragged = false
             draggedNodeMouseOffset = CGPoint.zero
         }
     }
