@@ -18,6 +18,7 @@ class ItemEditorController: NSViewController {
 	
 	var delegate:ItemEditorDelegate?
 	var editedItem:Any?
+    var newItemType:AgentGoalsController.GoalType?
 	
 	@objc dynamic var preview:Bool = false
 	
@@ -29,7 +30,7 @@ class ItemEditorController: NSViewController {
 	
 	// MARK: - Initialization
 	
-	init(withAttributes attributes:[String]) {
+    init(withAttributes attributes:[String]) {
 		super.init(nibName: NSNib.Name(rawValue: "ItemEditorView"), bundle: nil)
 		for valueName in attributes {
 			// User lowercased attribute name as key
@@ -47,7 +48,7 @@ class ItemEditorController: NSViewController {
 	}
 	
 	convenience init() {
-		self.init(withAttributes: ["Value"])
+        self.init(withAttributes: ["Value"])
 	}
 	
 	required convenience init?(coder: NSCoder) {

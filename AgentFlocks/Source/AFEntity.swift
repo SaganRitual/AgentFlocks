@@ -43,7 +43,9 @@ extension AFEntity: AgentGoalsDataSource {
             return collection.howManyChildren()
         } else if let index = AppDelegate.editedAgentIndex {
             if let entity = GameScene.selfScene!.entities[index] as? AFEntity {
-                if let motivator = entity.agent.motivator {
+                if let motivator = entity.agent.motivator as? AFBehavior {
+                    return motivator.howManyChildren()
+                } else if let motivator = entity.agent.motivator as? AFCompositeBehavior {
                     return motivator.howManyChildren()
                 }
             }

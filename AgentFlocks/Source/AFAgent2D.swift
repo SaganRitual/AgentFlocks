@@ -61,11 +61,15 @@ class AFAgent2D: GKAgent2D {
         originalSize = sprite.size
         
         let m = AFBehavior(goal: AFGoal(toWander: 100, weight: 100))
+        let c = AFCompositeBehavior()
+        c.addBehavior(m)
 
         walls = SKNode.obstacles(fromNodeBounds: scene.corral)
         m.addGoal(AFGoal(toAvoidObstacles: walls, maxPredictionTime: 5, weight: 10000))
 
-        motivator = m
+        m.addGoal(AFGoal(toReachTargetSpeed: 200, weight: 50))
+
+        motivator = c
         
         super.init()
         

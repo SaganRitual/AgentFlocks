@@ -403,9 +403,9 @@ extension AppDelegate: AgentGoalsDelegate {
             let editorController = ItemEditorController(withAttributes: ["Distance", "Angle", "Weight"])
             editorController.delegate = self
             editorController.editedItem = item
-            
-                // TODO: Set goal values
-                editorController.setValue(ofSlider: "Distance", to: 3.2)
+ 
+            // TODO: Set goal values
+            editorController.setValue(ofSlider: "Distance", to: 3.2)
             editorController.setValue(ofSlider: "Angle", to: 4.8)
             editorController.setValue(ofSlider: "Weight", to: 5.6)
             editorController.preview = true
@@ -432,7 +432,8 @@ extension AppDelegate: AgentGoalsDelegate {
     
         let editorController = ItemEditorController(withAttributes: ["Weight"])
         editorController.delegate = self
-    
+        editorController.newItemType = nil
+
         let itemRect = mainView.convert(rect, from: agentGoalsController.view)
         self.showPopover(withContentController: editorController, forRect: itemRect, preferredEdge: .minX)
     }
@@ -454,6 +455,7 @@ extension AppDelegate: AgentGoalsDelegate {
     
         let editorController = ItemEditorController(withAttributes: attributeList)
         editorController.delegate = self
+        editorController.newItemType = type
     
         let itemRect = mainView.convert(rect, from: agentGoalsController.view)
         self.showPopover(withContentController: editorController, forRect: itemRect, preferredEdge: .minX)
@@ -486,23 +488,66 @@ extension AppDelegate: AgentGoalsDelegate {
 // MARK: - ItemEditorDelegate
 
 extension AppDelegate: ItemEditorDelegate {
+    
+    private func getParentForNewMotivator(rootMotivator: AFMotivatorCollection, selectionIndex: Int) -> AFMotivatorCollection {
+        if selectionIndex == -1 {
+            return rootMotivator
+        }
+        
+        var collectionIndex = 0
+        var currentIndex = 0
+        var parentForNewMotivator = rootMotivator.getChild(at: 0) as! AFBehavior
+
+        while currentIndex < selectionIndex {
+            currentIndex += 1 + parentForNewMotivator.howManyChildren()
+            collectionIndex += 1
+
+            parentForNewMotivator = rootMotivator.getChild(at: collectionIndex) as! AFBehavior
+        }
+        
+        return parentForNewMotivator
+    }
 	
 	func itemEditorApplyPressed(_ controller: ItemEditorController) {
 		guard let agentIndex = AppDelegate.editedAgentIndex else { return }
-		
-		if let _ = controller.editedItem {
-			// Edit existing behavior:
-			// TODO: Identify item in database and change it.
-			// Values:
-			//   controller.weight
-			//   controller.preview
+
+        let entity = GameScene.selfScene!.entities[agentIndex] as! AFEntity
+        let selected = AgentGoalsController.selfController.selectedIndex()
+        let parentOfNewMotivator = getParentForNewMotivator(rootMotivator: entity.agent.motivator!, selectionIndex: selected)
+        
+//        let angle = controller.value(ofSlider: "Angle")
+//        let distance = controller.value(ofSlider: "Distance")
+        let speed = controller.value(ofSlider: "Speed")
+        let weight = controller.value(ofSlider: "Weight")
+        
+
+        if controller.editedItem == nil {
+            // Add new goal or behavior
+            if let type = controller.newItemType {
+                var goal: AFGoal?
+
+                switch type {
+                case .Align:  break;
+                case .Avoid:  break;
+                case .Cohere: break;
+                case .Wander: goal = AFGoal(toWander: Float(speed!), weight: Float(weight!))
+                }
+
+                if goal != nil {
+                    (parentOfNewMotivator as! AFBehavior).addGoal(goal!)
+                }
+            } else {
+                let behavior = AFBehavior()
+                behavior.weight = Float(weight!)
+                (parentOfNewMotivator as! AFCompositeBehavior).addBehavior(behavior)
+            }
 		}
 		else {
-			// Add new behavior
-            let selectedIndex = AppDelegate.agentEditorController.selectedIndex()
-            agents[agentIndex].behaviors.insert((name: "New behavior", enabled: true, goals: []), at: selectedIndex+1)
-            AppDelegate.agentEditorController.refresh()
+            // Edit existing goal or behavior
+            
 		}
+
+        AppDelegate.agentEditorController.refresh()
 		activePopover?.close()
 	}
 	

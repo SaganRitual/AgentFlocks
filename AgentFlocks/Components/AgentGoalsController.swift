@@ -29,6 +29,7 @@ protocol AgentGoalsDataSource {
 }
 
 class AgentGoalsController: NSViewController {
+    static var selfController: AgentGoalsController!
 	
 	enum GoalType {
 		case Wander
@@ -44,7 +45,7 @@ class AgentGoalsController: NSViewController {
 
 	// MARK: - Attributes (private)
 	
-	@IBOutlet private weak var outlineView: NSOutlineView!
+	@IBOutlet weak var outlineView: NSOutlineView!
 	@IBOutlet weak var addButton: NSButton!
 	@IBOutlet private weak var playButton: NSButton!
 	
@@ -62,13 +63,21 @@ class AgentGoalsController: NSViewController {
 	
 	override func viewDidLoad() {
         super.viewDidLoad()
+        
+        AgentGoalsController.selfController = self
 		
 		playButton.image = NSImage(named: NSImage.Name(rawValue: "Play"))
 		
 		outlineView.target = self
 		outlineView.doubleAction = #selector(onItemDoubleClicked)
-		
 		outlineView.registerForDraggedTypes([NSPasteboard.PasteboardType.string])
+        
+        var indexSet = IndexSet()
+        indexSet.insert(0)
+        outlineView.selectRowIndexes(indexSet, byExtendingSelection: false)
+
+        let zeroItem = outlineView.item(atRow: 0)
+        outlineView.expandItem(zeroItem)
 	}
 	
 	// MARK: - Public methods
@@ -202,7 +211,6 @@ extension AgentGoalsController: NSOutlineViewDelegate {
 		}
 		return false
 	}
-	
 }
 
 // MARK: - Custom components used in Agent Behavior&Goals editor
