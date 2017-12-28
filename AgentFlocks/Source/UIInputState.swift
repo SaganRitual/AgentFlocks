@@ -33,6 +33,13 @@ class UIInputState: GKComponent {
             self.gameScene = gameScene
             self.stateComponent = stateComponent
         }
+        
+        func trackMouse(agent: GKAgent2D) {
+            let p = stateComponent.event.location(in: gameScene)
+            agent.position = vector_float2(Float(p.x), Float(p.y))
+            agent.position.x += Float(stateComponent.nodeToMouseOffset.x)
+            agent.position.y += Float(stateComponent.nodeToMouseOffset.y)
+        }
     }
     
     class MouseDown: BaseState {
@@ -62,17 +69,20 @@ class UIInputState: GKComponent {
     }
     
     class MouseDragging: BaseState {
+        var agent: GKAgent2D?
+        
         override func didEnter(from previousState: GKState?) {
             if let draggedNodeIndex = stateComponent.touchedNodeIndex {
                 if let entity = gameScene.entities[draggedNodeIndex] as? AFEntity {
                     stateComponent.draggedNodeIndex = draggedNodeIndex
                     
-                    let c = entity.agent.spriteContainer
-                    c.position = stateComponent.event.location(in: gameScene)
-                    c.position.x += stateComponent.nodeToMouseOffset.x
-                    c.position.y += stateComponent.nodeToMouseOffset.y
+                    agent = entity.agent
                 }
             }
+        }
+        
+        override func willExit(to nextState: GKState) {
+            agent = nil
         }
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
@@ -80,6 +90,7 @@ class UIInputState: GKComponent {
         }
         
         override func update(deltaTime seconds: TimeInterval) {
+            if let d = agent { trackMouse(agent: d) }
         }
     }
     
@@ -87,11 +98,7 @@ class UIInputState: GKComponent {
         override func didEnter(from previousState: GKState?) {
             if let draggedNodeIndex = stateComponent.draggedNodeIndex {
                 if let entity = gameScene.entities[draggedNodeIndex] as? AFEntity {
-                    let c = entity.agent
-                    let p = stateComponent.event.location(in: gameScene)
-                    c.position = vector_float2(Float(p.x), Float(p.y))
-                    c.position.x += Float(stateComponent.nodeToMouseOffset.x)
-                    c.position.y += Float(stateComponent.nodeToMouseOffset.y)
+                    trackMouse(agent: entity.agent)
                 }
                 
                 stateComponent.draggedNodeIndex = nil
@@ -99,15 +106,20 @@ class UIInputState: GKComponent {
             } else {
                 stateComponent.reselectScenoid()
             }
+            
+            stateMachine!.enter(Ready.self)
         }
         
+        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+            return stateClass is Ready.Type
+        }
+
         override func update(deltaTime seconds: TimeInterval) {
         }
     }
     
     class Ready: BaseState {
         override func didEnter(from previousState: GKState?) {
-            print("entering ready")
         }
         
         override func update(deltaTime seconds: TimeInterval) {

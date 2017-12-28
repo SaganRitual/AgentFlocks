@@ -35,7 +35,8 @@ class GameScene: SKScene, SKViewDelegate {
     var lastUpdateTime : TimeInterval = 0
     
     var selectionIndicator: SKShapeNode!
-    
+    var multiSelectionIndicator: SKShapeNode!
+
     var corral = [SKShapeNode]()
     
     override func didMove(to view: SKView) {
@@ -70,6 +71,7 @@ class GameScene: SKScene, SKViewDelegate {
     
     override func mouseDragged(with event: NSEvent) {
         uiInputState.enter(UIInputState.MouseDragging.self, event: event)
+        uiInputState.update(deltaTime: 0)
     }
     
     override func sceneDidLoad() {
@@ -81,6 +83,9 @@ class GameScene: SKScene, SKViewDelegate {
         selectionIndicator = SKShapeNode(circleOfRadius: 15)
         selectionIndicator.fillColor = .red
         
+        multiSelectionIndicator = SKShapeNode(circleOfRadius: 15)
+        multiSelectionIndicator.fillColor = .blue
+
         let adjustedOrigin = self.convertPoint(toView: CGPoint.zero)
         print(adjustedOrigin)
         
