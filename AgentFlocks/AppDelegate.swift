@@ -351,16 +351,37 @@ extension AppDelegate: AgentGoalsDelegate {
             self.showPopover(withContentController: editorController, forRect: itemRect, preferredEdge: .minX)
         }
         else if item is AFGoal {
-            // TODO: Get Goal's type (Wander, Align, Cohere or Avoid) from item
-            // based on that information create ItemEditorController with type's specific attributes
-            let editorController = ItemEditorController(withAttributes: ["Distance", "Angle", "Weight"])
+            let goal = item as! AFGoal
+            
+            var attributes = [String]()
+
+            switch goal.goalType {
+            case .toAlignWith:    fallthrough
+            case .toCohereWith:   fallthrough
+            case .toSeparateFrom: attributes = ["Angle", "Distance", "Weight"]
+
+            case .toFleeAgent:    fallthrough
+            case .toSeekAgent:    attributes = ["Weight"]
+
+            case .toReachTargetSpeed: fallthrough
+            case .toWander:           attributes = ["Speed", "Weight"]
+
+            case .toFollow:         fallthrough
+            case .toStayOn:         fallthrough
+            case .toAvoidAgents:    fallthrough
+            case .toAvoidObstacles: fallthrough
+            case .toInterceptAgent: attributes = ["Time", "Weight"]
+            }
+            
+            let editorController = ItemEditorController(withAttributes: attributes)
             editorController.delegate = self
             editorController.editedItem = item
  
-            // TODO: Set goal values
-            editorController.setValue(ofSlider: "Distance", to: 3.2)
-            editorController.setValue(ofSlider: "Angle", to: 4.8)
-            editorController.setValue(ofSlider: "Weight", to: 5.6)
+            editorController.setValue(ofSlider: "Angle", to: Double(goal.angle))
+            editorController.setValue(ofSlider: "Distance", to: Double(goal.distance))
+            editorController.setValue(ofSlider: "Speed", to: Double(goal.speed))
+            editorController.setValue(ofSlider: "Time", to: Double(goal.predictionTime))
+            editorController.setValue(ofSlider: "Weight", to: Double(goal.weight))
             editorController.preview = true
         
             let itemRect = mainView.convert(rect, from: agentGoalsController.view)
@@ -396,21 +417,23 @@ extension AppDelegate: AgentGoalsDelegate {
     
         var attributeList = ["Weight"]
         switch type {
-        case .Align:
+        case .toAlignWith:
             attributeList = ["Distance", "Angle"] + attributeList
-        case .Avoid:
-            attributeList = ["Avoid"] + attributeList
-        case .Cohere:
-            attributeList = ["Cohere"] + attributeList
-        case .Flee: break
-        case .FollowPath: break
-        case .Intercept: break
-        case .Seek: break
-        case .Separate: break
-        case .StayOnPath: break
-        case .TargetSpeed:
+        case .toAvoidAgents:
+            fallthrough
+        case .toAvoidObstacles:
+            attributeList = ["<Avoid>"] + attributeList
+        case .toCohereWith:
+            attributeList = ["<Cohere>"] + attributeList
+        case .toFleeAgent: break
+        case .toFollow: break
+        case .toInterceptAgent: break
+        case .toSeekAgent: break
+        case .toSeparateFrom: break
+        case .toStayOn: break
+        case .toReachTargetSpeed:
             attributeList = ["Speed"] + attributeList
-        case .Wander:
+        case .toWander:
             attributeList = ["Speed"] + attributeList
         }
     
@@ -460,10 +483,10 @@ extension AppDelegate: ItemEditorDelegate {
         var parentForNewMotivator = rootMotivator.getChild(at: 0) as! AFBehavior
 
         while currentIndex < selectionIndex {
+            parentForNewMotivator = rootMotivator.getChild(at: collectionIndex) as! AFBehavior
+
             currentIndex += 1 + parentForNewMotivator.howManyChildren()
             collectionIndex += 1
-
-            parentForNewMotivator = rootMotivator.getChild(at: collectionIndex) as! AFBehavior
         }
         
         return parentForNewMotivator
@@ -479,26 +502,41 @@ extension AppDelegate: ItemEditorDelegate {
         let angle = controller.value(ofSlider: "Angle")
         let distance = controller.value(ofSlider: "Distance")
         let speed = controller.value(ofSlider: "Speed")
+        let time = controller.value(ofSlider: "Time")
         let weight = controller.value(ofSlider: "Weight")
 
-        if controller.editedItem == nil {
+        if let motivator = controller.editedItem as? AFMotivator {
+            // Edit existing
+            if let behavior = motivator as? AFBehavior {
+                behavior.weight = Float(weight!)
+            } else if let goal = motivator as? AFGoal {
+                if let angle = angle { goal.angle = Float(angle) }
+                if let distance = distance { goal.distance = Float(distance) }
+                if let speed = speed { goal.speed = Float(speed) }
+                if let time = time { goal.predictionTime = Float(time) }
+
+                // Everyone has a weight
+                goal.weight = Float(weight!)
+            }
+        } else {
             // Add new goal or behavior
             if let type = controller.newItemType {
                 var goal: AFGoal?
 
                 switch type {
-                case .Align: break;
+                case .toAlignWith: break;
 //                    goal = AFGoal(toAlignWith: hackGroup, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: Float(weight!))
-                case .Avoid:  break;
-                case .Cohere: break;
-                case .Flee:   break
-                case .FollowPath:   break
-                case .Intercept:   break
-                case .Seek:   break
-                case .Separate:   break
-                case .StayOnPath:   break
-                case .TargetSpeed: goal = AFGoal(toReachTargetSpeed: Float(speed!), weight: Float(weight!))
-                case .Wander: goal = AFGoal(toWander: Float(speed!), weight: Float(weight!))
+                case .toAvoidObstacles:  break;
+                case .toAvoidAgents:  break;
+                case .toCohereWith: break;
+                case .toFleeAgent:   break
+                case .toFollow:   break
+                case .toInterceptAgent:   break
+                case .toSeekAgent:   break
+                case .toSeparateFrom:   break
+                case .toStayOn:   break
+                case .toReachTargetSpeed: goal = AFGoal(toReachTargetSpeed: Float(speed!), weight: Float(weight!))
+                case .toWander: goal = AFGoal(toWander: Float(speed!), weight: Float(weight!))
                 }
 
                 if goal != nil {
@@ -509,10 +547,6 @@ extension AppDelegate: ItemEditorDelegate {
                 behavior.weight = 100 //Float(weight!)
                 (parentOfNewMotivator as! AFCompositeBehavior).addBehavior(behavior)
             }
-		}
-		else {
-            // Edit existing goal or behavior
-            
 		}
 
         AppDelegate.agentEditorController.refresh()

@@ -123,7 +123,8 @@ class AFCompositeBehavior: AFMotivatorCollection {
 }
 
 enum AFGoalType {
-    case toAlignWith, toAvoidObstacles, toReachTargetSpeed, toWander
+    case toAlignWith, toAvoidAgents, toAvoidObstacles, toCohereWith, toFleeAgent, toFollow,
+            toInterceptAgent, toReachTargetSpeed, toSeekAgent, toSeparateFrom, toStayOn, toWander
 }
 
 class AFGoal: AFMotivator {

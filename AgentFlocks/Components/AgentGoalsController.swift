@@ -31,7 +31,7 @@ protocol AgentGoalsDataSource {
 class AgentGoalsController: NSViewController {
     static var selfController: AgentGoalsController!
 	
-    enum GoalType { case Align, Avoid, Cohere, Flee, FollowPath, Intercept, Seek, Separate, StayOnPath, TargetSpeed, Wander }
+    typealias GoalType = AFGoalType
 
 	// MARK: - Attributes (public)
 	
@@ -115,19 +115,19 @@ class AgentGoalsController: NSViewController {
 	}
 	
 	@IBAction func addGoalItemSelected(_ sender: NSMenuItem) {
-		var goalType = GoalType.Wander
+		var goalType = GoalType.toWander
 		switch addContextMenu.index(of: sender) {
-		case 2: goalType = GoalType.Align
-		case 3: goalType = GoalType.Avoid
-        case 4: goalType = GoalType.Cohere
-        case 5: goalType = GoalType.Flee
-        case 6: goalType = GoalType.FollowPath
-        case 7: goalType = GoalType.Intercept
-        case 8: goalType = GoalType.Seek
-        case 9: goalType = GoalType.Separate
-        case 10: goalType = GoalType.StayOnPath
-        case 11: goalType = GoalType.TargetSpeed
-        case 12: goalType = GoalType.Wander
+		case 2: goalType = GoalType.toAlignWith
+		case 3: goalType = GoalType.toAvoidObstacles
+        case 4: goalType = GoalType.toCohereWith
+        case 5: goalType = GoalType.toFleeAgent
+        case 6: goalType = GoalType.toFollow
+        case 7: goalType = GoalType.toInterceptAgent
+        case 8: goalType = GoalType.toSeekAgent
+        case 9: goalType = GoalType.toSeparateFrom
+        case 10: goalType = GoalType.toStayOn
+        case 11: goalType = GoalType.toReachTargetSpeed
+        case 12: goalType = GoalType.toWander
 		default: fatalError()
 		}
 		delegate?.agentGoals(self, newGoalShowForRect: addButton.bounds, goalType: goalType)
