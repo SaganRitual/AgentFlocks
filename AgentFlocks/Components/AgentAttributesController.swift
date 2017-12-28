@@ -93,7 +93,7 @@ class AgentAttributesController: NSViewController {
             (massSliderContainer, massSliderController, "Mass", 1.0, 0.001),
             (maxAccelerationSliderContainer, maxAccelerationSliderController, "Max Accel", 1000.0, 1.0),
             (maxSpeedSliderContainer, maxSpeedSliderController, "Max Speed", 1000.0, 1.0),
-            (radiusSliderContainer, radiusSliderController, "Radius", 10.0, 0.01),
+            (radiusSliderContainer, radiusSliderController, "Radius", 100, 0.1),
             (scaleSliderContainer, scaleSliderController, "Scale", 10.0, 0.01)
         ]
         

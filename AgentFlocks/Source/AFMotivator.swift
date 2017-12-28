@@ -123,7 +123,7 @@ class AFCompositeBehavior: AFMotivatorCollection {
 }
 
 enum AFGoalType {
-    case toAvoidObstacles, toReachTargetSpeed, toWander
+    case toAlignWith, toAvoidObstacles, toReachTargetSpeed, toWander
 }
 
 class AFGoal: AFMotivator {
@@ -144,9 +144,21 @@ class AFGoal: AFMotivator {
     
     var obstacles = [GKObstacle]()
     
+    init(toAlignWith agents: [GKAgent], maxDistance: Float, maxAngle: Float, weight: Float) {
+        goalType = .toAlignWith
+        motivatorType = .goal
+        
+        self.angle = maxAngle
+        self.distance = maxDistance
+        self.weight = weight
+
+        goal = GKGoal(toAlignWith: agents, maxDistance: maxDistance, maxAngle: maxAngle)
+    }
+    
     init(toAvoidObstacles obstacles: [GKObstacle], maxPredictionTime: TimeInterval, weight: Float) {
         goalType = .toAvoidObstacles
         motivatorType = .goal
+        
         self.obstacles = obstacles
         self.weight = weight
         
@@ -156,6 +168,7 @@ class AFGoal: AFMotivator {
     init(toReachTargetSpeed speed: Float, weight: Float) {
         goalType = .toReachTargetSpeed
         motivatorType = .goal
+        
         self.speed = speed
         self.weight = weight
         

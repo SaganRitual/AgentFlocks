@@ -64,7 +64,7 @@ class AFAgent2D: GKAgent2D {
         c.addBehavior(b)
         
         walls = SKNode.obstacles(fromNodeBounds: scene.corral)
-        let g = AFGoal(toAvoidObstacles: walls, maxPredictionTime: 1, weight: 10)
+        let g = AFGoal(toAvoidObstacles: walls, maxPredictionTime: 2, weight: 1000)
         
         b.addGoal(g)
 
@@ -73,7 +73,7 @@ class AFAgent2D: GKAgent2D {
         mass = 0.1
         maxAcceleration = 1000
         maxSpeed = 1000
-        radius = 1
+        radius = 25
         scale = 1
     }
     

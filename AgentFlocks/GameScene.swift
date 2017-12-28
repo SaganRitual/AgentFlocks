@@ -81,12 +81,16 @@ class GameScene: SKScene, SKViewDelegate {
         selectionIndicator = SKShapeNode(circleOfRadius: 15)
         selectionIndicator.fillColor = .red
         
-        let thickness = 5
+        let adjustedOrigin = self.convertPoint(toView: CGPoint.zero)
+        print(adjustedOrigin)
+        
+        let thickness = 50
+        let offset = 0
         var specs: [(CGPoint, CGSize, NSColor)] = [
-            (CGPoint(x: x, y: -y + thickness), CGSize(width: w, height: thickness), .red),
-            (CGPoint(x: -x, y: y), CGSize(width: thickness, height: h), .yellow),
-            (CGPoint(x: x, y: y), CGSize(width: w, height: thickness), .blue),
-            (CGPoint(x: x - thickness, y: y), CGSize(width: thickness, height: h), .green)
+            (CGPoint(x: x, y: -y + thickness - offset), CGSize(width: w, height: thickness), .red),
+            (CGPoint(x: -x - offset, y: y), CGSize(width: thickness, height: h), .yellow),
+            (CGPoint(x: x, y: y + offset - 100), CGSize(width: w, height: thickness), .blue),
+            (CGPoint(x: x - thickness + offset, y: y), CGSize(width: thickness, height: h), .green)
         ]
         
         func drawShape(_ ss: Int) {

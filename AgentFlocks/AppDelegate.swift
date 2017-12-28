@@ -532,11 +532,10 @@ extension AppDelegate: ItemEditorDelegate {
         let selected = AgentGoalsController.selfController.selectedIndex()
         let parentOfNewMotivator = getParentForNewMotivator(rootMotivator: entity.agent.motivator!, selectionIndex: selected)
         
-//        let angle = controller.value(ofSlider: "Angle")
-//        let distance = controller.value(ofSlider: "Distance")
+        let angle = controller.value(ofSlider: "Angle")
+        let distance = controller.value(ofSlider: "Distance")
         let speed = controller.value(ofSlider: "Speed")
         let weight = controller.value(ofSlider: "Weight")
-        
 
         if controller.editedItem == nil {
             // Add new goal or behavior
@@ -544,7 +543,8 @@ extension AppDelegate: ItemEditorDelegate {
                 var goal: AFGoal?
 
                 switch type {
-                case .Align:  break;
+                case .Align: break;
+//                    goal = AFGoal(toAlignWith: hackGroup, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: Float(weight!))
                 case .Avoid:  break;
                 case .Cohere: break;
                 case .Flee:   break
@@ -553,7 +553,7 @@ extension AppDelegate: ItemEditorDelegate {
                 case .Seek:   break
                 case .Separate:   break
                 case .StayOnPath:   break
-                case .TargetSpeed:   break
+                case .TargetSpeed: goal = AFGoal(toReachTargetSpeed: Float(speed!), weight: Float(weight!))
                 case .Wander: goal = AFGoal(toWander: Float(speed!), weight: Float(weight!))
                 }
 
