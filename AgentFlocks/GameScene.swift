@@ -1,9 +1,25 @@
 //
-//  GameScene.swift
-//  barf
+// Created by Rob Bishop on 12/17/17.
 //
-//  Created by Rob Bishop on 12/17/17.
-//  Copyright © 2017 Rob Bishop. All rights reserved.
+// Copyright © 2017 Rob Bishop
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
 //
 
 import SpriteKit
@@ -12,49 +28,25 @@ import GameplayKit
 class GameScene: SKScene, SKViewDelegate {
     static var selfScene: GameScene?
     
+    var uiInputState: UIInputState!
     var entities = [GKEntity]()
     var graphs = [String : GKGraph]()
-    
-//    var agentControls: AgentControls!
-//    var motivatorControls: MotivatorControls!
 
-    private var lastUpdateTime : TimeInterval = 0
-    
-    private var selectedNodeIndex: Int? = nil
-    private var draggedNodeIndex: Int? = nil
-    private var draggedNodeMouseOffset = CGPoint.zero
+    var lastUpdateTime : TimeInterval = 0
     
     var selectionIndicator: SKShapeNode!
-    var mouseWasDragged = false
-    var showingSelection = false
     
     var corral = [SKShapeNode]()
     
     override func didMove(to view: SKView) {
         GameScene.selfScene = self
-//        agentControls = AgentControls(view: view)
-//        motivatorControls = MotivatorControls(view: view)
+        uiInputState = UIInputState()
     }
     
     // MARK: - Mouse handling
     
     override func mouseDown(with event: NSEvent) {
-        let location = event.location(in: self)
-        let touchedNodes = self.nodes(at: location)
-        
-        for (index, entity_) in self.entities.enumerated() {
-            let entity = entity_ as! AFEntity
-            if touchedNodes.contains(entity.agent.spriteContainer) {
-                draggedNodeIndex = index
-                
-                let e = event.location(in: self)
-                draggedNodeMouseOffset.x = entity.agent.spriteContainer.position.x - e.x
-                draggedNodeMouseOffset.y = entity.agent.spriteContainer.position.y - e.y
-                break
-            }
-        }
-
-        mouseWasDragged = false
+        uiInputState.enter(UIInputState.MouseDown.self, event: event)
     }
     
     func selectScenoid(new: Int?, old: Int?) {
@@ -69,43 +61,15 @@ class GameScene: SKScene, SKViewDelegate {
             selectionIndicator.zPosition = 2
             
             AppDelegate.myself.placeAgentFrames(agentIndex: toSelect)
-            selectedNodeIndex = toSelect
-        } else {
-            selectedNodeIndex = nil
         }
     }
 
     override func mouseUp(with event: NSEvent) {
-        if let draggedIndex = draggedNodeIndex {
-            if let entity = self.entities[draggedIndex] as? AFEntity {
-                let c = entity.agent
-                let p = event.location(in: self)
-                c.position = vector_float2(Float(p.x), Float(p.y))
-                c.position.x += Float(draggedNodeMouseOffset.x)
-                c.position.y += Float(draggedNodeMouseOffset.y)
-            
-                if !mouseWasDragged {
-                    selectScenoid(new: draggedIndex, old: selectedNodeIndex)
-                }
-            }
-
-            draggedNodeIndex = nil
-            mouseWasDragged = false
-            draggedNodeMouseOffset = CGPoint.zero
-        }
+        uiInputState.enter(UIInputState.MouseUp.self, event: event)
     }
     
     override func mouseDragged(with event: NSEvent) {
-        if let draggedIndex = draggedNodeIndex {
-            if let entity = self.entities[draggedIndex] as? AFEntity {
-                mouseWasDragged = true
-                
-                let c = entity.agent.spriteContainer
-                c.position = event.location(in: self)
-                c.position.x += draggedNodeMouseOffset.x
-                c.position.y += draggedNodeMouseOffset.y
-            }
-        }
+        uiInputState.enter(UIInputState.MouseDragging.self, event: event)
     }
     
     override func sceneDidLoad() {
@@ -147,11 +111,11 @@ class GameScene: SKScene, SKViewDelegate {
         // Calculate time since last update
         let dt = currentTime - self.lastUpdateTime
         
+        uiInputState.update(deltaTime: dt)
+        
         // Update entities
-        for (index, entity) in self.entities.enumerated() {
-            if draggedNodeIndex != index {
-                entity.update(deltaTime: dt)
-            }
+        for entity in self.entities {
+            entity.update(deltaTime: dt)
         }
         
         self.lastUpdateTime = currentTime

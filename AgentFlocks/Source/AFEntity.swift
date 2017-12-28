@@ -13,20 +13,12 @@ class AFEntity: GKEntity {
     
     var name: String { return agent.sprite.name! }
     
-    init(scene: GameScene, position: CGPoint) {
-        agent = AFAgent2D(scene: scene, position: position)
+    init(scene: GameScene, image: NSImage, position: CGPoint) {
+        agent = AFAgent2D(scene: scene, image: image, position: position)
         
         super.init()
         
         addComponent(agent)
-        
-        AppDelegate.agentEditorController.goalsController.dataSource = self
-
-        //        let node = GKSKNodeComponent(node: agent.spriteContainer)
-        //        addComponent(node)
-        //        agent.delegate = node
-        
-//        scene.agentControls.setAgent(agent)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -41,7 +33,7 @@ extension AFEntity: AgentGoalsDataSource {
             return entities.count
         } else if let collection = item as? AFMotivatorCollection {
             return collection.howManyChildren()
-        } else if let index = AppDelegate.editedAgentIndex {
+        } else if let index = GameScene.selfScene!.uiInputState.selectedNodeIndex {
             if let entity = GameScene.selfScene!.entities[index] as? AFEntity {
                 if let motivator = entity.agent.motivator as? AFBehavior {
                     return motivator.howManyChildren()
@@ -62,7 +54,7 @@ extension AFEntity: AgentGoalsDataSource {
         if let collection = item as? AFMotivatorCollection {
             // Child goal
             return collection.getChild(at: index)
-        } else if let agentIndex = AppDelegate.editedAgentIndex {
+        } else if let agentIndex = GameScene.selfScene!.uiInputState.selectedNodeIndex {
             // Child behavior
             return (GameScene.selfScene!.entities[agentIndex] as! AFEntity).agent.motivator!.getChild(at: index)
         } else {

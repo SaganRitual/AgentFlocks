@@ -32,13 +32,14 @@ class AFAgent2D: GKAgent2D {
         return String(format: "%5d", AFAgent2D.uniqueNameBase)
     }
     
-    init(scene: GameScene, position: CGPoint) {
+    init(scene: GameScene, image: NSImage, position: CGPoint) {
         scale = 1
         
         spriteContainer = SKNode()
         spriteContainer.position = position
         
-        sprite = SKSpriteNode(imageNamed: "Agent01")
+        let texture = SKTexture(image: image)
+        sprite = SKSpriteNode(texture: texture)
         sprite.name = AFAgent2D.makeUniqueName()
         sprite.zPosition = 0
         spriteContainer.addChild(sprite)

@@ -25,7 +25,7 @@
                     <rect key="frame" x="8" y="37" width="284" height="227"/>
                     <clipView key="contentView" id="Mid-yf-OoY">
                         <rect key="frame" x="1" y="1" width="282" height="225"/>
-                        <autoresizingMask key="autoresizingMask"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" columnReordering="NO" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" floatsGroupRows="NO" indentationPerLevel="16" outlineTableColumn="a9I-Ya-OUn" id="88F-gC-oPm">
                                 <rect key="frame" x="0.0" y="0.0" width="282" height="225"/>

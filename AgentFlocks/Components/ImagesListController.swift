@@ -9,7 +9,7 @@
 import Cocoa
 
 protocol ImagesListDelegate {
-	func imagesList(_ controller: ImagesListController, selectedIndex index: Int)
+	func imagesList(_ controller: ImagesListController, imageIndex: Int)
 }
 
 class ImagesListController: NSViewController {
@@ -56,13 +56,13 @@ class ImagesListController: NSViewController {
     }
 	
 	@objc private func onItemClicked() {
-		delegate?.imagesList(self, selectedIndex: self.tableView.clickedRow)
+		delegate?.imagesList(self, imageIndex: self.tableView.clickedRow)
 	}
 	
 	override func keyUp(with event: NSEvent) {
 		super.keyUp(with: event)
 		if event.keyCode == 36 {
-			delegate?.imagesList(self, selectedIndex: self.tableView.selectedRow)
+			delegate?.imagesList(self, imageIndex: self.tableView.selectedRow)
 		}
 	}
 	

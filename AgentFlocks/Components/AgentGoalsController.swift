@@ -116,19 +116,19 @@ class AgentGoalsController: NSViewController {
 	
 	@IBAction func addGoalItemSelected(_ sender: NSMenuItem) {
 		var goalType = GoalType.Wander
-		switch sender.tag {
-		case 1: goalType = GoalType.Align
-		case 2: goalType = GoalType.Avoid
-        case 3: goalType = GoalType.Cohere
-        case 4: goalType = GoalType.Flee
-        case 5: goalType = GoalType.FollowPath
-        case 6: goalType = GoalType.Intercept
-        case 7: goalType = GoalType.Seek
-        case 8: goalType = GoalType.Separate
-        case 9: goalType = GoalType.StayOnPath
-        case 10: goalType = GoalType.TargetSpeed
-        case 11: goalType = GoalType.Wander
-		default: goalType = GoalType.Wander
+		switch addContextMenu.index(of: sender) {
+		case 2: goalType = GoalType.Align
+		case 3: goalType = GoalType.Avoid
+        case 4: goalType = GoalType.Cohere
+        case 5: goalType = GoalType.Flee
+        case 6: goalType = GoalType.FollowPath
+        case 7: goalType = GoalType.Intercept
+        case 8: goalType = GoalType.Seek
+        case 9: goalType = GoalType.Separate
+        case 10: goalType = GoalType.StayOnPath
+        case 11: goalType = GoalType.TargetSpeed
+        case 12: goalType = GoalType.Wander
+		default: fatalError()
 		}
 		delegate?.agentGoals(self, newGoalShowForRect: addButton.bounds, goalType: goalType)
 	}

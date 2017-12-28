@@ -11,7 +11,7 @@ import Cocoa
 protocol TopBarDelegate {
 	func topBarDrawPath(_ controller: TopBarController)
 	func topBar(_ controller: TopBarController, obstacleSelected index:Int)
-	func topBar(_ controller: TopBarController, agentSelected index:Int)
+	func topBar(_ controller: TopBarController, imageIndex:Int)
 	func topBar(_ controller: TopBarController, flockSelected flock:TopBarController.FlockType)
 	func topBar(_ controller: TopBarController, statusChangedTo newStatus: TopBarController.Status)
 	func topBar(_ controller: TopBarController, speedChangedTo newSpeed:Double)
@@ -187,15 +187,15 @@ extension TopBarController: NSPopoverDelegate {
 
 extension TopBarController: ImagesListDelegate {
 	
-	func imagesList(_ controller: ImagesListController, selectedIndex index: Int) {
+	func imagesList(_ controller: ImagesListController, imageIndex: Int) {
 		if let popover = activePopover {
 			popover.close()
 		}
 		if controller.listTitle.compare("Agents") == .orderedSame {
-			delegate?.topBar(self, agentSelected: index)
+			delegate?.topBar(self, imageIndex: imageIndex)
 		}
 		else if controller.listTitle.compare("Obstacles") == .orderedSame {
-			delegate?.topBar(self, obstacleSelected: index)
+			delegate?.topBar(self, obstacleSelected: imageIndex)
 		}
 	}
 	

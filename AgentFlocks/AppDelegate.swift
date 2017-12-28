@@ -34,8 +34,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var agents = [AgentType]()
     var obstacles = [ObstacleType]()
     
-    static var editedAgentIndex:Int?
     var editedObstacleIndex:Int?
+    var stopTime: TimeInterval = 0
 
 	private var activePopover:NSPopover?
 	
@@ -69,7 +69,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             obstacleImages.append(obstacle.image)
         }
         
-        AppDelegate.agentEditorController.goalsController.dataSource = self
         AppDelegate.agentEditorController.goalsController.delegate = self
         
         topBarController.delegate = self
@@ -161,15 +160,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 				let fileNames = try FileManager.default.contentsOfDirectory(atPath: resourcesPath)
 				for fileName in fileNames.sorted() where fileName.hasPrefix("Agent") {
 					if let image = NSImage(contentsOfFile: "\(resourcesPath)/\(fileName)") {
-						var agent:AgentType = (name:fileName, image:image, behaviors:[]);
-						for index1 in 1...5 {
-							var behavior:AgentBehaviorType = (name: "Behavior\(index1)", enabled:true, goals:[])
-							for index2 in 1...3 {
-								let goal:AgentGoalType = (name: "Goal\(index2)", enabled:true)
-								behavior.goals.append(goal)
-							}
-							agent.behaviors.append(behavior)
-						}
+						let agent:AgentType = (name:fileName, image:image, behaviors:[]);
 						foundAgents.append(agent)
 					}
 				}
@@ -215,6 +206,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         ac.scale = Double(agent.scale)
         
 		settingsView.addSubview(AppDelegate.agentEditorController.view)
+        AppDelegate.agentEditorController.refresh()
 		AppDelegate.agentEditorController.view.translatesAutoresizingMaskIntoConstraints = false
 		NSLayoutConstraint(item: AppDelegate.agentEditorController.view,
 		                   attribute: .top,
@@ -292,16 +284,18 @@ extension AppDelegate: TopBarDelegate {
         }
     }
     
-    func topBar(_ controller: TopBarController, agentSelected index: Int) {
-        if 0..<agents.count ~= index {
+    func topBar(_ controller: TopBarController, imageIndex: Int) {
+        if 0..<agents.count ~= imageIndex {
             NSLog("Agent selected")
-            AppDelegate.editedAgentIndex = index
-            let entity = sceneController.addNode(image: agents[index].image)
+            GameScene.selfScene!.uiInputState.selectedNodeIndex = GameScene.selfScene!.entities.count
+
+            let entity = sceneController.addNode(image: agents[imageIndex].image)
             AppDelegate.agentEditorController.goalsController.dataSource = entity
             AppDelegate.agentEditorController.attributesController.delegate = entity.agent
-            
-            GameScene.selfScene!.selectScenoid(new: index, old: nil)
-            self.placeAgentFrames(agentIndex: index)
+
+            let nodeIndex = GameScene.selfScene!.uiInputState.selectedNodeIndex!
+            GameScene.selfScene!.selectScenoid(new: nodeIndex, old: nil)
+            self.placeAgentFrames(agentIndex: nodeIndex)
         }
     }
 
@@ -314,6 +308,7 @@ extension AppDelegate: TopBarDelegate {
         switch newStatus {
         case .Running:
             NSLog("START")
+            GameScene.selfScene!.lastUpdateTime = 0
         case .Paused:
             NSLog("STOP")
         }
@@ -336,7 +331,8 @@ extension AppDelegate: AgentGoalsDataSource {
             return behaviorItem.goals.count
         }
         // Root item
-        return (AppDelegate.editedAgentIndex == nil) ? 0 : agents[AppDelegate.editedAgentIndex!].behaviors.count
+        let ix = GameScene.selfScene!.uiInputState.selectedNodeIndex
+        return (ix == nil) ? 0 : agents[ix!].behaviors.count
     }
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemExpandable item: Any) -> Bool {
@@ -352,7 +348,7 @@ extension AppDelegate: AgentGoalsDataSource {
             return behaviorItem.goals[index]
         }
         // Root item
-        if let agentIndex = AppDelegate.editedAgentIndex {
+        if let agentIndex = GameScene.selfScene!.uiInputState.selectedNodeIndex {
             // Child item: AgentBehaviorType
             return agents[agentIndex].behaviors[index]
         }
@@ -387,7 +383,7 @@ extension AppDelegate: AgentGoalsDataSource {
 extension AppDelegate: AgentGoalsDelegate {
 
     func agentGoalsPlayClicked(_ agentGoalsController: AgentGoalsController) {
-        guard let agentIndex = AppDelegate.editedAgentIndex else { return }
+        guard let agentIndex = GameScene.selfScene!.uiInputState.selectedNodeIndex else { return }
     
         let entity = sceneController.addNode(image: agents[agentIndex].image)
         AppDelegate.agentEditorController.goalsController.dataSource = entity
@@ -468,7 +464,8 @@ extension AppDelegate: AgentGoalsDelegate {
         case .Seek: break
         case .Separate: break
         case .StayOnPath: break
-        case .TargetSpeed: break
+        case .TargetSpeed:
+            attributeList = ["Speed"] + attributeList
         case .Wander:
             attributeList = ["Speed"] + attributeList
         }
@@ -529,7 +526,7 @@ extension AppDelegate: ItemEditorDelegate {
     }
 	
 	func itemEditorApplyPressed(_ controller: ItemEditorController) {
-		guard let agentIndex = AppDelegate.editedAgentIndex else { return }
+		guard let agentIndex = GameScene.selfScene!.uiInputState.selectedNodeIndex else { return }
 
         let entity = GameScene.selfScene!.entities[agentIndex] as! AFEntity
         let selected = AgentGoalsController.selfController.selectedIndex()

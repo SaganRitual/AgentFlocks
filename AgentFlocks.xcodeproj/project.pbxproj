@@ -69,6 +69,7 @@
 		D44256291FE808FF00FC454B /* AFMotivator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256281FE808FF00FC454B /* AFMotivator.swift */; };
 		D442562B1FE80FA000FC454B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D442562A1FE80FA000FC454B /* README.md */; };
 		D47BC1F41FECCFE600B3CE6B /* Round2.txt in Resources */ = {isa = PBXBuildFile; fileRef = D47BC1F31FECCFE600B3CE6B /* Round2.txt */; };
+		D47D7BDD1FF4F89200DA508B /* UIInputState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47D7BDC1FF4F89200DA508B /* UIInputState.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -137,6 +138,7 @@
 		D44256281FE808FF00FC454B /* AFMotivator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFMotivator.swift; sourceTree = "<group>"; };
 		D442562A1FE80FA000FC454B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D47BC1F31FECCFE600B3CE6B /* Round2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Round2.txt; sourceTree = "<group>"; };
+		D47D7BDC1FF4F89200DA508B /* UIInputState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIInputState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -273,6 +275,7 @@
 				D44256261FE804F000FC454B /* AFAgent2D.swift */,
 				D44256241FE8048100FC454B /* AFEntity.swift */,
 				D44256281FE808FF00FC454B /* AFMotivator.swift */,
+				D47D7BDC1FF4F89200DA508B /* UIInputState.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -401,6 +404,7 @@
 				D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */,
 				745F8F591F93A491006B08AF /* SliderController.swift in Sources */,
 				D44256251FE8048100FC454B /* AFEntity.swift in Sources */,
+				D47D7BDD1FF4F89200DA508B /* UIInputState.swift in Sources */,
 				74ECDF661F9B132C0096468F /* AgentGoalsController.swift in Sources */,
 				74622E7B1F9249CA00690C3C /* ImagesListController.swift in Sources */,
 				D44256291FE808FF00FC454B /* AFMotivator.swift in Sources */,
