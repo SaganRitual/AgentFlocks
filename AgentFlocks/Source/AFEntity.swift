@@ -29,16 +29,23 @@ class AFEntity: GKEntity {
 extension AFEntity: AgentGoalsDataSource {
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, numberOfChildrenOfItem item: Any?) -> Int {
-        if let entities = item as? [GKEntity] {
-            return entities.count
-        } else if let collection = item as? AFMotivatorCollection {
+        if let collection = item as? AFMotivatorCollection {
             return collection.howManyChildren()
-        } else if let index = GameScene.selfScene!.uiInputState.selectedNodeIndex {
-            if let entity = GameScene.selfScene!.entities[index] as? AFEntity {
-                if let motivator = entity.agent.motivator as? AFBehavior {
-                    return motivator.howManyChildren()
-                } else if let motivator = entity.agent.motivator as? AFCompositeBehavior {
-                    return motivator.howManyChildren()
+        } else {
+            var reportThisIndex: Int?
+            if let check = GameScene.selfScene!.uiInputState.touchedNodeIndex {
+                reportThisIndex = check
+            } else if let check = GameScene.selfScene!.uiInputState.selectedNodeIndex {
+                reportThisIndex = check
+            }
+            
+            if reportThisIndex != nil {
+                if let entity = GameScene.selfScene!.entities[reportThisIndex!] as? AFEntity {
+                    if let motivator = entity.agent.motivator as? AFBehavior {
+                        return motivator.howManyChildren()
+                    } else if let motivator = entity.agent.motivator as? AFCompositeBehavior {
+                        return motivator.howManyChildren()
+                    }
                 }
             }
         }
@@ -54,13 +61,21 @@ extension AFEntity: AgentGoalsDataSource {
         if let collection = item as? AFMotivatorCollection {
             // Child goal
             return collection.getChild(at: index)
-        } else if let agentIndex = GameScene.selfScene!.uiInputState.selectedNodeIndex {
-            // Child behavior
-            return (GameScene.selfScene!.entities[agentIndex] as! AFEntity).agent.motivator!.getChild(at: index)
         } else {
-            // Child behavior
-            return (GameScene.selfScene!.entities[0] as! AFEntity).agent.motivator ?? 0
+            var agentIndex: Int?
+            if let check = GameScene.selfScene!.uiInputState.touchedNodeIndex {
+                agentIndex = check
+            } else if let check = GameScene.selfScene!.uiInputState.selectedNodeIndex {
+                agentIndex = check
+            }
+            
+            if agentIndex != nil {
+                let entity = GameScene.selfScene!.entities[agentIndex!] as! AFEntity
+                return entity.agent.motivator!.getChild(at: index)
+            }
         }
+        
+        fatalError()
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, labelOfItem item: Any) -> String {

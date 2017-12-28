@@ -64,6 +64,14 @@ class GameScene: SKScene, SKViewDelegate {
             AppDelegate.myself.placeAgentFrames(agentIndex: toSelect)
         }
     }
+    
+    func multiSelectScenoid(_ index: Int) {
+        let entity = self.entities[index] as! AFEntity
+        let hackSprite = SKShapeNode(circleOfRadius: 15)
+        hackSprite.fillColor = .blue
+        entity.agent.spriteContainer.addChild(hackSprite)
+        hackSprite.zPosition = 2
+    }
 
     override func mouseUp(with event: NSEvent) {
         uiInputState.enter(UIInputState.MouseUp.self, event: event)

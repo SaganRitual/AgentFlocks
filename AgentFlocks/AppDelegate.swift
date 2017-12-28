@@ -321,74 +321,18 @@ extension AppDelegate: TopBarDelegate {
 
 }
 
-// MARK: - AgentGoalsDataSource
-
-extension AppDelegate: AgentGoalsDataSource {
-
-    func agentGoals(_ agentGoalsController: AgentGoalsController, numberOfChildrenOfItem item: Any?) -> Int {
-        if let behaviorItem = item as? AgentBehaviorType {
-            // Child item: behavior
-            return behaviorItem.goals.count
-        }
-        // Root item
-        let ix = GameScene.selfScene!.uiInputState.selectedNodeIndex
-        return (ix == nil) ? 0 : agents[ix!].behaviors.count
-    }
-
-    func agentGoals(_ agentGoalsController: AgentGoalsController, isItemExpandable item: Any) -> Bool {
-        if item is AgentBehaviorType {
-            return true
-        }
-        return false
-    }
-
-    func agentGoals(_ agentGoalsController: AgentGoalsController, child index: Int, ofItem item: Any?) -> Any {
-        if let behaviorItem = item as? AgentBehaviorType {
-            // Child item: AgentGoalType
-            return behaviorItem.goals[index]
-        }
-        // Root item
-        if let agentIndex = GameScene.selfScene!.uiInputState.selectedNodeIndex {
-            // Child item: AgentBehaviorType
-            return agents[agentIndex].behaviors[index]
-        }
-        // Child item: AgentBehaviorType
-        return agents[0].behaviors[0]
-    }
-
-    func agentGoals(_ agentGoalsController: AgentGoalsController, labelOfItem item: Any) -> String {
-        if let behaviorItem = item as? AgentBehaviorType {
-            return behaviorItem.name
-        }
-        else if let goalItem = item as? AgentGoalType {
-            return goalItem.name
-        }
-        return ""
-    }
-
-    func agentGoals(_ agentGoalsController: AgentGoalsController, isItemEnabled item: Any) -> Bool {
-        if let behaviorItem = item as? AgentBehaviorType {
-            return behaviorItem.enabled
-        }
-        else if let goalItem = item as? AgentGoalType {
-            return goalItem.enabled
-        }
-        return false
-    }
-
-}
-
 // MARK: - AgentGoalsDelegate
 
 extension AppDelegate: AgentGoalsDelegate {
 
     func agentGoalsPlayClicked(_ agentGoalsController: AgentGoalsController) {
-        guard let agentIndex = GameScene.selfScene!.uiInputState.selectedNodeIndex else { return }
-    
-        let entity = sceneController.addNode(image: agents[agentIndex].image)
-        AppDelegate.agentEditorController.goalsController.dataSource = entity
+        GameScene.selfScene!.uiInputState.multiSelect = !GameScene.selfScene!.uiInputState.multiSelect
         
-        self.removeAgentFrames()
+        // If we've just now turned off multi-select
+        if !GameScene.selfScene!.uiInputState.multiSelect {
+            GameScene.selfScene!.uiInputState.clearSelectionIndicators()
+            GameScene.selfScene!.uiInputState.multiSelectedNodeIndexes = nil
+        }
     }
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemDoubleClicked item: Any, inRect rect: NSRect) {

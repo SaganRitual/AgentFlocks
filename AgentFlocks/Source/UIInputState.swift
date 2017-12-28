@@ -104,7 +104,7 @@ class UIInputState: GKComponent {
                 stateComponent.draggedNodeIndex = nil
                 stateComponent.nodeToMouseOffset = CGPoint.zero
             } else {
-                stateComponent.reselectScenoid()
+                stateComponent.updateSelectionIndicators()
             }
             
             stateMachine!.enter(Ready.self)
@@ -128,6 +128,8 @@ class UIInputState: GKComponent {
     
     var draggedNodeIndex: Int?
     var event: NSEvent!
+    var multiSelect = false
+    var multiSelectedNodeIndexes: [Int]?
     var nodeToMouseOffset = CGPoint.zero
     var selectedNodeIndex: Int?
     var stateMachine: GKStateMachine!
@@ -150,19 +152,40 @@ class UIInputState: GKComponent {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func clearSelectionIndicators() {
+        if let m = multiSelectedNodeIndexes {
+            for i in m {
+                let entity = GameScene.selfScene!.entities[i] as! AFEntity
+                let spriteContainer = entity.agent.spriteContainer
+                
+                let final = spriteContainer.children.count - 1
+                let remove = spriteContainer.children[final]
+                spriteContainer.removeChildren(in: [remove])
+            }
+        }
+        
+        multiSelectedNodeIndexes = nil
+    }
+    
     func enter(_ state: AnyClass, event: NSEvent) {
         self.event = event
         stateMachine.enter(state)
     }
     
-    func reselectScenoid() {
-        GameScene.selfScene!.selectScenoid(new: touchedNodeIndex, old: selectedNodeIndex)
-        
-        if touchedNodeIndex == selectedNodeIndex {
-            touchedNodeIndex = nil
-            selectedNodeIndex = nil
+    func updateSelectionIndicators() {
+        if multiSelect {
+            if multiSelectedNodeIndexes == nil { multiSelectedNodeIndexes = [Int]() }
+            GameScene.selfScene!.multiSelectScenoid(touchedNodeIndex!)
+            multiSelectedNodeIndexes!.append(touchedNodeIndex!)
         } else {
-            selectedNodeIndex = touchedNodeIndex
+            GameScene.selfScene!.selectScenoid(new: touchedNodeIndex, old: selectedNodeIndex)
+            
+            if touchedNodeIndex == selectedNodeIndex {
+                touchedNodeIndex = nil
+                selectedNodeIndex = nil
+            } else {
+                selectedNodeIndex = touchedNodeIndex
+            }
         }
     }
     
