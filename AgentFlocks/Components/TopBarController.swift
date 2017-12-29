@@ -143,15 +143,16 @@ class TopBarController: NSViewController {
 		self.showPopover(withTitle: "Agents", andImages: self.agentImages, forButton: sender)
 	}
 	
+    // Hijacked as a recall button
 	@IBAction private func placeFlockClicked(_ sender: NSButton) {
-		let menu = NSMenu(title: "Flocks")
-		for (index, flock) in flocks.enumerated() {
-			let item = menu.insertItem(withTitle: flock.name, action: #selector(flockMenuItemSelected(_:)), keyEquivalent: "", at: index)
-			item.tag = index
-			item.target = self
-		}
-		// Display popup menu below the button
-		menu.popUp(positioning: menu.items.first!, at: NSMakePoint(3.0, sender.bounds.size.height + 2.0), in: sender)
+        for e in GameScene.selfScene!.entities {
+            let entity = e as! AFEntity
+            let spriteContainer = entity.agent.spriteContainer
+            
+            entity.agent.position.x = 0
+            entity.agent.position.y = 0
+            spriteContainer.position = CGPoint.zero
+        }
 	}
 	
 	@IBAction private func playClicked(_ sender: NSButton) {
