@@ -135,16 +135,9 @@ class TopBarController: NSViewController {
 		delegate?.topBarDrawPath(self)
 	}
 	
+    // re-purposed as a recall button
 	@IBAction private func placeObstacleClicked(_ sender: NSButton) {
-		self.showPopover(withTitle: "Obstacles", andImages: self.obstacleImages, forButton: sender)
-	}
-	
-	@IBAction private func placeAgentClicked(_ sender: NSButton) {
-		self.showPopover(withTitle: "Agents", andImages: self.agentImages, forButton: sender)
-	}
-	
-    // Hijacked as a recall button
-	@IBAction private func placeFlockClicked(_ sender: NSButton) {
+//        self.showPopover(withTitle: "Obstacles", andImages: self.obstacleImages, forButton: sender)
         for e in GameScene.selfScene!.entities {
             let entity = e as! AFEntity
             let spriteContainer = entity.agent.spriteContainer
@@ -152,6 +145,30 @@ class TopBarController: NSViewController {
             entity.agent.position.x = 0
             entity.agent.position.y = 0
             spriteContainer.position = CGPoint.zero
+        }
+	}
+	
+	@IBAction private func placeAgentClicked(_ sender: NSButton) {
+		self.showPopover(withTitle: "Agents", andImages: self.agentImages, forButton: sender)
+	}
+	
+	@IBAction private func placeFlockClicked(_ sender: NSButton) {
+        if let nodeIndex = GameScene.selfScene!.uiInputState.selectedNodeIndex {
+            let entity = GameScene.selfScene!.entities[nodeIndex] as! AFEntity
+
+            var flock = [entity.agent]
+            for _ in 0 ..< 5 {
+                let spawn = AFEntity(scene: GameScene.selfScene!, image: agentImages[4], position: CGPoint.zero)
+                flock.append(spawn.agent)
+                GameScene.selfScene!.entities.append(spawn)
+            }
+            
+            let goal = AFGoal(toAlignWith: flock, maxDistance: 1, maxAngle: 180, weight: 10)
+            for agent in flock {
+                let composite = agent.motivator! as! AFCompositeBehavior
+                let behavior = composite.getChild(at: 0) as! AFBehavior
+                behavior.addGoal(goal)
+            }
         }
 	}
 	

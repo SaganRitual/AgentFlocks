@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13196" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13196"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -14,12 +15,12 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <customView id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="667" height="41"/>
+        <customView misplaced="YES" id="Hz6-mo-xeY">
+            <rect key="frame" x="0.0" y="0.0" width="775" height="41"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5yr-11-FKX">
-                    <rect key="frame" x="-2" y="-3" width="79" height="46"/>
+                    <rect key="frame" x="-2" y="-3" width="103" height="46"/>
                     <buttonCell key="cell" type="bevel" title="Draw Path" bezelStyle="regularSquare" image="buttonCell:Gmk-0U-77U:image" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Gmk-0U-77U">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -29,8 +30,8 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KEH-SL-ZCm">
-                    <rect key="frame" x="73" y="-3" width="79" height="46"/>
-                    <buttonCell key="cell" type="bevel" title="Place Obstacle" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uTa-Vf-5ng">
+                    <rect key="frame" x="97" y="-3" width="103" height="46"/>
+                    <buttonCell key="cell" type="bevel" title="RecallAgents" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uTa-Vf-5ng">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
@@ -39,7 +40,7 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yfk-q2-1mQ">
-                    <rect key="frame" x="148" y="-3" width="79" height="46"/>
+                    <rect key="frame" x="196" y="-3" width="103" height="46"/>
                     <buttonCell key="cell" type="bevel" title="Place Agent" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="hnk-Du-CwH">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -49,7 +50,7 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xmO-WQ-mPG">
-                    <rect key="frame" x="223" y="-3" width="79" height="46"/>
+                    <rect key="frame" x="295" y="-3" width="103" height="46"/>
                     <buttonCell key="cell" type="bevel" title="Place Flock" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="tbN-05-X4v">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
@@ -59,13 +60,13 @@
                     </connections>
                 </button>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="6uf-Yz-6OL">
-                    <rect key="frame" x="427" y="0.0" width="240" height="41"/>
+                    <rect key="frame" x="535" y="0.0" width="240" height="41"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="240" id="YZO-gi-TmZ"/>
                     </constraints>
                 </customView>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yPH-jb-RZz">
-                    <rect key="frame" x="330" y="-3" width="79" height="46"/>
+                    <rect key="frame" x="414" y="-3" width="103" height="46"/>
                     <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSSlideshowTemplate" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pUB-53-E3g">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>

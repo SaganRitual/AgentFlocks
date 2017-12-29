@@ -166,6 +166,17 @@ class AFGoal: AFMotivator {
         goal = GKGoal(toAvoid: obstacles, maxPredictionTime: maxPredictionTime)
     }
     
+    init(toCohereWith agents: [GKAgent], maxDistance: Float, maxAngle: Float, weight: Float) {
+        goalType = .toCohereWith
+        motivatorType = .goal
+        
+        self.angle = maxAngle
+        self.distance = maxDistance
+        self.weight = weight
+        
+        goal = GKGoal(toCohereWith: agents, maxDistance: maxDistance, maxAngle: maxAngle)
+    }
+
     init(toReachTargetSpeed speed: Float, weight: Float) {
         goalType = .toReachTargetSpeed
         motivatorType = .goal
