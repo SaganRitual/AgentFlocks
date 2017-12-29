@@ -27,7 +27,7 @@ class SliderController: NSViewController {
 			}
 		}
 	}
-	@objc dynamic var maxValue:Double = 10.0 {
+	@objc dynamic var maxValue:Double = 100 {
 		didSet {
 			if self.value > maxValue {
 				self.value = maxValue

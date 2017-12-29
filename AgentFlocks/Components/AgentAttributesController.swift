@@ -90,11 +90,11 @@ class AgentAttributesController: NSViewController {
         
         typealias AttributeSet = (ainer: NSView?, roller: SliderController, label: String, max: Double, increment: Double)
         let attributeSets: [AttributeSet] = [
-            (massSliderContainer, massSliderController, "Mass", 1.0, 0.001),
-            (maxAccelerationSliderContainer, maxAccelerationSliderController, "Max Accel", 1000.0, 1.0),
-            (maxSpeedSliderContainer, maxSpeedSliderController, "Max Speed", 1000.0, 1.0),
-            (radiusSliderContainer, radiusSliderController, "Radius", 100, 0.1),
-            (scaleSliderContainer, scaleSliderController, "Scale", 10.0, 0.01)
+            (massSliderContainer, massSliderController, "Mass", 10.0, 1.0),
+            (maxAccelerationSliderContainer, maxAccelerationSliderController, "Max Accel", 10.0, 1.0),
+            (maxSpeedSliderContainer, maxSpeedSliderController, "Max Speed", 10.0, 1.0),
+            (radiusSliderContainer, radiusSliderController, "Radius", 10.0, 1.0),
+            (scaleSliderContainer, scaleSliderController, "Scale", 10.0, 1.0)
         ]
         
         for s in attributeSets {

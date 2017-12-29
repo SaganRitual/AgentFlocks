@@ -338,13 +338,13 @@ extension AppDelegate: AgentGoalsDelegate {
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemDoubleClicked item: Any, inRect rect: NSRect) {
         guard let mainView = window.contentView else { return }
         if item is AFBehavior {
+            let behavior = item as! AFBehavior
             
             let editorController = ItemEditorController(withAttributes: ["Weight"])
             editorController.delegate = self
             editorController.editedItem = item
-            
-            // TODO: Set behavior values
-            editorController.setValue(ofSlider: "Weight", to: 5.6)
+
+            editorController.setValue(ofSlider: "Weight", to: Double(behavior.weight))
             editorController.preview = true
         
             let itemRect = mainView.convert(rect, from: agentGoalsController.view)

@@ -70,11 +70,11 @@ class AFAgent2D: GKAgent2D {
 
         applyMotivator()
         
-        mass = 0.1
-        maxAcceleration = 1000
-        maxSpeed = 1000
-        radius = 25
-        scale = 1
+//        mass = 0.1
+//        maxAcceleration = 1000
+//        maxSpeed = 1000
+//        radius = 25
+//        scale = 1
     }
     
     deinit {

@@ -161,6 +161,15 @@ class TopBarController: NSViewController {
                 let spawn = AFEntity(scene: GameScene.selfScene!, image: agentImages[4], position: CGPoint.zero)
                 flock.append(spawn.agent)
                 GameScene.selfScene!.entities.append(spawn)
+
+                let composite = entity.agent.motivator! as! AFCompositeBehavior
+                let behavior = composite.getChild(at: 0) as! AFBehavior
+                for i in 0 ..< behavior.howManyChildren() {
+                    let tComposite = spawn.agent.motivator! as! AFCompositeBehavior
+                    let tBehavior = tComposite.getChild(at: 0) as! AFBehavior
+                    
+                    tBehavior.addGoal(behavior.getChild(at: i) as! AFGoal)
+                }
             }
             
             let goal = AFGoal(toAlignWith: flock, maxDistance: 1, maxAngle: 180, weight: 10)
