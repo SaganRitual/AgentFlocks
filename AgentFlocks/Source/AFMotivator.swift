@@ -154,12 +154,23 @@ class AFGoal: AFMotivator {
 
         goal = GKGoal(toAlignWith: agents, maxDistance: maxDistance, maxAngle: maxAngle)
     }
-    
+
+    init(toAvoidAgents agents: [GKAgent], maxPredictionTime: TimeInterval, weight: Float) {
+        goalType = .toAvoidAgents
+        motivatorType = .goal
+        
+        self.predictionTime = Float(maxPredictionTime)
+        self.weight = weight
+        
+        goal = GKGoal(toAvoid: agents, maxPredictionTime: maxPredictionTime)
+    }
+
     init(toAvoidObstacles obstacles: [GKObstacle], maxPredictionTime: TimeInterval, weight: Float) {
         goalType = .toAvoidObstacles
         motivatorType = .goal
         
         self.obstacles = obstacles
+        self.predictionTime = Float(maxPredictionTime)
         self.weight = weight
         
         goal = GKGoal(toAvoid: obstacles, maxPredictionTime: maxPredictionTime)
@@ -176,6 +187,35 @@ class AFGoal: AFMotivator {
         goal = GKGoal(toCohereWith: agents, maxDistance: maxDistance, maxAngle: maxAngle)
     }
 
+    init(toInterceptAgent agent: GKAgent, maxPredictionTime: TimeInterval, weight: Float) {
+        goalType = .toInterceptAgent
+        motivatorType = .goal
+        
+        self.predictionTime = Float(maxPredictionTime)
+        self.weight = weight
+        
+        goal = GKGoal(toInterceptAgent: agent, maxPredictionTime: maxPredictionTime)
+    }
+
+    init(toFleeAgent agent: GKAgent, weight: Float) {
+        goalType = .toFleeAgent
+        motivatorType = .goal
+        
+        self.weight = weight
+        
+        goal = GKGoal(toFleeAgent: agent)
+    }
+
+    init(toFollow path: GKPath, maxPredictionTime t: Float, forward: Bool, weight: Float) {
+        goalType = .toFollow
+        motivatorType = .goal
+        
+        self.predictionTime = t
+        self.weight = weight
+        
+        goal = GKGoal(toFollow: path, maxPredictionTime: TimeInterval(t), forward: true)
+    }
+
     init(toReachTargetSpeed speed: Float, weight: Float) {
         goalType = .toReachTargetSpeed
         motivatorType = .goal
@@ -184,6 +224,36 @@ class AFGoal: AFMotivator {
         self.weight = weight
         
         newGoal(newValue: speed)
+    }
+    
+    init(toSeekAgent agent: GKAgent, weight: Float) {
+        goalType = .toSeekAgent
+        motivatorType = .goal
+        
+        self.weight = weight
+        
+        goal = GKGoal(toSeekAgent: agent)
+    }
+    
+    init(toSeparateFrom agents: [GKAgent], maxDistance: Float, maxAngle: Float, weight: Float) {
+        goalType = .toSeparateFrom
+        motivatorType = .goal
+        
+        self.angle = maxAngle
+        self.distance = maxDistance
+        self.weight = weight
+        
+        goal = GKGoal(toSeparateFrom: agents, maxDistance: maxDistance, maxAngle: maxAngle)
+    }
+
+    init(toStayOn path: GKPath, maxPredictionTime t: Float, weight: Float) {
+        goalType = .toStayOn
+        motivatorType = .goal
+        
+        self.predictionTime = t
+        self.weight = weight
+
+        goal = GKGoal(toStayOn: path, maxPredictionTime: TimeInterval(t))
     }
     
     init(toWander speed: Float, weight: Float) {
