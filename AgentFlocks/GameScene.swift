@@ -32,9 +32,11 @@ class GameScene: SKScene, SKViewDelegate {
     var downNodeIndex: Int?
     var entities = [AFEntity]()
     var graphs = [String : GKGraph]()
+    var inputMode = InputMode.primary
     var mouseState = MouseStates.up
     var mouseWasDragged = false
     var nodeToMouseOffset = CGPoint.zero
+    var pathHandles = [SKShapeNode]()
     var selectedIndexes = Set<Int>()
     var selectionState = SelectionStates.none
     var touchedNodes = [SKNode]()
@@ -109,6 +111,7 @@ class GameScene: SKScene, SKViewDelegate {
 // MARK: mouse and selection handling
 
 extension GameScene {
+    enum InputMode { case primary, drawPath }
     enum MouseStates { case down, dragging, rightDown, rightUp, up }
     enum SelectionStates { case none, one, multi }
     
@@ -204,8 +207,16 @@ extension GameScene {
 
         upNodeIndex = getTouchedNodeIndex()
         
-        if mouseState == .down {
-            updateSelectionState()
+        if inputMode == .primary {
+            if mouseState == .down {
+                updateSelectionState()
+            }
+        } else {
+            let node = SKShapeNode(circleOfRadius: 5)
+            node.position = currentPosition!
+            node.fillColor = .yellow
+            addChild(node)
+            pathHandles.append(node)
         }
 
         downNodeIndex = nil
@@ -234,6 +245,36 @@ extension GameScene {
 
         if selectedIndexes.count == 1 {
             AppDelegate.me!.placeAgentFrames(agentIndex: ix)
+        }
+    }
+    
+    func toggleDrawMode() {
+        if inputMode == .primary {
+            inputMode = .drawPath
+        } else {
+            inputMode = .primary
+            
+            var points = [GKGraphNode2D]()
+            for handle in pathHandles {
+                points.append(GKGraphNode2D(point: vector_float2(Float(handle.position.x), Float(handle.position.y))))
+            }
+
+            points.append(GKGraphNode2D(point: vector_float2(Float(pathHandles[0].position.x), Float(pathHandles[0].position.y))))
+
+            let path = GKPath(graphNodes: points, radius: 1)
+            let pathGoal = AFGoal(toFollow: path, maxPredictionTime: 0.1, forward: true, weight: 100)
+            
+            let entity = AppDelegate.me!.sceneController.addNode(image: AppDelegate.me!.agents[0].image)
+            let b = AFBehavior(agent: entity.agent)
+
+            b.addGoal(pathGoal)
+            
+            let c = AFCompositeBehavior(agent: entity.agent)
+            
+            c.addBehavior(b)
+            
+            entity.agent.motivator = c
+            entity.agent.applyMotivator()
         }
     }
     

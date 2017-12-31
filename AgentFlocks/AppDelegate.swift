@@ -269,14 +269,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 extension AppDelegate: TopBarDelegate {
     
     func topBarDrawPath(_ controller: TopBarController) {
-        NSLog("Repurposing for multi-select, for the time being...")
-        if GameScene.me!.selectionState == .multi {
-            // We were already in multi-mode. Now just turn it off.
-            GameScene.me!.selectionState = .none
-        } else {
-            GameScene.me!.deselectAll(newState: .multi)
-        }
+        NSLog("Draw path")
+        GameScene.me!.toggleDrawMode()
     }
+    
     func topBar(_ controller: TopBarController, obstacleSelected index: Int) {
         if 0..<obstacles.count ~= index {
             NSLog("Obstacle selected")
