@@ -270,16 +270,10 @@ extension AppDelegate: TopBarDelegate {
     
     func topBarDrawPath(_ controller: TopBarController) {
 //        NSLog("Draw path")
-        
-//        GameScene.me!.toggleDrawMode()
 
+        
         NSLog("Repurposing for multi-select, for the time being...")
-        if GameScene.me!.selectionState == .multi {
-            // We were already in multi-mode. Now just turn it off.
-            GameScene.me!.selectionState = .none
-        } else {
-            GameScene.me!.deselectAll(newState: .multi)
-        }
+        GameScene.me!.toggleMultiSelectMode()
     }
     
     func topBar(_ controller: TopBarController, obstacleSelected index: Int) {
@@ -299,11 +293,8 @@ extension AppDelegate: TopBarDelegate {
             AppDelegate.agentEditorController.attributesController.delegate = entity.agent
 
             let nodeIndex = GameScene.me!.entities.count - 1
-            // Hacker! this func shouldn't be fiddling with GameScene's internals
-            // Don't be lazy. Write a function
-            GameScene.me!.deselectAll()
-            GameScene.me!.select(nodeIndex)
-            GameScene.me!.selectionState = .one
+            
+            GameScene.me!.newAgent(nodeIndex)
             
             self.placeAgentFrames(agentIndex: nodeIndex)
         }
@@ -496,9 +487,10 @@ extension AppDelegate: ItemEditorDelegate {
     }
 	
 	func itemEditorApplyPressed(_ controller: ItemEditorController) {
-        guard GameScene.me!.selectedIndexes.count > 0 else { return }
+        let selectedIndexes = GameScene.me!.getSelectedIndexes()
+        guard selectedIndexes.count > 0 else { return }
 
-        let agentIndex = GameScene.me!.primarySelectionIndex!// GameScene.me!.selectedIndexes.first!
+        let agentIndex = GameScene.me!.getPrimarySelectionIndex()!
         let entity = GameScene.me!.entities[agentIndex]
 //        let selected = AgentGoalsController.selfController.selectedIndex()
         let parentOfNewMotivator = getParentForNewMotivator(rootMotivator: entity.agent.motivator!, selectionIndex: agentIndex)
@@ -558,10 +550,11 @@ extension AppDelegate: ItemEditorDelegate {
                     goal = nil
                     
                 case .toFleeAgent:
-                    guard GameScene.me!.selectedIndexes.count == 2 else { return }
+                    let selectedIndexes = GameScene.me!.getSelectedIndexes()
+                    guard selectedIndexes.count == 2 else { return }
                     
-                    var si = GameScene.me!.selectedIndexes.union(Set<Int>())
-                    si.remove(GameScene.me!.primarySelectionIndex!)
+                    var si = selectedIndexes.union(Set<Int>())
+                    si.remove(GameScene.me!.getPrimarySelectionIndex()!)
                     
                     let secondarySelectionIndex = si.first!
                     let theAgentToFlee = GameScene.me!.entities[secondarySelectionIndex].agent
@@ -570,17 +563,19 @@ extension AppDelegate: ItemEditorDelegate {
                 case .toFollow:   break
                     
                 case .toInterceptAgent:
-                    guard GameScene.me!.selectedIndexes.count == 2 else { return }
-                    
-                    let indexesAsArray = Array(GameScene.me!.selectedIndexes)
+                    let selectedIndexes = GameScene.me!.getSelectedIndexes()
+                    guard selectedIndexes.count == 2 else { return }
+
+                    let indexesAsArray = Array(selectedIndexes)
                     let secondaryAgentIndex = indexesAsArray[1]
                     let theAgentToIntercept = GameScene.me!.entities[secondaryAgentIndex].agent
                     goal = AFGoal(toInterceptAgent: theAgentToIntercept, maxPredictionTime: time!, weight: Float(weight!))
 
                 case .toSeekAgent:
-                    guard GameScene.me!.selectedIndexes.count == 2 else { return }
-                    
-                    let indexesAsArray = Array(GameScene.me!.selectedIndexes)
+                    let selectedIndexes = GameScene.me!.getSelectedIndexes()
+                    guard selectedIndexes.count == 2 else { return }
+
+                    let indexesAsArray = Array(GameScene.me!.getSelectedIndexes())
                     let secondaryAgentIndex = indexesAsArray[1]
                     let theAgentToSeek = GameScene.me!.entities[secondaryAgentIndex].agent
                     goal = AFGoal(toSeekAgent: theAgentToSeek, weight: Float(weight!))

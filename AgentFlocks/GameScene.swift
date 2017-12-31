@@ -28,23 +28,14 @@ import GameplayKit
 class GameScene: SKScene, SKViewDelegate {
     static var me: GameScene?
 
-    var currentPosition: CGPoint?
-    var downNodeIndex: Int?
     var entities = [AFEntity]()
     var graphs = [String : GKGraph]()
-    var inputMode = InputMode.primary
-    var mouseState = MouseStates.up
-    var mouseWasDragged = false
-    var nodeToMouseOffset = CGPoint.zero
+    var inputMode = AFSelectionState_Primary.InputMode.primary
     var pathHandles = [SKShapeNode]()
-    var primarySelectionIndex: Int?
-    var selectedIndexes = Set<Int>()
-    var selectionState = SelectionStates.none
-    var touchedNodes = [SKNode]()
-    var upNodeIndex: Int?
 
     var lastUpdateTime : TimeInterval = 0
-    
+    var selectionDelegate: AFSelectionState!
+    var selectionDelegateStore: AFSelectionState!
     var selectionIndicator: SKShapeNode!
     var multiSelectionIndicator: SKShapeNode!
 
@@ -87,6 +78,9 @@ class GameScene: SKScene, SKViewDelegate {
         }
         
         for i in 0..<4 { drawShape(i) }
+        
+        selectionDelegateStore = AFSelectionState_Primary(gameScene: self)
+        selectionDelegate = selectionDelegateStore
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -109,217 +103,14 @@ class GameScene: SKScene, SKViewDelegate {
     }
 }
 
-// MARK: mouse and selection handling
-
 extension GameScene {
-    enum InputMode { case primary, drawPath }
-    enum MouseStates { case down, dragging, rightDown, rightUp, up }
-    enum SelectionStates { case none, one, multi }
-    
-    func deselect(_ ix: Int) {
-        entities[ix].agent.deselect()
-        selectedIndexes.remove(ix)
-        
-        if primarySelectionIndex == ix { primarySelectionIndex = nil }
-        AppDelegate.me!.removeAgentFrames()
-    }
-    
-    func deselectAll(newState: SelectionStates = .none) {
-        for entity in entities {
-            entity.agent.deselect()
-        }
-        
-        selectionState = newState
-        selectedIndexes.removeAll()
-        primarySelectionIndex = nil
-        AppDelegate.me!.removeAgentFrames()
-    }
-
-    func getAgent(at index: Int) -> AFAgent2D {
-        let entity = entities[index]
-        return entity.agent
-    }
-
-    func getNode(at point: CGPoint) -> Int? {
-        var nodeIndex: Int?
-        
-        for (index, entity) in entities.enumerated() {
-            if touchedNodes.contains(entity.agent.spriteContainer) {
-                nodeIndex = index
-                break
-            }
-        }
-        
-        return nodeIndex
-    }
-    
-    func getSelectedAgents() -> [GKAgent2D] {
-        var agents = [GKAgent2D]()
-
-        let indexes = getSelectedNodes()
-        for i in indexes {
-            agents.append(entities[i].agent)
-        }
-        
-        return agents
-    }
-    
-    func getSelectedNodes() -> Set<Int> {
-        return selectedIndexes
-    }
-
-    func getTouchedNodeIndex() -> Int? {
-        touchedNodes = nodes(at: currentPosition!)
-        
-        var ix: Int?
-        for (index, entity) in entities.enumerated() {
-            if touchedNodes.contains(entity.agent.spriteContainer) {
-                ix = index
-                break
-            }
-        }
-        
-        return ix
-    }
-    
-    override func mouseDown(with event: NSEvent) {
-        currentPosition = event.location(in: self)
-        downNodeIndex = getTouchedNodeIndex()
-        upNodeIndex = nil
-
-        mouseState = .down
-
-        if let index = downNodeIndex {
-            let p = entities[index].agent.spriteContainer.position
-            nodeToMouseOffset.x = p.x - currentPosition!.x
-            nodeToMouseOffset.y = p.y - currentPosition!.y
-        }
-    }
-    
-    override func mouseDragged(with event: NSEvent) {
-        currentPosition = event.location(in: self)
-        mouseState = .dragging
-
-        if let d = downNodeIndex, let c = currentPosition {
-            trackMouse(nodeIndex: d, atPoint: c)
-        }
-    }
-    
-    override func mouseUp(with event: NSEvent) {
-        currentPosition = event.location(in: self)
-
-        upNodeIndex = getTouchedNodeIndex()
-        
-        if inputMode == .primary {
-            if mouseState == .down {
-                updateSelectionState()
-            }
-        } else {
-            let node = SKShapeNode(circleOfRadius: 5)
-            node.position = currentPosition!
-            node.fillColor = .yellow
-            addChild(node)
-            pathHandles.append(node)
-        }
-
-        downNodeIndex = nil
-        mouseState = .up
-    }
-    
-    override func rightMouseDown(with event: NSEvent) {
-        currentPosition = event.location(in: self)
-        upNodeIndex = getTouchedNodeIndex()
-        downNodeIndex = nil
-        mouseState = .rightDown
-    }
-
-    override func rightMouseUp(with event: NSEvent) {
-        currentPosition = event.location(in: self)
-        upNodeIndex = getTouchedNodeIndex()
-        downNodeIndex = nil
-        mouseState = .rightUp
-    }
-    
-    func select(_ ix: Int) {
-        let primarySelection = (selectedIndexes.count == 0)
-        
-        entities[ix].agent.select(primary: primarySelection)
-        selectedIndexes.insert(ix)
-
-        if selectedIndexes.count == 1 {
-            primarySelectionIndex = ix
-            AppDelegate.me!.placeAgentFrames(agentIndex: ix)
-        }
-    }
-    
-    func toggleDrawMode() {
-        if inputMode == .primary {
-            inputMode = .drawPath
-        } else {
-            inputMode = .primary
-            
-            var points = [GKGraphNode2D]()
-            for handle in pathHandles {
-                points.append(GKGraphNode2D(point: vector_float2(Float(handle.position.x), Float(handle.position.y))))
-            }
-
-            points.append(GKGraphNode2D(point: vector_float2(Float(pathHandles[0].position.x), Float(pathHandles[0].position.y))))
-
-            let path = GKPath(graphNodes: points, radius: 1)
-            let pathGoal = AFGoal(toFollow: path, maxPredictionTime: 0.1, forward: true, weight: 100)
-            
-            let entity = AppDelegate.me!.sceneController.addNode(image: AppDelegate.me!.agents[0].image)
-            let b = AFBehavior(agent: entity.agent)
-
-            b.addGoal(pathGoal)
-            
-            let c = AFCompositeBehavior(agent: entity.agent)
-            
-            c.addBehavior(b)
-            
-            entity.agent.motivator = c
-            entity.agent.applyMotivator()
-        }
-    }
-    
-    func toggleSelection(_ ix: Int) {
-        if selectedIndexes.contains(ix) { deselect(ix) }
-        else { select(ix) }
-    }
-
-    func trackMouse(nodeIndex: Int, atPoint: CGPoint) {
-        let agent = getAgent(at: nodeIndex)
-        agent.position = vector_float2(Float(atPoint.x), Float(atPoint.y))
-        agent.position.x += Float(nodeToMouseOffset.x)
-        agent.position.y += Float(nodeToMouseOffset.y)
-        agent.update(deltaTime: 0)
-    }
-    
-    func updateSelectionState() {
-        if upNodeIndex == nil {
-            // User clicked on a blank area of the scene
-            deselectAll()
-        } else {
-            switch selectionState {
-            case .none:
-                select(upNodeIndex!)
-                selectionState = .one
-                
-            case .one:
-                let selectedIndex = selectedIndexes.first!
-                
-                deselect(selectedIndex)
-                selectionState = .none
-                
-                // If he clicked on a node other than the one that we just deselected
-                if upNodeIndex != selectedIndex {
-                    select(upNodeIndex!)
-                    selectionState = .one
-                }
-                
-            case .multi:
-                toggleSelection(upNodeIndex!)
-            }
-        }
-    }
+    func getSelectedAgents() -> [GKAgent2D] { return selectionDelegate.getSelectedAgents() }
+    func getSelectedIndexes() -> Set<Int> { return selectionDelegate.getSelectedIndexes() }
+    func getPrimarySelectionIndex() -> Int? { return selectionDelegate.getPrimarySelectionIndex() }
+    override func mouseDown(with event: NSEvent) { selectionDelegate.mouseDown(with: event) }
+    override func mouseDragged(with event: NSEvent) { selectionDelegate.mouseDragged(with: event) }
+    override func mouseUp(with event: NSEvent) { selectionDelegate.mouseUp(with: event) }
+    func newAgent(_ nodeIndex: Int) { selectionDelegate.newAgent(nodeIndex) }
+    func toggleMultiSelectMode() { selectionDelegate.toggleMultiSelectMode() }
 }
+

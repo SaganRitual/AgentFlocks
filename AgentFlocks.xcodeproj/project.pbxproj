@@ -62,6 +62,7 @@
 		74ECDF741F9CB5610096468F /* ItemEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 74ECDF721F9CB5610096468F /* ItemEditorView.xib */; };
 		74ECDF751F9CB5610096468F /* ItemEditorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74ECDF731F9CB5610096468F /* ItemEditorController.swift */; };
 		D4053F051FF5E3A60038953B /* notes.txt in Resources */ = {isa = PBXBuildFile; fileRef = D4053F041FF5E3A60038953B /* notes.txt */; };
+		D417BBB71FF95236001D9892 /* AFSelectionState_Primary.swift in Sources */ = {isa = PBXBuildFile; fileRef = D417BBB61FF95236001D9892 /* AFSelectionState_Primary.swift */; };
 		D442561A1FE7A19000FC454B /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = D44256191FE7A19000FC454B /* GameScene.sks */; };
 		D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561D1FE7A2F000FC454B /* SceneController.swift */; };
 		D44256201FE7A41800FC454B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561F1FE7A41800FC454B /* GameScene.swift */; };
@@ -131,6 +132,7 @@
 		74ECDF721F9CB5610096468F /* ItemEditorView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ItemEditorView.xib; sourceTree = "<group>"; };
 		74ECDF731F9CB5610096468F /* ItemEditorController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemEditorController.swift; sourceTree = "<group>"; };
 		D4053F041FF5E3A60038953B /* notes.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = notes.txt; sourceTree = "<group>"; };
+		D417BBB61FF95236001D9892 /* AFSelectionState_Primary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFSelectionState_Primary.swift; sourceTree = "<group>"; };
 		D44256191FE7A19000FC454B /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		D442561D1FE7A2F000FC454B /* SceneController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneController.swift; sourceTree = "<group>"; };
 		D442561F1FE7A41800FC454B /* GameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -276,6 +278,7 @@
 				D44256261FE804F000FC454B /* AFAgent2D.swift */,
 				D44256241FE8048100FC454B /* AFEntity.swift */,
 				D44256281FE808FF00FC454B /* AFMotivator.swift */,
+				D417BBB61FF95236001D9892 /* AFSelectionState_Primary.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -399,6 +402,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D417BBB71FF95236001D9892 /* AFSelectionState_Primary.swift in Sources */,
 				D44256201FE7A41800FC454B /* GameScene.swift in Sources */,
 				74ECDF751F9CB5610096468F /* ItemEditorController.swift in Sources */,
 				744D8F241F91E38300D4B048 /* AppDelegate.swift in Sources */,

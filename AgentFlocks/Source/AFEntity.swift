@@ -32,7 +32,7 @@ extension AFEntity: AgentGoalsDataSource {
         if let collection = item as? AFMotivatorCollection {
             return collection.howManyChildren()
         } else {
-            let selected = GameScene.me!.getSelectedNodes()
+            let selected = GameScene.me!.getSelectedIndexes()
             
             if selected.count > 0 {
                 let entity = GameScene.me!.entities[selected.first!]
@@ -57,7 +57,7 @@ extension AFEntity: AgentGoalsDataSource {
             // Child goal
             return collection.getChild(at: index)
         } else {
-            let selected = GameScene.me!.getSelectedNodes()
+            let selected = GameScene.me!.getSelectedIndexes()
             if selected.count > 0 {
                 let entity = GameScene.me!.entities[selected.first!]
                 return entity.agent.motivator!.getChild(at: index)

@@ -10,3 +10,4 @@
 - Cloneable everything
 - Zoom with pinch gesture
 - Paths library with scrollable list view
+- Show/hide radius

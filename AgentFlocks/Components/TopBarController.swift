@@ -152,9 +152,10 @@ class TopBarController: NSViewController {
 	}
 	
 	@IBAction private func placeFlockClicked(_ sender: NSButton) {
-        guard GameScene.me!.selectedIndexes.count == 1 else { return }
+        let selectedIndexes = GameScene.me!.getSelectedIndexes()
+        guard selectedIndexes.count == 1 else { return }
         
-        if let nodeIndex = GameScene.me!.selectedIndexes.first {
+        if let nodeIndex = selectedIndexes.first {
             let entity = GameScene.me!.entities[nodeIndex]
 
             var flock = [entity.agent]
