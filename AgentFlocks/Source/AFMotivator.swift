@@ -283,7 +283,7 @@ class AFGoal: AFMotivator {
     func toString() -> String {
         let m: [AFGoalType: String] = [
             .toAlignWith: "Align: %.0f", .toAvoidAgents: "Avoid agents: %.0f", .toAvoidObstacles: "Avoid obstacles: %.0f",
-            .toCohereWith: "Coher: %.0f", .toFleeAgent: "Flee: %.0f", .toFollow: "Follow path: %.0f",
+            .toCohereWith: "Cohere: %.0f", .toFleeAgent: "Flee: %.0f", .toFollow: "Follow path: %.0f",
             .toInterceptAgent: "Intercept: %.0f", .toReachTargetSpeed: "Speed: %.0f", .toSeekAgent: "Seek: %.0f",
             .toSeparateFrom: "Separate from: %.0f", .toStayOn: "Stay on path: %.0f", .toWander: "Wander: %.0f"
         ]

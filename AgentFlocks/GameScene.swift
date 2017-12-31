@@ -182,6 +182,12 @@ extension GameScene {
         upNodeIndex = nil
 
         mouseState = .down
+
+        if let index = downNodeIndex {
+            let p = entities[index].agent.spriteContainer.position
+            nodeToMouseOffset.x = p.x - currentPosition!.x
+            nodeToMouseOffset.y = p.y - currentPosition!.y
+        }
     }
     
     override func mouseDragged(with event: NSEvent) {
@@ -201,7 +207,7 @@ extension GameScene {
         if mouseState == .down {
             updateSelectionState()
         }
-        
+
         downNodeIndex = nil
         mouseState = .up
     }
@@ -221,7 +227,9 @@ extension GameScene {
     }
     
     func select(_ ix: Int) {
-        entities[ix].agent.select()
+        let primarySelection = (selectedIndexes.count == 0)
+        
+        entities[ix].agent.select(primary: primarySelection)
         selectedIndexes.insert(ix)
 
         if selectedIndexes.count == 1 {
@@ -239,6 +247,7 @@ extension GameScene {
         agent.position = vector_float2(Float(atPoint.x), Float(atPoint.y))
         agent.position.x += Float(nodeToMouseOffset.x)
         agent.position.y += Float(nodeToMouseOffset.y)
+        agent.update(deltaTime: 0)
     }
     
     func updateSelectionState() {

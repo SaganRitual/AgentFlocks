@@ -122,7 +122,12 @@ class AFAgent2D: GKAgent2D {
     }
     
     func deselect() { selected = false; selectionIndicator.alpha = 0 }
-    func select() { selected = true; selectionIndicator.alpha = 1 }
+    func select(primary: Bool = true) {
+        selected = true;
+        selectionIndicator.alpha = 1
+
+        selectionIndicator.fillColor = primary ? .blue : .green
+    }
     
     override func update(deltaTime seconds: TimeInterval) {
         super.update(deltaTime: seconds)
