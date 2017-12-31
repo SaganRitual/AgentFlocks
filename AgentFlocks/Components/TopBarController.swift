@@ -138,8 +138,7 @@ class TopBarController: NSViewController {
     // re-purposed as a recall button
 	@IBAction private func placeObstacleClicked(_ sender: NSButton) {
 //        self.showPopover(withTitle: "Obstacles", andImages: self.obstacleImages, forButton: sender)
-        for e in GameScene.selfScene!.entities {
-            let entity = e as! AFEntity
+        for entity in GameScene.me!.entities {
             let spriteContainer = entity.agent.spriteContainer
             
             entity.agent.position.x = 0
@@ -153,14 +152,16 @@ class TopBarController: NSViewController {
 	}
 	
 	@IBAction private func placeFlockClicked(_ sender: NSButton) {
-        if let nodeIndex = GameScene.selfScene!.uiInputState.selectedNodeIndex {
-            let entity = GameScene.selfScene!.entities[nodeIndex] as! AFEntity
+        guard GameScene.me!.selectedIndexes.count == 1 else { return }
+        
+        if let nodeIndex = GameScene.me!.selectedIndexes.first {
+            let entity = GameScene.me!.entities[nodeIndex]
 
             var flock = [entity.agent]
             for _ in 0 ..< 5 {
-                let spawn = AFEntity(scene: GameScene.selfScene!, image: agentImages[4], position: CGPoint.zero)
+                let spawn = AFEntity(scene: GameScene.me!, image: agentImages[4], position: CGPoint.zero)
                 flock.append(spawn.agent)
-                GameScene.selfScene!.entities.append(spawn)
+                GameScene.me!.entities.append(spawn)
 
                 let composite = entity.agent.motivator! as! AFCompositeBehavior
                 let behavior = composite.getChild(at: 0) as! AFBehavior
@@ -182,7 +183,7 @@ class TopBarController: NSViewController {
 	}
 	
 	@IBAction private func playClicked(_ sender: NSButton) {
-        GameScene.selfScene!.isPaused = !GameScene.selfScene!.isPaused
+        GameScene.me!.isPaused = !GameScene.me!.isPaused
 		self.play = !self.play
 		delegate?.topBar(self, statusChangedTo: self.play ? TopBarController.Status.Running : TopBarController.Status.Paused)
 	}

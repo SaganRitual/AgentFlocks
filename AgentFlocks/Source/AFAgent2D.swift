@@ -14,6 +14,8 @@ class AFAgent2D: GKAgent2D {
     let spriteContainer: SKNode
     let radiusIndicator: SKShapeNode
     let radiusIndicatorRadius: CGFloat = 100.0
+    var selected = false
+    let selectionIndicator: SKShapeNode
     let sprite: SKSpriteNode
     
     var walls = [GKPolygonObstacle]()
@@ -51,6 +53,12 @@ class AFAgent2D: GKAgent2D {
         radiusIndicator.zPosition = 1
         spriteContainer.addChild(radiusIndicator)
         
+        selectionIndicator = SKShapeNode(circleOfRadius: 15)
+        selectionIndicator.fillColor = .blue
+        selectionIndicator.zPosition = 2
+        selectionIndicator.alpha  = 0
+        spriteContainer.addChild(selectionIndicator)
+
         scene.addChild(spriteContainer)
         
         originalSize = sprite.size
@@ -64,17 +72,11 @@ class AFAgent2D: GKAgent2D {
         c.addBehavior(b)
         
         walls = SKNode.obstacles(fromNodeBounds: scene.corral)
-        let g = AFGoal(toAvoidObstacles: walls, maxPredictionTime: 2, weight: 1000)
+        let g = AFGoal(toAvoidObstacles: walls, maxPredictionTime: 2, weight: 1)
         
         b.addGoal(g)
 
         applyMotivator()
-        
-//        mass = 0.1
-//        maxAcceleration = 1000
-//        maxSpeed = 1000
-//        radius = 25
-//        scale = 1
     }
     
     deinit {
@@ -85,11 +87,21 @@ class AFAgent2D: GKAgent2D {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func deselect() { selected = false; selectionIndicator.alpha = 0 }
+    func select() { selected = true; selectionIndicator.alpha = 1 }
+    
     override func update(deltaTime seconds: TimeInterval) {
         super.update(deltaTime: seconds)
         spriteContainer.position = CGPoint(x: Double(position.x), y: Double(position.y))
         spriteContainer.zRotation = CGFloat(Double(rotation) - Double.pi / 2.0)
     }
+}
+
+// MARK: selection indicator show/hide
+
+extension AFAgent2D {
+    func setSelectionIndicator() { selectionIndicator.alpha = 1 }
+    func clearSelectionIndicator() { selectionIndicator.alpha = 0 }
 }
 
 extension AFAgent2D {
@@ -122,7 +134,7 @@ extension AFAgent2D {
         
         for mvBehavior in from.behaviors {
             let gkBehavior = createBehavior(from: mvBehavior)
-            composite.setWeight(100/*mvBehavior.weight*/, for: gkBehavior)
+            composite.setWeight(mvBehavior.weight, for: gkBehavior)
         }
         
         return composite

@@ -32,20 +32,15 @@ extension AFEntity: AgentGoalsDataSource {
         if let collection = item as? AFMotivatorCollection {
             return collection.howManyChildren()
         } else {
-            var reportThisIndex: Int?
-            if let check = GameScene.selfScene!.uiInputState.touchedNodeIndex {
-                reportThisIndex = check
-            } else if let check = GameScene.selfScene!.uiInputState.selectedNodeIndex {
-                reportThisIndex = check
-            }
+            let selected = GameScene.me!.getSelectedNodes()
             
-            if reportThisIndex != nil {
-                if let entity = GameScene.selfScene!.entities[reportThisIndex!] as? AFEntity {
-                    if let motivator = entity.agent.motivator as? AFBehavior {
-                        return motivator.howManyChildren()
-                    } else if let motivator = entity.agent.motivator as? AFCompositeBehavior {
-                        return motivator.howManyChildren()
-                    }
+            if selected.count > 0 {
+                let entity = GameScene.me!.entities[selected.first!]
+
+                if let motivator = entity.agent.motivator as? AFBehavior {
+                    return motivator.howManyChildren()
+                } else if let motivator = entity.agent.motivator as? AFCompositeBehavior {
+                    return motivator.howManyChildren()
                 }
             }
         }
@@ -62,15 +57,9 @@ extension AFEntity: AgentGoalsDataSource {
             // Child goal
             return collection.getChild(at: index)
         } else {
-            var agentIndex: Int?
-            if let check = GameScene.selfScene!.uiInputState.touchedNodeIndex {
-                agentIndex = check
-            } else if let check = GameScene.selfScene!.uiInputState.selectedNodeIndex {
-                agentIndex = check
-            }
-            
-            if agentIndex != nil {
-                let entity = GameScene.selfScene!.entities[agentIndex!] as! AFEntity
+            let selected = GameScene.me!.getSelectedNodes()
+            if selected.count > 0 {
+                let entity = GameScene.me!.entities[selected.first!]
                 return entity.agent.motivator!.getChild(at: index)
             }
         }

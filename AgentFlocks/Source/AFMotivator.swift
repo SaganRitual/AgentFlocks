@@ -76,7 +76,7 @@ class AFBehavior: AFMotivatorCollection {
     }
     
     func toString() -> String {
-        return "GKBehavior"
+        return String(format: "Behavior: %.0f", weight)
     }
 }
 
@@ -101,7 +101,6 @@ class AFCompositeBehavior: AFMotivatorCollection {
     func addBehavior(_ behavior: AFBehavior) {
         behaviors.append(behavior)
         weight = behavior.weight
-        if weight == 0 { weight = 100 } // Until I can retrieve the weight from the UI
         agent.applyMotivator()
     }
     
@@ -118,7 +117,7 @@ class AFCompositeBehavior: AFMotivatorCollection {
     }
     
     func toString() -> String {
-        return "GKCompositeBehavior"
+        return "You've found a bug"
     }
 }
 
@@ -212,8 +211,14 @@ class AFGoal: AFMotivator {
     }
     
     func toString() -> String {
-        return "GKGoal: \(goalType)"
+        let m: [AFGoalType: String] = [
+            .toAlignWith: "Align: %.0f", .toAvoidAgents: "Avoid agents: %.0f", .toAvoidObstacles: "Avoid obstacles: %.0f",
+            .toCohereWith: "Coher: %.0f", .toFleeAgent: "Flee: %.0f", .toFollow: "Follow path: %.0f",
+            .toInterceptAgent: "Intercept: %.0f", .toReachTargetSpeed: "Speed: %.0f", .toSeekAgent: "Seek: %.0f",
+            .toSeparateFrom: "Separate from: %.0f", .toStayOn: "Stay on path: %.0f", .toWander: "Wander: %.0f"
+        ]
+        
+        return String(format: m[goalType]!, weight)
     }
 }
-
 

@@ -26,11 +26,19 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene, SKViewDelegate {
-    static var selfScene: GameScene?
-    
-    var uiInputState: UIInputState!
-    var entities = [GKEntity]()
+    static var me: GameScene?
+
+    var currentPosition: CGPoint?
+    var downNodeIndex: Int?
+    var entities = [AFEntity]()
     var graphs = [String : GKGraph]()
+    var mouseState = MouseStates.up
+    var mouseWasDragged = false
+    var nodeToMouseOffset = CGPoint.zero
+    var selectedIndexes = Set<Int>()
+    var selectionState = SelectionStates.none
+    var touchedNodes = [SKNode]()
+    var upNodeIndex: Int?
 
     var lastUpdateTime : TimeInterval = 0
     
@@ -40,48 +48,9 @@ class GameScene: SKScene, SKViewDelegate {
     var corral = [SKShapeNode]()
     
     override func didMove(to view: SKView) {
-        GameScene.selfScene = self
-        uiInputState = UIInputState()
-    }
-    
-    // MARK: - Mouse handling
-    
-    override func mouseDown(with event: NSEvent) {
-        uiInputState.enter(UIInputState.MouseDown.self, event: event)
-    }
-    
-    func selectScenoid(new: Int?, old: Int?) {
-        if old != nil {
-            selectionIndicator.removeFromParent()
-            AppDelegate.myself.removeAgentFrames()
-        }
-        
-        if let toSelect = new, old != new {
-            let entity = self.entities[toSelect] as! AFEntity
-            entity.agent.spriteContainer.addChild(selectionIndicator)
-            selectionIndicator.zPosition = 2
-            
-            AppDelegate.myself.placeAgentFrames(agentIndex: toSelect)
-        }
-    }
-    
-    func multiSelectScenoid(_ index: Int) {
-        let entity = self.entities[index] as! AFEntity
-        let hackSprite = SKShapeNode(circleOfRadius: 15)
-        hackSprite.fillColor = .blue
-        entity.agent.spriteContainer.addChild(hackSprite)
-        hackSprite.zPosition = 2
+        GameScene.me = self
     }
 
-    override func mouseUp(with event: NSEvent) {
-        uiInputState.enter(UIInputState.MouseUp.self, event: event)
-    }
-    
-    override func mouseDragged(with event: NSEvent) {
-        uiInputState.enter(UIInputState.MouseDragging.self, event: event)
-        uiInputState.update(deltaTime: 0)
-    }
-    
     override func sceneDidLoad() {
         self.lastUpdateTime = 0
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
@@ -128,8 +97,6 @@ class GameScene: SKScene, SKViewDelegate {
         // Calculate time since last update
         let dt = currentTime - self.lastUpdateTime
         
-        uiInputState.update(deltaTime: dt)
-        
         // Update entities
         for entity in self.entities {
             entity.update(deltaTime: dt)
@@ -139,3 +106,158 @@ class GameScene: SKScene, SKViewDelegate {
     }
 }
 
+// MARK: mouse and selection handling
+
+extension GameScene {
+    enum MouseStates { case down, dragging, rightDown, rightUp, up }
+    enum SelectionStates { case none, one, multi }
+
+    func getAgent(at index: Int) -> AFAgent2D {
+        let entity = entities[index]
+        return entity.agent
+    }
+
+    func getNode(at point: CGPoint) -> Int? {
+        var nodeIndex: Int?
+        
+        for (index, entity) in entities.enumerated() {
+            if touchedNodes.contains(entity.agent.spriteContainer) {
+                nodeIndex = index
+                break
+            }
+        }
+        
+        return nodeIndex
+    }
+    
+    func getSelectedNodes() -> Set<Int> {
+        return selectedIndexes
+    }
+
+    func getTouchedNodeIndex() -> Int? {
+        touchedNodes = nodes(at: currentPosition!)
+        
+        var ix: Int?
+        for (index, entity) in entities.enumerated() {
+            if touchedNodes.contains(entity.agent.spriteContainer) {
+                ix = index
+                break
+            }
+        }
+        
+        return ix
+    }
+    
+    override func mouseDown(with event: NSEvent) {
+        currentPosition = event.location(in: self)
+        downNodeIndex = getTouchedNodeIndex()
+        upNodeIndex = nil
+
+        mouseState = .down
+    }
+    
+    override func mouseDragged(with event: NSEvent) {
+        currentPosition = event.location(in: self)
+        mouseState = .dragging
+
+        if let d = downNodeIndex, let c = currentPosition {
+            trackMouse(nodeIndex: d, atPoint: c)
+        }
+    }
+    
+    func deselect(_ ix: Int) {
+        entities[ix].agent.deselect()
+        selectedIndexes.remove(ix)
+        
+        AppDelegate.me!.removeAgentFrames()
+    }
+    
+    func deselectAll() {
+        for entity in entities {
+            entity.agent.deselect()
+        }
+        
+        selectionState = .none
+        selectedIndexes.removeAll()
+        AppDelegate.me!.removeAgentFrames()
+    }
+    
+    func select(_ ix: Int) {
+        entities[ix].agent.select()
+        selectedIndexes.insert(ix)
+        
+        AppDelegate.me!.placeAgentFrames(agentIndex: ix)
+    }
+    
+    func toggleSelection(_ ix: Int) {
+        if selectedIndexes.contains(ix) {
+            selectedIndexes.remove(ix)
+            entities[ix].agent.deselect()
+        } else {
+            selectedIndexes.insert(ix)
+            entities[ix].agent.select()
+        }
+    }
+    
+    override func mouseUp(with event: NSEvent) {
+        currentPosition = event.location(in: self)
+
+        upNodeIndex = getTouchedNodeIndex()
+        
+        if mouseState == .down {
+            updateSelectionState()
+        }
+        
+        downNodeIndex = nil
+        mouseState = .up
+    }
+    
+    override func rightMouseDown(with event: NSEvent) {
+        currentPosition = event.location(in: self)
+        upNodeIndex = getTouchedNodeIndex()
+        downNodeIndex = nil
+        mouseState = .rightDown
+    }
+
+    override func rightMouseUp(with event: NSEvent) {
+        currentPosition = event.location(in: self)
+        upNodeIndex = getTouchedNodeIndex()
+        downNodeIndex = nil
+        mouseState = .rightUp
+    }
+    
+    func trackMouse(nodeIndex: Int, atPoint: CGPoint) {
+        let agent = getAgent(at: nodeIndex)
+        agent.position = vector_float2(Float(atPoint.x), Float(atPoint.y))
+        agent.position.x += Float(nodeToMouseOffset.x)
+        agent.position.y += Float(nodeToMouseOffset.y)
+    }
+    
+    func updateSelectionState() {
+        if upNodeIndex == nil {
+            // User clicked on a blank area of the scene
+            deselectAll()
+        } else {
+            switch selectionState {
+            case .none:
+                select(upNodeIndex!)
+                selectionState = .one
+                
+            case .one:
+                let selectedIndex = selectedIndexes.first!
+                
+                deselect(selectedIndex)
+                selectionState = .none
+                
+                // If he clicked on a node other than the one that we just deselected
+                if upNodeIndex != selectedIndex {
+                    select(upNodeIndex!)
+                    selectionState = .one
+                }
+                
+            case .multi:
+                toggleSelection(upNodeIndex!)
+            }
+        }
+    }
+}

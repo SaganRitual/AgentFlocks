@@ -70,7 +70,6 @@
 		D44256291FE808FF00FC454B /* AFMotivator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256281FE808FF00FC454B /* AFMotivator.swift */; };
 		D442562B1FE80FA000FC454B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D442562A1FE80FA000FC454B /* README.md */; };
 		D47BC1F41FECCFE600B3CE6B /* Round2.txt in Resources */ = {isa = PBXBuildFile; fileRef = D47BC1F31FECCFE600B3CE6B /* Round2.txt */; };
-		D47D7BDD1FF4F89200DA508B /* UIInputState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47D7BDC1FF4F89200DA508B /* UIInputState.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -140,7 +139,6 @@
 		D44256281FE808FF00FC454B /* AFMotivator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFMotivator.swift; sourceTree = "<group>"; };
 		D442562A1FE80FA000FC454B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D47BC1F31FECCFE600B3CE6B /* Round2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Round2.txt; sourceTree = "<group>"; };
-		D47D7BDC1FF4F89200DA508B /* UIInputState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIInputState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,6 +176,7 @@
 				D44256191FE7A19000FC454B /* GameScene.sks */,
 				74ECDF701F9C8ED40096468F /* Objects.txt */,
 				D47BC1F31FECCFE600B3CE6B /* Round2.txt */,
+				D4053F041FF5E3A60038953B /* notes.txt */,
 				744D8F231F91E38300D4B048 /* AppDelegate.swift */,
 				744D8F311F91E40200D4B048 /* Components */,
 				74622E7F1F927D3900690C3C /* Resources */,
@@ -186,7 +185,6 @@
 				744D8F271F91E38300D4B048 /* MainMenu.xib */,
 				744D8F2A1F91E38300D4B048 /* Info.plist */,
 				744D8F2B1F91E38300D4B048 /* AgentFlocks.entitlements */,
-				D4053F041FF5E3A60038953B /* notes.txt */,
 			);
 			path = AgentFlocks;
 			sourceTree = "<group>";
@@ -278,7 +276,6 @@
 				D44256261FE804F000FC454B /* AFAgent2D.swift */,
 				D44256241FE8048100FC454B /* AFEntity.swift */,
 				D44256281FE808FF00FC454B /* AFMotivator.swift */,
-				D47D7BDC1FF4F89200DA508B /* UIInputState.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -408,7 +405,6 @@
 				D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */,
 				745F8F591F93A491006B08AF /* SliderController.swift in Sources */,
 				D44256251FE8048100FC454B /* AFEntity.swift in Sources */,
-				D47D7BDD1FF4F89200DA508B /* UIInputState.swift in Sources */,
 				74ECDF661F9B132C0096468F /* AgentGoalsController.swift in Sources */,
 				74622E7B1F9249CA00690C3C /* ImagesListController.swift in Sources */,
 				D44256291FE808FF00FC454B /* AFMotivator.swift in Sources */,

@@ -20,7 +20,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	let topBarControllerPadding:CGFloat = 10.0
 	
 	static let agentEditorController = AgentEditorController()
-    static var myself: AppDelegate!
+    static var me: AppDelegate!
 	let leftBarWidth:CGFloat = 250.0
 	
 	let sceneController = SceneController()
@@ -53,7 +53,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		UserDefaults.standard.set(true, forKey: "NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints")
 		#endif
         
-        AppDelegate.myself = self
+        AppDelegate.me = self
 		
         agents = loadAgents()
         obstacles = loadObstacles()
@@ -192,11 +192,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
 	func placeAgentFrames(agentIndex: Int) {
-		
-		// TODO: Set values of agentAttributesController based on agent with index 'agentIndex'
-        
-        let entity = GameScene.selfScene!.entities[agentIndex] as! AFEntity
-        let agent = entity.agent
+        let agent = GameScene.me!.entities[agentIndex].agent
         let ac = AppDelegate.agentEditorController.attributesController
         
         ac.mass = Double(agent.mass)
@@ -287,14 +283,17 @@ extension AppDelegate: TopBarDelegate {
     func topBar(_ controller: TopBarController, imageIndex: Int) {
         if 0..<agents.count ~= imageIndex {
             NSLog("Agent selected")
-            GameScene.selfScene!.uiInputState.selectedNodeIndex = GameScene.selfScene!.entities.count
 
             let entity = sceneController.addNode(image: agents[imageIndex].image)
             AppDelegate.agentEditorController.goalsController.dataSource = entity
             AppDelegate.agentEditorController.attributesController.delegate = entity.agent
 
-            let nodeIndex = GameScene.selfScene!.uiInputState.selectedNodeIndex!
-            GameScene.selfScene!.selectScenoid(new: nodeIndex, old: nil)
+            let nodeIndex = GameScene.me!.entities.count - 1
+            // Hacker! this func shouldn't be fiddling with GameScene's internals
+            // Don't be lazy. Write a function
+            GameScene.me!.select(nodeIndex)
+            GameScene.me!.selectionState = .one
+            
             self.placeAgentFrames(agentIndex: nodeIndex)
         }
     }
@@ -308,7 +307,7 @@ extension AppDelegate: TopBarDelegate {
         switch newStatus {
         case .Running:
             NSLog("START")
-            GameScene.selfScene!.lastUpdateTime = 0
+            GameScene.me!.lastUpdateTime = 0
         case .Paused:
             NSLog("STOP")
         }
@@ -326,13 +325,7 @@ extension AppDelegate: TopBarDelegate {
 extension AppDelegate: AgentGoalsDelegate {
 
     func agentGoalsPlayClicked(_ agentGoalsController: AgentGoalsController) {
-        GameScene.selfScene!.uiInputState.multiSelect = !GameScene.selfScene!.uiInputState.multiSelect
-        
-        // If we've just now turned off multi-select
-        if !GameScene.selfScene!.uiInputState.multiSelect {
-            GameScene.selfScene!.uiInputState.clearSelectionIndicators()
-            GameScene.selfScene!.uiInputState.multiSelectedNodeIndexes = nil
-        }
+        print("We're not doing anything with the play button on the agent goals controller")
     }
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemDoubleClicked item: Any, inRect rect: NSRect) {
@@ -493,9 +486,10 @@ extension AppDelegate: ItemEditorDelegate {
     }
 	
 	func itemEditorApplyPressed(_ controller: ItemEditorController) {
-		guard let agentIndex = GameScene.selfScene!.uiInputState.selectedNodeIndex else { return }
+        guard GameScene.me!.selectedIndexes.count > 0 else { return }
 
-        let entity = GameScene.selfScene!.entities[agentIndex] as! AFEntity
+        let agentIndex = GameScene.me!.selectedIndexes.first!
+        let entity = GameScene.me!.entities[agentIndex]
         let selected = AgentGoalsController.selfController.selectedIndex()
         let parentOfNewMotivator = getParentForNewMotivator(rootMotivator: entity.agent.motivator!, selectionIndex: selected)
         
@@ -518,6 +512,8 @@ extension AppDelegate: ItemEditorDelegate {
                 // Everyone has a weight
                 goal.weight = Float(weight!)
             }
+            
+            entity.agent.applyMotivator()
         } else {
             // Add new goal or behavior
             if let type = controller.newItemType {
@@ -544,7 +540,7 @@ extension AppDelegate: ItemEditorDelegate {
                 }
             } else {
                 let behavior = AFBehavior(agent: entity.agent)
-                behavior.weight = 100 //Float(weight!)
+                behavior.weight = Float(weight!)
                 (parentOfNewMotivator as! AFCompositeBehavior).addBehavior(behavior)
             }
 		}
