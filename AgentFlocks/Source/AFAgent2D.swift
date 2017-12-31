@@ -8,6 +8,16 @@
 
 import GameplayKit
 
+extension Date {
+    var millisecondsSince1970:Int {
+        return Int((self.timeIntervalSince1970 * 1000.0).rounded())
+    }
+    
+    init(milliseconds:Int) {
+        self = Date(timeIntervalSince1970: TimeInterval(milliseconds / 1000))
+    }
+}
+
 class AFAgent2D: GKAgent2D {
     var motivator: AFMotivatorCollection?
     let originalSize: CGSize
@@ -19,7 +29,9 @@ class AFAgent2D: GKAgent2D {
     let sprite: SKSpriteNode
     
     var walls = [GKPolygonObstacle]()
-    
+
+    static var once: Bool = false
+
     var scale: Float {
         willSet(newValue) {
             let v = CGFloat(newValue)
@@ -76,6 +88,28 @@ class AFAgent2D: GKAgent2D {
         
         b.addGoal(g)
 
+        let points = [
+            GKGraphNode2D(point: vector_float2(0, 800)),
+            GKGraphNode2D(point: vector_float2(800, 800)),
+            GKGraphNode2D(point: vector_float2(800, 0)),
+            GKGraphNode2D(point: vector_float2(0, 0))
+        ]
+        
+        let path = GKPath(graphNodes: points, radius: 1)
+        let date = Date()
+        let tf = (date.millisecondsSince1970 & 1) == 1
+        let pathGoal = AFGoal(toFollow: path, maxPredictionTime: 1, forward: tf, weight: 100)
+        
+        if !AFAgent2D.once {
+            b.addGoal(pathGoal)
+            AFAgent2D.once = true
+        }
+        
+        mass = 0.01
+        maxSpeed = 1000
+        maxAcceleration = 1000
+        radius = 50
+
         applyMotivator()
     }
     
@@ -105,6 +139,14 @@ extension AFAgent2D {
 }
 
 extension AFAgent2D {
+    func addGoal(_ goal: AFGoal) {
+        let b = AFBehavior(agent: self)
+        (motivator! as! AFCompositeBehavior).addBehavior(b)
+        
+        b.addGoal(goal)
+        applyMotivator()
+    }
+
     func applyMotivator() {
         guard motivator != nil else { return }
 

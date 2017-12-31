@@ -163,21 +163,23 @@ class TopBarController: NSViewController {
                 flock.append(spawn.agent)
                 GameScene.me!.entities.append(spawn)
 
-                let composite = entity.agent.motivator! as! AFCompositeBehavior
-                let behavior = composite.getChild(at: 0) as! AFBehavior
-                for i in 0 ..< behavior.howManyChildren() {
-                    let tComposite = spawn.agent.motivator! as! AFCompositeBehavior
-                    let tBehavior = tComposite.getChild(at: 0) as! AFBehavior
-                    
-                    tBehavior.addGoal(behavior.getChild(at: i) as! AFGoal)
-                }
+//                let composite = entity.agent.motivator! as! AFCompositeBehavior
+//                let behavior = composite.getChild(at: 0) as! AFBehavior
+//                for i in 0 ..< behavior.howManyChildren() {
+//                    let tComposite = spawn.agent.motivator! as! AFCompositeBehavior
+//                    let tBehavior = tComposite.getChild(at: 0) as! AFBehavior
+//                    
+//                    tBehavior.addGoal(behavior.getChild(at: i) as! AFGoal)
+//                }
             }
             
-            let goal = AFGoal(toAlignWith: flock, maxDistance: 1, maxAngle: 180, weight: 10)
-            for agent in flock {
-                let composite = agent.motivator! as! AFCompositeBehavior
-                let behavior = composite.getChild(at: 0) as! AFBehavior
-                behavior.addGoal(goal)
+            let goal = AFGoal(toInterceptAgent: flock[0], maxPredictionTime: 0.1, weight: 200)
+            for (index, agent) in flock.enumerated() {
+                if index == 1 {
+                    let composite = agent.motivator! as! AFCompositeBehavior
+                    let behavior = composite.getChild(at: 0) as! AFBehavior
+                    behavior.addGoal(goal)
+                }
             }
         }
 	}

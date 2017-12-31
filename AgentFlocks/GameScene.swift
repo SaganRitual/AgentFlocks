@@ -111,6 +111,23 @@ class GameScene: SKScene, SKViewDelegate {
 extension GameScene {
     enum MouseStates { case down, dragging, rightDown, rightUp, up }
     enum SelectionStates { case none, one, multi }
+    
+    func deselect(_ ix: Int) {
+        entities[ix].agent.deselect()
+        selectedIndexes.remove(ix)
+        
+        AppDelegate.me!.removeAgentFrames()
+    }
+    
+    func deselectAll(newState: SelectionStates = .none) {
+        for entity in entities {
+            entity.agent.deselect()
+        }
+        
+        selectionState = newState
+        selectedIndexes.removeAll()
+        AppDelegate.me!.removeAgentFrames()
+    }
 
     func getAgent(at index: Int) -> AFAgent2D {
         let entity = entities[index]
@@ -128,6 +145,17 @@ extension GameScene {
         }
         
         return nodeIndex
+    }
+    
+    func getSelectedAgents() -> [GKAgent2D] {
+        var agents = [GKAgent2D]()
+
+        let indexes = getSelectedNodes()
+        for i in indexes {
+            agents.append(entities[i].agent)
+        }
+        
+        return agents
     }
     
     func getSelectedNodes() -> Set<Int> {
@@ -165,40 +193,6 @@ extension GameScene {
         }
     }
     
-    func deselect(_ ix: Int) {
-        entities[ix].agent.deselect()
-        selectedIndexes.remove(ix)
-        
-        AppDelegate.me!.removeAgentFrames()
-    }
-    
-    func deselectAll() {
-        for entity in entities {
-            entity.agent.deselect()
-        }
-        
-        selectionState = .none
-        selectedIndexes.removeAll()
-        AppDelegate.me!.removeAgentFrames()
-    }
-    
-    func select(_ ix: Int) {
-        entities[ix].agent.select()
-        selectedIndexes.insert(ix)
-        
-        AppDelegate.me!.placeAgentFrames(agentIndex: ix)
-    }
-    
-    func toggleSelection(_ ix: Int) {
-        if selectedIndexes.contains(ix) {
-            selectedIndexes.remove(ix)
-            entities[ix].agent.deselect()
-        } else {
-            selectedIndexes.insert(ix)
-            entities[ix].agent.select()
-        }
-    }
-    
     override func mouseUp(with event: NSEvent) {
         currentPosition = event.location(in: self)
 
@@ -226,6 +220,20 @@ extension GameScene {
         mouseState = .rightUp
     }
     
+    func select(_ ix: Int) {
+        entities[ix].agent.select()
+        selectedIndexes.insert(ix)
+
+        if selectedIndexes.count == 1 {
+            AppDelegate.me!.placeAgentFrames(agentIndex: ix)
+        }
+    }
+    
+    func toggleSelection(_ ix: Int) {
+        if selectedIndexes.contains(ix) { deselect(ix) }
+        else { select(ix) }
+    }
+
     func trackMouse(nodeIndex: Int, atPoint: CGPoint) {
         let agent = getAgent(at: nodeIndex)
         agent.position = vector_float2(Float(atPoint.x), Float(atPoint.y))

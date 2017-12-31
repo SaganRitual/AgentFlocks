@@ -269,8 +269,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 extension AppDelegate: TopBarDelegate {
     
     func topBarDrawPath(_ controller: TopBarController) {
-        NSLog("Draw path...")
-        self.removeAgentFrames()
+        NSLog("Repurposing for multi-select, for the time being...")
+        if GameScene.me!.selectionState == .multi {
+            // We were already in multi-mode. Now just turn it off.
+            GameScene.me!.selectionState = .none
+        } else {
+            GameScene.me!.deselectAll(newState: .multi)
+        }
     }
     func topBar(_ controller: TopBarController, obstacleSelected index: Int) {
         if 0..<obstacles.count ~= index {
@@ -291,6 +296,7 @@ extension AppDelegate: TopBarDelegate {
             let nodeIndex = GameScene.me!.entities.count - 1
             // Hacker! this func shouldn't be fiddling with GameScene's internals
             // Don't be lazy. Write a function
+            GameScene.me!.deselectAll()
             GameScene.me!.select(nodeIndex)
             GameScene.me!.selectionState = .one
             
@@ -359,7 +365,8 @@ extension AppDelegate: AgentGoalsDelegate {
             case .toReachTargetSpeed: fallthrough
             case .toWander:           attributes = ["Speed", "Weight"]
 
-            case .toFollow:         fallthrough
+            case .toFollow:         attributes = ["Time", "Forward" , "Weight"]
+                
             case .toStayOn:         fallthrough
             case .toAvoidAgents:    fallthrough
             case .toAvoidObstacles: fallthrough
@@ -410,24 +417,22 @@ extension AppDelegate: AgentGoalsDelegate {
     
         var attributeList = ["Weight"]
         switch type {
-        case .toAlignWith:
-            attributeList = ["Distance", "Angle"] + attributeList
-        case .toAvoidAgents:
-            fallthrough
-        case .toAvoidObstacles:
-            attributeList = ["<Avoid>"] + attributeList
-        case .toCohereWith:
-            attributeList = ["<Cohere>"] + attributeList
-        case .toFleeAgent: break
-        case .toFollow: break
-        case .toInterceptAgent: break
+        case .toAlignWith:      fallthrough
+        case .toCohereWith:     fallthrough
+        case .toSeparateFrom:   attributeList = ["Distance", "Angle"] + attributeList
+
+        case .toAvoidAgents:    fallthrough
+        case .toAvoidObstacles: fallthrough
+        case .toInterceptAgent: attributeList = ["Time"] + attributeList
+
+        case .toFleeAgent: fallthrough
         case .toSeekAgent: break
-        case .toSeparateFrom: break
-        case .toStayOn: break
-        case .toReachTargetSpeed:
-            attributeList = ["Speed"] + attributeList
-        case .toWander:
-            attributeList = ["Speed"] + attributeList
+
+        case .toFollow: attributeList = ["Time", "Forward"] + attributeList
+        case .toStayOn: attributeList = ["Time"] + attributeList
+
+        case .toReachTargetSpeed: fallthrough
+        case .toWander:           attributeList = ["Speed"] + attributeList
         }
     
         let editorController = ItemEditorController(withAttributes: attributeList)
@@ -498,7 +503,7 @@ extension AppDelegate: ItemEditorDelegate {
         let speed = controller.value(ofSlider: "Speed")
         let time = controller.value(ofSlider: "Time")
         let weight = controller.value(ofSlider: "Weight")
-
+        
         if let motivator = controller.editedItem as? AFMotivator {
             // Edit existing
             if let behavior = motivator as? AFBehavior {
@@ -518,21 +523,48 @@ extension AppDelegate: ItemEditorDelegate {
             // Add new goal or behavior
             if let type = controller.newItemType {
                 var goal: AFGoal?
+                let group = GameScene.me!.getSelectedAgents()
 
                 switch type {
-                case .toAlignWith: break;
-//                    goal = AFGoal(toAlignWith: hackGroup, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: Float(weight!))
+                case .toAlignWith:
+                    for agent in group {
+                        goal = AFGoal(toAlignWith: group, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: Float(weight!))
+                        (agent as! AFAgent2D).addGoal(goal!)
+                    }
+                    
+                    goal = nil
+                    
                 case .toAvoidObstacles:  break;
-                case .toAvoidAgents:  break;
-                case .toCohereWith: break;
+                case .toAvoidAgents:
+                    goal = AFGoal(toAvoidAgents: group, maxPredictionTime: time!, weight: Float(weight!))
+                    for agent in group {
+                        (agent as! AFAgent2D).addGoal(goal!)
+                    }
+                    
+                    goal = nil
+                case .toCohereWith:
+                    goal = AFGoal(toCohereWith: group, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: Float(weight!))
+                    for agent in group {
+                        (agent as! AFAgent2D).addGoal(goal!)
+                    }
+                    
+                    goal = nil
                 case .toFleeAgent:   break
                 case .toFollow:   break
                 case .toInterceptAgent:   break
                 case .toSeekAgent:   break
-                case .toSeparateFrom:   break
+                case .toSeparateFrom:
+                    goal = AFGoal(toSeparateFrom: group, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: Float(weight!))
+                    for agent in group {
+                        (agent as! AFAgent2D).addGoal(goal!)
+                    }
+                    
+                    goal = nil
                 case .toStayOn:   break
-                case .toReachTargetSpeed: goal = AFGoal(toReachTargetSpeed: Float(speed!), weight: Float(weight!))
-                case .toWander: goal = AFGoal(toWander: Float(speed!), weight: Float(weight!))
+                case .toReachTargetSpeed:
+                    goal = AFGoal(toReachTargetSpeed: Float(speed!), weight: Float(weight!))
+                case .toWander:
+                    goal = AFGoal(toWander: Float(speed!), weight: Float(weight!))
                 }
 
                 if goal != nil {
