@@ -9,3 +9,4 @@
 - Remember eventually that composite behaviors can also have goals on them
 - Cloneable everything
 - Zoom with pinch gesture
+- Paths library with scrollable list view

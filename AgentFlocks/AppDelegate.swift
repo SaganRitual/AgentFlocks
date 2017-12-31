@@ -269,8 +269,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 extension AppDelegate: TopBarDelegate {
     
     func topBarDrawPath(_ controller: TopBarController) {
-        NSLog("Draw path")
-        GameScene.me!.toggleDrawMode()
+//        NSLog("Draw path")
+        
+//        GameScene.me!.toggleDrawMode()
+
+        NSLog("Repurposing for multi-select, for the time being...")
+        if GameScene.me!.selectionState == .multi {
+            // We were already in multi-mode. Now just turn it off.
+            GameScene.me!.selectionState = .none
+        } else {
+            GameScene.me!.deselectAll(newState: .multi)
+        }
     }
     
     func topBar(_ controller: TopBarController, obstacleSelected index: Int) {
@@ -489,10 +498,10 @@ extension AppDelegate: ItemEditorDelegate {
 	func itemEditorApplyPressed(_ controller: ItemEditorController) {
         guard GameScene.me!.selectedIndexes.count > 0 else { return }
 
-        let agentIndex = GameScene.me!.selectedIndexes.first!
+        let agentIndex = GameScene.me!.primarySelectionIndex!// GameScene.me!.selectedIndexes.first!
         let entity = GameScene.me!.entities[agentIndex]
-        let selected = AgentGoalsController.selfController.selectedIndex()
-        let parentOfNewMotivator = getParentForNewMotivator(rootMotivator: entity.agent.motivator!, selectionIndex: selected)
+//        let selected = AgentGoalsController.selfController.selectedIndex()
+        let parentOfNewMotivator = getParentForNewMotivator(rootMotivator: entity.agent.motivator!, selectionIndex: agentIndex)
         
         let angle = controller.value(ofSlider: "Angle")
         let distance = controller.value(ofSlider: "Distance")
@@ -531,6 +540,7 @@ extension AppDelegate: ItemEditorDelegate {
                     goal = nil
                     
                 case .toAvoidObstacles:  break;
+                    
                 case .toAvoidAgents:
                     goal = AFGoal(toAvoidAgents: group, maxPredictionTime: time!, weight: Float(weight!))
                     for agent in group {
@@ -538,6 +548,7 @@ extension AppDelegate: ItemEditorDelegate {
                     }
                     
                     goal = nil
+                    
                 case .toCohereWith:
                     goal = AFGoal(toCohereWith: group, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: Float(weight!))
                     for agent in group {
@@ -545,10 +556,35 @@ extension AppDelegate: ItemEditorDelegate {
                     }
                     
                     goal = nil
-                case .toFleeAgent:   break
+                    
+                case .toFleeAgent:
+                    guard GameScene.me!.selectedIndexes.count == 2 else { return }
+                    
+                    var si = GameScene.me!.selectedIndexes.union(Set<Int>())
+                    si.remove(GameScene.me!.primarySelectionIndex!)
+                    
+                    let secondarySelectionIndex = si.first!
+                    let theAgentToFlee = GameScene.me!.entities[secondarySelectionIndex].agent
+                    goal = AFGoal(toFleeAgent: theAgentToFlee, weight: Float(weight!))
+                    
                 case .toFollow:   break
-                case .toInterceptAgent:   break
-                case .toSeekAgent:   break
+                    
+                case .toInterceptAgent:
+                    guard GameScene.me!.selectedIndexes.count == 2 else { return }
+                    
+                    let indexesAsArray = Array(GameScene.me!.selectedIndexes)
+                    let secondaryAgentIndex = indexesAsArray[1]
+                    let theAgentToIntercept = GameScene.me!.entities[secondaryAgentIndex].agent
+                    goal = AFGoal(toInterceptAgent: theAgentToIntercept, maxPredictionTime: time!, weight: Float(weight!))
+
+                case .toSeekAgent:
+                    guard GameScene.me!.selectedIndexes.count == 2 else { return }
+                    
+                    let indexesAsArray = Array(GameScene.me!.selectedIndexes)
+                    let secondaryAgentIndex = indexesAsArray[1]
+                    let theAgentToSeek = GameScene.me!.entities[secondaryAgentIndex].agent
+                    goal = AFGoal(toSeekAgent: theAgentToSeek, weight: Float(weight!))
+
                 case .toSeparateFrom:
                     goal = AFGoal(toSeparateFrom: group, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: Float(weight!))
                     for agent in group {
@@ -556,9 +592,12 @@ extension AppDelegate: ItemEditorDelegate {
                     }
                     
                     goal = nil
+
                 case .toStayOn:   break
+                    
                 case .toReachTargetSpeed:
                     goal = AFGoal(toReachTargetSpeed: Float(speed!), weight: Float(weight!))
+                    
                 case .toWander:
                     goal = AFGoal(toWander: Float(speed!), weight: Float(weight!))
                 }

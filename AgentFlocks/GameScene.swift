@@ -37,6 +37,7 @@ class GameScene: SKScene, SKViewDelegate {
     var mouseWasDragged = false
     var nodeToMouseOffset = CGPoint.zero
     var pathHandles = [SKShapeNode]()
+    var primarySelectionIndex: Int?
     var selectedIndexes = Set<Int>()
     var selectionState = SelectionStates.none
     var touchedNodes = [SKNode]()
@@ -119,6 +120,7 @@ extension GameScene {
         entities[ix].agent.deselect()
         selectedIndexes.remove(ix)
         
+        if primarySelectionIndex == ix { primarySelectionIndex = nil }
         AppDelegate.me!.removeAgentFrames()
     }
     
@@ -129,6 +131,7 @@ extension GameScene {
         
         selectionState = newState
         selectedIndexes.removeAll()
+        primarySelectionIndex = nil
         AppDelegate.me!.removeAgentFrames()
     }
 
@@ -244,6 +247,7 @@ extension GameScene {
         selectedIndexes.insert(ix)
 
         if selectedIndexes.count == 1 {
+            primarySelectionIndex = ix
             AppDelegate.me!.placeAgentFrames(agentIndex: ix)
         }
     }

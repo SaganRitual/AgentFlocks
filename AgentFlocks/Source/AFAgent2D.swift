@@ -62,7 +62,7 @@ class AFAgent2D: GKAgent2D {
         radiusIndicator = SKShapeNode(circleOfRadius: 25)
         radiusIndicator.fillColor = .red
         radiusIndicator.alpha = 0.5
-        radiusIndicator.zPosition = 1
+        radiusIndicator.zPosition = -1
         spriteContainer.addChild(radiusIndicator)
         
         selectionIndicator = SKShapeNode(circleOfRadius: 15)
