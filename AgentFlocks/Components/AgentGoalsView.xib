@@ -145,10 +145,16 @@
                         <action selector="addGoalItemSelected:" target="-2" id="eg4-xz-PjG"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Avoid" tag="4" id="EO4-oG-iNa">
+                <menuItem title="Avoid agents" tag="4" id="EO4-oG-iNa">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="addGoalItemSelected:" target="-2" id="q9H-wu-vHW"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Avoid obstacles" id="JlJ-22-rd5">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="addGoalItemSelected:" target="-2" id="jff-As-nwe"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Cohere" tag="3" id="Kdp-D0-eDK">
@@ -206,7 +212,7 @@
                     </connections>
                 </menuItem>
             </items>
-            <point key="canvasLocation" x="-8" y="541.5"/>
+            <point key="canvasLocation" x="-8" y="551.5"/>
         </menu>
     </objects>
     <resources>

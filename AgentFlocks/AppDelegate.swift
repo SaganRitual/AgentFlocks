@@ -546,7 +546,15 @@ extension AppDelegate: ItemEditorDelegate {
                     
                     goal = nil
                     
-                case .toAvoidObstacles:  break;
+                case .toAvoidObstacles:
+                    var points = [float2]()
+                    for vertex in GameScene.me!.selectionDelegateDraw.vertices {
+                        let point = float2(Float(vertex.x), Float(vertex.y))
+                        points.append(point)
+                    }
+                    
+                    let outline = GKPolygonObstacle(points: points)
+                    goal = AFGoal(toAvoidObstacles: [outline], maxPredictionTime: time!, weight: Float(weight!))
                     
                 case .toAvoidAgents:
                     goal = AFGoal(toAvoidAgents: group, maxPredictionTime: time!, weight: Float(weight!))
