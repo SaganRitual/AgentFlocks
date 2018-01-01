@@ -25,6 +25,7 @@
 import GameplayKit
 
 protocol AFSelectionState {
+    func deselectAll(newState: AFSelectionState_Primary.SelectionStates)
     func getPrimarySelectionIndex() -> Int?
     func getSelectedAgents() -> [GKAgent2D]
     func getSelectedIndexes() -> Set<Int>
@@ -32,6 +33,7 @@ protocol AFSelectionState {
     func mouseDragged(with event: NSEvent)
     func mouseUp(with event: NSEvent)
     func newAgent(_ nodeIndex: Int)
+    func select(_ nodeIndex: Int)
     func toggleMultiSelectMode()
 }
 

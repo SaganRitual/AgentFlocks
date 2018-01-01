@@ -24,8 +24,8 @@ class AFAgent2D: GKAgent2D {
     let radiusIndicator: SKShapeNode
     let radiusIndicatorRadius: CGFloat = 100.0
     var selected = false
-    let selectionIndicator: SKShapeNode
-    var showingRadius = true
+    var selectionIndicator: SKNode?
+    var showingRadius = false
     let sprite: SKSpriteNode
     let spriteContainer: SKNode
 
@@ -62,16 +62,10 @@ class AFAgent2D: GKAgent2D {
         // 0.5 is the default radius for agents
         radiusIndicator = SKShapeNode(circleOfRadius: 25)
         radiusIndicator.fillColor = .red
-        radiusIndicator.alpha = 0.5
+        radiusIndicator.alpha = 0
         radiusIndicator.zPosition = -1
         spriteContainer.addChild(radiusIndicator)
         
-        selectionIndicator = SKShapeNode(circleOfRadius: 15)
-        selectionIndicator.fillColor = .blue
-        selectionIndicator.zPosition = 2
-        selectionIndicator.alpha  = 0
-        spriteContainer.addChild(selectionIndicator)
-
         scene.addChild(spriteContainer)
         
         originalSize = sprite.size
@@ -88,23 +82,6 @@ class AFAgent2D: GKAgent2D {
         let g = AFGoal(toAvoidObstacles: walls, maxPredictionTime: 2, weight: 1)
         
         b.addGoal(g)
-
-//        let points = [
-//            GKGraphNode2D(point: vector_float2(0, 800)),
-//            GKGraphNode2D(point: vector_float2(800, 800)),
-//            GKGraphNode2D(point: vector_float2(800, 0)),
-//            GKGraphNode2D(point: vector_float2(0, 0))
-//        ]
-//        
-//        let path = GKPath(graphNodes: points, radius: 1)
-//        let date = Date()
-//        let tf = (date.millisecondsSince1970 & 1) == 1
-//        let pathGoal = AFGoal(toFollow: path, maxPredictionTime: 1, forward: tf, weight: 100)
-//        
-//        if !AFAgent2D.once {
-//            b.addGoal(pathGoal)
-//            AFAgent2D.once = true
-//        }
         
         mass = 0.01
         maxSpeed = 1000
@@ -122,12 +99,17 @@ class AFAgent2D: GKAgent2D {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func deselect() { selected = false; selectionIndicator.alpha = 0 }
+    func deselect() {
+        selected = false;
+        clearSelectionIndicator()
+    }
+    
     func select(primary: Bool = true) {
-        selected = true;
-        selectionIndicator.alpha = 1
-
-        selectionIndicator.fillColor = primary ? .blue : .green
+        if let si = selectionIndicator {
+            si.removeFromParent()
+        }
+        
+        setSelectionIndicator(primary: primary)
     }
     
     func showRadius(_ show: Bool) {
@@ -144,8 +126,45 @@ class AFAgent2D: GKAgent2D {
 // MARK: selection indicator show/hide
 
 extension AFAgent2D {
-    func setSelectionIndicator() { selectionIndicator.alpha = 1 }
-    func clearSelectionIndicator() { selectionIndicator.alpha = 0 }
+    func setSelectionIndicator(primary: Bool = true) {
+        selectionIndicator = SKNode()
+        
+        var firstPosition: CGPoint!
+        var lastPosition: CGPoint!
+        let path = CGMutablePath()
+        for theta in stride(from: 0, to: Float.pi * 2, by: Float.pi / 8) {
+            let x = 40 * Double(cos(theta)); let y = 40 * Double(sin(theta))
+            
+            if firstPosition == nil {
+                firstPosition = CGPoint(x: x, y: y)
+            }
+
+            if theta > 0 {
+                path.addLine(to: CGPoint(x: x, y: y))
+                let line = SKShapeNode(path: path)
+                selectionIndicator!.addChild(line)
+                line.strokeColor = primary ? .yellow : .green
+            }
+            
+            lastPosition = CGPoint(x: x, y: y)
+            path.move(to: lastPosition)
+        }
+        
+        path.addLine(to: firstPosition)
+        let line = SKShapeNode(path: path)
+        selectionIndicator!.addChild(line)
+        line.strokeColor = primary ? .yellow : .green
+        
+        selected = true;
+        spriteContainer.addChild(selectionIndicator!)
+    }
+
+    func clearSelectionIndicator() {
+        if let si = selectionIndicator {
+            si.removeFromParent()
+            selectionIndicator = nil
+        }
+    }
 }
 
 extension AFAgent2D {

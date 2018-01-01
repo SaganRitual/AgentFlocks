@@ -302,6 +302,8 @@ extension AppDelegate: TopBarDelegate {
     func topBar(_ controller: TopBarController, imageIndex: Int) {
         if 0..<agents.count ~= imageIndex {
             NSLog("Agent selected")
+            
+            GameScene.me!.selectionDelegate.deselectAll(newState: .none)
 
             let entity = sceneController.addNode(image: agents[imageIndex].image)
             AppDelegate.agentEditorController.goalsController.dataSource = entity
@@ -310,6 +312,7 @@ extension AppDelegate: TopBarDelegate {
             let nodeIndex = GameScene.me!.entities.count - 1
             
             GameScene.me!.newAgent(nodeIndex)
+//            GameScene.me!.selectionDelegate.select(nodeIndex)
             
             self.placeAgentFrames(agentIndex: nodeIndex)
         }
