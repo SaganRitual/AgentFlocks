@@ -287,6 +287,10 @@ extension AppDelegate: TopBarDelegate {
         GameScene.me!.selectionDelegatePrimary.selectionState = .none
     }
     
+    func clearPathClicked(_ controller: TopBarController) {
+        GameScene.me!.selectionDelegateDraw.vertices.removeAll()
+    }
+    
     func topBar(_ controller: TopBarController, obstacleSelected index: Int) {
         if 0..<obstacles.count ~= index {
             NSLog("Obstacle selected")
@@ -372,7 +376,7 @@ extension AppDelegate: AgentGoalsDelegate {
             case .toReachTargetSpeed: fallthrough
             case .toWander:           attributes = ["Speed", "Weight"]
 
-            case .toFollow:         attributes = ["Time", "Forward" , "Weight"]
+            case .toFollow:         attributes = ["Time", "Weight"]
                 
             case .toStayOn:         fallthrough
             case .toAvoidAgents:    fallthrough
@@ -435,7 +439,7 @@ extension AppDelegate: AgentGoalsDelegate {
         case .toFleeAgent: fallthrough
         case .toSeekAgent: break
 
-        case .toFollow: attributeList = ["Time", "Forward"] + attributeList
+        case .toFollow: attributeList = ["Time"] + attributeList
         case .toStayOn: attributeList = ["Time"] + attributeList
 
         case .toReachTargetSpeed: fallthrough
@@ -607,8 +611,16 @@ extension AppDelegate: ItemEditorDelegate {
                     
                     goal = nil
 
-                case .toStayOn:   break
+                case .toStayOn:
+                    var points = [GKGraphNode2D]()
+                    for vertex in GameScene.me!.selectionDelegateDraw.vertices {
+                        let point = GKGraphNode2D(point: vector_float2(Float(vertex.x), Float(vertex.y)))
+                        points.append(point)
+                    }
                     
+                    let path = GKPath(graphNodes: points, radius: 1)
+                    goal = AFGoal(toStayOn: path, maxPredictionTime: 1, weight: 100)
+
                 case .toReachTargetSpeed:
                     goal = AFGoal(toReachTargetSpeed: Float(speed!), weight: Float(weight!))
                     
