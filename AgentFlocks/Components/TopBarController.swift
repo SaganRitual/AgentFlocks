@@ -155,6 +155,10 @@ class TopBarController: NSViewController {
         delegate?.clearPathClicked(self)
     }
     
+    @IBAction func radiiClicked(_ sender: NSButton) {
+        GameScene.me!.toggleRadii()
+    }
+    
     // re-purposed as a recall button
 	@IBAction private func placeObstacleClicked(_ sender: NSButton) {
 //        self.showPopover(withTitle: "Obstacles", andImages: self.obstacleImages, forButton: sender)

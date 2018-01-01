@@ -21,13 +21,14 @@ extension Date {
 class AFAgent2D: GKAgent2D {
     var motivator: AFMotivatorCollection?
     let originalSize: CGSize
-    let spriteContainer: SKNode
     let radiusIndicator: SKShapeNode
     let radiusIndicatorRadius: CGFloat = 100.0
     var selected = false
     let selectionIndicator: SKShapeNode
+    var showingRadius = true
     let sprite: SKSpriteNode
-    
+    let spriteContainer: SKNode
+
     var walls = [GKPolygonObstacle]()
 
     static var once: Bool = false
@@ -127,6 +128,10 @@ class AFAgent2D: GKAgent2D {
         selectionIndicator.alpha = 1
 
         selectionIndicator.fillColor = primary ? .blue : .green
+    }
+    
+    func showRadius(_ show: Bool) {
+        radiusIndicator.alpha = (show ? 0.5 : 0)
     }
     
     override func update(deltaTime seconds: TimeInterval) {

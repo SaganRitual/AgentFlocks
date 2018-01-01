@@ -590,8 +590,8 @@ extension AppDelegate: ItemEditorDelegate {
                         points.append(point)
                     }
                     
-                    let path = GKPath(graphNodes: points, radius: 1)
-                    goal = AFGoal(toFollow: path, maxPredictionTime: 1, forward: true, weight: 100)
+                    let path = GKPath(graphNodes: points, radius: 100)
+                    goal = AFGoal(toFollow: path, maxPredictionTime: Float(time!), forward: true, weight: Float(weight!))
                     
                 case .toInterceptAgent:
                     let selectedIndexes = GameScene.me!.getSelectedIndexes()

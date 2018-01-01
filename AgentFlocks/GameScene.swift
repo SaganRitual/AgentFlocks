@@ -85,6 +85,13 @@ class GameScene: SKScene, SKViewDelegate {
         selectionDelegate = selectionDelegateDraw
     }
     
+    func toggleRadii() {
+        let state = entities[0].agent.showingRadius
+        for entity in entities {
+            entity.agent.showRadius(!state)
+        }
+    }
+    
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
         
