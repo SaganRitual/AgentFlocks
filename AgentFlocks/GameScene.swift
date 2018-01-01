@@ -35,7 +35,8 @@ class GameScene: SKScene, SKViewDelegate {
 
     var lastUpdateTime : TimeInterval = 0
     var selectionDelegate: AFSelectionState!
-    var selectionDelegateStore: AFSelectionState!
+    var selectionDelegateDraw: AFSelectionState_Draw!
+    var selectionDelegatePrimary: AFSelectionState_Primary!
     var selectionIndicator: SKShapeNode!
     var multiSelectionIndicator: SKShapeNode!
 
@@ -79,8 +80,9 @@ class GameScene: SKScene, SKViewDelegate {
         
         for i in 0..<4 { drawShape(i) }
         
-        selectionDelegateStore = AFSelectionState_Primary(gameScene: self)
-        selectionDelegate = selectionDelegateStore
+        selectionDelegatePrimary = AFSelectionState_Primary(gameScene: self)
+        selectionDelegateDraw = AFSelectionState_Draw(gameScene: self)
+        selectionDelegate = selectionDelegateDraw
     }
     
     override func update(_ currentTime: TimeInterval) {

@@ -10,6 +10,9 @@ import Cocoa
 
 protocol TopBarDelegate {
 	func topBarDrawPath(_ controller: TopBarController)
+    func pInputClicked(_ controller: TopBarController)
+    func multiSelectClicked(_ controller: TopBarController)
+    func singleSelectClicked(_ controller: TopBarController)
 	func topBar(_ controller: TopBarController, obstacleSelected index:Int)
 	func topBar(_ controller: TopBarController, imageIndex:Int)
 	func topBar(_ controller: TopBarController, flockSelected flock:TopBarController.FlockType)
@@ -135,6 +138,18 @@ class TopBarController: NSViewController {
 		delegate?.topBarDrawPath(self)
 	}
 	
+    @IBAction func pInputClicked(_ sender: NSButton) {
+        delegate?.pInputClicked(self)
+    }
+    
+    @IBAction func multiSelectClicked(_ sender: NSButton) {
+        delegate?.multiSelectClicked(self)
+    }
+    
+    @IBAction func singleSelectClicked(_ sender: NSButton) {
+        delegate?.singleSelectClicked(self)
+    }
+    
     // re-purposed as a recall button
 	@IBAction private func placeObstacleClicked(_ sender: NSButton) {
 //        self.showPopover(withTitle: "Obstacles", andImages: self.obstacleImages, forButton: sender)

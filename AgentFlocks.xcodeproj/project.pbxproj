@@ -70,6 +70,7 @@
 		D44256271FE804F000FC454B /* AFAgent2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256261FE804F000FC454B /* AFAgent2D.swift */; };
 		D44256291FE808FF00FC454B /* AFMotivator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256281FE808FF00FC454B /* AFMotivator.swift */; };
 		D442562B1FE80FA000FC454B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D442562A1FE80FA000FC454B /* README.md */; };
+		D46AFB591FF968DA001CD4ED /* AFSelectionState_Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46AFB581FF968DA001CD4ED /* AFSelectionState_Draw.swift */; };
 		D47BC1F41FECCFE600B3CE6B /* Round2.txt in Resources */ = {isa = PBXBuildFile; fileRef = D47BC1F31FECCFE600B3CE6B /* Round2.txt */; };
 /* End PBXBuildFile section */
 
@@ -140,6 +141,7 @@
 		D44256261FE804F000FC454B /* AFAgent2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFAgent2D.swift; sourceTree = "<group>"; };
 		D44256281FE808FF00FC454B /* AFMotivator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFMotivator.swift; sourceTree = "<group>"; };
 		D442562A1FE80FA000FC454B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		D46AFB581FF968DA001CD4ED /* AFSelectionState_Draw.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSelectionState_Draw.swift; sourceTree = "<group>"; };
 		D47BC1F31FECCFE600B3CE6B /* Round2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Round2.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -278,6 +280,7 @@
 				D44256261FE804F000FC454B /* AFAgent2D.swift */,
 				D44256241FE8048100FC454B /* AFEntity.swift */,
 				D44256281FE808FF00FC454B /* AFMotivator.swift */,
+				D46AFB581FF968DA001CD4ED /* AFSelectionState_Draw.swift */,
 				D417BBB61FF95236001D9892 /* AFSelectionState_Primary.swift */,
 			);
 			path = Source;
@@ -410,6 +413,7 @@
 				745F8F591F93A491006B08AF /* SliderController.swift in Sources */,
 				D44256251FE8048100FC454B /* AFEntity.swift in Sources */,
 				74ECDF661F9B132C0096468F /* AgentGoalsController.swift in Sources */,
+				D46AFB591FF968DA001CD4ED /* AFSelectionState_Draw.swift in Sources */,
 				74622E7B1F9249CA00690C3C /* ImagesListController.swift in Sources */,
 				D44256291FE808FF00FC454B /* AFMotivator.swift in Sources */,
 				74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */,

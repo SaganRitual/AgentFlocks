@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import GameplayKit
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -269,11 +270,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 extension AppDelegate: TopBarDelegate {
     
     func topBarDrawPath(_ controller: TopBarController) {
-//        NSLog("Draw path")
-
-        
-        NSLog("Repurposing for multi-select, for the time being...")
-        GameScene.me!.toggleMultiSelectMode()
+        GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegateDraw
+    }
+    
+    func pInputClicked(_ controller: TopBarController) {
+        GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
+    }
+    
+    func multiSelectClicked(_ controller: TopBarController) {
+        GameScene.me!.selectionDelegatePrimary.deselectAll()
+        GameScene.me!.selectionDelegatePrimary.selectionState = .multi
+    }
+    
+    func singleSelectClicked(_ controller: TopBarController) {
+        GameScene.me!.selectionDelegatePrimary.deselectAll()
+        GameScene.me!.selectionDelegatePrimary.selectionState = .none
     }
     
     func topBar(_ controller: TopBarController, obstacleSelected index: Int) {
@@ -560,7 +571,15 @@ extension AppDelegate: ItemEditorDelegate {
                     let theAgentToFlee = GameScene.me!.entities[secondarySelectionIndex].agent
                     goal = AFGoal(toFleeAgent: theAgentToFlee, weight: Float(weight!))
                     
-                case .toFollow:   break
+                case .toFollow:
+                    var points = [GKGraphNode2D]()
+                    for vertex in GameScene.me!.selectionDelegateDraw.vertices {
+                        let point = GKGraphNode2D(point: vector_float2(Float(vertex.x), Float(vertex.y)))
+                        points.append(point)
+                    }
+                    
+                    let path = GKPath(graphNodes: points, radius: 1)
+                    goal = AFGoal(toFollow: path, maxPredictionTime: 1, forward: true, weight: 100)
                     
                 case .toInterceptAgent:
                     let selectedIndexes = GameScene.me!.getSelectedIndexes()
