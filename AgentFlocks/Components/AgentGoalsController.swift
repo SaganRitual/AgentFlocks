@@ -29,7 +29,7 @@ protocol AgentGoalsDataSource {
 }
 
 class AgentGoalsController: NSViewController {
-    static var selfController: AgentGoalsController!
+    static var me: AgentGoalsController!
 	
     typealias GoalType = AFGoalType
 
@@ -59,7 +59,7 @@ class AgentGoalsController: NSViewController {
 	override func viewDidLoad() {
         super.viewDidLoad()
         
-        AgentGoalsController.selfController = self
+        AgentGoalsController.me = self
 		
 		playButton.image = NSImage(named: NSImage.Name(rawValue: "Play"))
 		

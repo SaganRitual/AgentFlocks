@@ -497,7 +497,7 @@ extension AppDelegate: ItemEditorDelegate {
             currentIndex += 1 + parentForNewMotivator.howManyChildren()
             collectionIndex += 1
         }
-        
+
         return parentForNewMotivator
     }
 	
@@ -507,8 +507,8 @@ extension AppDelegate: ItemEditorDelegate {
 
         let agentIndex = GameScene.me!.getPrimarySelectionIndex()!
         let entity = GameScene.me!.entities[agentIndex]
-//        let selected = AgentGoalsController.selfController.selectedIndex()
-        let parentOfNewMotivator = getParentForNewMotivator(rootMotivator: entity.agent.motivator!, selectionIndex: agentIndex)
+        let selected = AgentGoalsController.me!.selectedIndex()
+        let parentOfNewMotivator = getParentForNewMotivator(rootMotivator: entity.agent.motivator!, selectionIndex: selected)
         
         let angle = controller.value(ofSlider: "Angle")
         let distance = controller.value(ofSlider: "Distance")
