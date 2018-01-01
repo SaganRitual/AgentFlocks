@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import Foundation
 import GameplayKit
 
 @NSApplicationMain
@@ -150,8 +151,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
 		return true
 	}
-	
-	// MARK: - Custom methods
+    
+    // MARK: - Custom methods
+    func loadJSON(_ controller: TopBarController) {
+        let url = Bundle.main.url(forResource: "setup", withExtension: "json")!
+        let jsonData = try! Data(contentsOf: url)
+        let decoder = JSONDecoder()
+        let entities = try! decoder.decode(AFEntities.self, from: jsonData)
+   }
 	
 	func loadAgents() -> [AgentType] {
 		
@@ -160,6 +167,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 			do {
 				let fileNames = try FileManager.default.contentsOfDirectory(atPath: resourcesPath)
 				for fileName in fileNames.sorted() where fileName.hasPrefix("Agent") {
+                    print("\(resourcesPath)/\(fileName)")
 					if let image = NSImage(contentsOfFile: "\(resourcesPath)/\(fileName)") {
 						let agent:AgentType = (name:fileName, image:image, behaviors:[]);
 						foundAgents.append(agent)

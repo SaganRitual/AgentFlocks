@@ -8,6 +8,15 @@
 
 import GameplayKit
 
+class AFEntities: Codable {
+    let entities: [AFEntity_]
+}
+
+class AFEntity_: Codable {
+    let agent: AFAgent2D_
+    let name: String
+}
+
 class AFEntity: GKEntity {
     let agent: AFAgent2D
     

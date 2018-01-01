@@ -9,7 +9,7 @@
 
 import GameplayKit
 
-enum AFMotivatorType {
+enum AFMotivatorType: String, Codable {
     case behavior, compositeBehavior, goal
 }
 
@@ -28,6 +28,13 @@ protocol AFMotivatorCollection: AFMotivator {
     func getChild(at: Int) -> AFMotivator
     func hasChildren() -> Bool
     func howManyChildren() -> Int
+}
+
+class AFBehavior_: Codable {
+    var enabled = true
+    var goals: [AFGoal_]
+//    let motivatorType: AFMotivatorType
+//    var weight: Float
 }
 
 class AFBehavior: AFMotivatorCollection {
@@ -80,6 +87,18 @@ class AFBehavior: AFMotivatorCollection {
     }
 }
 
+class AFCompositeBehavior_: Codable {
+    var enabled = true
+    var behaviors: [AFBehavior_]
+//    let motivatorType: AFMotivatorType
+//
+//    var angle: Float = 0
+//    var distance: Float = 0
+//    var predictionTime: Float = 0
+//    var speed: Float = 0
+//    var weight: Float = 0
+}
+
 class AFCompositeBehavior: AFMotivatorCollection {
     let agent: AFAgent2D
     var enabled = true
@@ -121,9 +140,21 @@ class AFCompositeBehavior: AFMotivatorCollection {
     }
 }
 
-enum AFGoalType {
+enum AFGoalType: String, Codable {
     case toAlignWith, toAvoidAgents, toAvoidObstacles, toCohereWith, toFleeAgent, toFollow,
             toInterceptAgent, toReachTargetSpeed, toSeekAgent, toSeparateFrom, toStayOn, toWander
+}
+
+class AFGoal_: Codable {
+    var enabled = true
+    let goalType: AFGoalType
+    let motivatorType: AFMotivatorType
+    var weight: Float
+
+    var angle: Float = 0
+    var distance: Float = 0
+//    var predictionTime: Float = 0
+//    var speed: Float = 0
 }
 
 class AFGoal: AFMotivator {
@@ -141,6 +172,8 @@ class AFGoal: AFMotivator {
             newGoal(newValue: newValue)
         }
     }
+    
+//    required init(from decoder: Decoder) throws {}
     
     var obstacles = [GKObstacle]()
     
