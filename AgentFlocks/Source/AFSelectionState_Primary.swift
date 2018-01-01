@@ -60,14 +60,18 @@ class AFSelectionState_Primary: AFSelectionState {
     enum SelectionStates { case none, one, multi }
     
     func deselect(_ ix: Int) {
+        print("State deselect \(ix)")
         gameScene.entities[ix].agent.deselect()
         selectedIndexes.remove(ix)
         
-        if primarySelectionIndex == ix { primarySelectionIndex = nil }
-        AppDelegate.me!.removeAgentFrames()
+        if primarySelectionIndex == ix {
+            primarySelectionIndex = nil
+            AppDelegate.me!.removeAgentFrames()
+        }
     }
     
     func deselectAll(newState: SelectionStates = .none) {
+        print("State deselectAll()")
         for entity in gameScene.entities {
             entity.agent.deselect()
         }
@@ -186,6 +190,7 @@ class AFSelectionState_Primary: AFSelectionState {
     }
     
     func select(_ ix: Int) {
+        print("State select \(ix)")
         let primarySelection = (selectedIndexes.count == 0)
         
         gameScene.entities[ix].agent.select(primary: primarySelection)

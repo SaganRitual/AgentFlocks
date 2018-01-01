@@ -143,7 +143,7 @@ extension AFAgent2D {
                 path.addLine(to: CGPoint(x: x, y: y))
                 let line = SKShapeNode(path: path)
                 selectionIndicator!.addChild(line)
-                line.strokeColor = primary ? .yellow : .green
+                line.strokeColor = primary ? .green : .yellow
             }
             
             lastPosition = CGPoint(x: x, y: y)
@@ -153,7 +153,7 @@ extension AFAgent2D {
         path.addLine(to: firstPosition)
         let line = SKShapeNode(path: path)
         selectionIndicator!.addChild(line)
-        line.strokeColor = primary ? .yellow : .green
+        line.strokeColor = primary ? .green : .yellow
         
         selected = true;
         spriteContainer.addChild(selectionIndicator!)
