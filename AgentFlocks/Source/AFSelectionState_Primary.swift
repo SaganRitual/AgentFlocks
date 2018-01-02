@@ -25,7 +25,7 @@
 import GameplayKit
 
 protocol AFSelectionState {
-    func deselectAll(newState: AFSelectionState_Primary.SelectionStates)
+    func deselectAll()
     func getPrimarySelectionIndex() -> Int?
     func getSelectedAgents() -> [GKAgent2D]
     func getSelectedIndexes() -> Set<Int>
@@ -33,8 +33,7 @@ protocol AFSelectionState {
     func mouseDragged(with event: NSEvent)
     func mouseUp(with event: NSEvent)
     func newAgent(_ nodeIndex: Int)
-    func select(_ nodeIndex: Int)
-    func toggleMultiSelectMode()
+    func select(_ nodeIndex: Int, primary: Bool)
 }
 
 class AFSelectionState_Primary: AFSelectionState {
@@ -47,7 +46,6 @@ class AFSelectionState_Primary: AFSelectionState {
     var nodeToMouseOffset = CGPoint.zero
     var primarySelectionIndex: Int?
     var selectedIndexes = Set<Int>()
-    var selectionState = SelectionStates.none
     var touchedNodes = [SKNode]()
     var upNodeIndex: Int?
 
@@ -57,26 +55,32 @@ class AFSelectionState_Primary: AFSelectionState {
 
     enum InputMode { case primary, drawPath }
     enum MouseStates { case down, dragging, rightDown, rightUp, up }
-    enum SelectionStates { case none, one, multi }
     
     func deselect(_ ix: Int) {
         print("State deselect \(ix)")
         gameScene.entities[ix].agent.deselect()
         selectedIndexes.remove(ix)
         
+        // We just now deselected the primary. If there's anyone
+        // else selected, they need to be made the primary.
         if primarySelectionIndex == ix {
-            primarySelectionIndex = nil
-            AppDelegate.me!.removeAgentFrames()
+            if selectedIndexes.count > 0 {
+                let newix = selectedIndexes.first!
+                select(newix, primary: true)
+                AppDelegate.me!.placeAgentFrames(agentIndex: newix)
+            } else {
+                primarySelectionIndex = nil
+                AppDelegate.me!.removeAgentFrames()
+            }
         }
     }
     
-    func deselectAll(newState: SelectionStates = .none) {
+    func deselectAll() {
         print("State deselectAll()")
         for entity in gameScene.entities {
             entity.agent.deselect()
         }
         
-        selectionState = newState
         selectedIndexes.removeAll()
         primarySelectionIndex = nil
         AppDelegate.me!.removeAgentFrames()
@@ -158,11 +162,32 @@ class AFSelectionState_Primary: AFSelectionState {
     
     func mouseUp(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
-        
-        upNodeIndex = getTouchedNodeIndex()
 
-        if mouseState == .down {
-            updateSelectionState()
+        upNodeIndex = getTouchedNodeIndex()
+        
+        if upNodeIndex == nil {
+            // Mouse up in the black; always a full deselect
+            deselectAll()
+        } else {
+            if event.modifierFlags.contains(.command) {
+                if mouseState == .dragging {
+                    fatalError()    // Who knows?
+                } else {
+                    // cmd+click on a node
+                    toggleSelection(upNodeIndex!)
+                }
+            } else {
+                if mouseState == .down {
+                    // plain click on a node
+                    let selectAfter = !selectedIndexes.contains(upNodeIndex!)
+
+                    deselectAll()
+                    
+                    if selectAfter {
+                        select(upNodeIndex!, primary: true)
+                    }
+                }
+            }
         }
         
         downNodeIndex = nil
@@ -171,8 +196,7 @@ class AFSelectionState_Primary: AFSelectionState {
     
     func newAgent(_ nodeIndex: Int) {
         deselectAll()
-        select(nodeIndex)
-        selectionState = .one
+        select(nodeIndex, primary: true)
     }
     
     func rightMouseDown(with event: NSEvent) {
@@ -189,11 +213,9 @@ class AFSelectionState_Primary: AFSelectionState {
         mouseState = .rightUp
     }
     
-    func select(_ ix: Int) {
+    func select(_ ix: Int, primary: Bool) {
         print("State select \(ix)")
-        let primarySelection = (selectedIndexes.count == 0)
-        
-        gameScene.entities[ix].agent.select(primary: primarySelection)
+        gameScene.entities[ix].agent.select(primary: primary)
         selectedIndexes.insert(ix)
         
         if selectedIndexes.count == 1 {
@@ -204,16 +226,7 @@ class AFSelectionState_Primary: AFSelectionState {
     
     func toggleSelection(_ ix: Int) {
         if selectedIndexes.contains(ix) { deselect(ix) }
-        else { select(ix) }
-    }
-    
-    func toggleMultiSelectMode() {
-        if selectionState == .multi {
-            // We were already in multi-mode. Now just turn it off.
-            selectionState = .none
-        } else {
-            deselectAll(newState: .multi)
-        }
+        else { select(ix, primary: primarySelectionIndex == nil) }
     }
     
     func trackMouse(nodeIndex: Int, atPoint: CGPoint) {
@@ -222,33 +235,5 @@ class AFSelectionState_Primary: AFSelectionState {
         agent.position.x += Float(nodeToMouseOffset.x)
         agent.position.y += Float(nodeToMouseOffset.y)
         agent.update(deltaTime: 0)
-    }
-    
-    func updateSelectionState() {
-        if upNodeIndex == nil {
-            // User clicked on a blank area of the scene
-            deselectAll()
-        } else {
-            switch selectionState {
-            case .none:
-                select(upNodeIndex!)
-                selectionState = .one
-                
-            case .one:
-                let selectedIndex = selectedIndexes.first!
-                
-                deselect(selectedIndex)
-                selectionState = .none
-                
-                // If he clicked on a node other than the one that we just deselected
-                if upNodeIndex != selectedIndex {
-                    select(upNodeIndex!)
-                    selectionState = .one
-                }
-                
-            case .multi:
-                toggleSelection(upNodeIndex!)
-            }
-        }
     }
 }

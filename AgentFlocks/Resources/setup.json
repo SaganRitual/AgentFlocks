@@ -26,7 +26,7 @@
                   "enabled": true,
                   "goalType": "toWander",
                   "motivatorType": "goal",
-                  "weight": 100,
+                  "weight": 1,
                   "angle": 3.14,
                   "distance": 100,
                   "predictionTime": 1,
@@ -37,7 +37,83 @@
           ]
         },
       }
-    }
+    },
+    {
+      "name": "47cc5264-f168-4e69-940a-864c898afeea",
+      
+      "agent": {
+        "imageFile": "Agent02.png",
+        "position": [0, 0],
+        "mass": 0.01,
+        "maxSpeed": 1000,
+        "maxAcceleration": 1000,
+        "radius": 25,
+        
+        "motivator": {
+          "enabled": true,
+          "motivatorType": "compositeBehavior",
+
+          "behaviors": [
+            {
+              "enabled": true,
+              "motivatorType": "behavior",
+              "weight": 1,
+              
+              "goals": [
+                {
+                  "enabled": true,
+                  "goalType": "toWander",
+                  "motivatorType": "goal",
+                  "weight": 1,
+                  "angle": 3.14,
+                  "distance": 100,
+                  "predictionTime": 1,
+                  "speed": 1000
+                }
+              ]
+            }
+          ]
+        },
+      }
+    },
+    {
+      "name": "47cc5264-f168-4e69-940a-864c898afeea",
+      
+      "agent": {
+        "imageFile": "Agent03.png",
+        "position": [0, 300],
+        "mass": 0.01,
+        "maxSpeed": 1000,
+        "maxAcceleration": 1000,
+        "radius": 25,
+        
+        "motivator": {
+          "enabled": true,
+          "motivatorType": "compositeBehavior",
+
+          "behaviors": [
+            {
+              "enabled": true,
+              "motivatorType": "behavior",
+              "weight": 1,
+              
+              "goals": [
+                {
+                  "enabled": true,
+                  "goalType": "toWander",
+                  "motivatorType": "goal",
+                  "weight": 1,
+                  "angle": 3.14,
+                  "distance": 100,
+                  "predictionTime": 1,
+                  "speed": 1000
+                }
+              ]
+            }
+          ]
+        },
+      }
+    },
   ],
   
   "paths": [

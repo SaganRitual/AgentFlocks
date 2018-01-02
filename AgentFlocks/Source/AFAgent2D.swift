@@ -176,7 +176,7 @@ extension AFAgent2D {
         var firstPosition: CGPoint!
         var lastPosition: CGPoint!
         let path = CGMutablePath()
-        for theta in stride(from: 0, to: Float.pi * 2, by: Float.pi / 8) {
+        for theta in stride(from: 0, to: Float.pi * 2, by: Float.pi / 16) {
             let x = 40 * Double(cos(theta)); let y = 40 * Double(sin(theta))
             
             if firstPosition == nil {

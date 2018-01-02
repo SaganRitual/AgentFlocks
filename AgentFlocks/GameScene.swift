@@ -120,6 +120,5 @@ extension GameScene {
     override func mouseDragged(with event: NSEvent) { selectionDelegate.mouseDragged(with: event) }
     override func mouseUp(with event: NSEvent) { selectionDelegate.mouseUp(with: event) }
     func newAgent(_ nodeIndex: Int) { selectionDelegate.newAgent(nodeIndex) }
-    func toggleMultiSelectMode() { selectionDelegate.toggleMultiSelectMode() }
 }
 

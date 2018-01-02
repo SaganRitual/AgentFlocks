@@ -32,7 +32,6 @@ class AFSelectionState_Draw: AFSelectionState {
     var nodeToMouseOffset = CGPoint.zero
     var primarySelectionIndex: Int?
     var selectedIndexes = Set<Int>()
-    var selectionState = AFSelectionState_Primary.SelectionStates.none
     var touchedNodes = [SKNode]()
     var upNodeIndex: Int?
     var vertices = [CGPoint]()
@@ -113,18 +112,17 @@ class AFSelectionState_Draw: AFSelectionState {
         mouseState = .up
     }
 
-    func deselectAll(newState: AFSelectionState_Primary.SelectionStates = .none) {
+    func deselectAll() {
         for entity in gameScene.entities {
             entity.agent.deselect()
         }
         
-        selectionState = newState
         selectedIndexes.removeAll()
         primarySelectionIndex = nil
         AppDelegate.me!.removeAgentFrames()
     }
 
     func newAgent(_ nodeIndex: Int) {}
-    func select(_ nodeIndex: Int) {}
+    func select(_ nodeIndex: Int, primary: Bool) {}
     func toggleMultiSelectMode() {}
 }

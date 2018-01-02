@@ -311,13 +311,11 @@ extension AppDelegate: TopBarDelegate {
     }
     
     func multiSelectClicked(_ controller: TopBarController) {
-        GameScene.me!.selectionDelegatePrimary.deselectAll()
-        GameScene.me!.selectionDelegatePrimary.selectionState = .multi
+        // No more multi-select mode; repurpose the button
     }
     
     func singleSelectClicked(_ controller: TopBarController) {
-        GameScene.me!.selectionDelegatePrimary.deselectAll()
-        GameScene.me!.selectionDelegatePrimary.selectionState = .none
+        // No more multi-select mode; repurpose the button
     }
     
     func clearPathClicked(_ controller: TopBarController) {
@@ -336,7 +334,7 @@ extension AppDelegate: TopBarDelegate {
         if 0..<agents.count ~= imageIndex {
             NSLog("Agent selected")
             
-            GameScene.me!.selectionDelegate.deselectAll(newState: .none)
+            GameScene.me!.selectionDelegate.deselectAll()
 
             let entity = sceneController.addNode(image: agents[imageIndex].image)
             AppDelegate.agentEditorController.goalsController.dataSource = entity
