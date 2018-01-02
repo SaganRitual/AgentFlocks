@@ -205,6 +205,7 @@ class AFGoal: AFMotivator {
         distance = prototype.distance
         goalType = prototype.goalType
         motivatorType = prototype.motivatorType
+        speed = prototype.speed
         weight = prototype.weight
         
         switch goalType {

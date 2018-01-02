@@ -70,7 +70,7 @@ class SliderController: NSViewController {
 			}
 		}
 	}
-	@objc dynamic var maxMaxValue:Double = 9999.0
+	@objc dynamic var maxMaxValue:Double = 1e6
 
 	var delegate:SliderDelegate?
 	

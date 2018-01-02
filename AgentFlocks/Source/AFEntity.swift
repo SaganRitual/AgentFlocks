@@ -31,7 +31,7 @@ class AFEntity: GKEntity {
     }
     
     init(prototype: AFEntity_) {
-        agent = AFAgent2D(prototype: prototype.agent)
+        agent = AFAgent2D(prototype: prototype.agent, name: prototype.name)
         
         super.init()
         

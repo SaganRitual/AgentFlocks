@@ -5,8 +5,11 @@
       
       "agent": {
         "imageFile": "Agent01.png",
-        "position": [0, 0],
-        "mass": 10,
+        "position": [0, 300],
+        "mass": 0.01,
+        "maxSpeed": 1000,
+        "maxAcceleration": 1000,
+        "radius": 25,
         
         "motivator": {
           "enabled": true,
@@ -23,11 +26,11 @@
                   "enabled": true,
                   "goalType": "toWander",
                   "motivatorType": "goal",
-                  "weight": 1.0,
+                  "weight": 100,
                   "angle": 3.14,
                   "distance": 100,
                   "predictionTime": 1,
-                  "speed": 100
+                  "speed": 1000
                 }
               ]
             }

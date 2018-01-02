@@ -160,25 +160,27 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
 
         do {
-            let url = Bundle.main.url(forResource: "setup", withExtension: "json")!
-            let jsonData = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            let entities_ = try decoder.decode(AFEntities.self, from: jsonData)
+            if let resourcesPath = Bundle.main.resourcePath {
+                let url = URL(string: "file://\(resourcesPath)/setup.json")!
+                let jsonData = try Data(contentsOf: url)
+                let decoder = JSONDecoder()
+                let entities_ = try decoder.decode(AFEntities.self, from: jsonData)
 
-            var selectionSet = false
+                var selectionSet = false
 
-            for entity_ in entities_.entities {
-                let entity = AFEntity(prototype: entity_)
-                GameScene.me!.entities.append(entity)
-                
-                if !selectionSet {
-                    AppDelegate.agentEditorController.goalsController.dataSource = entity
-                    AppDelegate.agentEditorController.attributesController.delegate = entity.agent
-                    selectionSet = true
+                for entity_ in entities_.entities {
+                    let entity = AFEntity(prototype: entity_)
+                    GameScene.me!.entities.append(entity)
+                    
+                    if !selectionSet {
+                        AppDelegate.agentEditorController.goalsController.dataSource = entity
+                        AppDelegate.agentEditorController.attributesController.delegate = entity.agent
+                        selectionSet = true
+                    }
+
+                    let nodeIndex = GameScene.me!.entities.count - 1
+                    GameScene.me!.newAgent(nodeIndex)
                 }
-
-                let nodeIndex = GameScene.me!.entities.count - 1
-                GameScene.me!.newAgent(nodeIndex)
             }
         } catch { print(error) }
    }
