@@ -21,7 +21,7 @@ class AFAgent2D_: Codable {
 class AFAgent2D: GKAgent2D {
     var motivator: AFMotivatorCollection?
     let originalSize: CGSize
-    let radiusIndicator: SKShapeNode
+    var radiusIndicator: SKNode?
     let radiusIndicatorRadius: CGFloat = 100.0
     var selected = false
     var selectionIndicator: SKNode?
@@ -50,10 +50,9 @@ class AFAgent2D: GKAgent2D {
     init(prototype: AFAgent2D_, name: String) {
         scale = 1
         
-        let (cc, ss, rr) = AFAgent2D.makeSpriteContainer(imageFile: prototype.imageFile, position: prototype.position, name)
+        let (cc, ss) = AFAgent2D.makeSpriteContainer(imageFile: prototype.imageFile, position: prototype.position, name)
         spriteContainer = cc
         sprite = ss
-        radiusIndicator = rr
         
         GameScene.me!.addChild(spriteContainer)
         
@@ -74,10 +73,9 @@ class AFAgent2D: GKAgent2D {
     init(scene: GameScene, image: NSImage, position: CGPoint) {
         scale = 1
         
-        let (cc, ss, rr) = AFAgent2D.makeSpriteContainer(image: image, position: position)
+        let (cc, ss) = AFAgent2D.makeSpriteContainer(image: image, position: position)
         spriteContainer = cc
         sprite = ss
-        radiusIndicator = rr
         
         scene.addChild(spriteContainer)
         
@@ -117,7 +115,7 @@ class AFAgent2D: GKAgent2D {
         clearSelectionIndicator()
     }
     
-    static func makeSpriteContainer(image: NSImage, position: CGPoint, _ name: String? = nil) -> (SKNode, SKSpriteNode, SKShapeNode) {
+    static func makeSpriteContainer(image: NSImage, position: CGPoint, _ name: String? = nil) -> (SKNode, SKSpriteNode) {
         let node = SKNode()
         node.position = position
         
@@ -132,17 +130,10 @@ class AFAgent2D: GKAgent2D {
             sprite.name = NSUUID().uuidString
         }
         
-        // 0.5 is the default radius for agents
-        let radiusIndicator = SKShapeNode(circleOfRadius: 25)
-        radiusIndicator.fillColor = .red
-        radiusIndicator.alpha = 0
-        radiusIndicator.zPosition = -1
-        node.addChild(radiusIndicator)
-        
-        return (node, sprite, radiusIndicator)
+        return (node, sprite)
     }
 
-    static func makeSpriteContainer(imageFile: String, position: CGPoint, _ name: String? = nil) -> (SKNode, SKSpriteNode, SKShapeNode) {
+    static func makeSpriteContainer(imageFile: String, position: CGPoint, _ name: String? = nil) -> (SKNode, SKSpriteNode) {
         let path = Bundle.main.resourcePath!
         let image = NSImage(byReferencingFile: "\(path)/\(imageFile)")
         return makeSpriteContainer(image: image!, position: position, name)
@@ -156,10 +147,6 @@ class AFAgent2D: GKAgent2D {
         setSelectionIndicator(primary: primary)
     }
     
-    func showRadius(_ show: Bool) {
-        radiusIndicator.alpha = (show ? 0.5 : 0)
-    }
-    
     override func update(deltaTime seconds: TimeInterval) {
         super.update(deltaTime: seconds)
         spriteContainer.position = CGPoint(x: Double(position.x), y: Double(position.y))
@@ -170,23 +157,24 @@ class AFAgent2D: GKAgent2D {
 // MARK: selection indicator show/hide
 
 extension AFAgent2D {
-    func setSelectionIndicator(primary: Bool = true) {
-        selectionIndicator = SKNode()
+    static func makeRing(radius: Float, isForSelector: Bool, primary: Bool) -> SKNode {
+        let ring = SKNode()
         
         var firstPosition: CGPoint!
         var lastPosition: CGPoint!
         let path = CGMutablePath()
         for theta in stride(from: 0, to: Float.pi * 2, by: Float.pi / 16) {
-            let x = 40 * Double(cos(theta)); let y = 40 * Double(sin(theta))
+            let r = CGFloat(radius)
+            let x = r * CGFloat(cos(theta)); let y = r * CGFloat(sin(theta))
             
             if firstPosition == nil {
                 firstPosition = CGPoint(x: x, y: y)
             }
-
+            
             if theta > 0 {
                 path.addLine(to: CGPoint(x: x, y: y))
                 let line = SKShapeNode(path: path)
-                selectionIndicator!.addChild(line)
+                ring.addChild(line)
                 line.strokeColor = primary ? .green : .yellow
             }
             
@@ -196,17 +184,37 @@ extension AFAgent2D {
         
         path.addLine(to: firstPosition)
         let line = SKShapeNode(path: path)
-        selectionIndicator!.addChild(line)
-        line.strokeColor = primary ? .green : .yellow
+        ring.addChild(line)
         
+        if isForSelector {
+            line.strokeColor = primary ? .green : .yellow
+        } else {
+            line.strokeColor = .red
+        }
+        
+        return ring
+    }
+    
+    func setSelectionIndicator(primary: Bool = true) {
         selected = true;
+
+        // 40 is just a number that makes the rings look about right to me
+        selectionIndicator = AFAgent2D.makeRing(radius: 40, isForSelector: true, primary: primary)
         spriteContainer.addChild(selectionIndicator!)
+        
+        radiusIndicator = AFAgent2D.makeRing(radius: radius, isForSelector: false, primary: primary)
+        spriteContainer.addChild(radiusIndicator!)
     }
 
     func clearSelectionIndicator() {
         if let si = selectionIndicator {
             si.removeFromParent()
             selectionIndicator = nil
+        }
+        
+        if let ri = radiusIndicator {
+            ri.removeFromParent()
+            radiusIndicator = nil
         }
     }
 }
@@ -263,7 +271,14 @@ extension AFAgent2D: AgentAttributesDelegate {
         case .mass: mass = v; break
         case .maxAcceleration: maxAcceleration = v; break
         case .maxSpeed: maxSpeed = v; break
-        case .radius: radius = v; break
+        case .radius:
+            radius = v
+
+            if let r = radiusIndicator { r.removeFromParent() }
+
+            radiusIndicator = AFAgent2D.makeRing(radius: radius, isForSelector: false, primary: false)
+            spriteContainer.addChild(radiusIndicator!)
+            break
         case .scale: scale = v; break
         }
     }

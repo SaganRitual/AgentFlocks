@@ -161,7 +161,7 @@ class TopBarController: NSViewController {
     }
     
     @IBAction func radiiClicked(_ sender: NSButton) {
-        GameScene.me!.toggleRadii()
+        // ready to be re-purposed somewhere else
     }
     
     // re-purposed as a recall button
