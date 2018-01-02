@@ -170,9 +170,7 @@ class AFSelectionState_Primary: AFSelectionState {
             deselectAll()
         } else {
             if event.modifierFlags.contains(.command) {
-                if mouseState == .dragging {
-                    fatalError()    // Who knows?
-                } else {
+                if mouseState == .down {
                     // cmd+click on a node
                     toggleSelection(upNodeIndex!)
                 }
