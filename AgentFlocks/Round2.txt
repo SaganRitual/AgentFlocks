@@ -1,33 +1,110 @@
-1a) The "draw" and "place" buttons are toggle-switches. That is, push "draw" to engage, push "draw" again to disengage.
-1b) Only one can be engaged. Engaging one disengages the other.
+- I need File-> open & save connected. I will do the file processing, of course, but as I told you before,
+I was totally defeated by menus. I need you to put the menus there and tell them to notify me.
 
-2a) When "draw" is selected, "shape" and "count" items should be disabled
-2b) When "place" is selected, see below for details
+- I'd like to have a preferences dialog. Maybe with just some radio buttons on it for now. And I'd like
+the app to remember those preferences. I know some apps do it automatically, without the user telling them to.
+Do you know how this kind of thing is done?
 
-3a) When "place" is selected, the mouse cursor should change to crosshairs, but only when it's over the scene.
-    When the user clicks in the scene, the sprite represented in the "shape" menu should be
-    placed where the mouse is clicked.
+- On a similar note, I'd like to have some way of saving some state and reloading it on future runs.
 
-3b) When "draw" is selected, the mouse cursor should change to a pen, but only when it's over the scene
+- I need a general-purpose menu, call it "Actions", with any sort of items in it. This is so I can add
+features, until my shame becomes too great and I must hire you again to do it the proper way.
 
-3c) When neither is selected, the mouse cursor should be the usual kind everywhere
+To the diagrams:
 
-4) There are three independent dropdown menus under the "shape" heading, one for each radio button selection. That is,
-    there is an "agents" dropdown with agent images in it, an "objects" dropdown with object images, etc. We will
-    show only one dropdown menu at a time; the other two will be hidden. We will show the dropdown for the selected
-    radio button: "agents" dropdown for "agents" radio button, etc. When a radio button is selected, we display the
-    corresponding dropdown in its closed state, showing the currently selected image.
+Goalkeeper
+----------
 
-    It's ok to continue using the faces. I have an artist working on the final images. I just need three menus.
+The first diagram, titled, "Goalkeeper (AgentFlocks)" shows the layout of the page. I've given names to
+each of the boxes on the page, each of which is shown in detail in subsequent diagrams.
 
-5a) If the "agents" radio button is selected, the "Shape" label should change to "Avatar".
-5b) If the "agents" radio button is not selected, the "count" input field should be disabled, and "Avatar"
-    should change to "Shape".
+Agent Goals
+-----------
 
-6) I was terrible at describing the spinner+input components. I've drawn some pictures to help make it more sensible.
-    The input field is an exponent that can be either negative or positive. The 10 is just fixed text. The reason for
-    this ugly contraption is that I want to enable the user to set the scale of the slider. He needs the flexibility
-    to slide in the milli range but also in the kilo range. If you have any better ideas on presenting an exponential
-    slider, I would love to hear them. If you don't have any ideas, please add the work of changing those
-    spinner+inputs to behave as in the drawing I've attached.
+I've added a "Weight" field, with a popout slider next to each one. I said "popout slider" in the
+diagram, that's not what I meant. I meant like the editors we're already using for setting goal
+and behavior attributes. But these will just have that one attribute, the weight.
+
+I need a change in the way the item editors work. For some of the goals, the workflow is as follows:
+
+- user clicks the add button at the bottom of the AgentGoalsView, get the popup menu
+- user selects, for example, "To follow". For this particular goal, the dialog should
+first appear with the "Apply" button disabled, and the user will click on the
+agent he wants the selected agent to follow.
+
+Similarly, if the user chooses to add "To cohere", then he can select any number of other agents
+to cohere with before clicking "Apply".
+
+I mention this because the attribute editor dialogs auto-dismiss when I click anywhere outside
+their boundaries. I need them to persist while the user clicks around in the scene. I suppose this
+also means that we'll need a "cancel" button on those views. Or maybe an "x" in the corner?
+
+Agent Attributes
+----------------
+
+This one is similar to the current incarnation. It will use the new sliders, all set to the same width. In the
+"Defaults" column are output text fields that I can write values to. The "Make Default" and "Apply
+Defaults" are push buttons, the kind that go dark while the mouse is down, then back to normal on mouse up.
+
+Placement Panel
+---------------
+
+The "verb" set of radio buttons, and the separate set of "noun" radio buttons. For some combinations of
+these settings, an image should appear in a frame next to them. I want to produce this image dynamically.
+At the moment, I don't know the necessary details. Presumably I can just pass an NSImage to you, but I
+will need to research how to produce an NSImage from my data. Until I learn how to do that, is there some
+kind of placeholder you could put there?
+
+Also, I've just realized that the "verb" radio button list set needs an "off" setting. I didn't draw that in the diagrams.
+
+Control Panel
+-------------
+
+There will be checkboxes here, for showing and hiding the "paths library"-style lists. Also, if
+you can fit in any more checkboxes, another six that I might use for general purposes would be helpful.
+
+I forgot to put it into the diagram, but I need a "Recall agents" button in this area. It would be
+nice to have a button that goes dark while the mouse is down, then goes normal on mouse up?
+Is that a pain to implement?
+
+Play/pause/slider
+-----------------
+
+This needs only the new slider to replace the old one.
+
+Paths Library
+-------------
+
+This is a special one. I need six of these things, that I can instantiate separately and connect to six
+different data sources. I need to make them appear and disappear on demand, in some orderly fashion on
+the right side of the screen. For this one in particular, I would like to dynamically draw the images
+for those line items. For the other instantiations, I would like to show a colored square, or in some
+cases, plain text.
+
+------------------------------------
+
+In case it helps you at all, here's the workflow I envision, after having
+used it for a while.
+
+To place items of any kind, the user should select "place", then select
+the kind of item he wants -- agent, path, or obstacle -- then select an
+image from a list. With those selections in place, he can click
+arbitrarily in the scene area. On each click, a copy of the selected agent
+will be created.
+
+Agents can't be drawn. When draw is selected, only paths and obstacles are enabled. The
+user draws, then the path/obstacle is stored
+in a catalog that is displayed in one of the "paths library"-style scrollers. I'd also like
+to save much of this information to persistent storage, either as part of the app state, or
+perhaps as a certain kind of setup file that the user can save and load on demand.
+
+In edit mode the user will be interacting with the live objects in the scene, using the
+various editing panels
+
+One final note. From this experience, I have learned immensely about the culture of Swift
+and UI programming in ways that I never have been able to before. You would be doing me a
+huge favor if you would work on my
+existing codebase on github. I think I could learn a lot from you -- if you don't mind having a
+curious nerd watch all your commits and ask questions about design, style, resources, etc.
+I hope it's not inappropriate for me to suggest it. If it is, I hope I haven't caused any offense.
 
