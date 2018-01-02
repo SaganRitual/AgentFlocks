@@ -33,8 +33,8 @@ protocol AFMotivatorCollection: AFMotivator {
 class AFBehavior_: Codable {
     var enabled = true
     var goals: [AFGoal_]
-//    let motivatorType: AFMotivatorType
-//    var weight: Float
+    let motivatorType: AFMotivatorType
+    var weight: Float
 }
 
 class AFBehavior: AFMotivatorCollection {
@@ -44,10 +44,25 @@ class AFBehavior: AFMotivatorCollection {
     let motivatorType: AFMotivatorType
     var weight: Float
     
+    // Have these here just to conform to the collection protocol. Come
+    // back to this, it's ugly.
     var angle: Float = 0
     var distance: Float = 0
     var predictionTime: Float = 0
     var speed: Float = 0
+    
+    init(prototype: AFBehavior_, agent: AFAgent2D) {
+        self.agent = agent
+        enabled = prototype.enabled
+        motivatorType = prototype.motivatorType
+        weight = prototype.weight
+        
+        goals = [AFGoal]()
+        for goal_ in prototype.goals {
+            let goal = AFGoal(prototype: goal_)
+            goals.append(goal)
+        }
+    }
     
     init(agent: AFAgent2D) {
         self.agent = agent
@@ -90,19 +105,13 @@ class AFBehavior: AFMotivatorCollection {
 class AFCompositeBehavior_: Codable {
     var enabled = true
     var behaviors: [AFBehavior_]
-//    let motivatorType: AFMotivatorType
-//
-//    var angle: Float = 0
-//    var distance: Float = 0
-//    var predictionTime: Float = 0
-//    var speed: Float = 0
-//    var weight: Float = 0
+    let motivatorType: AFMotivatorType
 }
 
 class AFCompositeBehavior: AFMotivatorCollection {
     let agent: AFAgent2D
     var enabled = true
-    var behaviors: [AFBehavior]
+    var behaviors = [AFBehavior]()
     let motivatorType: AFMotivatorType
     
     var angle: Float = 0
@@ -110,6 +119,18 @@ class AFCompositeBehavior: AFMotivatorCollection {
     var predictionTime: Float = 0
     var speed: Float = 0
     var weight: Float = 0
+    
+    init(prototype: AFCompositeBehavior_, agent: AFAgent2D) {
+        self.agent = agent
+        
+        enabled = prototype.enabled
+        motivatorType = prototype.motivatorType
+        
+        for behavior_ in prototype.behaviors {
+            let behavior = AFBehavior(prototype: behavior_, agent: agent)
+            behaviors.append(behavior)
+        }
+    }
     
     init(agent: AFAgent2D) {
         self.agent = agent
@@ -153,8 +174,8 @@ class AFGoal_: Codable {
 
     var angle: Float = 0
     var distance: Float = 0
-//    var predictionTime: Float = 0
-//    var speed: Float = 0
+    var predictionTime: Float = 0
+    var speed: Float = 0
 }
 
 class AFGoal: AFMotivator {
@@ -176,6 +197,33 @@ class AFGoal: AFMotivator {
 //    required init(from decoder: Decoder) throws {}
     
     var obstacles = [GKObstacle]()
+    
+    init(prototype: AFGoal_) {
+        enabled = prototype.enabled
+        
+        angle = prototype.angle
+        distance = prototype.distance
+        goalType = prototype.goalType
+        motivatorType = prototype.motivatorType
+        weight = prototype.weight
+        
+        switch goalType {
+        case .toAlignWith:        break
+        case .toAvoidAgents:      break
+        case .toAvoidObstacles:   break
+        case .toCohereWith:       break
+        case .toFleeAgent:        break
+        case .toFollow:           break
+        case .toInterceptAgent:   break
+        case .toReachTargetSpeed:
+            newGoal(newValue: speed)
+        case .toSeekAgent:        break
+        case .toSeparateFrom:     break
+        case .toStayOn:           break
+        case .toWander:
+            newGoal(newValue: speed)
+        }
+    }
     
     init(toAlignWith agents: [GKAgent], maxDistance: Float, maxAngle: Float, weight: Float) {
         goalType = .toAlignWith

@@ -82,7 +82,7 @@ class GameScene: SKScene, SKViewDelegate {
         
         selectionDelegatePrimary = AFSelectionState_Primary(gameScene: self)
         selectionDelegateDraw = AFSelectionState_Draw(gameScene: self)
-        selectionDelegate = selectionDelegateDraw
+        selectionDelegate = selectionDelegatePrimary
     }
     
     func toggleRadii() {

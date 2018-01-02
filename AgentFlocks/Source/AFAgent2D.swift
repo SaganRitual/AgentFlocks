@@ -10,7 +10,8 @@ import GameplayKit
 
 class AFAgent2D_: Codable {
     let motivator: AFCompositeBehavior_
-    let blargh: String
+    let imageFile: String
+    let position: CGPoint
 }
 
 class AFAgent2D: GKAgent2D {
@@ -42,24 +43,37 @@ class AFAgent2D: GKAgent2D {
         return String(format: "%5d", AFAgent2D.uniqueNameBase)
     }
     
+    init(prototype: AFAgent2D_) {
+        scale = 1
+        
+        let (cc, ss, rr) = AFAgent2D.makeSpriteContainer(imageFile: prototype.imageFile, position: prototype.position)
+        spriteContainer = cc
+        sprite = ss
+        radiusIndicator = rr
+        
+        GameScene.me!.addChild(spriteContainer)
+        
+        originalSize = sprite.size
+
+        super.init()
+        
+        motivator = AFCompositeBehavior(prototype: prototype.motivator, agent: self)
+        
+        mass = 0.01
+        maxSpeed = 1000
+        maxAcceleration = 1000
+        radius = 50
+
+        applyMotivator()
+    }
+    
     init(scene: GameScene, image: NSImage, position: CGPoint) {
         scale = 1
         
-        spriteContainer = SKNode()
-        spriteContainer.position = position
-        
-        let texture = SKTexture(image: image)
-        sprite = SKSpriteNode(texture: texture)
-        sprite.name = AFAgent2D.makeUniqueName()
-        sprite.zPosition = 0
-        spriteContainer.addChild(sprite)
-        
-        // 0.5 is the default radius for agents
-        radiusIndicator = SKShapeNode(circleOfRadius: 25)
-        radiusIndicator.fillColor = .red
-        radiusIndicator.alpha = 0
-        radiusIndicator.zPosition = -1
-        spriteContainer.addChild(radiusIndicator)
+        let (cc, ss, rr) = AFAgent2D.makeSpriteContainer(image: image, position: position)
+        spriteContainer = cc
+        sprite = ss
+        radiusIndicator = rr
         
         scene.addChild(spriteContainer)
         
@@ -99,6 +113,31 @@ class AFAgent2D: GKAgent2D {
         clearSelectionIndicator()
     }
     
+    static func makeSpriteContainer(image: NSImage, position: CGPoint) -> (SKNode, SKSpriteNode, SKShapeNode) {
+        let node = SKNode()
+        node.position = position
+        
+        let texture = SKTexture(image: image)
+        let sprite = SKSpriteNode(texture: texture)
+        sprite.name = AFAgent2D.makeUniqueName()
+        sprite.zPosition = 0
+        node.addChild(sprite)
+        
+        // 0.5 is the default radius for agents
+        let radiusIndicator = SKShapeNode(circleOfRadius: 25)
+        radiusIndicator.fillColor = .red
+        radiusIndicator.alpha = 0
+        radiusIndicator.zPosition = -1
+        node.addChild(radiusIndicator)
+        
+        return (node, sprite, radiusIndicator)
+    }
+
+    static func makeSpriteContainer(imageFile: String, position: CGPoint) -> (SKNode, SKSpriteNode, SKShapeNode) {
+        let image = NSImage(byReferencingFile: imageFile)
+        return makeSpriteContainer(image: image!, position: position)
+    }
+
     func select(primary: Bool = true) {
         if let si = selectionIndicator {
             si.removeFromParent()
@@ -112,9 +151,9 @@ class AFAgent2D: GKAgent2D {
     }
     
     override func update(deltaTime seconds: TimeInterval) {
-        super.update(deltaTime: seconds)
         spriteContainer.position = CGPoint(x: Double(position.x), y: Double(position.y))
         spriteContainer.zRotation = CGFloat(Double(rotation) - Double.pi / 2.0)
+        print(spriteContainer.position, spriteContainer.zRotation)
     }
 }
 

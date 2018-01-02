@@ -30,8 +30,29 @@ class AFEntity: GKEntity {
         addComponent(agent)
     }
     
+    init(prototype: AFEntity_) {
+        agent = AFAgent2D(prototype: prototype.agent)
+        
+        super.init()
+        
+        addComponent(agent)
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension AFEntity {
+    static func makeEntities(from entities_: [AFEntity_]) -> [AFEntity] {
+        var result = [AFEntity]()
+        
+        for entity_ in entities_ {
+            let entity = AFEntity(prototype: entity_)
+            result.append(entity)
+        }
+        
+        return result
     }
 }
 

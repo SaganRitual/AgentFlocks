@@ -154,10 +154,33 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     // MARK: - Custom methods
     func loadJSON(_ controller: TopBarController) {
-        let url = Bundle.main.url(forResource: "setup", withExtension: "json")!
-        let jsonData = try! Data(contentsOf: url)
-        let decoder = JSONDecoder()
-        let entities = try! decoder.decode(AFEntities.self, from: jsonData)
+        // Get out of draw mode. Seems weird to be doing this in a function about
+        // loading a script, but this is the only reasonable place to put it, I think?
+
+        GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
+
+        do {
+            let url = Bundle.main.url(forResource: "setup", withExtension: "json")!
+            let jsonData = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let entities_ = try decoder.decode(AFEntities.self, from: jsonData)
+
+            var selectionSet = false
+
+            for entity_ in entities_.entities {
+                let entity = AFEntity(prototype: entity_)
+                GameScene.me!.entities.append(entity)
+                
+                if !selectionSet {
+                    AppDelegate.agentEditorController.goalsController.dataSource = entity
+                    AppDelegate.agentEditorController.attributesController.delegate = entity.agent
+                    selectionSet = true
+                }
+
+                let nodeIndex = GameScene.me!.entities.count - 1
+                GameScene.me!.newAgent(nodeIndex)
+            }
+        } catch { print(error) }
    }
 	
 	func loadAgents() -> [AgentType] {
@@ -320,7 +343,6 @@ extension AppDelegate: TopBarDelegate {
             let nodeIndex = GameScene.me!.entities.count - 1
             
             GameScene.me!.newAgent(nodeIndex)
-//            GameScene.me!.selectionDelegate.select(nodeIndex)
             
             self.placeAgentFrames(agentIndex: nodeIndex)
         }
@@ -601,7 +623,7 @@ extension AppDelegate: ItemEditorDelegate {
                         points.append(point)
                     }
                     
-                    let path = GKPath(graphNodes: points, radius: 100)
+                    let path = GKPath(graphNodes: points, radius: 1)
                     goal = AFGoal(toFollow: path, maxPredictionTime: Float(time!), forward: true, weight: Float(weight!))
                     
                 case .toInterceptAgent:
