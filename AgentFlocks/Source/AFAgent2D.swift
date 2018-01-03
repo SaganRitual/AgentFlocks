@@ -9,7 +9,7 @@
 import GameplayKit
 
 class AFAgent2D_: Codable {
-    let motivator: AFCompositeBehavior_
+    let motivator: AFCompositeBehavior_Script
     let imageFile: String
     let position: CGPoint
     let mass: Float
@@ -19,17 +19,15 @@ class AFAgent2D_: Codable {
 }
 
 class AFAgent2D: GKAgent2D {
-    var motivator: AFMotivatorCollection?
     let originalSize: CGSize
     var radiusIndicator: SKNode?
     let radiusIndicatorRadius: CGFloat = 100.0
+    var savedBehaviorState: AFCompositeBehavior?
     var selected = false
     var selectionIndicator: SKNode?
     var showingRadius = false
     let sprite: SKSpriteNode
     let spriteContainer: SKNode
-
-    var walls = [GKPolygonObstacle]()
 
     static var once: Bool = false
 
@@ -60,14 +58,12 @@ class AFAgent2D: GKAgent2D {
 
         super.init()
         
-        motivator = AFCompositeBehavior(prototype: prototype.motivator, agent: self)
+        behavior = AFCompositeBehavior(prototype: prototype.motivator, agent: self)
         
         mass = prototype.mass
         maxSpeed = prototype.maxSpeed
         maxAcceleration = prototype.maxAcceleration
         radius = prototype.radius
-
-        applyMotivator()
     }
     
     init(scene: GameScene, image: NSImage, position: CGPoint) {
@@ -82,24 +78,19 @@ class AFAgent2D: GKAgent2D {
         originalSize = sprite.size
         
         super.init()
-
-        let c = AFCompositeBehavior(agent: self)
-        motivator = c
+        
+        behavior = AFCompositeBehavior(agent: self)
         
         let b = AFBehavior(agent: self)
-        c.addBehavior(b)
-        
-        walls = SKNode.obstacles(fromNodeBounds: scene.corral)
-        let g = AFGoal(toAvoidObstacles: walls, maxPredictionTime: 2, weight: 1)
-        
-        b.addGoal(g)
+        (behavior! as! AFCompositeBehavior).setWeight(42, for: b)
+
+        let g = AFGoal(toAvoidObstacles: scene.corral, time: 2, weight: 1)
+        (behavior! as! AFCompositeBehavior).getChild(at: 0).setWeight(43, for: g)
         
         mass = 0.01
         maxSpeed = 1000
         maxAcceleration = 1000
         radius = 50
-
-        applyMotivator()
     }
     
     deinit {
@@ -110,6 +101,16 @@ class AFAgent2D: GKAgent2D {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func addGoal(_ goal: AFGoal) {
+        /*
+        let b = AFBehavior(agent: self)
+        (motivator! as! AFCompositeBehavior).addBehavior(b)
+        
+        b.addGoal(goal)
+        applyMotivator()
+         */
+    }
+
     func deselect() {
         selected = false;
         clearSelectionIndicator()
@@ -219,50 +220,21 @@ extension AFAgent2D {
     }
 }
 
+// MARK : Behaviors & goals
+
 extension AFAgent2D {
-    func addGoal(_ goal: AFGoal) {
-        let b = AFBehavior(agent: self)
-        (motivator! as! AFCompositeBehavior).addBehavior(b)
-        
-        b.addGoal(goal)
-        applyMotivator()
-    }
-
-    func applyMotivator() {
-        guard motivator != nil else { return }
-
-        switch motivator {
-        case let m as AFBehavior:
-            behavior = createBehavior(from: m)
-
-        case let m as AFCompositeBehavior:
-            behavior = createComposite(from: m)
-
-        default: fatalError()
+    func enableMotivators(_ on: Bool = true) {
+        if on {
+            behavior = savedBehaviorState
+            savedBehaviorState = nil
+        } else {
+            savedBehaviorState = behavior as? AFCompositeBehavior
+            behavior = nil
         }
-    }
-    
-    func createBehavior(from: AFBehavior) -> GKBehavior {
-        let behavior = GKBehavior()
-        
-        for goal in from.goals {
-            behavior.setWeight(goal.weight, for: goal.goal)
-        }
-        
-        return behavior
-    }
-    
-    func createComposite(from: AFCompositeBehavior) -> GKCompositeBehavior {
-        let composite = GKCompositeBehavior()
-        
-        for mvBehavior in from.behaviors {
-            let gkBehavior = createBehavior(from: mvBehavior)
-            composite.setWeight(mvBehavior.weight, for: gkBehavior)
-        }
-        
-        return composite
     }
 }
+
+// MARK: Basic agent attributes
 
 extension AFAgent2D: AgentAttributesDelegate {
     func agent(_ controller: AgentAttributesController, newValue value: Double, ofAttribute: AgentAttributesController.Attribute) {

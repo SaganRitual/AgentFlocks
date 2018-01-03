@@ -12,6 +12,7 @@ protocol AgentGoalsDelegate {
     func agentGoalsPlayClicked(_ agentGoalsController: AgentGoalsController)
     func agentGoals(_ agentGoalsController: AgentGoalsController, newBehaviorShowForRect rect: NSRect)
     func agentGoals(_ agentGoalsController: AgentGoalsController, newGoalShowForRect rect: NSRect, goalType type:AgentGoalsController.GoalType)
+    func agentGoals(_ agentGoalsController: AgentGoalsController, itemClicked item: Any, inRect rect: NSRect)
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemDoubleClicked item: Any, inRect rect: NSRect)
     func agentGoals(_ agentGoalsController: AgentGoalsController, item: Any, setState state: NSControl.StateValue )
     // Drag & Drop
@@ -64,6 +65,7 @@ class AgentGoalsController: NSViewController {
 		playButton.image = NSImage(named: NSImage.Name(rawValue: "Play"))
 		
 		outlineView.target = self
+        outlineView.action = #selector(onItemClicked)
 		outlineView.doubleAction = #selector(onItemDoubleClicked)
 		outlineView.registerForDraggedTypes([NSPasteboard.PasteboardType.string])
         
@@ -86,6 +88,13 @@ class AgentGoalsController: NSViewController {
 	}
 	
 	// MARK: - Actions and methods (private)
+    
+    @objc private func onItemClicked() {
+        if let selectedItem = outlineView.item(atRow: outlineView.selectedRow) {
+            let rect = outlineView.rect(ofRow: outlineView.selectedRow)
+            delegate?.agentGoals(self, itemClicked: selectedItem, inRect: outlineView.convert(rect, to: self.view))
+        }
+    }
 	
 	@objc private func onItemDoubleClicked() {
 		if let selectedItem = outlineView.item(atRow: outlineView.selectedRow) {

@@ -40,8 +40,9 @@ class GameScene: SKScene, SKViewDelegate {
     var selectionIndicator: SKShapeNode!
     var multiSelectionIndicator: SKShapeNode!
 
-    var corral = [SKShapeNode]()
-    
+    var corral_ = [SKShapeNode]()
+    var corral = [GKPolygonObstacle]()
+
     override func didMove(to view: SKView) {
         GameScene.me = self
     }
@@ -75,10 +76,12 @@ class GameScene: SKScene, SKViewDelegate {
             shapeNode.fillColor = specs[ss].2
             shapeNode.strokeColor = .black
             self.addChild(shapeNode)
-            corral.append(shapeNode)
+            corral_.append(shapeNode)
         }
         
         for i in 0..<4 { drawShape(i) }
+        
+        corral = SKNode.obstacles(fromNodeBounds: corral_)
         
         selectionDelegatePrimary = AFSelectionState_Primary(gameScene: self)
         selectionDelegateDraw = AFSelectionState_Draw(gameScene: self)

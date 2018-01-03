@@ -68,10 +68,13 @@
 		D44256201FE7A41800FC454B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561F1FE7A41800FC454B /* GameScene.swift */; };
 		D44256251FE8048100FC454B /* AFEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256241FE8048100FC454B /* AFEntity.swift */; };
 		D44256271FE804F000FC454B /* AFAgent2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256261FE804F000FC454B /* AFAgent2D.swift */; };
-		D44256291FE808FF00FC454B /* AFMotivator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256281FE808FF00FC454B /* AFMotivator.swift */; };
 		D442562B1FE80FA000FC454B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D442562A1FE80FA000FC454B /* README.md */; };
 		D46AFB591FF968DA001CD4ED /* AFSelectionState_Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46AFB581FF968DA001CD4ED /* AFSelectionState_Draw.swift */; };
 		D47BC1F41FECCFE600B3CE6B /* Round2.txt in Resources */ = {isa = PBXBuildFile; fileRef = D47BC1F31FECCFE600B3CE6B /* Round2.txt */; };
+		D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */; };
+		D4C7EADF1FFD04730008FBCD /* AFBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */; };
+		D4C7EAE11FFD06EE0008FBCD /* AFGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */; };
+		D4C7EAE31FFD93C00008FBCD /* Agent07.png in Resources */ = {isa = PBXBuildFile; fileRef = D4C7EAE21FFD93C00008FBCD /* Agent07.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -139,10 +142,13 @@
 		D442561F1FE7A41800FC454B /* GameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		D44256241FE8048100FC454B /* AFEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFEntity.swift; sourceTree = "<group>"; };
 		D44256261FE804F000FC454B /* AFAgent2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFAgent2D.swift; sourceTree = "<group>"; };
-		D44256281FE808FF00FC454B /* AFMotivator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFMotivator.swift; sourceTree = "<group>"; };
 		D442562A1FE80FA000FC454B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D46AFB581FF968DA001CD4ED /* AFSelectionState_Draw.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSelectionState_Draw.swift; sourceTree = "<group>"; };
 		D47BC1F31FECCFE600B3CE6B /* Round2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Round2.txt; sourceTree = "<group>"; };
+		D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFCompositeBehavior.swift; sourceTree = "<group>"; };
+		D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFBehavior.swift; sourceTree = "<group>"; };
+		D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFGoal.swift; sourceTree = "<group>"; };
+		D4C7EAE21FFD93C00008FBCD /* Agent07.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent07.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -234,6 +240,7 @@
 				74622E871F927EEB00690C3C /* Agent04.png */,
 				74622E821F927EEA00690C3C /* Agent05.png */,
 				74622E851F927EEA00690C3C /* Agent06.png */,
+				D4C7EAE21FFD93C00008FBCD /* Agent07.png */,
 			);
 			path = Agents;
 			sourceTree = "<group>";
@@ -278,8 +285,10 @@
 			isa = PBXGroup;
 			children = (
 				D44256261FE804F000FC454B /* AFAgent2D.swift */,
+				D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */,
+				D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */,
 				D44256241FE8048100FC454B /* AFEntity.swift */,
-				D44256281FE808FF00FC454B /* AFMotivator.swift */,
+				D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */,
 				D46AFB581FF968DA001CD4ED /* AFSelectionState_Draw.swift */,
 				D417BBB61FF95236001D9892 /* AFSelectionState_Primary.swift */,
 			);
@@ -360,6 +369,7 @@
 				D4053F051FF5E3A60038953B /* notes.txt in Resources */,
 				745F8F451F929AB4006B08AF /* Obstacle12.png in Resources */,
 				74ECDF671F9B132C0096468F /* AgentGoalsView.xib in Resources */,
+				D4C7EAE31FFD93C00008FBCD /* Agent07.png in Resources */,
 				745F8F481F929AB4006B08AF /* Obstacle15.png in Resources */,
 				745F8F3F1F929AB4006B08AF /* Obstacle06.png in Resources */,
 				745F8F491F929AB4006B08AF /* Obstacle16.png in Resources */,
@@ -408,6 +418,7 @@
 				D417BBB71FF95236001D9892 /* AFSelectionState_Primary.swift in Sources */,
 				D44256201FE7A41800FC454B /* GameScene.swift in Sources */,
 				74ECDF751F9CB5610096468F /* ItemEditorController.swift in Sources */,
+				D4C7EADF1FFD04730008FBCD /* AFBehavior.swift in Sources */,
 				744D8F241F91E38300D4B048 /* AppDelegate.swift in Sources */,
 				D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */,
 				745F8F591F93A491006B08AF /* SliderController.swift in Sources */,
@@ -415,10 +426,11 @@
 				74ECDF661F9B132C0096468F /* AgentGoalsController.swift in Sources */,
 				D46AFB591FF968DA001CD4ED /* AFSelectionState_Draw.swift in Sources */,
 				74622E7B1F9249CA00690C3C /* ImagesListController.swift in Sources */,
-				D44256291FE808FF00FC454B /* AFMotivator.swift in Sources */,
 				74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */,
 				D44256271FE804F000FC454B /* AFAgent2D.swift in Sources */,
 				74ECDF6A1F9B1C630096468F /* AgentEditorController.swift in Sources */,
+				D4C7EAE11FFD06EE0008FBCD /* AFGoal.swift in Sources */,
+				D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */,
 				744D8F341F91E53A00D4B048 /* TopBarController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

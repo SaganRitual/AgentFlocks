@@ -51,13 +51,10 @@
                 </button>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xmO-WQ-mPG">
                     <rect key="frame" x="187" y="-3" width="67" height="46"/>
-                    <buttonCell key="cell" type="bevel" title="Place Flock" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="tbN-05-X4v">
+                    <buttonCell key="cell" type="bevel" title="PH" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="tbN-05-X4v">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
-                    <connections>
-                        <action selector="placeFlockClicked:" target="-2" id="95c-0c-BIt"/>
-                    </connections>
                 </button>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="6uf-Yz-6OL">
                     <rect key="frame" x="535" y="0.0" width="240" height="41"/>

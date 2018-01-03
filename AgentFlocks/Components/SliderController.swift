@@ -42,6 +42,8 @@ class SliderController: NSViewController {
 			return _value
 		}
 		set {
+            valueChanged = true
+            
 			if newValue < minValue {
 				_value = minValue
 			}
@@ -80,6 +82,8 @@ class SliderController: NSViewController {
 	@IBOutlet private weak var valueEntry: NSTextField!
 	@IBOutlet private weak var maxStepper: NSStepper!
 	@IBOutlet private weak var maxValueEntry: NSTextField!
+    
+    var valueChanged = false
 	
 	// MARK: - Initialization
 	

@@ -40,6 +40,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var stopTime: TimeInterval = 0
 
 	private var activePopover:NSPopover?
+    
+    var parentOfNewMotivator: AFBehavior?
 	
 	func applicationWillFinishLaunching(_ notification: Notification) {
 		
@@ -378,6 +380,14 @@ extension AppDelegate: AgentGoalsDelegate {
         print("We're not doing anything with the play button on the agent goals controller")
     }
 
+    func agentGoals(_ agentGoalsController: AgentGoalsController, itemClicked item: Any, inRect rect: NSRect) {
+        if let motivator = item as? AFBehavior {
+            parentOfNewMotivator = motivator
+        } else if let motivator = item as? AFGoal {
+            parentOfNewMotivator = agentGoalsController.outlineView.parent(forItem: motivator) as? AFBehavior
+        }
+    }
+
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemDoubleClicked item: Any, inRect rect: NSRect) {
         guard let mainView = window.contentView else { return }
         if item is AFBehavior {
@@ -424,7 +434,7 @@ extension AppDelegate: AgentGoalsDelegate {
             editorController.setValue(ofSlider: "Angle", to: Double(goal.angle))
             editorController.setValue(ofSlider: "Distance", to: Double(goal.distance))
             editorController.setValue(ofSlider: "Speed", to: Double(goal.speed))
-            editorController.setValue(ofSlider: "Time", to: Double(goal.predictionTime))
+            editorController.setValue(ofSlider: "Time", to: Double(goal.time))
             editorController.setValue(ofSlider: "Weight", to: Double(goal.weight))
             editorController.preview = true
         
@@ -441,7 +451,6 @@ extension AppDelegate: AgentGoalsDelegate {
         else if let goalItem = item as? AgentGoalType {
             let enabled = (state == .on) ? true : false
             NSLog("Goal '\(goalItem.name)' " + (enabled ? "enabled" : "disabled"))
-            
         }
     }
 
@@ -515,23 +524,8 @@ extension AppDelegate: AgentGoalsDelegate {
 
 extension AppDelegate: ItemEditorDelegate {
     
-    private func getParentForNewMotivator(rootMotivator: AFMotivatorCollection, selectionIndex: Int) -> AFMotivatorCollection {
-        if selectionIndex == -1 {
-            return rootMotivator
-        }
-        
-        var collectionIndex = 0
-        var currentIndex = 0
-        var parentForNewMotivator = rootMotivator.getChild(at: 0) as! AFBehavior
-
-        while currentIndex < selectionIndex {
-            parentForNewMotivator = rootMotivator.getChild(at: collectionIndex) as! AFBehavior
-
-            currentIndex += 1 + parentForNewMotivator.howManyChildren()
-            collectionIndex += 1
-        }
-
-        return parentForNewMotivator
+    private func getParentForNewMotivator() -> AFBehavior {
+        return AppDelegate.me!.parentOfNewMotivator!
     }
 	
 	func itemEditorApplyPressed(_ controller: ItemEditorController) {
@@ -540,8 +534,7 @@ extension AppDelegate: ItemEditorDelegate {
 
         let agentIndex = GameScene.me!.getPrimarySelectionIndex()!
         let entity = GameScene.me!.entities[agentIndex]
-        let selected = AgentGoalsController.me!.selectedIndex()
-        let parentOfNewMotivator = getParentForNewMotivator(rootMotivator: entity.agent.motivator!, selectionIndex: selected)
+        let parentOfNewMotivator = getParentForNewMotivator()
         
         let angle = controller.value(ofSlider: "Angle")
         let distance = controller.value(ofSlider: "Distance")
@@ -549,21 +542,37 @@ extension AppDelegate: ItemEditorDelegate {
         let time = controller.value(ofSlider: "Time")
         let weight = controller.value(ofSlider: "Weight")
         
-        if let motivator = controller.editedItem as? AFMotivator {
-            // Edit existing
-            if let behavior = motivator as? AFBehavior {
-                behavior.weight = Float(weight!)
-            } else if let goal = motivator as? AFGoal {
+        if let behavior = controller.editedItem as? AFBehavior {
+            // Edit existing behavior
+            (entity.agent.behavior! as! AFCompositeBehavior).setWeight(Float(weight!), for: behavior)
+        } else if let goal = controller.editedItem as? AFGoal {
+            // Edit existing goal -- note AFBehavior doesn't give us a way
+            // to update the goal. If we want to assign any new values to
+            // this goal, we just have to throw it away and make a new one.
+            var newGoalRequired = false
+            for name in ["Angle", "Distance", "Speed", "Time", "Weight"] {
+                if controller.valueChanged(sliderName: name) {
+                    newGoalRequired = true
+                }
+            }
+
+            let weight = Float(weight!)
+
+            // However, the weight of the goal is managed by the behavior.
+            // So if all we're updating is the weight, we can just change that
+            // directly in the behavior, without creating a new goal.
+            if newGoalRequired {
                 if let angle = angle { goal.angle = Float(angle) }
                 if let distance = distance { goal.distance = Float(distance) }
                 if let speed = speed { goal.speed = Float(speed) }
-                if let time = time { goal.predictionTime = Float(time) }
-
-                // Everyone has a weight
-                goal.weight = Float(weight!)
+                if let time = time { goal.time = Float(time) }
+                
+                let newGoal = AFGoal(copyFrom: goal)
+                parentOfNewMotivator.remove(goal)
+                parentOfNewMotivator.setWeight(weight, for: newGoal)
+            } else {
+                parentOfNewMotivator.setWeight(weight, for: goal)
             }
-            
-            entity.agent.applyMotivator()
         } else {
             // Add new goal or behavior
             if let type = controller.newItemType {
@@ -587,10 +596,10 @@ extension AppDelegate: ItemEditorDelegate {
                     }
                     
                     let outline = GKPolygonObstacle(points: points)
-                    goal = AFGoal(toAvoidObstacles: [outline], maxPredictionTime: time!, weight: Float(weight!))
+                    goal = AFGoal(toAvoidObstacles: [outline], time: time!, weight: Float(weight!))
                     
                 case .toAvoidAgents:
-                    goal = AFGoal(toAvoidAgents: group, maxPredictionTime: time!, weight: Float(weight!))
+                    goal = AFGoal(toAvoidAgents: group, time: time!, weight: Float(weight!))
                     for agent in group {
                         (agent as! AFAgent2D).addGoal(goal!)
                     }
@@ -624,7 +633,7 @@ extension AppDelegate: ItemEditorDelegate {
                     }
                     
                     let path = GKPath(graphNodes: points, radius: 1)
-                    goal = AFGoal(toFollow: path, maxPredictionTime: Float(time!), forward: true, weight: Float(weight!))
+                    goal = AFGoal(toFollow: path, time: Float(time!), forward: true, weight: Float(weight!))
                     
                 case .toInterceptAgent:
                     let selectedIndexes = GameScene.me!.getSelectedIndexes()
@@ -633,7 +642,7 @@ extension AppDelegate: ItemEditorDelegate {
                     let indexesAsArray = Array(selectedIndexes)
                     let secondaryAgentIndex = indexesAsArray[1]
                     let theAgentToIntercept = GameScene.me!.entities[secondaryAgentIndex].agent
-                    goal = AFGoal(toInterceptAgent: theAgentToIntercept, maxPredictionTime: time!, weight: Float(weight!))
+                    goal = AFGoal(toInterceptAgent: theAgentToIntercept, time: time!, weight: Float(weight!))
 
                 case .toSeekAgent:
                     let selectedIndexes = GameScene.me!.getSelectedIndexes()
@@ -660,7 +669,7 @@ extension AppDelegate: ItemEditorDelegate {
                     }
                     
                     let path = GKPath(graphNodes: points, radius: 1)
-                    goal = AFGoal(toStayOn: path, maxPredictionTime: 1, weight: 100)
+                    goal = AFGoal(toStayOn: path, time: 1, weight: 100)
 
                 case .toReachTargetSpeed:
                     goal = AFGoal(toReachTargetSpeed: Float(speed!), weight: Float(weight!))
@@ -670,7 +679,7 @@ extension AppDelegate: ItemEditorDelegate {
                 }
 
                 if goal != nil {
-                    (parentOfNewMotivator as! AFBehavior).addGoal(goal!)
+                    parentOfNewMotivator.addGoal(goal!)
                 }
             } else {
                 let behavior = AFBehavior(agent: entity.agent)

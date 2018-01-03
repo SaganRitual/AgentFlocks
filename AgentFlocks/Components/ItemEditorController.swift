@@ -66,6 +66,12 @@ class ItemEditorController: NSViewController {
     }
 	
 	// MARK: - Public methods
+    func valueChanged(sliderName: String) -> Bool {
+        if let sliderController = sliders[sliderName.lowercased()] {
+            return sliderController.valueChanged
+        }
+        fatalError()
+    }
 	
 	// MARK: Value
 	func value(ofSlider sliderName:String) -> Double? {

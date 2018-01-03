@@ -59,19 +59,15 @@ extension AFEntity {
 extension AFEntity: AgentGoalsDataSource {
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, numberOfChildrenOfItem item: Any?) -> Int {
-        if let collection = item as? AFMotivatorCollection {
-            return collection.howManyChildren()
-        } else {
-            let selected = GameScene.me!.getSelectedIndexes()
+        let selected = GameScene.me!.getSelectedIndexes()
+        
+        if selected.count > 0 {
+            let entity = GameScene.me!.entities[selected.first!]
             
-            if selected.count > 0 {
-                let entity = GameScene.me!.entities[selected.first!]
-
-                if let motivator = entity.agent.motivator as? AFBehavior {
-                    return motivator.howManyChildren()
-                } else if let motivator = entity.agent.motivator as? AFCompositeBehavior {
-                    return motivator.howManyChildren()
-                }
+            if let b = entity.agent.behavior as? AFBehavior {
+                return b.howManyChildren()
+            } else if let c = entity.agent.behavior as? AFCompositeBehavior {
+                return c.howManyChildren()
             }
         }
         
@@ -79,18 +75,18 @@ extension AFEntity: AgentGoalsDataSource {
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemExpandable item: Any) -> Bool {
-        return item is AFMotivatorCollection
+        return item is AFBehavior
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, child index: Int, ofItem item: Any?) -> Any {
-        if let collection = item as? AFMotivatorCollection {
-            // Child goal
-            return collection.getChild(at: index)
+        if let motivator = item as? GKBehavior {
+            // Note: composite is also a behavior, so we'll come here for either case
+            return motivator[index]
         } else {
             let selected = GameScene.me!.getSelectedIndexes()
             if selected.count > 0 {
                 let entity = GameScene.me!.entities[selected.first!]
-                return entity.agent.motivator!.getChild(at: index)
+                return (entity.agent.behavior as! GKCompositeBehavior)[index]
             }
         }
         
@@ -98,9 +94,7 @@ extension AFEntity: AgentGoalsDataSource {
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, labelOfItem item: Any) -> String {
-        if let collection = item as? AFCompositeBehavior {
-            return collection.toString()
-        } else if let behavior = item as? AFBehavior {
+        if let behavior = item as? AFBehavior {
             return behavior.toString()
         } else if let goal = item as? AFGoal {
             return goal.toString()
