@@ -458,8 +458,14 @@ extension AppDelegate: AgentGoalsDelegate {
             let index = GameScene.me!.getPrimarySelectionIndex()!
             let agent = GameScene.me!.entities[index].agent
             let composite = agent.behavior as! AFCompositeBehavior
-
-            composite.enableBehavior(behavior, on: state == .on)
+            
+            if state == .on {
+                composite.enableBehavior(behavior, on: true)
+                agentGoalsController.outlineView!.expandItem(item)
+            } else {
+                composite.enableBehavior(behavior, on: false)
+                agentGoalsController.outlineView!.collapseItem(item)
+            }
         }
         else if let gkGoal = item as? GKGoal {
             let behavior = agentGoalsController.outlineView.parent(forItem: item) as! AFBehavior
