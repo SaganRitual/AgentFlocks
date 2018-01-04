@@ -525,7 +525,12 @@ extension AppDelegate: AgentGoalsDelegate {
 extension AppDelegate: ItemEditorDelegate {
     
     private func getParentForNewMotivator() -> AFBehavior {
-        return AppDelegate.me!.parentOfNewMotivator!
+        if let p = parentOfNewMotivator { return p }
+        else {
+            let agentIndex = GameScene.me!.getPrimarySelectionIndex()!
+            let entity = GameScene.me!.entities[agentIndex]
+            return (entity.agent.behavior! as! GKCompositeBehavior)[0] as! AFBehavior
+        }
     }
 	
 	func itemEditorApplyPressed(_ controller: ItemEditorController) {
@@ -540,37 +545,44 @@ extension AppDelegate: ItemEditorDelegate {
         let distance = controller.value(ofSlider: "Distance")
         let speed = controller.value(ofSlider: "Speed")
         let time = controller.value(ofSlider: "Time")
-        let weight = controller.value(ofSlider: "Weight")
+        
+        // Behaviors and goals always have a weight, thus a weight slider
+        let weight = Float(controller.value(ofSlider: "Weight")!)
         
         if let behavior = controller.editedItem as? AFBehavior {
             // Edit existing behavior
-            (entity.agent.behavior! as! AFCompositeBehavior).setWeight(Float(weight!), for: behavior)
+            behavior.weight = weight
+            (entity.agent.behavior! as! AFCompositeBehavior).setWeight(weight, for: behavior)
         } else if let goal = controller.editedItem as? AFGoal {
             // Edit existing goal -- note AFBehavior doesn't give us a way
             // to update the goal. If we want to assign any new values to
             // this goal, we just have to throw it away and make a new one.
-            var newGoalRequired = false
-            for name in ["Angle", "Distance", "Speed", "Time", "Weight"] {
+            var replacementGoalRequired = false
+            for name in ["Angle", "Distance", "Speed", "Time"] {
                 if controller.valueChanged(sliderName: name) {
-                    newGoalRequired = true
+                    replacementGoalRequired = true
                 }
             }
 
-            let weight = Float(weight!)
+            let weight = weight
 
             // However, the weight of the goal is managed by the behavior.
             // So if all we're updating is the weight, we can just change that
             // directly in the behavior, without creating a new goal.
-            if newGoalRequired {
-                if let angle = angle { goal.angle = Float(angle) }
-                if let distance = distance { goal.distance = Float(distance) }
-                if let speed = speed { goal.speed = Float(speed) }
-                if let time = time { goal.time = Float(time) }
+            if replacementGoalRequired {
+                let newGoal = AFGoal.makeGoal(copyFrom: goal)
                 
-                let newGoal = AFGoal(copyFrom: goal)
+                newGoal.weight = weight
+
+                if let angle = angle { newGoal.angle = Float(angle) }
+                if let distance = distance { newGoal.distance = Float(distance) }
+                if let speed = speed { newGoal.speed = Float(speed) }
+                if let time = time { newGoal.time = Float(time) }
+                
                 parentOfNewMotivator.remove(goal)
                 parentOfNewMotivator.setWeight(weight, for: newGoal)
             } else {
+                goal.weight = weight
                 parentOfNewMotivator.setWeight(weight, for: goal)
             }
         } else {
@@ -582,7 +594,7 @@ extension AppDelegate: ItemEditorDelegate {
                 switch type {
                 case .toAlignWith:
                     for agent in group {
-                        goal = AFGoal(toAlignWith: group, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: Float(weight!))
+                        goal = AFGoal(toAlignWith: group, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
                         (agent as! AFAgent2D).addGoal(goal!)
                     }
                     
@@ -596,10 +608,10 @@ extension AppDelegate: ItemEditorDelegate {
                     }
                     
                     let outline = GKPolygonObstacle(points: points)
-                    goal = AFGoal(toAvoidObstacles: [outline], time: time!, weight: Float(weight!))
+                    goal = AFGoal(toAvoidObstacles: [outline], time: time!, weight: weight)
                     
                 case .toAvoidAgents:
-                    goal = AFGoal(toAvoidAgents: group, time: time!, weight: Float(weight!))
+                    goal = AFGoal(toAvoidAgents: group, time: time!, weight: weight)
                     for agent in group {
                         (agent as! AFAgent2D).addGoal(goal!)
                     }
@@ -607,7 +619,7 @@ extension AppDelegate: ItemEditorDelegate {
                     goal = nil
                     
                 case .toCohereWith:
-                    goal = AFGoal(toCohereWith: group, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: Float(weight!))
+                    goal = AFGoal(toCohereWith: group, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
                     for agent in group {
                         (agent as! AFAgent2D).addGoal(goal!)
                     }
@@ -623,7 +635,7 @@ extension AppDelegate: ItemEditorDelegate {
                     
                     let secondarySelectionIndex = si.first!
                     let theAgentToFlee = GameScene.me!.entities[secondarySelectionIndex].agent
-                    goal = AFGoal(toFleeAgent: theAgentToFlee, weight: Float(weight!))
+                    goal = AFGoal(toFleeAgent: theAgentToFlee, weight: weight)
                     
                 case .toFollow:
                     var points = [GKGraphNode2D]()
@@ -633,7 +645,7 @@ extension AppDelegate: ItemEditorDelegate {
                     }
                     
                     let path = GKPath(graphNodes: points, radius: 1)
-                    goal = AFGoal(toFollow: path, time: Float(time!), forward: true, weight: Float(weight!))
+                    goal = AFGoal(toFollow: path, time: Float(time!), forward: true, weight: weight)
                     
                 case .toInterceptAgent:
                     let selectedIndexes = GameScene.me!.getSelectedIndexes()
@@ -642,7 +654,7 @@ extension AppDelegate: ItemEditorDelegate {
                     let indexesAsArray = Array(selectedIndexes)
                     let secondaryAgentIndex = indexesAsArray[1]
                     let theAgentToIntercept = GameScene.me!.entities[secondaryAgentIndex].agent
-                    goal = AFGoal(toInterceptAgent: theAgentToIntercept, time: time!, weight: Float(weight!))
+                    goal = AFGoal(toInterceptAgent: theAgentToIntercept, time: time!, weight: weight)
 
                 case .toSeekAgent:
                     let selectedIndexes = GameScene.me!.getSelectedIndexes()
@@ -651,10 +663,10 @@ extension AppDelegate: ItemEditorDelegate {
                     let indexesAsArray = Array(GameScene.me!.getSelectedIndexes())
                     let secondaryAgentIndex = indexesAsArray[1]
                     let theAgentToSeek = GameScene.me!.entities[secondaryAgentIndex].agent
-                    goal = AFGoal(toSeekAgent: theAgentToSeek, weight: Float(weight!))
+                    goal = AFGoal(toSeekAgent: theAgentToSeek, weight: weight)
 
                 case .toSeparateFrom:
-                    goal = AFGoal(toSeparateFrom: group, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: Float(weight!))
+                    goal = AFGoal(toSeparateFrom: group, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
                     for agent in group {
                         (agent as! AFAgent2D).addGoal(goal!)
                     }
@@ -669,22 +681,38 @@ extension AppDelegate: ItemEditorDelegate {
                     }
                     
                     let path = GKPath(graphNodes: points, radius: 1)
-                    goal = AFGoal(toStayOn: path, time: 1, weight: 100)
+                    goal = AFGoal(toStayOn: path, time: 1, weight: weight)
 
                 case .toReachTargetSpeed:
-                    goal = AFGoal(toReachTargetSpeed: Float(speed!), weight: Float(weight!))
+                    goal = AFGoal(toReachTargetSpeed: Float(speed!), weight: weight)
                     
                 case .toWander:
-                    goal = AFGoal(toWander: Float(speed!), weight: Float(weight!))
+                    goal = AFGoal(toWander: Float(speed!), weight: weight)
                 }
 
                 if goal != nil {
                     parentOfNewMotivator.addGoal(goal!)
+                    
+                    let a = entity.agent
+                    let c = a.behavior! as! AFCompositeBehavior
+                    for cc in 0 ..< c.behaviorCount {
+                        let b = c.getChild(at: cc)
+                        let bw = c.weight(for: b)
+                        
+                        print("b, \(b) \(bw)")
+                        
+                        for bb in 0 ..< b.goalCount {
+                            let g = b.getChild(at: bb)
+                            let gw = b.weight(for: g)
+                            print("g, \(gw) \(a.mass), \(a.maxSpeed), \(a.maxAcceleration), \(a.radius)")
+                        }
+                        
+                    }
                 }
             } else {
                 let behavior = AFBehavior(agent: entity.agent)
-                behavior.weight = Float(weight!)
-                (parentOfNewMotivator as! AFCompositeBehavior).addBehavior(behavior)
+                behavior.weight = weight
+                (entity.agent.behavior as! AFCompositeBehavior).setWeight(behavior.weight, for: behavior)
             }
 		}
 

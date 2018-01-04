@@ -82,11 +82,15 @@ class AFAgent2D: GKAgent2D {
         behavior = AFCompositeBehavior(agent: self)
         
         let b = AFBehavior(agent: self)
-        (behavior! as! AFCompositeBehavior).setWeight(42, for: b)
-
-        let g = AFGoal(toAvoidObstacles: scene.corral, time: 2, weight: 1)
-        (behavior! as! AFCompositeBehavior).getChild(at: 0).setWeight(43, for: g)
+        b.weight = 100
+        (behavior as! AFCompositeBehavior).setWeight(100, for: b)
         
+        let g1 = AFGoal.makeGoal(.toAvoidObstacles, obstacles: scene.corral, time: 10)
+        let g2 = AFGoal.makeGoal(.toWander, speed: 100)
+        
+        b.setWeight(100, for: g1); g1.weight = 100
+        b.setWeight(100, for: g2); g2.weight = 100
+
         mass = 0.01
         maxSpeed = 1000
         maxAcceleration = 1000

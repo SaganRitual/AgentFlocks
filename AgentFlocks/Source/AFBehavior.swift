@@ -33,6 +33,7 @@ class AFBehavior_Script: Codable {
 class AFBehavior: GKBehavior {
     let agent: AFAgent2D
     var enabled = true
+    var goalsMap = [GKGoal: AFGoal]()
     var savedState: (weight: Float, goal: AFGoal)?
     var weight: Float
 
@@ -43,15 +44,15 @@ class AFBehavior: GKBehavior {
         
         super.init()
         
-        for goal_ in prototype.goals {
-            let goal = AFGoal(prototype: goal_)
+        for gkGoal in prototype.goals {
+            let goal = AFGoal(prototype: gkGoal)
             setWeight(goal.weight, for: goal)
         }
     }
     
     init(agent: AFAgent2D) {
         self.agent = agent
-        weight = 100
+        weight = 142
     }
     
     func addGoal(_ goal: AFGoal) {
@@ -70,12 +71,13 @@ class AFBehavior: GKBehavior {
             let weight = self.weight(for: goal)
             savedState = (weight: weight, goal: goal)
             
-            remove(goal)
+            self.remove(goal.gkGoal)
         }
     }
 
     func getChild(at index: Int) -> AFGoal {
-        return self[index] as! AFGoal
+        let gkGoal = self[index]
+        return goalsMap[gkGoal]!
     }
     
     func hasChildren() -> Bool {
@@ -86,8 +88,24 @@ class AFBehavior: GKBehavior {
         return goalCount
     }
     
+    func remove(_ goal: AFGoal) {
+        goalsMap.removeValue(forKey: goal.gkGoal)
+        super.remove(goal.gkGoal)
+    }
+    
+    func setWeight(_ weight: Float, for goal: AFGoal) {
+        super.setWeight(weight, for: goal.gkGoal)
+        
+        // AFBehavior has to track goals, because there's no way to read
+        // them back out of the GKBehavior structures
+        goalsMap[goal.gkGoal] = goal
+    }
+    
     func toString() -> String {
         return String(format: "Behavior: %.0f", weight)
     }
+    
+    func weight(for goal: AFGoal) -> Float {
+        return weight(for: goal.gkGoal)
+    }
 }
-

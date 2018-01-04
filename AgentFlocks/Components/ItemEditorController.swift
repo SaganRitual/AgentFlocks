@@ -70,7 +70,8 @@ class ItemEditorController: NSViewController {
         if let sliderController = sliders[sliderName.lowercased()] {
             return sliderController.valueChanged
         }
-        fatalError()
+        
+        return false
     }
 	
 	// MARK: Value

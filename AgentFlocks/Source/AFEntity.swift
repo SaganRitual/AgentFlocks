@@ -59,19 +59,21 @@ extension AFEntity {
 extension AFEntity: AgentGoalsDataSource {
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, numberOfChildrenOfItem item: Any?) -> Int {
-        let selected = GameScene.me!.getSelectedIndexes()
-        
-        if selected.count > 0 {
-            let entity = GameScene.me!.entities[selected.first!]
+        if let c = item as? AFCompositeBehavior {
+            return c.behaviorCount
+        } else if let b = item as? AFBehavior {
+            return b.goalCount
+        } else {
+            let selected = GameScene.me!.getSelectedIndexes()
             
-            if let b = entity.agent.behavior as? AFBehavior {
-                return b.howManyChildren()
-            } else if let c = entity.agent.behavior as? AFCompositeBehavior {
-                return c.howManyChildren()
+            if selected.count > 0 {
+                let entity = GameScene.me!.entities[selected.first!]
+                print("c = ", (entity.agent.behavior as! GKCompositeBehavior).behaviorCount)
+                return (entity.agent.behavior as! GKCompositeBehavior).behaviorCount
             }
+            
+            return 0
         }
-        
-        return 0
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemExpandable item: Any) -> Bool {
@@ -96,10 +98,12 @@ extension AFEntity: AgentGoalsDataSource {
     func agentGoals(_ agentGoalsController: AgentGoalsController, labelOfItem item: Any) -> String {
         if let behavior = item as? AFBehavior {
             return behavior.toString()
-        } else if let goal = item as? AFGoal {
-            return goal.toString()
+        } else if let gkGoal = item as? GKGoal {
+            let parent = agentGoalsController.outlineView.parent(forItem: item) as! AFBehavior
+            
+            return parent.goalsMap[gkGoal]!.toString()
         } else {
-            return "<no name>"
+            return "<Rob broke something>"
         }
     }
     
@@ -108,8 +112,10 @@ extension AFEntity: AgentGoalsDataSource {
             return c.enabled
         } else if let b = item as? AFBehavior {
             return b.enabled
-        } else if let g = item as? AFGoal {
-            return g.enabled
+        } else if let gkGoal = item as? GKGoal {
+            let parent = agentGoalsController.outlineView.parent(forItem: item) as! AFBehavior
+
+            return parent.goalsMap[gkGoal]!.enabled
         } else {
             return false
         }

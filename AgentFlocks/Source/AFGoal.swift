@@ -41,11 +41,11 @@ class AFGoal_Script: Codable {
     var time: Float = 0
 }
 
-class AFGoal: GKGoal {
+class AFGoal {
     var agents = [GKAgent]()
     var enabled = true
     var forward = true
-    var goal: GKGoal!
+    var gkGoal: GKGoal!
     let goalType: AFGoalType
     var obstacles = [GKObstacle]()
     var path = GKPath()
@@ -69,8 +69,6 @@ class AFGoal: GKGoal {
         goalType = prototype.goalType
         speed = prototype.speed
         weight = prototype.weight
-        
-        super.init()
         
         switch goalType {
         case .toAlignWith:        break
@@ -108,7 +106,7 @@ class AFGoal: GKGoal {
         self.distance = maxDistance
         self.weight = weight
         
-        goal = GKGoal(toAlignWith: agents, maxDistance: maxDistance, maxAngle: maxAngle)
+        gkGoal = GKGoal(toAlignWith: agents, maxDistance: maxDistance, maxAngle: maxAngle)
     }
     
     init(toAvoidAgents agents: [GKAgent], time: TimeInterval, weight: Float) {
@@ -118,7 +116,7 @@ class AFGoal: GKGoal {
         self.time = Float(time)
         self.weight = weight
         
-        goal = GKGoal(toAvoid: agents, maxPredictionTime: time)
+        gkGoal = GKGoal(toAvoid: agents, maxPredictionTime: time)
     }
     
     init(toAvoidObstacles obstacles: [GKObstacle], time: TimeInterval, weight: Float) {
@@ -128,7 +126,7 @@ class AFGoal: GKGoal {
         self.time = Float(time)
         self.weight = weight
         
-        goal = GKGoal(toAvoid: obstacles, maxPredictionTime: time)
+        gkGoal = GKGoal(toAvoid: obstacles, maxPredictionTime: time)
     }
     
     init(toCohereWith agents: [GKAgent], maxDistance: Float, maxAngle: Float, weight: Float) {
@@ -139,7 +137,7 @@ class AFGoal: GKGoal {
         self.distance = maxDistance
         self.weight = weight
         
-        goal = GKGoal(toCohereWith: agents, maxDistance: maxDistance, maxAngle: maxAngle)
+        gkGoal = GKGoal(toCohereWith: agents, maxDistance: maxDistance, maxAngle: maxAngle)
     }
     
     init(toInterceptAgent agent: GKAgent, time: TimeInterval, weight: Float) {
@@ -148,7 +146,7 @@ class AFGoal: GKGoal {
         self.time = Float(time)
         self.weight = weight
         
-        goal = GKGoal(toInterceptAgent: agent, maxPredictionTime: time)
+        gkGoal = GKGoal(toInterceptAgent: agent, maxPredictionTime: time)
     }
     
     init(toFleeAgent agent: GKAgent, weight: Float) {
@@ -156,7 +154,7 @@ class AFGoal: GKGoal {
         
         self.weight = weight
         
-        goal = GKGoal(toFleeAgent: agent)
+        gkGoal = GKGoal(toFleeAgent: agent)
     }
 
     init(toFollow path: GKPath, time t: Float, forward: Bool, weight: Float) {
@@ -165,7 +163,7 @@ class AFGoal: GKGoal {
         self.time = t
         self.weight = weight
         
-        goal = GKGoal(toFollow: path, maxPredictionTime: TimeInterval(t), forward: true)
+        gkGoal = GKGoal(toFollow: path, maxPredictionTime: TimeInterval(t), forward: true)
     }
     
     init(toReachTargetSpeed speed: Float, weight: Float) {
@@ -174,9 +172,7 @@ class AFGoal: GKGoal {
         self.speed = speed
         self.weight = weight
         
-        super.init()
-        
-        newGoal(newValue: speed)
+        gkGoal = GKGoal(toReachTargetSpeed: speed)
     }
     
     init(toSeekAgent agent: GKAgent, weight: Float) {
@@ -184,7 +180,7 @@ class AFGoal: GKGoal {
         
         self.weight = weight
         
-        goal = GKGoal(toSeekAgent: agent)
+        gkGoal = GKGoal(toSeekAgent: agent)
     }
     
     init(toSeparateFrom agents: [GKAgent], maxDistance: Float, maxAngle: Float, weight: Float) {
@@ -195,7 +191,7 @@ class AFGoal: GKGoal {
         self.distance = maxDistance
         self.weight = weight
         
-        goal = GKGoal(toSeparateFrom: agents, maxDistance: maxDistance, maxAngle: maxAngle)
+        gkGoal = GKGoal(toSeparateFrom: agents, maxDistance: maxDistance, maxAngle: maxAngle)
     }
     
     init(toStayOn path: GKPath, time t: Float, weight: Float) {
@@ -204,7 +200,7 @@ class AFGoal: GKGoal {
         self.time = t
         self.weight = weight
         
-        goal = GKGoal(toStayOn: path, maxPredictionTime: TimeInterval(t))
+        gkGoal = GKGoal(toStayOn: path, maxPredictionTime: TimeInterval(t))
     }
     
     init(toWander speed: Float, weight: Float) {
@@ -212,21 +208,19 @@ class AFGoal: GKGoal {
         self.speed = speed
         self.weight = weight
         
-        super.init()
-        
-        newGoal(newValue: speed)
+        gkGoal = GKGoal(toWander: speed)
     }
     
     init(goal: GKGoal, type: AFGoalType, weight: Float) {
-        self.goal = goal
+        self.gkGoal = goal
         self.goalType = type
         self.weight = weight
     }
     
     func newGoal(newValue: Float) {
         switch goalType {
-        case .toReachTargetSpeed: goal = GKGoal(toReachTargetSpeed: newValue)
-        case .toWander:           goal = GKGoal(toWander: newValue)
+        case .toReachTargetSpeed: gkGoal = GKGoal(toReachTargetSpeed: newValue)
+        case .toWander:           gkGoal = GKGoal(toWander: newValue)
         default: fatalError()
         }
     }
