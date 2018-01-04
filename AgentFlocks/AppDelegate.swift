@@ -441,11 +441,11 @@ extension AppDelegate: AgentGoalsDelegate {
             editorController.delegate = self
             editorController.editedItem = item
  
-            editorController.setValue(ofSlider: "Angle", to: Double(afGoal.angle))
-            editorController.setValue(ofSlider: "Distance", to: Double(afGoal.distance))
-            editorController.setValue(ofSlider: "Speed", to: Double(afGoal.speed))
-            editorController.setValue(ofSlider: "Time", to: Double(afGoal.time))
-            editorController.setValue(ofSlider: "Weight", to: Double(afGoal.weight))
+            editorController.setValue(ofSlider: "Angle", to: Double(afGoal.angle), resetDirtyFlag: true)
+            editorController.setValue(ofSlider: "Distance", to: Double(afGoal.distance), resetDirtyFlag: true)
+            editorController.setValue(ofSlider: "Speed", to: Double(afGoal.speed), resetDirtyFlag: true)
+            editorController.setValue(ofSlider: "Time", to: Double(afGoal.time), resetDirtyFlag: true)
+            editorController.setValue(ofSlider: "Weight", to: Double(afGoal.weight), resetDirtyFlag: true)
             editorController.preview = true
         
             let itemRect = mainView.convert(rect, from: agentGoalsController.view)

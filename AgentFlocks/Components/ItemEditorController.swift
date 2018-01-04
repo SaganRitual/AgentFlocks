@@ -82,9 +82,11 @@ class ItemEditorController: NSViewController {
 		return nil
 	}
 	
-	func setValue(ofSlider sliderName:String, to value: Double) {
+    func setValue(ofSlider sliderName:String, to value: Double, resetDirtyFlag: Bool = false) {
 		if let sliderController = sliders[sliderName.lowercased()] {
 			sliderController.value = value
+            
+            if resetDirtyFlag { sliderController.valueChanged = false }
 		}
 	}
 	
