@@ -75,6 +75,18 @@ class AFCompositeBehavior: GKCompositeBehavior {
         }
     }
     
+    func findParent(ofGoal: GKGoal) -> AFBehavior {
+        for i in 0 ..< behaviorCount {
+            let behavior = self[i] as! AFBehavior
+            
+            if behavior.goalsMap[ofGoal] != nil {
+                return behavior
+            }
+        }
+        
+        fatalError()
+    }
+    
     func getChild(at index: Int) -> AFBehavior {
         return self[index] as! AFBehavior
     }

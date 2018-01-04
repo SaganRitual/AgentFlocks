@@ -383,8 +383,12 @@ extension AppDelegate: AgentGoalsDelegate {
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemClicked item: Any, inRect rect: NSRect) {
         if let motivator = item as? AFBehavior {
             parentOfNewMotivator = motivator
-        } else if let motivator = item as? AFGoal {
-            parentOfNewMotivator = agentGoalsController.outlineView.parent(forItem: motivator) as? AFBehavior
+        } else if let motivator = item as? GKGoal {
+            let index = GameScene.me!.getPrimarySelectionIndex()!
+            let agent = GameScene.me!.entities[index].agent
+            let composite = agent.behavior as! AFCompositeBehavior
+            
+            parentOfNewMotivator = composite.findParent(ofGoal: motivator)
         }
     }
 
@@ -403,12 +407,18 @@ extension AppDelegate: AgentGoalsDelegate {
             let itemRect = mainView.convert(rect, from: agentGoalsController.view)
             self.showPopover(withContentController: editorController, forRect: itemRect, preferredEdge: .minX)
         }
-        else if item is AFGoal {
-            let goal = item as! AFGoal
+        else if item is GKGoal {
+            let gkGoal = item as! GKGoal
+
+            let index = GameScene.me!.getPrimarySelectionIndex()!
+            let agent = GameScene.me!.entities[index].agent
+            let composite = agent.behavior as! AFCompositeBehavior
+            let behavior = composite.findParent(ofGoal: gkGoal)
+            let afGoal = behavior.goalsMap[gkGoal]!
             
             var attributes = [String]()
 
-            switch goal.goalType {
+            switch afGoal.goalType {
             case .toAlignWith:    fallthrough
             case .toCohereWith:   fallthrough
             case .toSeparateFrom: attributes = ["Angle", "Distance", "Weight"]
@@ -431,11 +441,11 @@ extension AppDelegate: AgentGoalsDelegate {
             editorController.delegate = self
             editorController.editedItem = item
  
-            editorController.setValue(ofSlider: "Angle", to: Double(goal.angle))
-            editorController.setValue(ofSlider: "Distance", to: Double(goal.distance))
-            editorController.setValue(ofSlider: "Speed", to: Double(goal.speed))
-            editorController.setValue(ofSlider: "Time", to: Double(goal.time))
-            editorController.setValue(ofSlider: "Weight", to: Double(goal.weight))
+            editorController.setValue(ofSlider: "Angle", to: Double(afGoal.angle))
+            editorController.setValue(ofSlider: "Distance", to: Double(afGoal.distance))
+            editorController.setValue(ofSlider: "Speed", to: Double(afGoal.speed))
+            editorController.setValue(ofSlider: "Time", to: Double(afGoal.time))
+            editorController.setValue(ofSlider: "Weight", to: Double(afGoal.weight))
             editorController.preview = true
         
             let itemRect = mainView.convert(rect, from: agentGoalsController.view)
@@ -558,7 +568,13 @@ extension AppDelegate: ItemEditorDelegate {
             // Edit existing behavior
             behavior.weight = weight
             (entity.agent.behavior! as! AFCompositeBehavior).setWeight(weight, for: behavior)
-        } else if let goal = controller.editedItem as? AFGoal {
+        } else if let gkGoal = controller.editedItem as? GKGoal {
+            let index = GameScene.me!.getPrimarySelectionIndex()!
+            let agent = GameScene.me!.entities[index].agent
+            let composite = agent.behavior as! AFCompositeBehavior
+            let behavior = composite.findParent(ofGoal: gkGoal)
+            let afGoal = behavior.goalsMap[gkGoal]!
+
             // Edit existing goal -- note AFBehavior doesn't give us a way
             // to update the goal. If we want to assign any new values to
             // this goal, we just have to throw it away and make a new one.
@@ -575,7 +591,7 @@ extension AppDelegate: ItemEditorDelegate {
             // So if all we're updating is the weight, we can just change that
             // directly in the behavior, without creating a new goal.
             if replacementGoalRequired {
-                let newGoal = AFGoal.makeGoal(copyFrom: goal)
+                let newGoal = AFGoal.makeGoal(copyFrom: afGoal)
                 
                 newGoal.weight = weight
 
@@ -584,11 +600,11 @@ extension AppDelegate: ItemEditorDelegate {
                 if let speed = speed { newGoal.speed = Float(speed) }
                 if let time = time { newGoal.time = Float(time) }
                 
-                parentOfNewMotivator.remove(goal)
+                parentOfNewMotivator.remove(afGoal)
                 parentOfNewMotivator.setWeight(weight, for: newGoal)
             } else {
-                goal.weight = weight
-                parentOfNewMotivator.setWeight(weight, for: goal)
+                afGoal.weight = weight
+                parentOfNewMotivator.setWeight(weight, for: afGoal)
             }
         } else {
             // Add new goal or behavior
@@ -697,22 +713,6 @@ extension AppDelegate: ItemEditorDelegate {
 
                 if goal != nil {
                     parentOfNewMotivator.addGoal(goal!)
-                    
-                    let a = entity.agent
-                    let c = a.behavior! as! AFCompositeBehavior
-                    for cc in 0 ..< c.behaviorCount {
-                        let b = c.getChild(at: cc)
-                        let bw = c.weight(for: b)
-                        
-                        print("b, \(b) \(bw)")
-                        
-                        for bb in 0 ..< b.goalCount {
-                            let g = b.getChild(at: bb)
-                            let gw = b.weight(for: g)
-                            print("g, \(gw) \(a.mass), \(a.maxSpeed), \(a.maxAcceleration), \(a.radius)")
-                        }
-                        
-                    }
                 }
             } else {
                 let behavior = AFBehavior(agent: entity.agent)
