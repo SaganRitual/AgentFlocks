@@ -444,13 +444,18 @@ extension AppDelegate: AgentGoalsDelegate {
     }
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, item: Any, setState state: NSControl.StateValue) {
-        if let behaviorItem = item as? AgentBehaviorType {
-            let enabled = (state == .on) ? true : false
-            NSLog("Behavior '\(behaviorItem.name)' " + (enabled ? "enabled" : "disabled"))
+        if let behavior = item as? AFBehavior {
+            let index = GameScene.me!.getPrimarySelectionIndex()!
+            let agent = GameScene.me!.entities[index].agent
+            let composite = agent.behavior as! AFCompositeBehavior
+
+            composite.enableBehavior(behavior, on: state == .on)
         }
-        else if let goalItem = item as? AgentGoalType {
-            let enabled = (state == .on) ? true : false
-            NSLog("Goal '\(goalItem.name)' " + (enabled ? "enabled" : "disabled"))
+        else if let gkGoal = item as? GKGoal {
+            let behavior = agentGoalsController.outlineView.parent(forItem: item) as! AFBehavior
+            let afGoal = behavior.goalsMap[gkGoal]!
+
+            behavior.enableGoal(afGoal, on: state == .on)
         }
     }
 

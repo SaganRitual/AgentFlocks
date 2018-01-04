@@ -57,7 +57,7 @@ extension AFEntity {
 }
 
 extension AFEntity: AgentGoalsDataSource {
-    
+
     func agentGoals(_ agentGoalsController: AgentGoalsController, numberOfChildrenOfItem item: Any?) -> Int {
         if let c = item as? AFCompositeBehavior {
             return c.behaviorCount
@@ -68,7 +68,6 @@ extension AFEntity: AgentGoalsDataSource {
             
             if selected.count > 0 {
                 let entity = GameScene.me!.entities[selected.first!]
-                print("c = ", (entity.agent.behavior as! GKCompositeBehavior).behaviorCount)
                 return (entity.agent.behavior as! GKCompositeBehavior).behaviorCount
             }
             

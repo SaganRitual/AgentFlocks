@@ -55,17 +55,21 @@ class AFCompositeBehavior: GKCompositeBehavior {
         setWeight(newBehavior.weight, for: newBehavior)
     }
     
-    func enableBehavior(behavior: AFBehavior, on: Bool = true) {
+    var saveMap = [AFBehavior: Float]()
+    
+    func enableBehavior(_ behavior: AFBehavior, on: Bool = true) {
         if on {
             enabled = true
             
-            setWeight(savedState!.weight, for: savedState!.behavior)
-            savedState = nil
+            let weight = saveMap[behavior]!
+            setWeight(weight, for: behavior)
+
+            saveMap.removeValue(forKey: behavior)
         } else {
             enabled = false
             
             let weight = self.weight(for: behavior)
-            savedState = (weight: weight, behavior: behavior)
+            saveMap[behavior] = weight
             
             remove(behavior)
         }
