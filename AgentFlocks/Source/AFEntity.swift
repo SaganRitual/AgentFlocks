@@ -12,6 +12,10 @@ class AFEntities: Codable {
     let entities: [AFEntity_Script]
 }
 
+class AFPaths: Codable {
+    let paths: [AFPath_Script]
+}
+
 class AFEntity_Script: Codable {
     let agent: AFAgent2D_Script
     let name: String

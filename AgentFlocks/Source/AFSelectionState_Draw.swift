@@ -30,6 +30,7 @@ class AFSelectionState_Draw: AFSelectionState {
     unowned let gameScene: GameScene
     var mouseState = AFSelectionState_Primary.MouseStates.up
     var nodeToMouseOffset = CGPoint.zero
+    var afPath = AFPath()
     var primarySelectionIndex: Int?
     var selectedIndexes = Set<Int>()
     var touchedNodes = [SKNode]()
@@ -57,6 +58,18 @@ class AFSelectionState_Draw: AFSelectionState {
         
         return ix
     }
+    
+    func getTouchedNode() -> SKNode? {
+        touchedNodes = gameScene.nodes(at: currentPosition!)
+        
+        for pathHandle in gameScene.pathHandles {
+            if touchedNodes.contains(pathHandle) {
+                return pathHandle
+            }
+        }
+        
+        return nil
+    }
 
     func mouseDown(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
@@ -80,32 +93,22 @@ class AFSelectionState_Draw: AFSelectionState {
         currentPosition = event.location(in: gameScene)
         upNodeIndex = getTouchedNodeIndex()
         
-        if let index = upNodeIndex {
-            // Clicked a node without moving it; delete it
-            gameScene.pathHandles[index].removeFromParent()
-            gameScene.pathHandles.remove(at: index)
-            vertices.remove(at: index)
-        } else {
+        if upNodeIndex == nil {
             // Clicked in the black; add a node
             vertices.append(currentPosition!)
+            
+            afPath.add(point: currentPosition!)
             
             let marker = SKShapeNode(circleOfRadius: 5)
             marker.fillColor = .yellow
             marker.position = currentPosition!
             gameScene.addChild(marker)
             gameScene.pathHandles.append(marker)
-            
-            if vertices.count > 1 {
-                let last = vertices[vertices.count - 1]
-                let penultimate = vertices[vertices.count - 2]
-
-                let pathToDraw = CGMutablePath()
-                pathToDraw.move(to: penultimate)
-                pathToDraw.addLine(to: last)
-                
-                let line = SKShapeNode(path: pathToDraw)
-                gameScene.addChild(line)
-            }
+        } else {
+            // Clicked a node without moving it; delete it
+            let touchedNode = getTouchedNode()!
+            afPath.remove(node: touchedNode)
+            gameScene.pathHandles.remove(at: upNodeIndex!)
         }
         
         downNodeIndex = nil

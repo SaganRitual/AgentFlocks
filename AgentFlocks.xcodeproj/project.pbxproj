@@ -69,6 +69,7 @@
 		D44256251FE8048100FC454B /* AFEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256241FE8048100FC454B /* AFEntity.swift */; };
 		D44256271FE804F000FC454B /* AFAgent2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256261FE804F000FC454B /* AFAgent2D.swift */; };
 		D442562B1FE80FA000FC454B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D442562A1FE80FA000FC454B /* README.md */; };
+		D4506DD51FFE65B50077A42A /* AFPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4506DD41FFE65B50077A42A /* AFPath.swift */; };
 		D46AFB591FF968DA001CD4ED /* AFSelectionState_Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46AFB581FF968DA001CD4ED /* AFSelectionState_Draw.swift */; };
 		D47BC1F41FECCFE600B3CE6B /* Round2.txt in Resources */ = {isa = PBXBuildFile; fileRef = D47BC1F31FECCFE600B3CE6B /* Round2.txt */; };
 		D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */; };
@@ -143,6 +144,7 @@
 		D44256241FE8048100FC454B /* AFEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFEntity.swift; sourceTree = "<group>"; };
 		D44256261FE804F000FC454B /* AFAgent2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFAgent2D.swift; sourceTree = "<group>"; };
 		D442562A1FE80FA000FC454B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		D4506DD41FFE65B50077A42A /* AFPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFPath.swift; sourceTree = "<group>"; };
 		D46AFB581FF968DA001CD4ED /* AFSelectionState_Draw.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSelectionState_Draw.swift; sourceTree = "<group>"; };
 		D47BC1F31FECCFE600B3CE6B /* Round2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Round2.txt; sourceTree = "<group>"; };
 		D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFCompositeBehavior.swift; sourceTree = "<group>"; };
@@ -289,6 +291,7 @@
 				D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */,
 				D44256241FE8048100FC454B /* AFEntity.swift */,
 				D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */,
+				D4506DD41FFE65B50077A42A /* AFPath.swift */,
 				D46AFB581FF968DA001CD4ED /* AFSelectionState_Draw.swift */,
 				D417BBB61FF95236001D9892 /* AFSelectionState_Primary.swift */,
 			);
@@ -432,6 +435,7 @@
 				D4C7EAE11FFD06EE0008FBCD /* AFGoal.swift in Sources */,
 				D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */,
 				744D8F341F91E53A00D4B048 /* TopBarController.swift in Sources */,
+				D4506DD51FFE65B50077A42A /* AFPath.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

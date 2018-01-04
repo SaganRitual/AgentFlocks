@@ -21,12 +21,12 @@
             <subviews>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5yr-11-FKX">
                     <rect key="frame" x="-2" y="-3" width="67" height="46"/>
-                    <buttonCell key="cell" type="bevel" title="Draw Mode" bezelStyle="regularSquare" image="buttonCell:Gmk-0U-77U:image" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Gmk-0U-77U">
+                    <buttonCell key="cell" type="bevel" title="Finish Path" bezelStyle="regularSquare" image="buttonCell:Gmk-0U-77U:image" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Gmk-0U-77U">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="drawPathClicked:" target="-2" id="FI3-bw-Zu6"/>
+                        <action selector="finishPathClicked:" target="-2" id="ayT-Zj-6Go"/>
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KEH-SL-ZCm">
@@ -36,25 +36,28 @@
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="placeObstacleClicked:" target="-2" id="vwG-ah-nWC"/>
+                        <action selector="recallAgents:" target="-2" id="F73-2Q-1K6"/>
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yfk-q2-1mQ">
                     <rect key="frame" x="124" y="-3" width="67" height="46"/>
-                    <buttonCell key="cell" type="bevel" title="Place Agent" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="hnk-Du-CwH">
+                    <buttonCell key="cell" type="bevel" title="Save Script" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="hnk-Du-CwH">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="placeAgentClicked:" target="-2" id="zD4-Ue-4GX"/>
+                        <action selector="saveFileClicked:" target="-2" id="HRY-rp-qDs"/>
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xmO-WQ-mPG">
                     <rect key="frame" x="187" y="-3" width="67" height="46"/>
-                    <buttonCell key="cell" type="bevel" title="PH" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="tbN-05-X4v">
+                    <buttonCell key="cell" type="bevel" title="Path 3" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="tbN-05-X4v">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
+                    <connections>
+                        <action selector="path3Clicked:" target="-2" id="Jrv-p4-x3g"/>
+                    </connections>
                 </button>
                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="6uf-Yz-6OL">
                     <rect key="frame" x="535" y="0.0" width="240" height="41"/>
@@ -75,81 +78,90 @@
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="59q-Na-Gej">
                     <rect key="frame" x="250" y="-3" width="67" height="46"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="bevel" title="Radii" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SQP-Ke-WKA">
+                    <buttonCell key="cell" type="bevel" title="Path 4" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="SQP-Ke-WKA">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="radiiClicked:" target="-2" id="SuP-6Y-SUV"/>
+                        <action selector="path4Clicked:" target="-2" id="wHh-zu-OuW"/>
                     </connections>
                 </button>
-                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="b4Z-oV-MHS">
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="b4Z-oV-MHS" userLabel="Draw Path">
                     <rect key="frame" x="-2" y="36" width="67" height="46"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="bevel" title="P-Input Mode" bezelStyle="regularSquare" image="buttonCell:fE3-gY-Mxq:image" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="fE3-gY-Mxq">
+                    <buttonCell key="cell" type="bevel" title="Draw Path" bezelStyle="regularSquare" image="buttonCell:fE3-gY-Mxq:image" imagePosition="overlaps" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="fE3-gY-Mxq">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="pInputClicked:" target="-2" id="ARW-mP-3Ct"/>
+                        <action selector="drawPathClicked:" target="-2" id="c3j-jD-lfS"/>
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GNH-KW-j7K">
                     <rect key="frame" x="61" y="36" width="67" height="46"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="bevel" title="PH" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="em8-pG-mWb">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                </button>
-                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SsX-Ah-a5b">
-                    <rect key="frame" x="124" y="36" width="67" height="46"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="bevel" title="PH" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Elt-2n-1B0">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                </button>
-                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vbr-jW-xUt">
-                    <rect key="frame" x="187" y="36" width="67" height="46"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="bevel" title="Clear Path" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="APt-kR-7MQ">
+                    <buttonCell key="cell" type="bevel" title="Place Agent" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="em8-pG-mWb">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="clearPathClicked:" target="-2" id="0DQ-Nl-D9J"/>
+                        <action selector="placeAgentClicked:" target="-2" id="g3h-6O-z7v"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SsX-Ah-a5b">
+                    <rect key="frame" x="124" y="36" width="67" height="46"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="bevel" title="Load Script" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Elt-2n-1B0">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="loadFileClicked:" target="-2" id="Nrw-jA-cR4"/>
+                    </connections>
+                </button>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vbr-jW-xUt">
+                    <rect key="frame" x="187" y="36" width="67" height="46"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="bevel" title="Path 0" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="APt-kR-7MQ">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="path0Clicked:" target="-2" id="jfp-rQ-bIo"/>
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xaU-Nl-sew">
                     <rect key="frame" x="250" y="36" width="67" height="46"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="bevel" title="Load Script" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2IY-6i-G7L">
+                    <buttonCell key="cell" type="bevel" title="Path 1" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="2IY-6i-G7L">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="loadFileClicked:" target="-2" id="M01-sU-lDy"/>
+                        <action selector="path1Clicked:" target="-2" id="tLG-4i-g9v"/>
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5sE-cD-hNI">
                     <rect key="frame" x="312" y="36" width="67" height="46"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="bevel" title="Save Script" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6H9-Dn-IhZ">
+                    <buttonCell key="cell" type="bevel" title="Path 2" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="6H9-Dn-IhZ">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="saveFileClicked:" target="-2" id="Jt9-z2-EoC"/>
+                        <action selector="path2Clicked:" target="-2" id="9hP-dD-dPA"/>
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fkz-Qb-D6q">
                     <rect key="frame" x="312" y="-3" width="67" height="46"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="bevel" title="PH" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="eXz-DI-a9h">
+                    <buttonCell key="cell" type="bevel" title="Path 5" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="eXz-DI-a9h">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                         <font key="font" metaFont="system"/>
                     </buttonCell>
+                    <connections>
+                        <action selector="path5Clicked:" target="-2" id="tge-H7-rlC"/>
+                    </connections>
                 </button>
             </subviews>
             <constraints>

@@ -156,9 +156,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     class jsonOut: Encodable {
         let entities: [AFEntity_Script]
-        let paths: Bool
+        let paths: [AFPath_Script]
         
-        init(entities: [AFEntity_Script], paths: Bool) {
+        init(entities: [AFEntity_Script], paths: [AFPath_Script]) {
             self.entities = entities
             self.paths = paths
         }
@@ -173,7 +173,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 entities_.append(entity_)
             }
             
-            let bigger = jsonOut(entities: entities_, paths: false)
+            var paths_ = [AFPath_Script]()
+            
+            for (_, afPath) in GameScene.me!.paths {
+                let afPath_Script = AFPath_Script(afPath: afPath)
+                paths_.append(afPath_Script)
+            }
+            
+            let bigger = jsonOut(entities: entities_, paths: paths_)
             let encoder = JSONEncoder()
             let script = try encoder.encode(bigger)
             let file = "setup.json"
@@ -207,8 +214,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 let decoder = JSONDecoder()
                 let entities_ = try decoder.decode(AFEntities.self, from: jsonData)
 
-                var selectionSet = false
+                let paths_ = try decoder.decode(AFPaths.self, from: jsonData)
+                
+                for path_ in paths_.paths {
+                    let path = AFPath(prototype: path_)
+                    GameScene.me!.paths[path.name] = path
+                    GameScene.me!.pathnames.append(path.name)
+                }
 
+                var selectionSet = false
                 for entity_ in entities_.entities {
                     let entity = AFEntity(prototype: entity_)
                     GameScene.me!.entities.append(entity)
@@ -347,20 +361,38 @@ extension AppDelegate: TopBarDelegate {
         GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegateDraw
     }
     
-    func pInputClicked(_ controller: TopBarController) {
+    func path0Clicked(_ controller: TopBarController) {
+//        GameScene.me!.pathForNextPathGoal = 0
+    }
+    
+    func path1Clicked(_ controller: TopBarController) {
+        GameScene.me!.pathForNextPathGoal = 1
+    }
+    
+    func path2Clicked(_ controller: TopBarController) {
+        GameScene.me!.pathForNextPathGoal = 2
+    }
+    
+    func path3Clicked(_ controller: TopBarController) {
+        GameScene.me!.pathForNextPathGoal = 3
+    }
+    
+    func path4Clicked(_ controller: TopBarController) {
+        GameScene.me!.pathForNextPathGoal = 4
+    }
+    
+    func path5Clicked(_ controller: TopBarController) {
+        GameScene.me!.pathForNextPathGoal = 5
+    }
+
+    func finishPathClicked(_ controller: TopBarController) {
+        let drawer = GameScene.me!.selectionDelegateDraw!
+        
+        GameScene.me!.paths[drawer.afPath.name] = drawer.afPath
+        GameScene.me!.pathnames.append(drawer.afPath.name)
+        drawer.afPath = AFPath()
+
         GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
-    }
-    
-    func multiSelectClicked(_ controller: TopBarController) {
-        // No more multi-select mode; repurpose the button
-    }
-    
-    func singleSelectClicked(_ controller: TopBarController) {
-        // No more multi-select mode; repurpose the button
-    }
-    
-    func clearPathClicked(_ controller: TopBarController) {
-        GameScene.me!.selectionDelegateDraw.vertices.removeAll()
     }
     
     func topBar(_ controller: TopBarController, obstacleSelected index: Int) {
@@ -667,14 +699,14 @@ extension AppDelegate: ItemEditorDelegate {
                     goal = nil
                     
                 case .toAvoidObstacles:
-                    var points = [float2]()
-                    for vertex in GameScene.me!.selectionDelegateDraw.vertices {
-                        let point = float2(Float(vertex.x), Float(vertex.y))
-                        points.append(point)
-                    }
+                    let pathIndex = GameScene.me!.pathForNextPathGoal
+                    let pathname = GameScene.me!.pathnames[pathIndex]
+                    let afPath = GameScene.me!.paths[pathname]!
+                    let outline = afPath.makeObstacle()
                     
-                    let outline = GKPolygonObstacle(points: points)
                     goal = AFGoal(toAvoidObstacles: [outline], time: time!, weight: weight)
+                    
+                    goal!.pathname = pathname
                     
                 case .toAvoidAgents:
                     goal = AFGoal(toAvoidAgents: group, time: time!, weight: weight)
@@ -704,14 +736,12 @@ extension AppDelegate: ItemEditorDelegate {
                     goal = AFGoal(toFleeAgent: theAgentToFlee, weight: weight)
                     
                 case .toFollow:
-                    var points = [GKGraphNode2D]()
-                    for vertex in GameScene.me!.selectionDelegateDraw.vertices {
-                        let point = GKGraphNode2D(point: vector_float2(Float(vertex.x), Float(vertex.y)))
-                        points.append(point)
-                    }
+                    let pathIndex = GameScene.me!.pathForNextPathGoal
+                    let pathname = GameScene.me!.pathnames[pathIndex]
+                    let afPath = GameScene.me!.paths[pathname]!
+                    goal = AFGoal(toFollow: afPath.gkPath!, time: Float(time!), forward: true, weight: weight)
                     
-                    let path = GKPath(graphNodes: points, radius: 1)
-                    goal = AFGoal(toFollow: path, time: Float(time!), forward: true, weight: weight)
+                    goal!.pathname = pathname
                     
                 case .toInterceptAgent:
                     let selectedIndexes = GameScene.me!.getSelectedIndexes()
