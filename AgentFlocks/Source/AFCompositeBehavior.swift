@@ -27,6 +27,17 @@ import GameplayKit
 class AFCompositeBehavior_Script: Codable {
     var enabled = true
     var behaviors: [AFBehavior_Script]
+    
+    init(composite: AFCompositeBehavior) {
+        enabled = composite.enabled
+        behaviors = [AFBehavior_Script]()
+        
+        for i in 0 ..< composite.behaviorCount {
+            let behavior_real = composite.getChild(at: i)
+            let behavior = AFBehavior_Script(behavior: behavior_real)
+            behaviors.append(behavior)
+        }
+    }
 }
 
 class AFCompositeBehavior: GKCompositeBehavior {

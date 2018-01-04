@@ -28,6 +28,18 @@ class AFBehavior_Script: Codable {
     var enabled = true
     var goals: [AFGoal_Script]
     var weight: Float
+    
+    init(behavior: AFBehavior) {
+        enabled = behavior.enabled
+        weight = behavior.weight
+        goals = [AFGoal_Script]()
+        
+        for i in 0 ..< behavior.goalCount {
+            let afGoal_real = behavior.getChild(at: i)
+            let afGoal_script = AFGoal_Script(goal: afGoal_real)
+            goals.append(afGoal_script)
+        }
+    }
 }
 
 class AFBehavior: GKBehavior {
@@ -47,6 +59,7 @@ class AFBehavior: GKBehavior {
         for gkGoal in prototype.goals {
             let goal = AFGoal(prototype: gkGoal)
             setWeight(goal.weight, for: goal)
+            goalsMap[goal.gkGoal!] = goal
         }
     }
     

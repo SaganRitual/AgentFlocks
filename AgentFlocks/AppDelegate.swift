@@ -154,6 +154,44 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		return true
 	}
     
+    class jsonOut: Encodable {
+        let entities: [AFEntity_Script]
+        let paths: Bool
+        
+        init(entities: [AFEntity_Script], paths: Bool) {
+            self.entities = entities
+            self.paths = paths
+        }
+    }
+    
+    func saveJSON(_ controller: TopBarController) {
+        do {
+            var entities_ = [AFEntity_Script]()
+            
+            for entity in GameScene.me!.entities {
+                let entity_ = AFEntity_Script(entity: entity)
+                entities_.append(entity_)
+            }
+            
+            let bigger = jsonOut(entities: entities_, paths: false)
+            let encoder = JSONEncoder()
+            let script = try encoder.encode(bigger)
+            let file = "setup.json"
+            
+            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                
+                let fileURL = dir.appendingPathComponent(file)
+                print(fileURL)
+                
+                //writing
+                do {
+                    try script.write(to: fileURL)
+                }
+                catch { print(error) }
+            }
+        } catch { print(error) }
+    }
+    
     // MARK: - Custom methods
     func loadJSON(_ controller: TopBarController) {
         // Get out of draw mode. Seems weird to be doing this in a function about
@@ -164,6 +202,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         do {
             if let resourcesPath = Bundle.main.resourcePath {
                 let url = URL(string: "file://\(resourcesPath)/setup.json")!
+                print(url)
                 let jsonData = try Data(contentsOf: url)
                 let decoder = JSONDecoder()
                 let entities_ = try decoder.decode(AFEntities.self, from: jsonData)

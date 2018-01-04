@@ -31,7 +31,7 @@ enum AFGoalType: String, Codable {
 
 class AFGoal_Script: Codable {
     var enabled = true
-    let forward: Bool
+    var forward = true
     let goalType: AFGoalType
     var weight: Float
     
@@ -39,6 +39,17 @@ class AFGoal_Script: Codable {
     var distance: Float = 0
     var speed: Float = 0
     var time: Float = 0
+    
+    init(goal: AFGoal) {
+        enabled = goal.enabled
+        forward = goal.forward
+        goalType = goal.goalType
+        weight = goal.weight
+        angle = goal.angle
+        distance = goal.distance
+        speed = goal.speed
+        time = goal.time
+    }
 }
 
 class AFGoal {

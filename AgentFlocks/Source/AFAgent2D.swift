@@ -8,14 +8,26 @@
 
 import GameplayKit
 
-class AFAgent2D_: Codable {
-    let motivator: AFCompositeBehavior_Script
+class AFAgent2D_Script: Codable {
+    let motivator: AFCompositeBehavior_Script!
     let imageFile: String
     let position: CGPoint
     let mass: Float
     let maxSpeed: Float
     let maxAcceleration: Float
     let radius: Float
+    
+    init(agent: AFAgent2D) {
+        position = CGPoint(x: CGFloat(agent.position.x), y: CGFloat(agent.position.y))
+        mass = agent.mass
+        maxSpeed = agent.maxSpeed
+        maxAcceleration = agent.maxAcceleration
+        radius = agent.radius
+        
+        motivator = AFCompositeBehavior_Script(composite: agent.behavior! as! AFCompositeBehavior)
+        
+        imageFile = ""
+    }
 }
 
 class AFAgent2D: GKAgent2D {
@@ -45,7 +57,7 @@ class AFAgent2D: GKAgent2D {
         return String(format: "%5d", AFAgent2D.uniqueNameBase)
     }
     
-    init(prototype: AFAgent2D_, name: String) {
+    init(prototype: AFAgent2D_Script, name: String) {
         scale = 1
         
         let (cc, ss) = AFAgent2D.makeSpriteContainer(imageFile: prototype.imageFile, position: prototype.position, name)

@@ -9,12 +9,17 @@
 import GameplayKit
 
 class AFEntities: Codable {
-    let entities: [AFEntity_]
+    let entities: [AFEntity_Script]
 }
 
-class AFEntity_: Codable {
-    let agent: AFAgent2D_
+class AFEntity_Script: Codable {
+    let agent: AFAgent2D_Script
     let name: String
+    
+    init(entity: AFEntity) {
+        agent = AFAgent2D_Script(agent: entity.agent)
+        name = entity.name
+    }
 }
 
 class AFEntity: GKEntity {
@@ -30,7 +35,7 @@ class AFEntity: GKEntity {
         addComponent(agent)
     }
     
-    init(prototype: AFEntity_) {
+    init(prototype: AFEntity_Script) {
         agent = AFAgent2D(prototype: prototype.agent, name: prototype.name)
         
         super.init()
@@ -44,7 +49,7 @@ class AFEntity: GKEntity {
 }
 
 extension AFEntity {
-    static func makeEntities(from entities_: [AFEntity_]) -> [AFEntity] {
+    static func makeEntities(from entities_: [AFEntity_Script]) -> [AFEntity] {
         var result = [AFEntity]()
         
         for entity_ in entities_ {
