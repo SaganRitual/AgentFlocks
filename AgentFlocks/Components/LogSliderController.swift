@@ -81,21 +81,15 @@ class LogSliderController: NSViewController {
 			return _value
 		}
 		set {
-            valueChanged = true
-            
 			if newValue < minValue {
 				_value = minValue
 			}
-            else {
-                if newValue <= maxValue {
-                    _value = newValue - newValue.remainder(dividingBy: incrementValue)
-                } else {
-                    while newValue > maxValue {
-                        exponentValue += 1
-                    }
-                }
-            }
-//			valueLabel.sizeToFit()
+			else if newValue > maxValue {
+				_value = maxValue
+			}
+			else {
+				_value = newValue - newValue.remainder(dividingBy: incrementValue)
+			}
 		}
 	}
 	
@@ -120,9 +114,7 @@ class LogSliderController: NSViewController {
 	@IBOutlet private weak var exponentSlider: NSSlider!
 	@IBOutlet private weak var slider: NSSlider!
 	@IBOutlet private weak var valueLabel: NSTextField!
-
-    var valueChanged = false
-
+	
 	// MARK: - Initialization
 	
 	init() {
