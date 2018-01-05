@@ -18,6 +18,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	@IBOutlet weak var settingsView: NSView!
 	@IBOutlet weak var sceneView: NSView!
 	
+	let configuration = Configuration.shared
+	let preferencesWindowController = PreferencesController(windowNibName: NSNib.Name.init(rawValue: "PreferencesWindow"))
+	
     let topBarController = TopBarController()
 	let topBarControllerPadding:CGFloat = 10.0
 	
@@ -351,7 +354,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		activePopover = popover
 	}
 	
-	// MARK: - IBAction
+	// MARK: - Menu callbacks
+	
+	@IBAction func menuPreferencesClicked(_ sender: NSMenuItem) {
+		if let preferencesWindow = preferencesWindowController.window {
+			self.window.beginSheet(preferencesWindow)
+		}
+	}
 	
 	@IBAction func menuFileMenuNewClicked(_ sender: NSMenuItem) {
 		NSLog("Menu: File->New")
