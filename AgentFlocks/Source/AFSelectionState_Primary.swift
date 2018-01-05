@@ -219,6 +219,9 @@ class AFSelectionState_Primary: AFSelectionState {
         if selectedIndexes.count == 1 {
             primarySelectionIndex = ix
             AppDelegate.me!.placeAgentFrames(agentIndex: ix)
+            
+            AppDelegate.agentEditorController.goalsController.dataSource = GameScene.me!.entities[ix]
+            AppDelegate.agentEditorController.attributesController.delegate = GameScene.me!.entities[ix].agent
         }
     }
     
