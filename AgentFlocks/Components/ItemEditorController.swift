@@ -67,9 +67,9 @@ class ItemEditorController: NSViewController {
 	
 	// MARK: - Public methods
     func valueChanged(sliderName: String) -> Bool {
-        if let sliderController = sliders[sliderName.lowercased()] {
-            return sliderController.valueChanged
-        }
+//        if let sliderController = sliders[sliderName.lowercased()] {
+//            return sliderController.valueChanged
+//        }
         
         return false
     }
@@ -86,7 +86,7 @@ class ItemEditorController: NSViewController {
 		if let sliderController = sliders[sliderName.lowercased()] {
 			sliderController.value = value
             
-            if resetDirtyFlag { sliderController.valueChanged = false }
+//            if resetDirtyFlag { sliderController.valueChanged = false }
 		}
 	}
 	
