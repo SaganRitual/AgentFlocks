@@ -52,7 +52,7 @@ class TopBarController: NSViewController {
 	                                    	(.Agents15,	"15 agents"),
 	                                    	(.Custom,	"Custom...") ]
 	
-	private let speedSliderController = SliderController()
+	private let speedSliderController = LogSliderController()
 
 	// MARK: - Attributes (public)
 	
@@ -194,9 +194,9 @@ class TopBarController: NSViewController {
 
 // MARK: -
 
-extension TopBarController: SliderDelegate {
+extension TopBarController: LogSliderDelegate {
 	
-	func slider(_ controller: SliderController, newValue value: Double) {
+	func logSlider(_ controller: LogSliderController, newValue value: Double) {
 		self.speed = value
 		delegate?.topBar(self, speedChangedTo: self.speed)
 	}

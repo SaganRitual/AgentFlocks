@@ -366,7 +366,7 @@ extension AppDelegate: TopBarDelegate {
     }
 
     func topBar(_ controller: TopBarController, speedChangedTo newSpeed: Double) {
-        NSLog("Speed: %.2f%%", newSpeed)
+        NSLog("Speed: %f", newSpeed)
         
     }
 
