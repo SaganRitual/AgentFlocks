@@ -50,6 +50,11 @@
 		74622E981F927FBE00690C3C /* Agent04.png in Resources */ = {isa = PBXBuildFile; fileRef = 74622E871F927EEB00690C3C /* Agent04.png */; };
 		74622E991F927FBE00690C3C /* Agent05.png in Resources */ = {isa = PBXBuildFile; fileRef = 74622E821F927EEA00690C3C /* Agent05.png */; };
 		74622E9A1F927FBE00690C3C /* Agent06.png in Resources */ = {isa = PBXBuildFile; fileRef = 74622E851F927EEA00690C3C /* Agent06.png */; };
+		749386261FFF4D7400BAAF8E /* LogSliderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749386241FFF4D7400BAAF8E /* LogSliderController.swift */; };
+		749386271FFF4D7400BAAF8E /* LogSliderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 749386251FFF4D7400BAAF8E /* LogSliderView.xib */; };
+		749386351FFFE1A500BAAF8E /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749386341FFFE1A500BAAF8E /* Configuration.swift */; };
+		749386381FFFECC300BAAF8E /* PreferencesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749386361FFFECC300BAAF8E /* PreferencesController.swift */; };
+		749386391FFFECC300BAAF8E /* PreferencesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 749386371FFFECC300BAAF8E /* PreferencesWindow.xib */; };
 		74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74ECDF601F9913260096468F /* AgentAttributesController.swift */; };
 		74ECDF631F9913260096468F /* AgentAttributesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 74ECDF611F9913260096468F /* AgentAttributesView.xib */; };
 		74ECDF661F9B132C0096468F /* AgentGoalsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74ECDF641F9B132C0096468F /* AgentGoalsController.swift */; };
@@ -128,6 +133,11 @@
 		74622E851F927EEA00690C3C /* Agent06.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent06.png; sourceTree = "<group>"; };
 		74622E861F927EEA00690C3C /* Agent01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent01.png; sourceTree = "<group>"; };
 		74622E871F927EEB00690C3C /* Agent04.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent04.png; sourceTree = "<group>"; };
+		749386241FFF4D7400BAAF8E /* LogSliderController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogSliderController.swift; sourceTree = "<group>"; };
+		749386251FFF4D7400BAAF8E /* LogSliderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LogSliderView.xib; sourceTree = "<group>"; };
+		749386341FFFE1A500BAAF8E /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
+		749386361FFFECC300BAAF8E /* PreferencesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesController.swift; sourceTree = "<group>"; };
+		749386371FFFECC300BAAF8E /* PreferencesWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PreferencesWindow.xib; sourceTree = "<group>"; };
 		74ECDF601F9913260096468F /* AgentAttributesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentAttributesController.swift; sourceTree = "<group>"; };
 		74ECDF611F9913260096468F /* AgentAttributesView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AgentAttributesView.xib; sourceTree = "<group>"; };
 		74ECDF641F9B132C0096468F /* AgentGoalsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentGoalsController.swift; sourceTree = "<group>"; };
@@ -189,6 +199,7 @@
 		744D8F221F91E38300D4B048 /* AgentFlocks */ = {
 			isa = PBXGroup;
 			children = (
+				749386341FFFE1A500BAAF8E /* Configuration.swift */,
 				D442561F1FE7A41800FC454B /* GameScene.swift */,
 				D44256191FE7A19000FC454B /* GameScene.sks */,
 				74ECDF701F9C8ED40096468F /* Objects.txt */,
@@ -225,6 +236,8 @@
 				74ECDF721F9CB5610096468F /* ItemEditorView.xib */,
 				D442561D1FE7A2F000FC454B /* SceneController.swift */,
 				74616DEB1FA9997800C9E23D /* SceneView.xib */,
+				749386361FFFECC300BAAF8E /* PreferencesController.swift */,
+				749386371FFFECC300BAAF8E /* PreferencesWindow.xib */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -402,6 +415,7 @@
 				744D8F261F91E38300D4B048 /* Assets.xcassets in Resources */,
 				D47BC1F41FECCFE600B3CE6B /* Round2.txt in Resources */,
 				744D8F291F91E38300D4B048 /* MainMenu.xib in Resources */,
+				749386391FFFECC300BAAF8E /* PreferencesWindow.xib in Resources */,
 				745F8F551F929AB4006B08AF /* Obstacle28.png in Resources */,
 				745F8F3D1F929AB4006B08AF /* Obstacle04.png in Resources */,
 				74ECDF711F9C8ED40096468F /* Objects.txt in Resources */,
@@ -427,6 +441,7 @@
 				D417BBB71FF95236001D9892 /* AFSelectionState_Primary.swift in Sources */,
 				D44256201FE7A41800FC454B /* GameScene.swift in Sources */,
 				74ECDF751F9CB5610096468F /* ItemEditorController.swift in Sources */,
+				749386351FFFE1A500BAAF8E /* Configuration.swift in Sources */,
 				D4C7EADF1FFD04730008FBCD /* AFBehavior.swift in Sources */,
 				744D8F241F91E38300D4B048 /* AppDelegate.swift in Sources */,
 				D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */,
@@ -439,6 +454,7 @@
 				74ECDF6A1F9B1C630096468F /* AgentEditorController.swift in Sources */,
 				D472A3711FFFD6860030ACA8 /* LogSliderController.swift in Sources */,
 				D4C7EAE11FFD06EE0008FBCD /* AFGoal.swift in Sources */,
+				749386381FFFECC300BAAF8E /* PreferencesController.swift in Sources */,
 				D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */,
 				744D8F341F91E53A00D4B048 /* TopBarController.swift in Sources */,
 				D4506DD51FFE65B50077A42A /* AFPath.swift in Sources */,

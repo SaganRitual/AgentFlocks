@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="PreferencesController" customModule="AgentFlocks" customModuleProvider="target">
+            <connections>
+                <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="F0z-JX-Cv5">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="240" width="369" height="135"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
+            <view key="contentView" wantsLayer="YES" id="se5-gp-TjO">
+                <rect key="frame" x="0.0" y="0.0" width="369" height="135"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="x9K-Wf-2Jj">
+                        <rect key="frame" x="280" y="13" width="75" height="32"/>
+                        <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="OPW-ti-O9H">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="closseButtonClicked:" target="-2" id="AEv-qN-byQ"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="d8s-vt-tqE">
+                        <rect key="frame" x="18" y="99" width="333" height="18"/>
+                        <buttonCell key="cell" type="check" title="First dummy configuration value" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="CnL-U4-AGL">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <binding destination="-2" name="value" keyPath="self.configuration.firstDummyValue" id="uDd-n9-0Mc"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="l83-cR-C5T">
+                        <rect key="frame" x="18" y="79" width="333" height="18"/>
+                        <buttonCell key="cell" type="check" title="Second dummy configuration value" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="twT-Jj-PAk">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <binding destination="-2" name="value" keyPath="self.configuration.secondDummyValue" id="R9g-Ho-GAJ"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jbU-nO-MIq">
+                        <rect key="frame" x="18" y="59" width="333" height="18"/>
+                        <buttonCell key="cell" type="check" title="Third dummy configuration value" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="dVs-M0-s7G">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <binding destination="-2" name="value" keyPath="self.configuration.thirdDummyValue" id="Fhe-Rf-0Ii"/>
+                        </connections>
+                    </button>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="jbU-nO-MIq" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" id="5QZ-Fg-rpi"/>
+                    <constraint firstAttribute="trailing" secondItem="l83-cR-C5T" secondAttribute="trailing" constant="20" id="9T5-2W-Tjf"/>
+                    <constraint firstAttribute="trailing" secondItem="jbU-nO-MIq" secondAttribute="trailing" constant="20" id="Dg9-Dx-YNx"/>
+                    <constraint firstItem="d8s-vt-tqE" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" id="MUc-Cr-sln"/>
+                    <constraint firstItem="l83-cR-C5T" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" id="T7q-Qg-jE5"/>
+                    <constraint firstAttribute="trailing" secondItem="d8s-vt-tqE" secondAttribute="trailing" constant="20" id="TYx-ZF-9hV"/>
+                    <constraint firstAttribute="trailing" secondItem="x9K-Wf-2Jj" secondAttribute="trailing" constant="20" id="XeQ-T4-Hhq"/>
+                    <constraint firstItem="x9K-Wf-2Jj" firstAttribute="top" secondItem="jbU-nO-MIq" secondAttribute="bottom" constant="20" id="Zix-X3-IR8"/>
+                    <constraint firstItem="l83-cR-C5T" firstAttribute="top" secondItem="d8s-vt-tqE" secondAttribute="bottom" constant="6" id="deT-sg-f5v"/>
+                    <constraint firstAttribute="bottom" secondItem="x9K-Wf-2Jj" secondAttribute="bottom" constant="20" id="o2F-hE-FXl"/>
+                    <constraint firstItem="jbU-nO-MIq" firstAttribute="top" secondItem="l83-cR-C5T" secondAttribute="bottom" constant="6" id="oaT-wq-I0p"/>
+                    <constraint firstItem="d8s-vt-tqE" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="20" id="u25-zk-Sa7"/>
+                </constraints>
+            </view>
+            <connections>
+                <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
+            </connections>
+            <point key="canvasLocation" x="83.5" y="161.5"/>
+        </window>
+        <userDefaultsController representsSharedInstance="YES" id="n1b-Zo-hfU"/>
+    </objects>
+</document>
