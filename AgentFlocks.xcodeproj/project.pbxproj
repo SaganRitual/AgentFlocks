@@ -72,6 +72,7 @@
 		D44256251FE8048100FC454B /* AFEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256241FE8048100FC454B /* AFEntity.swift */; };
 		D44256271FE804F000FC454B /* AFAgent2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256261FE804F000FC454B /* AFAgent2D.swift */; };
 		D442562B1FE80FA000FC454B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D442562A1FE80FA000FC454B /* README.md */; };
+		D44FCF2E1FFF5AA30067258D /* LogSliderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D4CE70FC1FFEFA38004BBB3C /* LogSliderView.xib */; };
 		D4506DD51FFE65B50077A42A /* AFPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4506DD41FFE65B50077A42A /* AFPath.swift */; };
 		D46AFB591FF968DA001CD4ED /* AFSelectionState_Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = D46AFB581FF968DA001CD4ED /* AFSelectionState_Draw.swift */; };
 		D47BC1F41FECCFE600B3CE6B /* Round2.txt in Resources */ = {isa = PBXBuildFile; fileRef = D47BC1F31FECCFE600B3CE6B /* Round2.txt */; };
@@ -380,7 +381,6 @@
 				745F8F4A1F929AB4006B08AF /* Obstacle17.png in Resources */,
 				D4053F051FF5E3A60038953B /* notes.txt in Resources */,
 				745F8F451F929AB4006B08AF /* Obstacle12.png in Resources */,
-				749386271FFF4D7400BAAF8E /* LogSliderView.xib in Resources */,
 				74ECDF671F9B132C0096468F /* AgentGoalsView.xib in Resources */,
 				D4C7EAE31FFD93C00008FBCD /* Agent07.png in Resources */,
 				745F8F481F929AB4006B08AF /* Obstacle15.png in Resources */,
@@ -412,6 +412,7 @@
 				74ECDF711F9C8ED40096468F /* Objects.txt in Resources */,
 				745F8F441F929AB4006B08AF /* Obstacle11.png in Resources */,
 				745F8F411F929AB4006B08AF /* Obstacle08.png in Resources */,
+				D44FCF2E1FFF5AA30067258D /* LogSliderView.xib in Resources */,
 				745F8F501F929AB4006B08AF /* Obstacle23.png in Resources */,
 				745F8F561F929AB4006B08AF /* Obstacle29.png in Resources */,
 				745F8F4E1F929AB4006B08AF /* Obstacle21.png in Resources */,
@@ -441,7 +442,6 @@
 				74622E7B1F9249CA00690C3C /* ImagesListController.swift in Sources */,
 				74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */,
 				D44256271FE804F000FC454B /* AFAgent2D.swift in Sources */,
-				749386261FFF4D7400BAAF8E /* LogSliderController.swift in Sources */,
 				74ECDF6A1F9B1C630096468F /* AgentEditorController.swift in Sources */,
 				D4C7EAE11FFD06EE0008FBCD /* AFGoal.swift in Sources */,
 				749386381FFFECC300BAAF8E /* PreferencesController.swift in Sources */,
@@ -578,7 +578,7 @@
 				CODE_SIGN_ENTITLEMENTS = AgentFlocks/AgentFlocks.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = Y9N34UZ32J;
+				DEVELOPMENT_TEAM = DD983V4X84;
 				INFOPLIST_FILE = AgentFlocks/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
@@ -595,7 +595,7 @@
 				CODE_SIGN_ENTITLEMENTS = AgentFlocks/AgentFlocks.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = Y9N34UZ32J;
+				DEVELOPMENT_TEAM = DD983V4X84;
 				INFOPLIST_FILE = AgentFlocks/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
