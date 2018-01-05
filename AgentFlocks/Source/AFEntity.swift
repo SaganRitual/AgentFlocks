@@ -40,7 +40,7 @@ class AFEntity: GKEntity {
     }
     
     init(prototype: AFEntity_Script) {
-        agent = AFAgent2D(prototype: prototype.agent, name: prototype.name)
+        agent = AFAgent2D(prototype: prototype.agent)
         
         super.init()
         

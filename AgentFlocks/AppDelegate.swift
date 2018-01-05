@@ -617,7 +617,7 @@ extension AppDelegate: AgentGoalsDelegate {
 
 extension AppDelegate: ItemEditorDelegate {
     
-    private func getParentForNewMotivator() -> AFBehavior {
+    func getParentForNewMotivator() -> AFBehavior {
         if let p = parentOfNewMotivator { return p }
         else {
             let agentIndex = GameScene.me!.getPrimarySelectionIndex()!
@@ -663,8 +663,6 @@ extension AppDelegate: ItemEditorDelegate {
                 }
             }
 
-            let weight = weight
-
             // However, the weight of the goal is managed by the behavior.
             // So if all we're updating is the weight, we can just change that
             // directly in the behavior, without creating a new goal.
@@ -689,11 +687,16 @@ extension AppDelegate: ItemEditorDelegate {
             if let type = controller.newItemType {
                 var goal: AFGoal?
                 let group = GameScene.me!.getSelectedAgents()
+                
+                var names = [String]()
+                for agent in group {
+                    names.append((agent as! AFAgent2D).name)
+                }
 
                 switch type {
                 case .toAlignWith:
                     for agent in group {
-                        goal = AFGoal(toAlignWith: group, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
+                        goal = AFGoal(toAlignWith: names, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
                         (agent as! AFAgent2D).addGoal(goal!)
                     }
                     
@@ -718,7 +721,7 @@ extension AppDelegate: ItemEditorDelegate {
                     goal = nil
                     
                 case .toCohereWith:
-                    goal = AFGoal(toCohereWith: group, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
+                    goal = AFGoal(toCohereWith: names, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
                     for agent in group {
                         (agent as! AFAgent2D).addGoal(goal!)
                     }
@@ -763,7 +766,7 @@ extension AppDelegate: ItemEditorDelegate {
                     goal = AFGoal(toSeekAgent: theAgentToSeek, weight: weight)
 
                 case .toSeparateFrom:
-                    goal = AFGoal(toSeparateFrom: group, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
+                    goal = AFGoal(toSeparateFrom: names, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
                     for agent in group {
                         (agent as! AFAgent2D).addGoal(goal!)
                     }

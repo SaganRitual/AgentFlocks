@@ -57,6 +57,7 @@ class AFGoal_Script: Codable {
 }
 
 class AFGoal {
+    var agentNames = [String]()
     var agents = [GKAgent]()
     var enabled = true
     var forward = true
@@ -142,16 +143,24 @@ class AFGoal {
         self.pathname = copyFrom.pathname
     }
     
-    init(toAlignWith agents: [GKAgent], maxDistance: Float, maxAngle: Float, weight: Float) {
+    init(toAlignWith agentNames: [String], maxDistance: Float, maxAngle: Float, weight: Float) {
         goalType = .toAlignWith
         
-        self.agents = agents
+        var gkAgents = [GKAgent]()
+        for entity in GameScene.me!.entities {
+            if agentNames.contains(entity.name) {
+                gkAgents.append(entity.agent)
+            }
+        }
+        
+        self.agentNames = agentNames
+        self.agents = gkAgents
         self.angle = maxAngle
         self.distance = maxDistance
         self.name = NSUUID().uuidString
         self.weight = weight
         
-        gkGoal = GKGoal(toAlignWith: agents, maxDistance: maxDistance, maxAngle: maxAngle)
+        gkGoal = GKGoal(toAlignWith: gkAgents, maxDistance: maxDistance, maxAngle: maxAngle)
     }
     
     init(toAvoidAgents agents: [GKAgent], time: TimeInterval, weight: Float) {
@@ -176,16 +185,24 @@ class AFGoal {
         gkGoal = GKGoal(toAvoid: obstacles, maxPredictionTime: time)
     }
     
-    init(toCohereWith agents: [GKAgent], maxDistance: Float, maxAngle: Float, weight: Float) {
+    init(toCohereWith agentNames: [String], maxDistance: Float, maxAngle: Float, weight: Float) {
         goalType = .toCohereWith
         
-        self.agents = agents
+        var gkAgents = [GKAgent]()
+        for entity in GameScene.me!.entities {
+            if agentNames.contains(entity.name) {
+                gkAgents.append(entity.agent)
+            }
+        }
+        
+        self.agents = gkAgents
+        self.agentNames = agentNames
         self.angle = maxAngle
         self.distance = maxDistance
         self.name = NSUUID().uuidString
         self.weight = weight
         
-        gkGoal = GKGoal(toCohereWith: agents, maxDistance: maxDistance, maxAngle: maxAngle)
+        gkGoal = GKGoal(toCohereWith: gkAgents, maxDistance: maxDistance, maxAngle: maxAngle)
     }
     
     init(toInterceptAgent agent: GKAgent, time: TimeInterval, weight: Float) {
@@ -236,16 +253,24 @@ class AFGoal {
         gkGoal = GKGoal(toSeekAgent: agent)
     }
     
-    init(toSeparateFrom agents: [GKAgent], maxDistance: Float, maxAngle: Float, weight: Float) {
+    init(toSeparateFrom agentNames: [String], maxDistance: Float, maxAngle: Float, weight: Float) {
         goalType = .toSeparateFrom
         
-        self.agents = agents
+        var gkAgents = [GKAgent]()
+        for entity in GameScene.me!.entities {
+            if agentNames.contains(entity.name) {
+                gkAgents.append(entity.agent)
+            }
+        }
+        
+        self.agentNames = agentNames
+        self.agents = gkAgents
         self.angle = maxAngle
         self.distance = maxDistance
         self.name = NSUUID().uuidString
         self.weight = weight
         
-        gkGoal = GKGoal(toSeparateFrom: agents, maxDistance: maxDistance, maxAngle: maxAngle)
+        gkGoal = GKGoal(toSeparateFrom: gkAgents, maxDistance: maxDistance, maxAngle: maxAngle)
     }
     
     init(toStayOn path: GKPath, time t: Float, weight: Float) {
@@ -312,7 +337,8 @@ extension AFGoal {
 
         case .toAlignWith:        fallthrough
         case .toCohereWith:       fallthrough
-        case .toSeparateFrom:     return makeGoal(copyFrom.goalType, agents: copyFrom.agents, distance: copyFrom.distance, angle: copyFrom.angle)
+        case .toSeparateFrom:
+            return makeGoal(copyFrom.goalType, agentNames: copyFrom.agentNames, distance: copyFrom.distance, angle: copyFrom.angle)
 
         case .toFollow:           fallthrough
         case .toStayOn:           return makeGoal(copyFrom.goalType, path: copyFrom.path, time: copyFrom.time, forward: copyFrom.forward)
@@ -328,11 +354,11 @@ extension AFGoal {
         }
     }
     
-    static func makeGoal(_ type: AFGoalType, agents: [GKAgent], distance: Float, angle: Float) -> AFGoal {
+    static func makeGoal(_ type: AFGoalType, agentNames: [String], distance: Float, angle: Float) -> AFGoal {
         switch type {
-        case .toAlignWith:    return AFGoal(toAlignWith: agents, maxDistance: distance, maxAngle: angle, weight: -1)
-        case .toCohereWith:   return AFGoal(toCohereWith: agents, maxDistance: distance, maxAngle: angle, weight: -1)
-        case .toSeparateFrom: return AFGoal(toSeparateFrom: agents, maxDistance: distance, maxAngle: angle, weight: -1)
+        case .toAlignWith:    return AFGoal(toAlignWith: agentNames, maxDistance: distance, maxAngle: angle, weight: -1)
+        case .toCohereWith:   return AFGoal(toCohereWith: agentNames, maxDistance: distance, maxAngle: angle, weight: -1)
+        case .toSeparateFrom: return AFGoal(toSeparateFrom: agentNames, maxDistance: distance, maxAngle: angle, weight: -1)
             
         default: fatalError()
         }
