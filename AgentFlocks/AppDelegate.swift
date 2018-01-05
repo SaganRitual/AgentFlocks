@@ -414,7 +414,7 @@ extension AppDelegate: TopBarDelegate {
     func finishPathClicked(_ controller: TopBarController) {
         let drawer = GameScene.me!.selectionDelegateDraw!
         
-        drawer.afPath.refresh(final: true) // Auto-add the closing line segment
+//        drawer.afPath.refresh(final: true) // Auto-add the closing line segment
         GameScene.me!.paths[drawer.afPath.name] = drawer.afPath
         GameScene.me!.pathnames.append(drawer.afPath.name)
         drawer.afPath = AFPath()
@@ -512,7 +512,7 @@ extension AppDelegate: AgentGoalsDelegate {
             let agent = GameScene.me!.entities[index].agent
             let composite = agent.behavior as! AFCompositeBehavior
             let behavior = composite.findParent(ofGoal: gkGoal)
-            let afGoal = behavior.goalsMap[gkGoal]!
+            let afGoal = behavior!.goalsMap[gkGoal]!
             
             var attributes = [String]()
 
@@ -591,7 +591,7 @@ extension AppDelegate: AgentGoalsDelegate {
         switch type {
         case .toAlignWith:      fallthrough
         case .toCohereWith:     fallthrough
-        case .toSeparateFrom:   attributeList = ["Distance", "Angle"] + attributeList
+        case .toSeparateFrom:   attributeList = ["Angle", "Distance"] + attributeList
 
         case .toAvoidAgents:    fallthrough
         case .toAvoidObstacles: fallthrough
@@ -677,7 +677,7 @@ extension AppDelegate: ItemEditorDelegate {
             let agent = GameScene.me!.entities[index].agent
             let composite = agent.behavior as! AFCompositeBehavior
             let behavior = composite.findParent(ofGoal: gkGoal)
-            let afGoal = behavior.goalsMap[gkGoal]!
+            let afGoal = behavior!.goalsMap[gkGoal]!
 
             // Edit existing goal -- note AFBehavior doesn't give us a way
             // to update the goal. If we want to assign any new values to
@@ -685,7 +685,7 @@ extension AppDelegate: ItemEditorDelegate {
             var replacementGoalRequired = false
             for name in ["Angle", "Distance", "Speed", "Time"] {
                 if controller.valueChanged(sliderName: name) {
-                    replacementGoalRequired = true
+                    replacementGoalRequired = true; break
                 }
             }
 
@@ -712,7 +712,7 @@ extension AppDelegate: ItemEditorDelegate {
             // Add new goal or behavior
             if let type = controller.newItemType {
                 var goal: AFGoal?
-                let group = GameScene.me!.getSelectedAgents()
+                var group = GameScene.me!.getSelectedAgents()
                 
                 var names = [String]()
                 for agent in group {
@@ -721,9 +721,19 @@ extension AppDelegate: ItemEditorDelegate {
 
                 switch type {
                 case .toAlignWith:
+                    let primarySelection = GameScene.me!.getPrimarySelectionIndex()!
+                    let primarySelected = GameScene.me!.entities[primarySelection] as AFEntity
+
+                    goal = AFGoal(toAlignWith: names, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
+
+                    // Secondary selections align with primary and with each other.
+                    // Primary doesn't do anything.
                     for agent in group {
-                        goal = AFGoal(toAlignWith: names, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
-                        (agent as! AFAgent2D).addGoal(goal!)
+                        let afAgent = agent as! AFAgent2D
+                        
+                        if afAgent.name != primarySelected.name {
+                            afAgent.addGoal(goal!)
+                        }
                     }
                     
                     goal = nil
@@ -739,10 +749,24 @@ extension AppDelegate: ItemEditorDelegate {
                     goal!.pathname = pathname
                     
                 case .toAvoidAgents:
-                    goal = AFGoal(toAvoidAgents: group, time: time!, weight: weight)
-                    for agent in group {
-                        (agent as! AFAgent2D).addGoal(goal!)
+                    let primarySelection = GameScene.me!.getPrimarySelectionIndex()!
+                    let primarySelected = GameScene.me!.entities[primarySelection] as AFEntity
+                    
+                    var agentNames = [String]()
+                    for gkAgent in group {
+                        let afAgent = gkAgent as! AFAgent2D
+                        agentNames.append(afAgent.name)
                     }
+                    
+                    for (i, _) in group.enumerated() {
+                        if group[i] == primarySelected.agent {
+                            group.remove(at: i)
+                            break;
+                        }
+                    }
+                    
+                    goal = AFGoal(toAvoidAgents: agentNames, time: time!, weight: weight)
+                    primarySelected.agent.addGoal(goal!)
                     
                     goal = nil
                     
@@ -762,8 +786,8 @@ extension AppDelegate: ItemEditorDelegate {
                     si.remove(GameScene.me!.getPrimarySelectionIndex()!)
                     
                     let secondarySelectionIndex = si.first!
-                    let theAgentToFlee = GameScene.me!.entities[secondarySelectionIndex].agent
-                    goal = AFGoal(toFleeAgent: theAgentToFlee, weight: weight)
+                    let nameOfAgentToFlee = GameScene.me!.entities[secondarySelectionIndex].agent.name
+                    goal = AFGoal(toFleeAgent: nameOfAgentToFlee, weight: weight)
                     
                 case .toFollow:
                     let pathIndex = GameScene.me!.pathForNextPathGoal
@@ -779,17 +803,19 @@ extension AppDelegate: ItemEditorDelegate {
 
                     let indexesAsArray = Array(selectedIndexes)
                     let secondaryAgentIndex = indexesAsArray[1]
-                    let theAgentToIntercept = GameScene.me!.entities[secondaryAgentIndex].agent
-                    goal = AFGoal(toInterceptAgent: theAgentToIntercept, time: time!, weight: weight)
+                    let targetAgentName = GameScene.me!.entities[secondaryAgentIndex].agent.name
+                    goal = AFGoal(toInterceptAgent: targetAgentName, time: time!, weight: weight)
 
                 case .toSeekAgent:
-                    let selectedIndexes = GameScene.me!.getSelectedIndexes()
+                    var selectedIndexes = GameScene.me!.getSelectedIndexes()
                     guard selectedIndexes.count == 2 else { return }
 
-                    let indexesAsArray = Array(GameScene.me!.getSelectedIndexes())
-                    let secondaryAgentIndex = indexesAsArray[1]
-                    let theAgentToSeek = GameScene.me!.entities[secondaryAgentIndex].agent
-                    goal = AFGoal(toSeekAgent: theAgentToSeek, weight: weight)
+                    let p = selectedIndexes.remove(GameScene.me!.getPrimarySelectionIndex()!)
+                    selectedIndexes.remove(p!)
+                    
+                    let secondaryAgentIndex = selectedIndexes.first!
+                    let targetAgentName = GameScene.me!.entities[secondaryAgentIndex].agent.name
+                    goal = AFGoal(toSeekAgent: targetAgentName, weight: weight)
 
                 case .toSeparateFrom:
                     goal = AFGoal(toSeparateFrom: names, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)

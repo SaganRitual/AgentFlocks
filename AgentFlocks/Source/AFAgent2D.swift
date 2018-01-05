@@ -61,6 +61,8 @@ class AFAgent2D: GKAgent2D {
         spriteContainer = cc
         sprite = ss
         
+        sprite.name = prototype.name
+        
         GameScene.me!.addChild(spriteContainer)
         
         originalSize = sprite.size
