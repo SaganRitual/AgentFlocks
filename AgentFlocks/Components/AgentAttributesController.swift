@@ -88,22 +88,20 @@ class AgentAttributesController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        typealias AttributeSet = (ainer: NSView?, roller: LogSliderController, label: String, max: Double, increment: Double)
+        typealias AttributeSet = (container: NSView?, roller: LogSliderController, label: String, value: Double)
         let attributeSets: [AttributeSet] = [
-            (massSliderContainer, massSliderController, "Mass", 1, 0.1),
-            (maxAccelerationSliderContainer, maxAccelerationSliderController, "Max Accel", 100, 1.0),
-            (maxSpeedSliderContainer, maxSpeedSliderController, "Max Speed", 100, 1.0),
-            (radiusSliderContainer, radiusSliderController, "Radius", 100, 1.0),
-            (scaleSliderContainer, scaleSliderController, "Scale", 10.0, 1.0)
+            (massSliderContainer, massSliderController, "Mass", 1),
+            (maxAccelerationSliderContainer, maxAccelerationSliderController, "Max Accel", 100),
+            (maxSpeedSliderContainer, maxSpeedSliderController, "Max Speed", 100),
+            (radiusSliderContainer, radiusSliderController, "Radius", 100),
+            (scaleSliderContainer, scaleSliderController, "Scale", 1)
         ]
         
         for s in attributeSets {
             s.roller.sliderName = s.label
-            s.roller.addToView(s.ainer!)
             s.roller.delegate = self
-            s.roller.minValue = 0
-            s.roller.maxValue = s.max
-            s.roller.incrementValue = s.increment
+            s.roller.value = s.value
+			s.roller.addToView(s.container!)
         }
     }
     

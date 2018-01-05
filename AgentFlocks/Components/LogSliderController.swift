@@ -39,7 +39,7 @@ class LogSliderController: NSViewController {
 	
 	// Exponent slider value
 	
-	private var _exponentValue:Int = 2
+	private var _exponentValue:Int = 0
 	@objc dynamic var exponentValue:Int {
 		get {
 			return _exponentValue
@@ -72,7 +72,7 @@ class LogSliderController: NSViewController {
 			}
 		}
 	}
-	@objc dynamic var maxValue:Double = 10.0
+	@objc dynamic private(set) var maxValue:Double = 10.0
 
 	// Slider value
 	private var _value:Double = 10.0
@@ -103,18 +103,7 @@ class LogSliderController: NSViewController {
 	}
 	
 	// Maximum allowed value (its maximum value and one unit when changed by stepper)
-	private var _incrementValue:Double = 0.1
-	var incrementValue:Double {
-		get {
-			return _incrementValue
-		}
-		set {
-			_incrementValue = newValue
-			if let slider = slider {
-				slider.altIncrementValue = _incrementValue
-			}
-		}
-	}
+	private(set) var incrementValue:Double = 0.1
 
 	var delegate:LogSliderDelegate?
 	
@@ -137,13 +126,27 @@ class LogSliderController: NSViewController {
 	
     override func viewDidLoad() {
         super.viewDidLoad()
+		let initialValue = self.value
+
+		// Set initial values
 		exponentSlider.altIncrementValue = 1.0
-		slider.altIncrementValue = incrementValue
 		valueLabel.formatter = LogSliderValueFormatter()
 		refreshExponentSliderTickmarks()
-		self.exponentValue = 2
+		
+		slider.altIncrementValue = incrementValue
+		
+		// Set the exponent to the minimum value
+		// It will be autoincremented to the needed value when self.value is set
+		self.exponentValue = minExponent
+		
+		// Set the initial value
+		// We use variable initialValue here, because self.value could be changed when exponentValue set to minExponent
+		// This will also auto-increment the exponent value
+		self.value = initialValue
+		
 		exponentSlider.integerValue = self.exponentValue
-    }
+		slider.doubleValue = self.value
+	}
 	
 	// MARK: - Private methods
 	

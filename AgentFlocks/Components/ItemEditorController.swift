@@ -74,6 +74,20 @@ class ItemEditorController: NSViewController {
         return false
     }
 	
+	// MARK: Exponent value
+	func exponentValue(ofSlider sliderName:String) -> Int? {
+		if let sliderController = sliders[sliderName.lowercased()] {
+			return sliderController.exponentValue
+		}
+		return nil
+	}
+	
+	func setExponentValue(ofSlider sliderName:String, to value: Int) {
+		if let sliderController = sliders[sliderName.lowercased()] {
+			sliderController.exponentValue = value
+		}
+	}
+	
 	// MARK: Value
 	func value(ofSlider sliderName:String) -> Double? {
 		if let sliderController = sliders[sliderName.lowercased()] {
@@ -87,34 +101,6 @@ class ItemEditorController: NSViewController {
 			sliderController.value = value
             
             if resetDirtyFlag { sliderController.valueChanged = false }
-		}
-	}
-	
-	// MARK: Maximum value
-	func maxValue(ofSlider sliderName:String) -> Double? {
-		if let sliderController = sliders[sliderName.lowercased()] {
-			return sliderController.maxValue
-		}
-		return nil
-	}
-	
-	func setMaxValue(ofSlider sliderName:String, to value: Double) {
-		if let sliderController = sliders[sliderName.lowercased()] {
-			sliderController.maxValue = value
-		}
-	}
-	
-	// MARK: Maximum value
-	func incrementValue(ofSlider sliderName:String) -> Double? {
-		if let sliderController = sliders[sliderName.lowercased()] {
-			return sliderController.incrementValue
-		}
-		return nil
-	}
-	
-	func setIncrementValue(ofSlider sliderName:String, to value: Double) {
-		if let sliderController = sliders[sliderName.lowercased()] {
-			sliderController.incrementValue = value
 		}
 	}
 	
