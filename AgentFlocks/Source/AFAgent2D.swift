@@ -101,9 +101,9 @@ class AFAgent2D: GKAgent2D {
         
         b.setWeight(100, for: g1); g1.weight = 100
 
-        mass = 0.01
-        maxSpeed = 1000
-        maxAcceleration = 1000
+        mass = 0.1
+        maxSpeed = 100
+        maxAcceleration = 100
         radius = 50
     }
     

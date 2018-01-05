@@ -56,7 +56,7 @@ class AFPath {
     var nodes: Set<AFGraphNode2D>
     var nodesMap: [Int: AFGraphNode2D]
     var obstacle: GKPolygonObstacle?
-    var radius: Float = 50.0
+    var radius: Float = 5.0
     var displayPath: SKNode?
     
     init(obstacle: GKPolygonObstacle? = nil) {
@@ -112,7 +112,7 @@ class AFPath {
         return obstacle!
     }
     
-    func refresh() {
+    func refresh(final: Bool = false) {
         if let dp = displayPath {
             dp.removeFromParent()
         }
@@ -147,11 +147,21 @@ class AFPath {
 
                     let line = SKShapeNode(path: cgPath)
                     displayPath!.addChild(line)
-                    line.glowWidth = 50
+                    line.glowWidth = 5
+                    line.fillColor = .gray
                 }
                 
                 lastPosition = cgPoint
                 cgPath.move(to: lastPosition!)
+            }
+            
+            if final, let fp = firstPosition, let lp = lastPosition, fp != lp {
+                cgPath.addLine(to: fp)
+                
+                let line = SKShapeNode(path: cgPath)
+                displayPath!.addChild(line)
+                line.glowWidth = 5
+                line.fillColor = .gray
             }
         }
         

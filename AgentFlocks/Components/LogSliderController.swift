@@ -86,12 +86,15 @@ class LogSliderController: NSViewController {
 			if newValue < minValue {
 				_value = minValue
 			}
-			else if newValue > maxValue {
-				_value = maxValue
-			}
-			else {
-				_value = newValue - newValue.remainder(dividingBy: incrementValue)
-			}
+            else {
+                if newValue <= maxValue {
+                    _value = newValue - newValue.remainder(dividingBy: incrementValue)
+                } else {
+                    while newValue > maxValue {
+                        exponentValue += 1
+                    }
+                }
+            }
 //			valueLabel.sizeToFit()
 		}
 	}

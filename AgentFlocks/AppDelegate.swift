@@ -388,6 +388,7 @@ extension AppDelegate: TopBarDelegate {
     func finishPathClicked(_ controller: TopBarController) {
         let drawer = GameScene.me!.selectionDelegateDraw!
         
+        drawer.afPath.refresh(final: true) // Auto-add the closing line segment
         GameScene.me!.paths[drawer.afPath.name] = drawer.afPath
         GameScene.me!.pathnames.append(drawer.afPath.name)
         drawer.afPath = AFPath()
