@@ -87,11 +87,17 @@ class LogSliderController: NSViewController {
 			if newValue < minValue {
 				_value = minValue
 			}
-			else if newValue > maxValue {
-				_value = maxValue
-			}
 			else {
-				_value = newValue - newValue.remainder(dividingBy: incrementValue)
+				while (newValue > maxValue) && (exponentValue < maxExponent) {
+					// We're incrementing exponent value - this also changes maxValue in exponentValue's setter
+					exponentValue += 1
+				}
+				if (newValue > maxValue) && (exponentValue >= maxExponent) {
+					_value = maxValue
+				}
+				else {
+					_value = newValue - newValue.remainder(dividingBy: incrementValue)
+				}
 			}
 		}
 	}

@@ -351,6 +351,32 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		activePopover = popover
 	}
 	
+	// MARK: - IBAction
+	
+	@IBAction func menuFileMenuNewClicked(_ sender: NSMenuItem) {
+		NSLog("Menu: File->New")
+	}
+	
+	@IBAction func menuFileMenuOpenClicked(_ sender: NSMenuItem) {
+		NSLog("Menu: File->Open")
+	}
+	
+	@IBAction func menuFileMenuCloseClicked(_ sender: NSMenuItem) {
+		NSLog("Menu: File->Close")
+	}
+	
+	@IBAction func menuFileMenuSaveClicked(_ sender: NSMenuItem) {
+		NSLog("Menu: File->Save")
+	}
+	
+	@IBAction func menuFileMenuSaveAsClicked(_ sender: NSMenuItem) {
+		NSLog("Menu: File->SaveAs")
+	}
+	
+	@IBAction func menuFileMenuRevertToSavedClicked(_ sender: NSMenuItem) {
+		NSLog("Menu: File->Revert to Saved")
+	}
+
 }
 
 // MARK: - TopBarDelegate
