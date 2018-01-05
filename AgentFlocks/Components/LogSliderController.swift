@@ -90,7 +90,6 @@ class LogSliderController: NSViewController {
 			else {
 				_value = newValue - newValue.remainder(dividingBy: incrementValue)
 			}
-//			valueLabel.sizeToFit()
 		}
 	}
 	

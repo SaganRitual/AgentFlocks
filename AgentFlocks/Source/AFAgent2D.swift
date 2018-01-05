@@ -8,14 +8,28 @@
 
 import GameplayKit
 
-class AFAgent2D_: Codable {
-    let motivator: AFCompositeBehavior_Script
+class AFAgent2D_Script: Codable {
+    let motivator: AFCompositeBehavior_Script!
     let imageFile: String
     let position: CGPoint
     let mass: Float
     let maxSpeed: Float
     let maxAcceleration: Float
+    let name: String
     let radius: Float
+    
+    init(agent: AFAgent2D) {
+        position = CGPoint(x: CGFloat(agent.position.x), y: CGFloat(agent.position.y))
+        mass = agent.mass
+        maxSpeed = agent.maxSpeed
+        maxAcceleration = agent.maxAcceleration
+        radius = agent.radius
+        name = agent.name
+        
+        motivator = AFCompositeBehavior_Script(composite: agent.behavior! as! AFCompositeBehavior)
+        
+        imageFile = ""
+    }
 }
 
 class AFAgent2D: GKAgent2D {
@@ -31,24 +45,19 @@ class AFAgent2D: GKAgent2D {
 
     static var once: Bool = false
 
+    var name: String { return sprite.name! }
+    
     var scale: Float {
         willSet(newValue) {
             let v = CGFloat(newValue)
             sprite.scale(to: CGSize(width: originalSize.width * v, height: originalSize.height * v))
         }
     }
-
-    static var uniqueNameBase = 0
     
-    class func makeUniqueName() -> String {
-        AFAgent2D.uniqueNameBase += 1
-        return String(format: "%5d", AFAgent2D.uniqueNameBase)
-    }
-    
-    init(prototype: AFAgent2D_, name: String) {
+    init(prototype: AFAgent2D_Script) {
         scale = 1
         
-        let (cc, ss) = AFAgent2D.makeSpriteContainer(imageFile: prototype.imageFile, position: prototype.position, name)
+        let (cc, ss) = AFAgent2D.makeSpriteContainer(imageFile: prototype.imageFile, position: prototype.position)
         spriteContainer = cc
         sprite = ss
         
@@ -89,9 +98,9 @@ class AFAgent2D: GKAgent2D {
         
         b.setWeight(100, for: g1); g1.weight = 100
 
-        mass = 0.01
-        maxSpeed = 1000
-        maxAcceleration = 1000
+        mass = 0.1
+        maxSpeed = 100
+        maxAcceleration = 100
         radius = 50
     }
     
@@ -104,13 +113,11 @@ class AFAgent2D: GKAgent2D {
     }
     
     func addGoal(_ goal: AFGoal) {
-        /*
+        // The guys who aren't selected have no control over where their
+        // new group goal goes. Just put everyone's in a new behavior.
         let b = AFBehavior(agent: self)
-        (motivator! as! AFCompositeBehavior).addBehavior(b)
-        
-        b.addGoal(goal)
-        applyMotivator()
-         */
+        b.setWeight(goal.weight, for: goal)
+        (behavior as! AFCompositeBehavior).setWeight(goal.weight, for: b)
     }
 
     func deselect() {

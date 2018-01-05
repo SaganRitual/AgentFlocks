@@ -10,11 +10,15 @@ import Cocoa
 
 protocol TopBarDelegate {
 	func topBarDrawPath(_ controller: TopBarController)
-    func pInputClicked(_ controller: TopBarController)
-    func multiSelectClicked(_ controller: TopBarController)
-    func singleSelectClicked(_ controller: TopBarController)
-    func clearPathClicked(_ controller: TopBarController)
+    func finishPathClicked(_ controller: TopBarController)
+    func path0Clicked(_ controller: TopBarController)
+    func path1Clicked(_ controller: TopBarController)
+    func path2Clicked(_ controller: TopBarController)
+    func path3Clicked(_ controller: TopBarController)
+    func path4Clicked(_ controller: TopBarController)
+    func path5Clicked(_ controller: TopBarController)
     func loadJSON(_ controller: TopBarController)
+    func saveJSON(_ controller: TopBarController)
 	func topBar(_ controller: TopBarController, obstacleSelected index:Int)
 	func topBar(_ controller: TopBarController, imageIndex:Int)
 	func topBar(_ controller: TopBarController, flockSelected flock:TopBarController.FlockType)
@@ -135,38 +139,42 @@ class TopBarController: NSViewController {
 			delegate?.topBar(self, flockSelected: flocks[index].type)
 		}
 	}
-
+    
+    @IBAction func path0Clicked(_ sender: NSButton) {
+        delegate?.path0Clicked(self)
+    }
+    @IBAction func path1Clicked(_ sender: NSButton) {
+        delegate?.path1Clicked(self)
+    }
+    @IBAction func path2Clicked(_ sender: NSButton) {
+        delegate?.path2Clicked(self)
+    }
+    @IBAction func path3Clicked(_ sender: NSButton) {
+        delegate?.path3Clicked(self)
+    }
+    @IBAction func path4Clicked(_ sender: NSButton) {
+        delegate?.path4Clicked(self)
+    }
+    @IBAction func path5Clicked(_ sender: NSButton) {
+        delegate?.path5Clicked(self)
+    }
     @IBAction func loadFileClicked(_ sender: NSButton) {
         delegate?.loadJSON(self)
     }
-    
+
+    @IBAction func saveFileClicked(_ sender: NSButton) {
+        delegate?.saveJSON(self)
+    }
+
     @IBAction private func drawPathClicked(_ sender: NSButton) {
 		delegate?.topBarDrawPath(self)
 	}
 	
-    @IBAction func pInputClicked(_ sender: NSButton) {
-        delegate?.pInputClicked(self)
+    @IBAction func finishPathClicked(_ sender: NSButton) {
+        delegate?.finishPathClicked(self)
     }
     
-    @IBAction func multiSelectClicked(_ sender: NSButton) {
-        delegate?.multiSelectClicked(self)
-    }
-    
-    @IBAction func singleSelectClicked(_ sender: NSButton) {
-        delegate?.singleSelectClicked(self)
-    }
-    
-    @IBAction func clearPathClicked(_ sender: NSButton) {
-        delegate?.clearPathClicked(self)
-    }
-    
-    @IBAction func radiiClicked(_ sender: NSButton) {
-        // ready to be re-purposed somewhere else
-    }
-    
-    // re-purposed as a recall button
-	@IBAction private func placeObstacleClicked(_ sender: NSButton) {
-//        self.showPopover(withTitle: "Obstacles", andImages: self.obstacleImages, forButton: sender)
+    @IBAction func recallAgents(_ sender: NSButton) {
         for entity in GameScene.me!.entities {
             let spriteContainer = entity.agent.spriteContainer
             
@@ -174,14 +182,10 @@ class TopBarController: NSViewController {
             entity.agent.position.y = 0
             spriteContainer.position = CGPoint.zero
         }
-	}
+    }
 	
 	@IBAction private func placeAgentClicked(_ sender: NSButton) {
 		self.showPopover(withTitle: "Agents", andImages: self.agentImages, forButton: sender)
-	}
-	
-	@IBAction private func placeFlockClicked(_ sender: NSButton) {
-        print("no more place flock; repurpose")
 	}
 	
 	@IBAction private func playClicked(_ sender: NSButton) {

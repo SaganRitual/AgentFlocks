@@ -31,7 +31,10 @@ class GameScene: SKScene, SKViewDelegate {
     var entities = [AFEntity]()
     var graphs = [String : GKGraph]()
     var inputMode = AFSelectionState_Primary.InputMode.primary
+    var pathForNextPathGoal = 0
+    var pathnames = [String]()
     var pathHandles = [SKShapeNode]()
+    var paths = [String : AFPath]()
 
     var lastUpdateTime : TimeInterval = 0
     var selectionDelegate: AFSelectionState!
