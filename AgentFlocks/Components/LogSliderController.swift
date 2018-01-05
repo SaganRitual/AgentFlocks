@@ -76,11 +76,14 @@ class LogSliderController: NSViewController {
 
 	// Slider value
 	private var _value:Double = 10.0
+	var valueChanged = false
+	
 	@objc dynamic var value:Double {
 		get {
 			return _value
 		}
 		set {
+			valueChanged = true
 			if newValue < minValue {
 				_value = minValue
 			}

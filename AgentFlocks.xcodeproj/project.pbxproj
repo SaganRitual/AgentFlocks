@@ -76,8 +76,6 @@
 		D4C7EADF1FFD04730008FBCD /* AFBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */; };
 		D4C7EAE11FFD06EE0008FBCD /* AFGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */; };
 		D4C7EAE31FFD93C00008FBCD /* Agent07.png in Resources */ = {isa = PBXBuildFile; fileRef = D4C7EAE21FFD93C00008FBCD /* Agent07.png */; };
-		D4CE70FD1FFEFA38004BBB3C /* LogSliderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4CE70FB1FFEFA38004BBB3C /* LogSliderController.swift */; };
-		D4CE70FE1FFEFA38004BBB3C /* LogSliderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D4CE70FC1FFEFA38004BBB3C /* LogSliderView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -153,8 +151,6 @@
 		D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFBehavior.swift; sourceTree = "<group>"; };
 		D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFGoal.swift; sourceTree = "<group>"; };
 		D4C7EAE21FFD93C00008FBCD /* Agent07.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent07.png; sourceTree = "<group>"; };
-		D4CE70FB1FFEFA38004BBB3C /* LogSliderController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogSliderController.swift; sourceTree = "<group>"; };
-		D4CE70FC1FFEFA38004BBB3C /* LogSliderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LogSliderView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -208,14 +204,10 @@
 		744D8F311F91E40200D4B048 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				D4CE70FB1FFEFA38004BBB3C /* LogSliderController.swift */,
-				D4CE70FC1FFEFA38004BBB3C /* LogSliderView.xib */,
 				744D8F321F91E53A00D4B048 /* TopBarController.swift */,
 				744D8F331F91E53A00D4B048 /* TopBarView.xib */,
 				74622E791F9249CA00690C3C /* ImagesListController.swift */,
 				74622E7A1F9249CA00690C3C /* ImagesListView.xib */,
-				745F8F571F93A491006B08AF /* SliderController.swift */,
-				745F8F581F93A491006B08AF /* SliderView.xib */,
 				749386241FFF4D7400BAAF8E /* LogSliderController.swift */,
 				749386251FFF4D7400BAAF8E /* LogSliderView.xib */,
 				74ECDF601F9913260096468F /* AgentAttributesController.swift */,
@@ -428,7 +420,6 @@
 			files = (
 				D417BBB71FF95236001D9892 /* AFSelectionState_Primary.swift in Sources */,
 				D44256201FE7A41800FC454B /* GameScene.swift in Sources */,
-				D4CE70FD1FFEFA38004BBB3C /* LogSliderController.swift in Sources */,
 				74ECDF751F9CB5610096468F /* ItemEditorController.swift in Sources */,
 				D4C7EADF1FFD04730008FBCD /* AFBehavior.swift in Sources */,
 				744D8F241F91E38300D4B048 /* AppDelegate.swift in Sources */,
