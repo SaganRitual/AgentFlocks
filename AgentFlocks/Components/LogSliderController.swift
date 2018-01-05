@@ -1,5 +1,5 @@
 //
-//  SliderController.swift
+//  LogSliderController.swift
 //  AgentFlocks
 //
 //  Created by Gergely Sánta on 15/10/2017.
@@ -8,35 +8,74 @@
 
 import Cocoa
 
-protocol SliderDelegate {
-	func slider(_ controller: SliderController, newValue value:Double)
+protocol LogSliderDelegate {
+	func logSlider(_ controller: LogSliderController, newValue value:Double)
 }
 
-class SliderController: NSViewController {
+class LogSliderController: NSViewController {
 	
 	// MARK: - Attributes (public)
 	
 	// Name of the slider (name of value the slider changes)
 	@objc dynamic var sliderName:String = "Name"
 	
-	// Allowed minimum and maximum value
-	@objc dynamic var minValue:Double = 0.0 {
+	// Allowed minimum and maximum exponents
+	@objc dynamic var minExponent:Int = -1 {
 		didSet {
-			if self.value < minValue {
-				self.value = minValue
+			if _exponentValue < minExponent {
+				_exponentValue = minExponent
 			}
+			refreshExponentSliderTickmarks()
 		}
 	}
-	@objc dynamic var maxValue:Double = 100 {
+	@objc dynamic var maxExponent:Int = 5 {
 		didSet {
-			if self.value > maxValue {
-				self.value = maxValue
+			if _exponentValue > maxExponent {
+				_exponentValue = maxExponent
 			}
+			refreshExponentSliderTickmarks()
 		}
 	}
 	
+	// Exponent slider value
+	
+	private var _exponentValue:Int = 2
+	@objc dynamic var exponentValue:Int {
+		get {
+			return _exponentValue
+		}
+		set {
+			if newValue < minExponent {
+				_exponentValue = minExponent
+			}
+			else if newValue > maxExponent {
+				_exponentValue = maxExponent
+			}
+			else {
+				_exponentValue = newValue
+			}
+			maxValue = pow(10.0, Double(_exponentValue))
+			if _value > maxValue {
+				_value = maxValue
+				delegate?.logSlider(self, newValue: _value)
+			}
+			incrementValue = (_exponentValue > 1) ? 0.1 : pow(10.0, Double(_exponentValue - 3))
+		}
+	}
+
+	// Allowed minimum value
+	@objc dynamic var minValue:Double = 0.0 {
+		didSet {
+			if _value < minValue {
+				_value = minValue
+				delegate?.logSlider(self, newValue: _value)
+			}
+		}
+	}
+	@objc dynamic var maxValue:Double = 10.0
+
 	// Slider value
-	private var _value:Double = 1.0
+	private var _value:Double = 10.0
 	@objc dynamic var value:Double {
 		get {
 			return _value
@@ -53,6 +92,7 @@ class SliderController: NSViewController {
 			else {
 				_value = newValue - newValue.remainder(dividingBy: incrementValue)
 			}
+//			valueLabel.sizeToFit()
 		}
 	}
 	
@@ -67,29 +107,24 @@ class SliderController: NSViewController {
 			if let slider = slider {
 				slider.altIncrementValue = _incrementValue
 			}
-			if let stepper = maxStepper {
-				stepper.increment = _incrementValue
-			}
 		}
 	}
-	@objc dynamic var maxMaxValue:Double = 1e6
 
-	var delegate:SliderDelegate?
+	var delegate:LogSliderDelegate?
 	
 	// MARK: - Attributes (private)
 	
+	@IBOutlet private weak var exponentSlider: NSSlider!
 	@IBOutlet private weak var slider: NSSlider!
-	@IBOutlet private weak var valueEntry: NSTextField!
-	@IBOutlet private weak var maxStepper: NSStepper!
-	@IBOutlet private weak var maxValueEntry: NSTextField!
-    
+	@IBOutlet private weak var valueLabel: NSTextField!
+
     var valueChanged = false
-	
+
 	// MARK: - Initialization
 	
 	init() {
-		ValueTransformer.setValueTransformer(SliderValueTransformer(), forName: .sliderValueTransformer)
-		super.init(nibName: NSNib.Name(rawValue: "SliderView"), bundle: nil)
+		ValueTransformer.setValueTransformer(LogSliderValueTransformer(), forName: .logSliderValueTransformer)
+		super.init(nibName: NSNib.Name(rawValue: "LogSliderView"), bundle: nil)
 	}
 	
 	required convenience init?(coder: NSCoder) {
@@ -98,10 +133,21 @@ class SliderController: NSViewController {
 	
     override func viewDidLoad() {
         super.viewDidLoad()
+		exponentSlider.altIncrementValue = 1.0
 		slider.altIncrementValue = incrementValue
-		maxStepper.increment = incrementValue
-		valueEntry.formatter = SliderValueFormatter()
+		valueLabel.formatter = LogSliderValueFormatter()
+		refreshExponentSliderTickmarks()
+		self.exponentValue = 2
+		exponentSlider.integerValue = self.exponentValue
     }
+	
+	// MARK: - Private methods
+	
+	private func refreshExponentSliderTickmarks() {
+		if let exponentSlider = self.exponentSlider {
+			exponentSlider.numberOfTickMarks = self.maxExponent - self.minExponent + 1
+		}
+	}
 	
 	// MARK: - Public methods
 	
@@ -141,18 +187,67 @@ class SliderController: NSViewController {
 	// MARK: - Actions and methods (private)
 	
 	@IBAction func sliderDidMove(_ sender: NSSlider) {
-		delegate?.slider(self, newValue: sender.doubleValue)
+		delegate?.logSlider(self, newValue: sender.doubleValue)
 	}
 	
-	@IBAction func valueDidChange(_ sender: NSTextField) {
-		delegate?.slider(self, newValue: value)
+	@IBAction func exponentSliderDidMove(_ sender: NSSlider) {
+		self.exponentValue = self.exponentSlider.integerValue
+	}
+
+}
+
+// MARK: - TextField ignoring mouses clicks
+
+class LogTextField : NSTextField {
+	
+	override func hitTest(_ point: NSPoint) -> NSView? {
+		return nil
+	}
+	
+}
+
+// MARK: - TextFieldCell resizing text is needed
+
+class LogTextFieldCell : NSTextFieldCell {
+	
+	override func drawInterior(withFrame cellFrame: NSRect, in controlView: NSView) {
+		var attributedString = self.attributedStringValue
+		var stringSize = attributedString.size()
+		
+		if let labelFont = attributedString.attribute(NSAttributedStringKey.font, at: 0, effectiveRange: nil) as? NSFont,
+			let fontSizeObj = labelFont.fontDescriptor.object(forKey: NSFontDescriptor.AttributeName.size) as? NSNumber,
+			let mutableAttributedString = attributedString.mutableCopy() as? NSMutableAttributedString
+		{
+			var fontSize = CGFloat(fontSizeObj.floatValue)
+			while stringSize.width > cellFrame.size.width {
+				fontSize -= 0.5
+				if let font = NSFont(name: labelFont.fontName, size: fontSize) {
+					mutableAttributedString.removeAttribute(NSAttributedStringKey.font,
+															range: NSMakeRange(0, mutableAttributedString.length))
+					mutableAttributedString.addAttribute(NSAttributedStringKey.font,
+														 value: font,
+														 range: NSMakeRange(0, mutableAttributedString.length))
+					attributedString = mutableAttributedString
+					stringSize = mutableAttributedString.size()
+				}
+				else {
+					break
+				}
+			}
+		}
+		
+		var drawRect = cellFrame
+		drawRect.size.height = stringSize.height
+		drawRect.origin.x -= 1.0
+		drawRect.origin.y += (cellFrame.size.height - stringSize.height) / 2
+		attributedString.draw(in: drawRect)
 	}
 	
 }
 
 // MARK: - Value formatter
 
-class SliderValueFormatter: Formatter {
+class LogSliderValueFormatter: Formatter {
 	
 	override func string(for obj: Any?) -> String? {
 		guard let value = obj as? String else { return "" }
@@ -199,7 +294,7 @@ class SliderValueFormatter: Formatter {
 
 // MARK: - Value transformer for XIB
 
-class SliderValueTransformer: ValueTransformer {
+class LogSliderValueTransformer: ValueTransformer {
 	
 	// Transformer used in slider. It's transforming Double to String and vice versa
 	
@@ -231,5 +326,5 @@ class SliderValueTransformer: ValueTransformer {
 }
 
 extension NSValueTransformerName {
-	static let sliderValueTransformer = NSValueTransformerName(rawValue: "SliderValueTransformer")
+	static let logSliderValueTransformer = NSValueTransformerName(rawValue: "LogSliderValueTransformer")
 }

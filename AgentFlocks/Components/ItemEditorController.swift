@@ -26,7 +26,7 @@ class ItemEditorController: NSViewController {
 	
 	@IBOutlet private weak var sliderStackView: NSStackView!
 	private var orderedSliderNames = [String]()
-	private var sliders = [String:SliderController]()
+	private var sliders = [String:LogSliderController]()
 	
 	// MARK: - Initialization
 	
@@ -37,7 +37,7 @@ class ItemEditorController: NSViewController {
 			let key = valueName.lowercased()
 			
 			// Create slider controller
-			let sliderController = SliderController()
+			let sliderController = LogSliderController()
 			sliderController.sliderName = valueName
 			
 			// Add controller to our dictionary

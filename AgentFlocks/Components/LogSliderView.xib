@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
+        <capability name="box content view" minToolsVersion="7.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="LogSliderController" customModule="AgentFlocks" customModuleProvider="target">
+            <connections>
+                <outlet property="exponentSlider" destination="L3R-mg-Dk8" id="Sod-Y5-KCp"/>
+                <outlet property="slider" destination="Bhk-bw-EMB" id="ZMw-CS-q2t"/>
+                <outlet property="valueLabel" destination="tlx-pF-QM6" id="OaO-Fn-mDZ"/>
+                <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="Hz6-mo-xeY">
+            <rect key="frame" x="0.0" y="0.0" width="361" height="44"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="LBz-sy-jl3">
+                    <rect key="frame" x="-2" y="14" width="54" height="17"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="&lt;name&gt;" id="Qfs-px-28I">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="-2" name="value" keyPath="self.sliderName" id="fe3-LK-Yt7"/>
+                    </connections>
+                </textField>
+                <box verticalCompressionResistancePriority="1000" boxType="custom" borderType="none" cornerRadius="4" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="aap-lY-nf3">
+                    <rect key="frame" x="58" y="0.0" width="255" height="44"/>
+                    <view key="contentView" id="ML2-mE-RLq">
+                        <rect key="frame" x="0.0" y="0.0" width="255" height="44"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dcP-BM-Eku">
+                                <rect key="frame" x="-2" y="33" width="84" height="11"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="80" id="q4q-UH-sgL"/>
+                                </constraints>
+                                <textFieldCell key="cell" controlSize="mini" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="&lt;exp_min&gt;" id="unG-GI-Wmh">
+                                    <font key="font" metaFont="miniSystem"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                                <connections>
+                                    <binding destination="-2" name="value" keyPath="self.minExponent" id="T3s-Hr-iOf"/>
+                                </connections>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="6aL-0T-IFA">
+                                <rect key="frame" x="173" y="33" width="84" height="11"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="80" id="U3v-hY-ujJ"/>
+                                </constraints>
+                                <textFieldCell key="cell" controlSize="mini" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="&lt;exp_max&gt;" id="8lR-Bi-nnO">
+                                    <font key="font" metaFont="miniSystem"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                                <connections>
+                                    <binding destination="-2" name="value" keyPath="self.maxExponent" id="0Vx-58-qxo"/>
+                                </connections>
+                            </textField>
+                            <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="L3R-mg-Dk8">
+                                <rect key="frame" x="0.0" y="22" width="255" height="15"/>
+                                <sliderCell key="cell" controlSize="mini" state="on" alignment="left" maxValue="100" doubleValue="40" tickMarkPosition="above" numberOfTickMarks="6" allowsTickMarkValuesOnly="YES" sliderType="linear" id="Z5j-Ry-dJD"/>
+                                <connections>
+                                    <action selector="exponentSliderDidMove:" target="-2" id="GX1-0i-q0h"/>
+                                    <binding destination="-2" name="maxValue" keyPath="self.maxExponent" id="Epm-KC-9a2"/>
+                                    <binding destination="-2" name="minValue" keyPath="self.minExponent" previousBinding="Epm-KC-9a2" id="w8x-ja-7eK"/>
+                                    <binding destination="-2" name="value" keyPath="self.exponentValue" previousBinding="w8x-ja-7eK" id="rFS-JP-UqH"/>
+                                </connections>
+                            </slider>
+                            <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Bhk-bw-EMB">
+                                <rect key="frame" x="0.0" y="10" width="255" height="15"/>
+                                <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" maxValue="100" doubleValue="50" tickMarkPosition="above" sliderType="linear" id="Qim-KK-Lgw"/>
+                                <connections>
+                                    <action selector="sliderDidMove:" target="-2" id="EZP-nU-uUs"/>
+                                    <binding destination="-2" name="maxValue" keyPath="self.maxValue" id="jkB-eq-Vgy"/>
+                                    <binding destination="-2" name="minValue" keyPath="self.minValue" previousBinding="jkB-eq-Vgy" id="WSF-wd-Hzd"/>
+                                    <binding destination="-2" name="value" keyPath="self.value" previousBinding="WSF-wd-Hzd" id="zp0-ed-QPj"/>
+                                </connections>
+                            </slider>
+                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="D2O-Pm-KKN" customClass="LogTextField" customModule="AgentFlocks" customModuleProvider="target">
+                                <rect key="frame" x="-2" y="0.0" width="43" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" focusRingType="none" alignment="left" title="&lt;min&gt;" id="6Ic-ZB-iSB">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                                <connections>
+                                    <binding destination="-2" name="value" keyPath="self.minValue" id="Tb3-NG-10q">
+                                        <dictionary key="options">
+                                            <string key="NSValueTransformerName">LogSliderValueTransformer</string>
+                                        </dictionary>
+                                    </binding>
+                                </connections>
+                            </textField>
+                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yBn-fN-vdC" customClass="LogTextField" customModule="AgentFlocks" customModuleProvider="target">
+                                <rect key="frame" x="210" y="0.0" width="19" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" focusRingType="none" alignment="right" title="10" id="wa0-Nd-hAa">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField focusRingType="none" horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="77J-e2-4te" customClass="LogTextField" customModule="AgentFlocks" customModuleProvider="target">
+                                <rect key="frame" x="225" y="6" width="32" height="11"/>
+                                <textFieldCell key="cell" controlSize="mini" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" focusRingType="none" alignment="left" title="&lt;exp&gt;" id="0h6-KF-v5s">
+                                    <font key="font" metaFont="miniSystem"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                                <connections>
+                                    <binding destination="-2" name="value" keyPath="self.exponentValue" id="VlT-6x-A7u"/>
+                                </connections>
+                            </textField>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="Bhk-bw-EMB" firstAttribute="top" secondItem="L3R-mg-Dk8" secondAttribute="bottom" constant="-2" id="8bL-a6-Grp"/>
+                            <constraint firstItem="dcP-BM-Eku" firstAttribute="leading" secondItem="ML2-mE-RLq" secondAttribute="leading" id="FVN-8K-4Yk"/>
+                            <constraint firstItem="D2O-Pm-KKN" firstAttribute="top" secondItem="Bhk-bw-EMB" secondAttribute="bottom" constant="-6" id="GhP-Ot-bgL"/>
+                            <constraint firstItem="yBn-fN-vdC" firstAttribute="top" secondItem="Bhk-bw-EMB" secondAttribute="bottom" constant="-6" id="LUa-Gu-6gc"/>
+                            <constraint firstItem="77J-e2-4te" firstAttribute="top" secondItem="yBn-fN-vdC" secondAttribute="top" id="SXh-il-EtS"/>
+                            <constraint firstAttribute="trailing" secondItem="77J-e2-4te" secondAttribute="trailing" id="Tkb-t0-B2r"/>
+                            <constraint firstItem="L3R-mg-Dk8" firstAttribute="top" secondItem="dcP-BM-Eku" secondAttribute="bottom" constant="-4" id="U5B-Rd-0uQ"/>
+                            <constraint firstItem="dcP-BM-Eku" firstAttribute="top" secondItem="ML2-mE-RLq" secondAttribute="top" id="WK2-2h-FNz"/>
+                            <constraint firstItem="77J-e2-4te" firstAttribute="leading" secondItem="yBn-fN-vdC" secondAttribute="trailing" id="WPk-w2-Axf"/>
+                            <constraint firstItem="Bhk-bw-EMB" firstAttribute="leading" secondItem="ML2-mE-RLq" secondAttribute="leading" id="faA-Il-Y8X"/>
+                            <constraint firstAttribute="trailing" secondItem="Bhk-bw-EMB" secondAttribute="trailing" id="hkd-7x-bPz"/>
+                            <constraint firstAttribute="trailing" secondItem="L3R-mg-Dk8" secondAttribute="trailing" id="jkG-RB-M5i"/>
+                            <constraint firstAttribute="trailing" secondItem="6aL-0T-IFA" secondAttribute="trailing" id="qJa-wi-9UR"/>
+                            <constraint firstItem="L3R-mg-Dk8" firstAttribute="leading" secondItem="ML2-mE-RLq" secondAttribute="leading" id="ssZ-90-bWI"/>
+                            <constraint firstItem="D2O-Pm-KKN" firstAttribute="leading" secondItem="ML2-mE-RLq" secondAttribute="leading" id="uEu-OL-2RM"/>
+                            <constraint firstAttribute="bottom" secondItem="yBn-fN-vdC" secondAttribute="bottom" id="uyS-cf-dci"/>
+                            <constraint firstItem="6aL-0T-IFA" firstAttribute="top" secondItem="ML2-mE-RLq" secondAttribute="top" id="y1s-qV-xpA"/>
+                        </constraints>
+                    </view>
+                </box>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="tlx-pF-QM6">
+                    <rect key="frame" x="319" y="14" width="44" height="17"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="40" id="UO0-NN-i1h"/>
+                    </constraints>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="&lt;val&gt;" id="lkf-8B-e8W" customClass="LogTextFieldCell" customModule="AgentFlocks" customModuleProvider="target">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                    <connections>
+                        <binding destination="-2" name="value" keyPath="self.value" id="Y3M-SB-6uc">
+                            <dictionary key="options">
+                                <string key="NSValueTransformerName">LogSliderValueTransformer</string>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </textField>
+            </subviews>
+            <constraints>
+                <constraint firstItem="LBz-sy-jl3" firstAttribute="centerY" secondItem="Hz6-mo-xeY" secondAttribute="centerY" id="7cw-7c-m1s"/>
+                <constraint firstAttribute="bottom" secondItem="aap-lY-nf3" secondAttribute="bottom" id="BKw-e4-sHz"/>
+                <constraint firstItem="tlx-pF-QM6" firstAttribute="leading" secondItem="aap-lY-nf3" secondAttribute="trailing" constant="8" id="H9c-0l-jxV"/>
+                <constraint firstItem="LBz-sy-jl3" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="IO7-Xg-gjt"/>
+                <constraint firstItem="aap-lY-nf3" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="Neu-gE-7bf"/>
+                <constraint firstItem="aap-lY-nf3" firstAttribute="leading" secondItem="LBz-sy-jl3" secondAttribute="trailing" constant="8" id="VbM-JX-rFW"/>
+                <constraint firstAttribute="trailing" secondItem="tlx-pF-QM6" secondAttribute="trailing" id="cxO-Bi-0BT"/>
+                <constraint firstItem="tlx-pF-QM6" firstAttribute="centerY" secondItem="Hz6-mo-xeY" secondAttribute="centerY" id="nBZ-4Z-uBr"/>
+            </constraints>
+            <point key="canvasLocation" x="88" y="57"/>
+        </customView>
+        <userDefaultsController representsSharedInstance="YES" id="ylW-8m-D4H"/>
+    </objects>
+</document>

@@ -69,11 +69,11 @@ class AgentAttributesController: NSViewController {
     @IBOutlet private weak var radiusSliderContainer: NSView!
     @IBOutlet private weak var scaleSliderContainer: NSView!
 
-	private let massSliderController = SliderController()
-    private let maxAccelerationSliderController = SliderController()
-    private let maxSpeedSliderController = SliderController()
-    private let radiusSliderController = SliderController()
-    private let scaleSliderController = SliderController()
+	private let massSliderController = LogSliderController()
+    private let maxAccelerationSliderController = LogSliderController()
+    private let maxSpeedSliderController = LogSliderController()
+    private let radiusSliderController = LogSliderController()
+    private let scaleSliderController = LogSliderController()
 
 	// MARK: - Initialization
 	
@@ -88,7 +88,7 @@ class AgentAttributesController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        typealias AttributeSet = (ainer: NSView?, roller: SliderController, label: String, max: Double, increment: Double)
+        typealias AttributeSet = (ainer: NSView?, roller: LogSliderController, label: String, max: Double, increment: Double)
         let attributeSets: [AttributeSet] = [
             (massSliderContainer, massSliderController, "Mass", 1, 0.1),
             (maxAccelerationSliderContainer, maxAccelerationSliderController, "Max Accel", 100, 1.0),
@@ -111,9 +111,9 @@ class AgentAttributesController: NSViewController {
 
 // MARK: -
 
-extension AgentAttributesController: SliderDelegate {
+extension AgentAttributesController: LogSliderDelegate {
 	
-	func slider(_ controller: SliderController, newValue value: Double) {
+	func logSlider(_ controller: LogSliderController, newValue value: Double) {
 		switch controller {
         case massSliderController:
             delegate?.agent(self, newValue: value, ofAttribute: .mass)
