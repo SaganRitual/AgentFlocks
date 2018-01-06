@@ -105,6 +105,16 @@ class AgentAttributesController: NSViewController {
         }
     }
     
+    // Any time we select a new agent, we need to force the sliders to recalculate their exponents
+    func resetSliderControllers() {
+        let controllers = [
+            massSliderController, maxAccelerationSliderController, maxSpeedSliderController,
+            radiusSliderController, scaleSliderController
+        ]
+
+        for controller in controllers { controller.resetExponent() }
+    }
+    
 }
 
 // MARK: -
