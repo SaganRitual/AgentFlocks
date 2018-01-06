@@ -74,12 +74,7 @@ class AFGoal {
     var angle: Float = 0
     var distance: Float = 0
     var time: Float = 0
-
-    var speed: Float = 0 {
-        willSet(newValue) {
-            newGoal(newValue: newValue)
-        }
-    }
+    var speed: Float = 0
 
     init(prototype: AFGoal_Script) {
         enabled = prototype.enabled
@@ -144,13 +139,18 @@ class AFGoal {
             gkGoal = GKGoal(toFollow: afPath.gkPath, maxPredictionTime: TimeInterval(time), forward: forward)
 
         case .toInterceptAgent:   break
+
         case .toReachTargetSpeed:
-            newGoal(newValue: speed)
+            gkGoal = GKGoal(toReachTargetSpeed: speed)
+            
         case .toSeekAgent:        break
         case .toSeparateFrom:     break
-        case .toStayOn:           break
+        case .toStayOn:
+            let afPath = GameScene.me!.paths[pathname!]!
+            gkGoal = GKGoal(toStayOn: afPath.gkPath, maxPredictionTime: TimeInterval(time))
+            
         case .toWander:
-            newGoal(newValue: speed)
+            gkGoal = GKGoal(toWander: speed)
         }
     }
     
@@ -357,14 +357,6 @@ class AFGoal {
         self.goalType = type
         self.name = NSUUID().uuidString
         self.weight = weight
-    }
-    
-    func newGoal(newValue: Float) {
-        switch goalType {
-        case .toReachTargetSpeed: gkGoal = GKGoal(toReachTargetSpeed: newValue)
-        case .toWander:           gkGoal = GKGoal(toWander: newValue)
-        default: fatalError()
-        }
     }
     
     func toString() -> String {

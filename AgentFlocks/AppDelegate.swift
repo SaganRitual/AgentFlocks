@@ -856,14 +856,12 @@ extension AppDelegate: ItemEditorDelegate {
                     goal = nil
 
                 case .toStayOn:
-                    var points = [GKGraphNode2D]()
-                    for vertex in GameScene.me!.selectionDelegateDraw.vertices {
-                        let point = GKGraphNode2D(point: vector_float2(Float(vertex.x), Float(vertex.y)))
-                        points.append(point)
-                    }
+                    let pathIndex = GameScene.me!.pathForNextPathGoal
+                    let pathname = GameScene.me!.pathnames[pathIndex]
+                    let afPath = GameScene.me!.paths[pathname]!
+                    goal = AFGoal(toStayOn: afPath.gkPath!, time: Float(time!), weight: weight)
                     
-                    let path = GKPath(graphNodes: points, radius: 1)
-                    goal = AFGoal(toStayOn: path, time: 1, weight: weight)
+                    goal!.pathname = pathname
 
                 case .toReachTargetSpeed:
                     goal = AFGoal(toReachTargetSpeed: Float(speed!), weight: weight)
