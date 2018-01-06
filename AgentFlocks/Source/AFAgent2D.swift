@@ -131,16 +131,12 @@ class AFAgent2D: GKAgent2D {
         let node = SKNode()
         node.position = position
         
-        var shape: SKShapeNode?
-        var texture: SKTexture?
+        var texture: SKTexture!
         
         if image.isValid {
             texture = SKTexture(image: image)
         } else {
-            shape = SKShapeNode(circleOfRadius: 25)
-            shape!.fillColor = .green
-            
-            texture = GameScene.me!.view!.texture(from: shape!)
+            texture = SKTexture(imageNamed: "Herman")
         }
         
         let sprite = SKSpriteNode(texture: texture)
