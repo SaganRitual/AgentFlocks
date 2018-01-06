@@ -166,82 +166,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.paths = paths
         }
     }
-    
-    func saveJSON(_ controller: TopBarController) {
-        do {
-            var entities_ = [AFEntity_Script]()
-            
-            for entity in GameScene.me!.entities {
-                let entity_ = AFEntity_Script(entity: entity)
-                entities_.append(entity_)
-            }
-            
-            var paths_ = [AFPath_Script]()
-            
-            for (_, afPath) in GameScene.me!.paths {
-                let afPath_Script = AFPath_Script(afPath: afPath)
-                paths_.append(afPath_Script)
-            }
-            
-            let bigger = jsonOut(entities: entities_, paths: paths_)
-            let encoder = JSONEncoder()
-            let script = try encoder.encode(bigger)
-            let file = "setup.json"
-            
-            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-                
-                let fileURL = dir.appendingPathComponent(file)
-                print(fileURL)
-                
-                //writing
-                do {
-                    try script.write(to: fileURL)
-                }
-                catch { print(error) }
-            }
-        } catch { print(error) }
-    }
-    
-    // MARK: - Custom methods
-    func loadJSON(_ controller: TopBarController) {
-        // Get out of draw mode. Seems weird to be doing this in a function about
-        // loading a script, but this is the only reasonable place to put it, I think?
-
-        GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
-
-        do {
-            if let resourcesPath = Bundle.main.resourcePath {
-                let url = URL(string: "file://\(resourcesPath)/setup.json")!
-                print(url)
-                let jsonData = try Data(contentsOf: url)
-                let decoder = JSONDecoder()
-                let entities_ = try decoder.decode(AFEntities.self, from: jsonData)
-
-                let paths_ = try decoder.decode(AFPaths.self, from: jsonData)
-                
-                for path_ in paths_.paths {
-                    let path = AFPath(prototype: path_)
-                    GameScene.me!.paths[path.name] = path
-                    GameScene.me!.pathnames.append(path.name)
-                }
-
-                var selectionSet = false
-                for entity_ in entities_.entities {
-                    let entity = AFEntity(prototype: entity_)
-                    GameScene.me!.entities.append(entity)
-                    
-                    if !selectionSet {
-                        AppDelegate.agentEditorController.goalsController.dataSource = entity
-                        AppDelegate.agentEditorController.attributesController.delegate = entity.agent
-                        selectionSet = true
-                    }
-
-                    let nodeIndex = GameScene.me!.entities.count - 1
-                    GameScene.me!.newAgent(nodeIndex)
-                }
-            }
-        } catch { print(error) }
-   }
 	
 	func loadAgents() -> [AgentType] {
 		
@@ -250,7 +174,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 			do {
 				let fileNames = try FileManager.default.contentsOfDirectory(atPath: resourcesPath)
 				for fileName in fileNames.sorted() where fileName.hasPrefix("Agent") {
-                    print("\(resourcesPath)/\(fileName)")
 					if let image = NSImage(contentsOfFile: "\(resourcesPath)/\(fileName)") {
 						let agent:AgentType = (name:fileName, image:image, behaviors:[]);
 						foundAgents.append(agent)
@@ -353,7 +276,71 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		popover.show(relativeTo: rect, of: mainView, preferredEdge: preferredEdge)
 		activePopover = popover
 	}
-	
+    
+    // MARK: - File i/o
+    
+    func loadJSON(url: URL) {
+        // Get out of draw mode. Seems weird to be doing this in a function about
+        // loading a script, but this is the only reasonable place to put it, I think?
+        
+        GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
+        
+        do {
+            let jsonData = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let entities_ = try decoder.decode(AFEntities.self, from: jsonData)
+            
+            let paths_ = try decoder.decode(AFPaths.self, from: jsonData)
+            
+            for path_ in paths_.paths {
+                let path = AFPath(prototype: path_)
+                GameScene.me!.paths[path.name] = path
+                GameScene.me!.pathnames.append(path.name)
+            }
+            
+            var selectionSet = false
+            for entity_ in entities_.entities {
+                let entity = AFEntity(prototype: entity_)
+                GameScene.me!.entities.append(entity)
+                
+                if !selectionSet {
+                    AppDelegate.agentEditorController.goalsController.dataSource = entity
+                    AppDelegate.agentEditorController.attributesController.delegate = entity.agent
+                    selectionSet = true
+                }
+                
+                let nodeIndex = GameScene.me!.entities.count - 1
+                GameScene.me!.newAgent(nodeIndex)
+            }
+        } catch { print(error) }
+    }
+    
+    func saveJSON(url: URL) {
+        do {
+            var entities_ = [AFEntity_Script]()
+            
+            for entity in GameScene.me!.entities {
+                let entity_ = AFEntity_Script(entity: entity)
+                entities_.append(entity_)
+            }
+            
+            var paths_ = [AFPath_Script]()
+            
+            for (_, afPath) in GameScene.me!.paths {
+                let afPath_Script = AFPath_Script(afPath: afPath)
+                paths_.append(afPath_Script)
+            }
+            
+            let bigger = jsonOut(entities: entities_, paths: paths_)
+            let encoder = JSONEncoder()
+            let script = try encoder.encode(bigger)
+            
+            do {
+                try script.write(to: url)
+            } catch { print(error) }
+        } catch { print(error) }
+    }
+
 	// MARK: - Menu callbacks
 	
 	@IBAction func menuPreferencesClicked(_ sender: NSMenuItem) {
@@ -368,7 +355,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	
 	@IBAction func menuFileMenuOpenClicked(_ sender: NSMenuItem) {
 		NSLog("Menu: File->Open")
-	}
+        
+        let dialog = NSOpenPanel()
+        dialog.title                   = "Load script"
+        dialog.showsResizeIndicator    = true
+        dialog.showsHiddenFiles        = true
+        dialog.canChooseDirectories    = false
+        dialog.canCreateDirectories    = true
+        dialog.allowsMultipleSelection = false
+        dialog.allowedFileTypes        = ["json"]
+        
+        if dialog.runModal() == NSApplication.ModalResponse.OK {
+            if let result = dialog.url {
+                loadJSON(url: result)
+            } else {
+                return
+            }
+        }
+    }
 	
 	@IBAction func menuFileMenuCloseClicked(_ sender: NSMenuItem) {
 		NSLog("Menu: File->Close")
@@ -376,6 +380,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	
 	@IBAction func menuFileMenuSaveClicked(_ sender: NSMenuItem) {
 		NSLog("Menu: File->Save")
+        
+        let dialog = NSSavePanel()
+        dialog.title                   = "Save script"
+        dialog.showsResizeIndicator    = true
+        dialog.showsHiddenFiles        = true
+        dialog.canCreateDirectories    = true
+        dialog.allowedFileTypes        = ["json"]
+        
+        if dialog.runModal() == NSApplication.ModalResponse.OK {
+            if let result = dialog.url {
+                print("Saving to \(result)")
+                saveJSON(url: result)
+            } else {
+                print("Not saving")
+                return
+            }
+        }
 	}
 	
 	@IBAction func menuFileMenuSaveAsClicked(_ sender: NSMenuItem) {

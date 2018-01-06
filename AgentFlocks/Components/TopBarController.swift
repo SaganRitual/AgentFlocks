@@ -17,8 +17,6 @@ protocol TopBarDelegate {
     func path3Clicked(_ controller: TopBarController)
     func path4Clicked(_ controller: TopBarController)
     func path5Clicked(_ controller: TopBarController)
-    func loadJSON(_ controller: TopBarController)
-    func saveJSON(_ controller: TopBarController)
 	func topBar(_ controller: TopBarController, obstacleSelected index:Int)
 	func topBar(_ controller: TopBarController, imageIndex:Int)
 	func topBar(_ controller: TopBarController, flockSelected flock:TopBarController.FlockType)
@@ -159,11 +157,11 @@ class TopBarController: NSViewController {
         delegate?.path5Clicked(self)
     }
     @IBAction func loadFileClicked(_ sender: NSButton) {
-        delegate?.loadJSON(self)
+        // Now we use File->Open on the menu
     }
 
     @IBAction func saveFileClicked(_ sender: NSButton) {
-        delegate?.saveJSON(self)
+        // Now we use File->Open on the menu
     }
 
     @IBAction private func drawPathClicked(_ sender: NSButton) {

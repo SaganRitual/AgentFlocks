@@ -131,7 +131,18 @@ class AFAgent2D: GKAgent2D {
         let node = SKNode()
         node.position = position
         
-        let texture = SKTexture(image: image)
+        var shape: SKShapeNode?
+        var texture: SKTexture?
+        
+        if image.isValid {
+            texture = SKTexture(image: image)
+        } else {
+            shape = SKShapeNode(circleOfRadius: 25)
+            shape!.fillColor = .green
+            
+            texture = GameScene.me!.view!.texture(from: shape!)
+        }
+        
         let sprite = SKSpriteNode(texture: texture)
         sprite.zPosition = 0
         node.addChild(sprite)
@@ -147,8 +158,8 @@ class AFAgent2D: GKAgent2D {
 
     static func makeSpriteContainer(imageFile: String, position: CGPoint, _ name: String? = nil) -> (SKNode, SKSpriteNode) {
         let path = Bundle.main.resourcePath!
-        let image = NSImage(byReferencingFile: "\(path)/\(imageFile)")
-        return makeSpriteContainer(image: image!, position: position, name)
+        let image = NSImage(byReferencingFile: "\(path)/\(imageFile)")!
+        return makeSpriteContainer(image: image, position: position, name)
     }
 
     func select(primary: Bool = true) {

@@ -50,8 +50,6 @@
 		74622E981F927FBE00690C3C /* Agent04.png in Resources */ = {isa = PBXBuildFile; fileRef = 74622E871F927EEB00690C3C /* Agent04.png */; };
 		74622E991F927FBE00690C3C /* Agent05.png in Resources */ = {isa = PBXBuildFile; fileRef = 74622E821F927EEA00690C3C /* Agent05.png */; };
 		74622E9A1F927FBE00690C3C /* Agent06.png in Resources */ = {isa = PBXBuildFile; fileRef = 74622E851F927EEA00690C3C /* Agent06.png */; };
-		749386261FFF4D7400BAAF8E /* LogSliderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749386241FFF4D7400BAAF8E /* LogSliderController.swift */; };
-		749386271FFF4D7400BAAF8E /* LogSliderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 749386251FFF4D7400BAAF8E /* LogSliderView.xib */; };
 		749386351FFFE1A500BAAF8E /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749386341FFFE1A500BAAF8E /* Configuration.swift */; };
 		749386381FFFECC300BAAF8E /* PreferencesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749386361FFFECC300BAAF8E /* PreferencesController.swift */; };
 		749386391FFFECC300BAAF8E /* PreferencesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 749386371FFFECC300BAAF8E /* PreferencesWindow.xib */; };
@@ -66,8 +64,6 @@
 		74ECDF751F9CB5610096468F /* ItemEditorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74ECDF731F9CB5610096468F /* ItemEditorController.swift */; };
 		D4053F051FF5E3A60038953B /* notes.txt in Resources */ = {isa = PBXBuildFile; fileRef = D4053F041FF5E3A60038953B /* notes.txt */; };
 		D417BBB71FF95236001D9892 /* AFSelectionState_Primary.swift in Sources */ = {isa = PBXBuildFile; fileRef = D417BBB61FF95236001D9892 /* AFSelectionState_Primary.swift */; };
-		D427E3E31FFF873400BF15E9 /* LogSliderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D427E3E11FFF873400BF15E9 /* LogSliderController.swift */; };
-		D427E3E41FFF873400BF15E9 /* LogSliderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D427E3E21FFF873400BF15E9 /* LogSliderView.xib */; };
 		D442561A1FE7A19000FC454B /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = D44256191FE7A19000FC454B /* GameScene.sks */; };
 		D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561D1FE7A2F000FC454B /* SceneController.swift */; };
 		D44256201FE7A41800FC454B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561F1FE7A41800FC454B /* GameScene.swift */; };
@@ -133,8 +129,6 @@
 		74622E851F927EEA00690C3C /* Agent06.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent06.png; sourceTree = "<group>"; };
 		74622E861F927EEA00690C3C /* Agent01.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent01.png; sourceTree = "<group>"; };
 		74622E871F927EEB00690C3C /* Agent04.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent04.png; sourceTree = "<group>"; };
-		749386241FFF4D7400BAAF8E /* LogSliderController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogSliderController.swift; sourceTree = "<group>"; };
-		749386251FFF4D7400BAAF8E /* LogSliderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LogSliderView.xib; sourceTree = "<group>"; };
 		749386341FFFE1A500BAAF8E /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		749386361FFFECC300BAAF8E /* PreferencesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesController.swift; sourceTree = "<group>"; };
 		749386371FFFECC300BAAF8E /* PreferencesWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PreferencesWindow.xib; sourceTree = "<group>"; };
@@ -149,8 +143,6 @@
 		74ECDF731F9CB5610096468F /* ItemEditorController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemEditorController.swift; sourceTree = "<group>"; };
 		D4053F041FF5E3A60038953B /* notes.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = notes.txt; sourceTree = "<group>"; };
 		D417BBB61FF95236001D9892 /* AFSelectionState_Primary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFSelectionState_Primary.swift; sourceTree = "<group>"; };
-		D427E3E11FFF873400BF15E9 /* LogSliderController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogSliderController.swift; sourceTree = "<group>"; };
-		D427E3E21FFF873400BF15E9 /* LogSliderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LogSliderView.xib; sourceTree = "<group>"; };
 		D44256191FE7A19000FC454B /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		D442561D1FE7A2F000FC454B /* SceneController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneController.swift; sourceTree = "<group>"; };
 		D442561F1FE7A41800FC454B /* GameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
