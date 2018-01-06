@@ -131,20 +131,67 @@ class AFGoal {
             }
         
 
-        case .toCohereWith:       break
-        case .toFleeAgent:        break
+        case .toCohereWith:
+            var gkAgents = [GKAgent]()
+            for coheree in agentNames {
+                for entity in GameScene.me!.entities {
+                    if entity.name == coheree {
+                        gkAgents.append(entity.agent)
+                    }
+                }
+            }
             
+            gkGoal = GKGoal(toCohereWith: gkAgents, maxDistance: distance, maxAngle: angle)
+
+        case .toFleeAgent:
+            for agentName in agentNames {
+                for entity in GameScene.me!.entities {
+                    if entity.name == agentName {
+                        gkGoal = GKGoal(toFleeAgent: entity.agent)
+                        break
+                    }
+                }
+            }
+
         case .toFollow:
             let afPath = GameScene.me!.paths[pathname!]!
             gkGoal = GKGoal(toFollow: afPath.gkPath, maxPredictionTime: TimeInterval(time), forward: forward)
 
-        case .toInterceptAgent:   break
+        case .toInterceptAgent:
+            for agentName in agentNames {
+                for entity in GameScene.me!.entities {
+                    if entity.name == agentName {
+                        gkGoal = GKGoal(toInterceptAgent: entity.agent, maxPredictionTime: TimeInterval(time))
+                        break
+                    }
+                }
+            }
 
         case .toReachTargetSpeed:
             gkGoal = GKGoal(toReachTargetSpeed: speed)
             
-        case .toSeekAgent:        break
-        case .toSeparateFrom:     break
+        case .toSeekAgent:
+            for agentName in agentNames {
+                for entity in GameScene.me!.entities {
+                    if entity.name == agentName {
+                        gkGoal = GKGoal(toSeekAgent: entity.agent)
+                        break
+                    }
+                }
+            }
+
+        case .toSeparateFrom:
+            var gkAgents = [GKAgent]()
+            for separatees in agentNames {
+                for entity in GameScene.me!.entities {
+                    if entity.name == separatees {
+                        gkAgents.append(entity.agent)
+                    }
+                }
+            }
+            
+            gkGoal = GKGoal(toSeparateFrom: gkAgents, maxDistance: distance, maxAngle: angle)
+            
         case .toStayOn:
             let afPath = GameScene.me!.paths[pathname!]!
             gkGoal = GKGoal(toStayOn: afPath.gkPath, maxPredictionTime: TimeInterval(time))
