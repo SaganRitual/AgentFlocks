@@ -60,7 +60,7 @@ class LogSliderController: NSViewController {
 				_value = maxValue
 				delegate?.logSlider(self, newValue: _value)
 			}
-			incrementValue = pow(10.0, Double(_exponentValue - 1))
+			incrementValue = pow(10.0, Double(_exponentValue - 2))
 		}
 	}
 
