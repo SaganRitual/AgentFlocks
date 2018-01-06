@@ -443,8 +443,8 @@ extension AppDelegate: TopBarDelegate {
 
     func finishPathClicked(_ controller: TopBarController) {
         let drawer = GameScene.me!.selectionDelegateDraw!
-        
-//        drawer.afPath.refresh(final: true) // Auto-add the closing line segment
+
+        drawer.afPath.refresh(final: true) // Auto-add the closing line segment
         GameScene.me!.paths[drawer.afPath.name] = drawer.afPath
         GameScene.me!.pathnames.append(drawer.afPath.name)
         drawer.afPath = AFPath()
@@ -733,10 +733,10 @@ extension AppDelegate: ItemEditorDelegate {
                 if let time = time { newGoal.time = Float(time) }
                 
                 parentOfNewMotivator.remove(afGoal)
-                parentOfNewMotivator.setWeight(weight, for: newGoal)
+                parentOfNewMotivator.setWeightage(weight, for: newGoal)
             } else {
                 afGoal.weight = weight
-                parentOfNewMotivator.setWeight(weight, for: afGoal)
+                parentOfNewMotivator.setWeightage(weight, for: afGoal)
             }
         } else {
             // Add new goal or behavior

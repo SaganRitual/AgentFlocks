@@ -66,7 +66,7 @@ class GameScene: SKScene, SKViewDelegate {
         print(adjustedOrigin)
         
         let thickness = 50
-        let offset = 0
+        let offset = 200
         var specs: [(CGPoint, CGSize, NSColor)] = [
             (CGPoint(x: x, y: -y + thickness - offset), CGSize(width: w, height: thickness), .red),
             (CGPoint(x: -x - offset, y: y), CGSize(width: thickness, height: h), .yellow),

@@ -125,6 +125,10 @@ class AFPath {
         for i in 0 ..< nodesMap.count {
             nodesArray.append(nodesMap[i]!)
         }
+        
+        if final {
+            nodesArray.append(nodesMap[0]!)
+        }
 
         gkPath = GKPath(graphNodes: nodesArray, radius: radius)
         
@@ -132,6 +136,7 @@ class AFPath {
             var firstPosition: CGPoint? = nil
             var lastPosition: CGPoint? = nil
             let cgPath = CGMutablePath()
+            var matchFirstToCloseLoop = false
 
             for node in nodesArray {
                 let x = CGFloat(node.position.x); let y = CGFloat(node.position.y)
@@ -141,7 +146,7 @@ class AFPath {
                     firstPosition = cgPoint
                 }
                 
-                if cgPoint != firstPosition! {
+                if cgPoint != firstPosition! || matchFirstToCloseLoop {
                     displayPath = SKNode()
                     cgPath.addLine(to: cgPoint)
 
@@ -151,11 +156,12 @@ class AFPath {
                     line.fillColor = .gray
                 }
                 
+                matchFirstToCloseLoop = true
                 lastPosition = cgPoint
                 cgPath.move(to: lastPosition!)
             }
             
-            if final, let fp = firstPosition, let lp = lastPosition, fp != lp {
+            if final, let fp = firstPosition, lastPosition != nil {
                 cgPath.addLine(to: fp)
                 
                 let line = SKShapeNode(path: cgPath)
