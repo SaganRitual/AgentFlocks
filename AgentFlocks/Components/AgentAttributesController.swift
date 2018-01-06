@@ -114,14 +114,19 @@ extension AgentAttributesController: LogSliderDelegate {
 	func logSlider(_ controller: LogSliderController, newValue value: Double) {
 		switch controller {
         case massSliderController:
+            mass = value
             delegate?.agent(self, newValue: value, ofAttribute: .mass)
         case maxAccelerationSliderController:
+            maxAcceleration = value
             delegate?.agent(self, newValue: value, ofAttribute: .maxAcceleration)
         case maxSpeedSliderController:
+            maxSpeed = value
             delegate?.agent(self, newValue: value, ofAttribute: .maxSpeed)
         case radiusSliderController:
+            radius = value
             delegate?.agent(self, newValue: value, ofAttribute: .radius)
 		case scaleSliderController:
+            scale = value
 			delegate?.agent(self, newValue: value, ofAttribute: .scale)
 		default:
 			return
