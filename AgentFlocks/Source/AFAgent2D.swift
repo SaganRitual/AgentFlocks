@@ -84,6 +84,7 @@ class AFAgent2D: GKAgent2D {
         spriteContainer = cc
         sprite = ss
         
+        spriteContainer.position = position
         scene.addChild(spriteContainer)
         
         originalSize = sprite.size
@@ -126,7 +127,11 @@ class AFAgent2D: GKAgent2D {
     static func makeSpriteContainer(image: NSImage, position: CGPoint, _ name: String? = nil) -> (SKNode, SKSpriteNode) {
         let node = SKNode()
         node.position = position
-        
+
+        let ss = GameScene.me!.selectionDelegate! as! AFSelectionState_Primary
+        node.position.x += ss.nodeToMouseOffset.x
+        node.position.y += ss.nodeToMouseOffset.y
+
         var texture: SKTexture!
         
         if image.isValid {

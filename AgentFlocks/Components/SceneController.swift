@@ -60,8 +60,8 @@ class SceneController: NSViewController {
     
     // MARK: - Public methods
     
-    func addNode(image: NSImage) -> AFEntity {
-        let entity = AFEntity(scene: sceneNode, image: image, position: CGPoint.zero)
+    func addNode(image: NSImage, at position: CGPoint) -> AFEntity {
+        let entity = AFEntity(scene: sceneNode, image: image, position: position)
         sceneNode.entities.append(entity)
         return entity
     }

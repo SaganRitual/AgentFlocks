@@ -57,7 +57,6 @@ class AFSelectionState_Primary: AFSelectionState {
     enum MouseStates { case down, dragging, rightDown, rightUp, up }
     
     func deselect(_ ix: Int) {
-        print("State deselect \(ix)")
         gameScene.entities[ix].agent.deselect()
         selectedIndexes.remove(ix)
         
@@ -76,7 +75,6 @@ class AFSelectionState_Primary: AFSelectionState {
     }
     
     func deselectAll() {
-        print("State deselectAll()")
         for entity in gameScene.entities {
             entity.agent.deselect()
         }
@@ -171,6 +169,14 @@ class AFSelectionState_Primary: AFSelectionState {
         if upNodeIndex == nil {
             // Mouse up in the black; always a full deselect
             deselectAll()
+            
+            let imageIndex = AppDelegate.me!.agentImageIndex
+            _ = AppDelegate.me!.sceneController.addNode(image: AppDelegate.me!.agents[imageIndex].image, at: currentPosition!)
+            
+            let nodeIndex = GameScene.me!.entities.count - 1
+            newAgent(nodeIndex)
+            
+            AppDelegate.me!.placeAgentFrames(agentIndex: nodeIndex)
         } else {
             if event.modifierFlags.contains(.command) {
                 if mouseState == .down {
@@ -178,13 +184,12 @@ class AFSelectionState_Primary: AFSelectionState {
                     toggleSelection(upNodeIndex!)
                 }
             } else {
-                if mouseState == .down {
-                    // plain click on a node
-                    let selectAfter = !selectedIndexes.contains(upNodeIndex!)
+                if mouseState == .down {    // That is, we're coming out of down as opposed to drag
+                    let setSelection = (primarySelectionIndex != upNodeIndex!)
 
                     deselectAll()
                     
-                    if selectAfter {
+                    if setSelection {
                         select(upNodeIndex!, primary: true)
                     }
                 }
@@ -215,7 +220,6 @@ class AFSelectionState_Primary: AFSelectionState {
     }
     
     func select(_ ix: Int, primary: Bool) {
-        print("State select \(ix)")
         gameScene.entities[ix].agent.select(primary: primary)
         selectedIndexes.insert(ix)
         

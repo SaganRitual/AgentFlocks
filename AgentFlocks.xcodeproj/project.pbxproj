@@ -584,7 +584,7 @@
 				CODE_SIGN_ENTITLEMENTS = AgentFlocks/AgentFlocks.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = Y9N34UZ32J;
+				DEVELOPMENT_TEAM = DD983V4X84;
 				INFOPLIST_FILE = AgentFlocks/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
@@ -601,7 +601,7 @@
 				CODE_SIGN_ENTITLEMENTS = AgentFlocks/AgentFlocks.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = Y9N34UZ32J;
+				DEVELOPMENT_TEAM = DD983V4X84;
 				INFOPLIST_FILE = AgentFlocks/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.12;

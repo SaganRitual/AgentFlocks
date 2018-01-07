@@ -41,7 +41,18 @@ class TopBarController: NSViewController {
 	@IBOutlet private weak var recallAgentsButton: NSButton!
 	@IBOutlet private weak var playPauseButton: NSButton!
 	@IBOutlet private weak var sliderContainerView: NSView!
-	
+    
+    @IBOutlet weak var radioButtonVerbBox: NSBox!
+    @IBOutlet weak var radioButtonVerbView: NSView!
+    @IBOutlet weak var radioButtonPlace: NSButton!
+    @IBOutlet weak var radioButtonEdit: NSButton!
+    @IBOutlet weak var radioButtonDraw: NSButton!
+    
+    @IBOutlet weak var radioButtonAgent: NSButton!
+    @IBOutlet weak var radioButtonObstacle: NSButton!
+    @IBOutlet weak var radioButtonPath: NSButton!
+    
+    
 	private var action = Action.Place
 	private var object = Object.Agent
 
@@ -120,15 +131,25 @@ class TopBarController: NSViewController {
 		case .Agent:
 			imageView.image = self.activeAgentImage
 			imageView.isHidden = false
-			recallAgentsButton.isHidden = false
 		case .Obstacle:
 			imageView.image = self.activeObstacleImage
 			imageView.isHidden = false
-			recallAgentsButton.isHidden = true
 		case .Path:
 			imageView.isHidden = true
-			recallAgentsButton.isHidden = true
 		}
+        
+        switch action {
+        case .Draw:
+            if radioButtonAgent.state == NSControl.StateValue.on {
+                self.object = .Path
+                radioButtonAgent.state = NSControl.StateValue.off
+                radioButtonPath.state = NSControl.StateValue.on
+            }
+            radioButtonAgent.isEnabled = false
+        case .Place:
+            radioButtonAgent.isEnabled = true
+        case .Edit: break
+        }
 	}
 	
 	private func showPopover(withTitle title:String, andImages images:[NSImage], forView view:NSView) {
