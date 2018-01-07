@@ -40,11 +40,6 @@ class GameScene: SKScene, SKViewDelegate {
     var selectionDelegate: AFSelectionState!
     var selectionDelegateDraw: AFSelectionState_Draw!
     var selectionDelegatePrimary: AFSelectionState_Primary!
-    var selectionIndicator: SKShapeNode!
-    var multiSelectionIndicator: SKShapeNode!
-
-    var corral_ = [SKShapeNode]()
-    var corral = [GKPolygonObstacle]()
 
     override func didMove(to view: SKView) {
         GameScene.me = self
@@ -53,38 +48,6 @@ class GameScene: SKScene, SKViewDelegate {
     override func sceneDidLoad() {
         self.lastUpdateTime = 0
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        let w = 1500, h = 740/*frame.size.height*/
-        let x = -w / 2/*frame.origin.x*/, y = -h / 2/*frame.origin.y*/
-        
-        selectionIndicator = SKShapeNode(circleOfRadius: 15)
-        selectionIndicator.fillColor = .red
-        
-        multiSelectionIndicator = SKShapeNode(circleOfRadius: 15)
-        multiSelectionIndicator.fillColor = .blue
-
-        let adjustedOrigin = self.convertPoint(toView: CGPoint.zero)
-        print(adjustedOrigin)
-        
-        let thickness = 50
-        let offset = 0
-        var specs: [(CGPoint, CGSize, NSColor)] = [
-            (CGPoint(x: x, y: -y + thickness - offset), CGSize(width: w, height: thickness), .red),
-            (CGPoint(x: -x - offset, y: y), CGSize(width: thickness, height: h), .yellow),
-            (CGPoint(x: x, y: y + offset - 100), CGSize(width: w, height: thickness), .blue),
-            (CGPoint(x: x - thickness + offset, y: y), CGSize(width: thickness, height: h), .green)
-        ]
-        
-        func drawShape(_ ss: Int) {
-            let shapeNode = SKShapeNode(rect: CGRect(origin: specs[ss].0, size: specs[ss].1))
-            shapeNode.fillColor = specs[ss].2
-            shapeNode.strokeColor = .black
-            self.addChild(shapeNode)
-            corral_.append(shapeNode)
-        }
-        
-        for i in 0..<4 { drawShape(i) }
-        
-        corral = SKNode.obstacles(fromNodeBounds: corral_)
         
         selectionDelegatePrimary = AFSelectionState_Primary(gameScene: self)
         selectionDelegateDraw = AFSelectionState_Draw(gameScene: self)

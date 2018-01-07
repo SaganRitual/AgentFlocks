@@ -58,7 +58,7 @@ class AFBehavior: GKBehavior {
         
         for gkGoal in prototype.goals {
             let goal = AFGoal(prototype: gkGoal)
-            setWeight(goal.weight, for: goal)
+            setWeightage(goal.weight, for: goal)
             goalsMap[goal.gkGoal!] = goal
         }
     }
@@ -69,14 +69,14 @@ class AFBehavior: GKBehavior {
     }
     
     func addGoal(_ goal: AFGoal) {
-        setWeight(goal.weight, for: goal)
+        setWeightage(goal.weight, for: goal)
     }
     
     func enableGoal(_ goal: AFGoal, on: Bool = true) {
         if on {
             enabled = true
             
-            setWeight(savedState!.weight, for: goal)
+            setWeight(savedState!.weight, for: goal.gkGoal)
             savedState = nil
         } else {
             enabled = false
@@ -106,7 +106,7 @@ class AFBehavior: GKBehavior {
         super.remove(goal.gkGoal)
     }
     
-    func setWeight(_ weight: Float, for goal: AFGoal) {
+    func setWeightage(_ weight: Float, for goal: AFGoal) {
         super.setWeight(weight, for: goal.gkGoal)
         
         // AFBehavior has to track goals, because there's no way to read

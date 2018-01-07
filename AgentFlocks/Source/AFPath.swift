@@ -50,6 +50,7 @@ class AFGraphNode2D_Script: Codable {
 }
 
 class AFPath {
+    var containerNode: SKNode?
     var gkPath: GKPath!
     let locked: Bool
     let name: String
@@ -57,7 +58,6 @@ class AFPath {
     var nodesMap: [Int: AFGraphNode2D]
     var obstacle: GKPolygonObstacle?
     var radius: Float = 5.0
-    var displayPath: SKNode?
     
     init(obstacle: GKPolygonObstacle? = nil) {
         name = NSUUID().uuidString
@@ -113,60 +113,51 @@ class AFPath {
     }
     
     func refresh(final: Bool = false) {
-        if let dp = displayPath {
-            dp.removeFromParent()
+        if let c = containerNode {
+            c.removeFromParent()    // Entirely remove the old one
+            containerNode = nil
         }
-        
+
         // GKPath constructor will totally crash the app such
         // that XCode can't catch the error
         guard nodes.count > 1 else { return }
-        
-        var nodesArray = [AFGraphNode2D]()
+
+        containerNode = SKNode()
+
+        var nodesArray = [float2]()
+        var visualDotsArray = [CGPoint]()
         for i in 0 ..< nodesMap.count {
-            nodesArray.append(nodesMap[i]!)
-        }
-
-        gkPath = GKPath(graphNodes: nodesArray, radius: radius)
-        
-        if nodesArray.count > 1 {
-            var firstPosition: CGPoint? = nil
-            var lastPosition: CGPoint? = nil
-            let cgPath = CGMutablePath()
-
-            for node in nodesArray {
-                let x = CGFloat(node.position.x); let y = CGFloat(node.position.y)
-                let cgPoint = CGPoint(x: x, y: y)
-                
-                if firstPosition == nil {
-                    firstPosition = cgPoint
-                }
-                
-                if cgPoint != firstPosition! {
-                    displayPath = SKNode()
-                    cgPath.addLine(to: cgPoint)
-
-                    let line = SKShapeNode(path: cgPath)
-                    displayPath!.addChild(line)
-                    line.glowWidth = 5
-                    line.fillColor = .gray
-                }
-                
-                lastPosition = cgPoint
-                cgPath.move(to: lastPosition!)
-            }
+            let point = CGPoint(x: CGFloat(nodesMap[i]!.position.x), y: CGFloat(nodesMap[i]!.position.y))
+            let node = vector_float2(nodesMap[i]!.position.x, nodesMap[i]!.position.y)
             
-            if final, let fp = firstPosition, let lp = lastPosition, fp != lp {
-                cgPath.addLine(to: fp)
-                
-                let line = SKShapeNode(path: cgPath)
-                displayPath!.addChild(line)
-                line.glowWidth = 5
-                line.fillColor = .gray
+            nodesArray.append(node)
+            visualDotsArray.append(point)
+        }
+        
+        if final {  // To draw from the last point back to the first
+            nodesArray.append(nodesArray[0])
+            visualDotsArray.append(visualDotsArray[0])
+        }
+
+        gkPath = GKPath(points: nodesArray, radius: 1, cyclical: true)
+        
+        var startPoint: CGPoint!
+        let visualPath = CGMutablePath()
+        for dot in visualDotsArray {
+            let point = CGPoint(x: CGFloat(dot.x), y: CGFloat(dot.y))
+            if startPoint == nil {
+                startPoint = point
+                visualPath.move(to: point)
+            } else {
+                visualPath.addLine(to: point)
             }
         }
         
-        if let dp = displayPath {
-            GameScene.me!.addChild(dp)
+        let sprite = SKShapeNode(path: visualPath)
+        containerNode!.addChild(sprite)
+
+        if let c = containerNode {
+            GameScene.me!.addChild(c)
         }
     }
     

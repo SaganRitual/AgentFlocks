@@ -84,6 +84,9 @@ class AFSelectionState_Primary: AFSelectionState {
         selectedIndexes.removeAll()
         primarySelectionIndex = nil
         AppDelegate.me!.removeAgentFrames()
+
+        // Clear out the sliders so they'll recalibrate themselves to the new values
+        AppDelegate.agentEditorController.attributesController.resetSliderControllers()
     }
     
     func getAgent(at index: Int) -> AFAgent2D {

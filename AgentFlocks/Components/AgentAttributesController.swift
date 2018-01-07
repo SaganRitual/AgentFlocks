@@ -105,6 +105,16 @@ class AgentAttributesController: NSViewController {
         }
     }
     
+    // Any time we select a new agent, we need to force the sliders to recalculate their exponents
+    func resetSliderControllers() {
+        let controllers = [
+            massSliderController, maxAccelerationSliderController, maxSpeedSliderController,
+            radiusSliderController, scaleSliderController
+        ]
+
+        for controller in controllers { controller.resetExponent() }
+    }
+    
 }
 
 // MARK: -
@@ -114,14 +124,19 @@ extension AgentAttributesController: LogSliderDelegate {
 	func logSlider(_ controller: LogSliderController, newValue value: Double) {
 		switch controller {
         case massSliderController:
+            mass = value
             delegate?.agent(self, newValue: value, ofAttribute: .mass)
         case maxAccelerationSliderController:
+            maxAcceleration = value
             delegate?.agent(self, newValue: value, ofAttribute: .maxAcceleration)
         case maxSpeedSliderController:
+            maxSpeed = value
             delegate?.agent(self, newValue: value, ofAttribute: .maxSpeed)
         case radiusSliderController:
+            radius = value
             delegate?.agent(self, newValue: value, ofAttribute: .radius)
 		case scaleSliderController:
+            scale = value
 			delegate?.agent(self, newValue: value, ofAttribute: .scale)
 		default:
 			return

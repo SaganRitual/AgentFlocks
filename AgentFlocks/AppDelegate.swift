@@ -166,83 +166,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.paths = paths
         }
     }
-    
-    // MARK: - Custom methods
-	
-	func loadJSON() {
-		// Get out of draw mode. Seems weird to be doing this in a function about
-		// loading a script, but this is the only reasonable place to put it, I think?
-		
-		GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
-		
-		do {
-			if let resourcesPath = Bundle.main.resourcePath {
-				let url = URL(string: "file://\(resourcesPath)/setup.json")!
-				print(url)
-				let jsonData = try Data(contentsOf: url)
-				let decoder = JSONDecoder()
-				let entities_ = try decoder.decode(AFEntities.self, from: jsonData)
-				
-				let paths_ = try decoder.decode(AFPaths.self, from: jsonData)
-				
-				for path_ in paths_.paths {
-					let path = AFPath(prototype: path_)
-					GameScene.me!.paths[path.name] = path
-					GameScene.me!.pathnames.append(path.name)
-				}
-				
-				var selectionSet = false
-				for entity_ in entities_.entities {
-					let entity = AFEntity(prototype: entity_)
-					GameScene.me!.entities.append(entity)
-					
-					if !selectionSet {
-						AppDelegate.agentEditorController.goalsController.dataSource = entity
-						AppDelegate.agentEditorController.attributesController.delegate = entity.agent
-						selectionSet = true
-					}
-					
-					let nodeIndex = GameScene.me!.entities.count - 1
-					GameScene.me!.newAgent(nodeIndex)
-				}
-			}
-		} catch { print(error) }
-	}
-	
-	func saveJSON() {
-		do {
-			var entities_ = [AFEntity_Script]()
-			
-			for entity in GameScene.me!.entities {
-				let entity_ = AFEntity_Script(entity: entity)
-				entities_.append(entity_)
-			}
-			
-			var paths_ = [AFPath_Script]()
-			
-			for (_, afPath) in GameScene.me!.paths {
-				let afPath_Script = AFPath_Script(afPath: afPath)
-				paths_.append(afPath_Script)
-			}
-			
-			let bigger = jsonOut(entities: entities_, paths: paths_)
-			let encoder = JSONEncoder()
-			let script = try encoder.encode(bigger)
-			let file = "setup.json"
-			
-			if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-				
-				let fileURL = dir.appendingPathComponent(file)
-				print(fileURL)
-				
-				//writing
-				do {
-					try script.write(to: fileURL)
-				}
-				catch { print(error) }
-			}
-		} catch { print(error) }
-	}
 	
 	func loadAgents() -> [AgentType] {
 		
@@ -251,7 +174,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 			do {
 				let fileNames = try FileManager.default.contentsOfDirectory(atPath: resourcesPath)
 				for fileName in fileNames.sorted() where fileName.hasPrefix("Agent") {
-                    print("\(resourcesPath)/\(fileName)")
 					if let image = NSImage(contentsOfFile: "\(resourcesPath)/\(fileName)") {
 						let agent:AgentType = (name:fileName, image:image, behaviors:[]);
 						foundAgents.append(agent)
@@ -354,7 +276,71 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		popover.show(relativeTo: rect, of: mainView, preferredEdge: preferredEdge)
 		activePopover = popover
 	}
-	
+    
+    // MARK: - File i/o
+    
+    func loadJSON(url: URL) {
+        // Get out of draw mode. Seems weird to be doing this in a function about
+        // loading a script, but this is the only reasonable place to put it, I think?
+        
+        GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
+        
+        do {
+            let jsonData = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let entities_ = try decoder.decode(AFEntities.self, from: jsonData)
+            
+            let paths_ = try decoder.decode(AFPaths.self, from: jsonData)
+            
+            for path_ in paths_.paths {
+                let path = AFPath(prototype: path_)
+                GameScene.me!.paths[path.name] = path
+                GameScene.me!.pathnames.append(path.name)
+            }
+            
+            var selectionSet = false
+            for entity_ in entities_.entities {
+                let entity = AFEntity(prototype: entity_)
+                GameScene.me!.entities.append(entity)
+                
+                if !selectionSet {
+                    AppDelegate.agentEditorController.goalsController.dataSource = entity
+                    AppDelegate.agentEditorController.attributesController.delegate = entity.agent
+                    selectionSet = true
+                }
+                
+                let nodeIndex = GameScene.me!.entities.count - 1
+                GameScene.me!.newAgent(nodeIndex)
+            }
+        } catch { print(error) }
+    }
+    
+    func saveJSON(url: URL) {
+        do {
+            var entities_ = [AFEntity_Script]()
+            
+            for entity in GameScene.me!.entities {
+                let entity_ = AFEntity_Script(entity: entity)
+                entities_.append(entity_)
+            }
+            
+            var paths_ = [AFPath_Script]()
+            
+            for (_, afPath) in GameScene.me!.paths {
+                let afPath_Script = AFPath_Script(afPath: afPath)
+                paths_.append(afPath_Script)
+            }
+            
+            let bigger = jsonOut(entities: entities_, paths: paths_)
+            let encoder = JSONEncoder()
+            let script = try encoder.encode(bigger)
+            
+            do {
+                try script.write(to: url)
+            } catch { print(error) }
+        } catch { print(error) }
+    }
+
 	// MARK: - Menu callbacks
 	
 	@IBAction func menuPreferencesClicked(_ sender: NSMenuItem) {
@@ -369,7 +355,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	
 	@IBAction func menuFileMenuOpenClicked(_ sender: NSMenuItem) {
 		NSLog("Menu: File->Open")
-	}
+        
+        let dialog = NSOpenPanel()
+        dialog.title                   = "Load script"
+        dialog.showsResizeIndicator    = true
+        dialog.showsHiddenFiles        = true
+        dialog.canChooseDirectories    = false
+        dialog.canCreateDirectories    = true
+        dialog.allowsMultipleSelection = false
+        dialog.allowedFileTypes        = ["json"]
+        
+        if dialog.runModal() == NSApplication.ModalResponse.OK {
+            if let result = dialog.url {
+                loadJSON(url: result)
+            } else {
+                return
+            }
+        }
+    }
 	
 	@IBAction func menuFileMenuCloseClicked(_ sender: NSMenuItem) {
 		NSLog("Menu: File->Close")
@@ -377,6 +380,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	
 	@IBAction func menuFileMenuSaveClicked(_ sender: NSMenuItem) {
 		NSLog("Menu: File->Save")
+        
+        let dialog = NSSavePanel()
+        dialog.title                   = "Save script"
+        dialog.showsResizeIndicator    = true
+        dialog.showsHiddenFiles        = true
+        dialog.canCreateDirectories    = true
+        dialog.allowedFileTypes        = ["json"]
+        
+        if dialog.runModal() == NSApplication.ModalResponse.OK {
+            if let result = dialog.url {
+                print("Saving to \(result)")
+                saveJSON(url: result)
+            } else {
+                print("Not saving")
+                return
+            }
+        }
 	}
 	
 	@IBAction func menuFileMenuSaveAsClicked(_ sender: NSMenuItem) {
@@ -501,7 +521,7 @@ extension AppDelegate: AgentGoalsDelegate {
             let agent = GameScene.me!.entities[index].agent
             let composite = agent.behavior as! AFCompositeBehavior
             let behavior = composite.findParent(ofGoal: gkGoal)
-            let afGoal = behavior.goalsMap[gkGoal]!
+            let afGoal = behavior!.goalsMap[gkGoal]!
             
             var attributes = [String]()
 
@@ -580,7 +600,7 @@ extension AppDelegate: AgentGoalsDelegate {
         switch type {
         case .toAlignWith:      fallthrough
         case .toCohereWith:     fallthrough
-        case .toSeparateFrom:   attributeList = ["Distance", "Angle"] + attributeList
+        case .toSeparateFrom:   attributeList = ["Angle", "Distance"] + attributeList
 
         case .toAvoidAgents:    fallthrough
         case .toAvoidObstacles: fallthrough
@@ -666,7 +686,7 @@ extension AppDelegate: ItemEditorDelegate {
             let agent = GameScene.me!.entities[index].agent
             let composite = agent.behavior as! AFCompositeBehavior
             let behavior = composite.findParent(ofGoal: gkGoal)
-            let afGoal = behavior.goalsMap[gkGoal]!
+            let afGoal = behavior!.goalsMap[gkGoal]!
 
             // Edit existing goal -- note AFBehavior doesn't give us a way
             // to update the goal. If we want to assign any new values to
@@ -674,7 +694,7 @@ extension AppDelegate: ItemEditorDelegate {
             var replacementGoalRequired = false
             for name in ["Angle", "Distance", "Speed", "Time"] {
                 if controller.valueChanged(sliderName: name) {
-                    replacementGoalRequired = true
+                    replacementGoalRequired = true; break
                 }
             }
 
@@ -692,16 +712,16 @@ extension AppDelegate: ItemEditorDelegate {
                 if let time = time { newGoal.time = Float(time) }
                 
                 parentOfNewMotivator.remove(afGoal)
-                parentOfNewMotivator.setWeight(weight, for: newGoal)
+                parentOfNewMotivator.setWeightage(weight, for: newGoal)
             } else {
                 afGoal.weight = weight
-                parentOfNewMotivator.setWeight(weight, for: afGoal)
+                parentOfNewMotivator.setWeightage(weight, for: afGoal)
             }
         } else {
             // Add new goal or behavior
             if let type = controller.newItemType {
                 var goal: AFGoal?
-                let group = GameScene.me!.getSelectedAgents()
+                var group = GameScene.me!.getSelectedAgents()
                 
                 var names = [String]()
                 for agent in group {
@@ -710,9 +730,19 @@ extension AppDelegate: ItemEditorDelegate {
 
                 switch type {
                 case .toAlignWith:
+                    let primarySelection = GameScene.me!.getPrimarySelectionIndex()!
+                    let primarySelected = GameScene.me!.entities[primarySelection] as AFEntity
+
+                    goal = AFGoal(toAlignWith: names, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
+
+                    // Secondary selections align with primary and with each other.
+                    // Primary doesn't do anything.
                     for agent in group {
-                        goal = AFGoal(toAlignWith: names, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
-                        (agent as! AFAgent2D).addGoal(goal!)
+                        let afAgent = agent as! AFAgent2D
+                        
+                        if afAgent.name != primarySelected.name {
+                            afAgent.addGoal(goal!)
+                        }
                     }
                     
                     goal = nil
@@ -728,10 +758,24 @@ extension AppDelegate: ItemEditorDelegate {
                     goal!.pathname = pathname
                     
                 case .toAvoidAgents:
-                    goal = AFGoal(toAvoidAgents: group, time: time!, weight: weight)
-                    for agent in group {
-                        (agent as! AFAgent2D).addGoal(goal!)
+                    let primarySelection = GameScene.me!.getPrimarySelectionIndex()!
+                    let primarySelected = GameScene.me!.entities[primarySelection] as AFEntity
+                    
+                    var agentNames = [String]()
+                    for gkAgent in group {
+                        let afAgent = gkAgent as! AFAgent2D
+                        agentNames.append(afAgent.name)
                     }
+                    
+                    for (i, _) in group.enumerated() {
+                        if group[i] == primarySelected.agent {
+                            group.remove(at: i)
+                            break;
+                        }
+                    }
+                    
+                    goal = AFGoal(toAvoidAgents: agentNames, time: time!, weight: weight)
+                    primarySelected.agent.addGoal(goal!)
                     
                     goal = nil
                     
@@ -751,8 +795,8 @@ extension AppDelegate: ItemEditorDelegate {
                     si.remove(GameScene.me!.getPrimarySelectionIndex()!)
                     
                     let secondarySelectionIndex = si.first!
-                    let theAgentToFlee = GameScene.me!.entities[secondarySelectionIndex].agent
-                    goal = AFGoal(toFleeAgent: theAgentToFlee, weight: weight)
+                    let nameOfAgentToFlee = GameScene.me!.entities[secondarySelectionIndex].agent.name
+                    goal = AFGoal(toFleeAgent: nameOfAgentToFlee, weight: weight)
                     
                 case .toFollow:
                     let pathIndex = GameScene.me!.pathForNextPathGoal
@@ -768,17 +812,19 @@ extension AppDelegate: ItemEditorDelegate {
 
                     let indexesAsArray = Array(selectedIndexes)
                     let secondaryAgentIndex = indexesAsArray[1]
-                    let theAgentToIntercept = GameScene.me!.entities[secondaryAgentIndex].agent
-                    goal = AFGoal(toInterceptAgent: theAgentToIntercept, time: time!, weight: weight)
+                    let targetAgentName = GameScene.me!.entities[secondaryAgentIndex].agent.name
+                    goal = AFGoal(toInterceptAgent: targetAgentName, time: time!, weight: weight)
 
                 case .toSeekAgent:
-                    let selectedIndexes = GameScene.me!.getSelectedIndexes()
+                    var selectedIndexes = GameScene.me!.getSelectedIndexes()
                     guard selectedIndexes.count == 2 else { return }
 
-                    let indexesAsArray = Array(GameScene.me!.getSelectedIndexes())
-                    let secondaryAgentIndex = indexesAsArray[1]
-                    let theAgentToSeek = GameScene.me!.entities[secondaryAgentIndex].agent
-                    goal = AFGoal(toSeekAgent: theAgentToSeek, weight: weight)
+                    let p = selectedIndexes.remove(GameScene.me!.getPrimarySelectionIndex()!)
+                    selectedIndexes.remove(p!)
+                    
+                    let secondaryAgentIndex = selectedIndexes.first!
+                    let targetAgentName = GameScene.me!.entities[secondaryAgentIndex].agent.name
+                    goal = AFGoal(toSeekAgent: targetAgentName, weight: weight)
 
                 case .toSeparateFrom:
                     goal = AFGoal(toSeparateFrom: names, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
@@ -789,14 +835,12 @@ extension AppDelegate: ItemEditorDelegate {
                     goal = nil
 
                 case .toStayOn:
-                    var points = [GKGraphNode2D]()
-                    for vertex in GameScene.me!.selectionDelegateDraw.vertices {
-                        let point = GKGraphNode2D(point: vector_float2(Float(vertex.x), Float(vertex.y)))
-                        points.append(point)
-                    }
+                    let pathIndex = GameScene.me!.pathForNextPathGoal
+                    let pathname = GameScene.me!.pathnames[pathIndex]
+                    let afPath = GameScene.me!.paths[pathname]!
+                    goal = AFGoal(toStayOn: afPath.gkPath!, time: Float(time!), weight: weight)
                     
-                    let path = GKPath(graphNodes: points, radius: 1)
-                    goal = AFGoal(toStayOn: path, time: 1, weight: weight)
+                    goal!.pathname = pathname
 
                 case .toReachTargetSpeed:
                     goal = AFGoal(toReachTargetSpeed: Float(speed!), weight: weight)

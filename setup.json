@@ -1,47 +1,362 @@
-{
-  "entities": [
-    {
-      "name": "47cc5264-f168-4e69-940a-864c898afeea",
-      
-      "agent": {
-        "imageFile": "Agent01.png",
-        "position": [0, 0],
-        "mass": 10,
-        
-        "motivator": {
-          "enabled": true,
-          "motivatorType": "compositeBehavior",
-
-          "behaviors": [
-            {
-              "enabled": true,
-              "motivatorType": "behavior",
-              "weight": 1,
-              
-              "goals": [
-                {
-                  "enabled": true,
-                  "goalType": "toWander",
-                  "motivatorType": "goal",
-                  "weight": 1.0,
-                  "angle": 3.14,
-                  "distance": 100,
-                  "predictionTime": 1,
-                  "speed": 100
-                }
-              ]
+{  
+   "paths":[  
+      {  
+         "name":"5352B56B-FE48-45F6-A9D1-193C3800E077",
+         "nodesMap":{  
+            "3":{  
+               "position":[  
+                  570.37890625,
+                  -276.0546875
+               ]
+            },
+            "1":{  
+               "position":[  
+                  -377.08984375,
+                  276.80078125
+               ]
+            },
+            "4":{  
+               "position":[  
+                  -361.8984375,
+                  -286.21484375
+               ]
+            },
+            "2":{  
+               "position":[  
+                  582.32806396484375,
+                  269.28121948242188
+               ]
+            },
+            "0":{  
+               "position":[  
+                  -373.67578125,
+                  -282.37109375
+               ]
             }
-          ]
-        },
+         },
+         "radius":5
       }
-    }
-  ],
-  
-  "paths": [
-    {
-      "points": [
-        { "x": 0, "y": 0 }, { "x": 0, "y": 100 }, { "x": 100, "y": 0 }, { "x": 0, "y": -100 }, { "x": -100, "y": 0}
-      ]
-    }
-  ]
+   ],
+   "entities":[  
+      {  
+         "agent":{  
+            "radius":50,
+            "imageFile":"Agent07.png",
+            "maxAcceleration":100,
+            "position":[  
+               -357.55996704101562,
+               -278.39892578125
+            ],
+            "maxSpeed":100,
+            "motivator":{  
+               "enabled":true,
+               "behaviors":[  
+                  {  
+                     "enabled":true,
+                     "goals":[  
+                        {  
+                           "pathname":"",
+                           "weight":100,
+                           "enabled":true,
+                           "forward":true,
+                           "angle":0,
+                           "distance":0,
+                           "speed":0,
+                           "agentNames":[  
+
+                           ],
+                           "goalType":"toAvoidObstacles",
+                           "time":10,
+                           "name":"316650BB-7D13-46FB-AE8B-B5F5E0F71739"
+                        },
+                        {  
+                           "pathname":"5352B56B-FE48-45F6-A9D1-193C3800E077",
+                           "weight":10,
+                           "enabled":true,
+                           "forward":true,
+                           "angle":0,
+                           "distance":0,
+                           "speed":0,
+                           "agentNames":[  
+
+                           ],
+                           "goalType":"toFollow",
+                           "time":10,
+                           "name":"AA1B5FDC-7E74-4353-B61C-735A32214913"
+                        }
+                     ],
+                     "weight":100
+                  }
+               ]
+            },
+            "name":"EA354D61-0346-499E-AD5A-7C729EF6A0C2",
+            "mass":0.10000000149011612
+         },
+         "name":"EA354D61-0346-499E-AD5A-7C729EF6A0C2"
+      },
+      {  
+         "agent":{  
+            "radius":50,
+            "imageFile":"Agent07.png",
+            "maxAcceleration":100,
+            "position":[  
+               -219.9454345703125,
+               40.084659576416016
+            ],
+            "maxSpeed":100,
+            "motivator":{  
+               "enabled":true,
+               "behaviors":[  
+                  {  
+                     "enabled":true,
+                     "goals":[  
+                        {  
+                           "pathname":"",
+                           "weight":100,
+                           "enabled":true,
+                           "forward":true,
+                           "angle":0,
+                           "distance":0,
+                           "speed":0,
+                           "agentNames":[  
+
+                           ],
+                           "goalType":"toAvoidObstacles",
+                           "time":10,
+                           "name":"523D6DA6-F0A5-4069-BE02-5347A77DF646"
+                        }
+                     ],
+                     "weight":100
+                  },
+                  {  
+                     "enabled":true,
+                     "goals":[  
+                        {  
+                           "pathname":"",
+                           "weight":10,
+                           "enabled":true,
+                           "forward":true,
+                           "angle":1000,
+                           "distance":1000,
+                           "speed":0,
+                           "agentNames":[  
+                              "EC3483C8-49A7-4DFA-888D-D95B68C3F621",
+                              "FA7F0815-D0FD-40BA-86E4-D072CEA333F5",
+                              "EA354D61-0346-499E-AD5A-7C729EF6A0C2",
+                              "E7EE9095-F0C6-40C6-A311-FF36DF14A380",
+                              "339BA537-56B2-4466-8C7A-ABFACB70D8A0"
+                           ],
+                           "goalType":"toAlignWith",
+                           "time":0,
+                           "name":"86729597-2D45-401A-9164-80CE1FBF46A2"
+                        }
+                     ],
+                     "weight":142
+                  }
+               ]
+            },
+            "name":"E7EE9095-F0C6-40C6-A311-FF36DF14A380",
+            "mass":0.10000000149011612
+         },
+         "name":"E7EE9095-F0C6-40C6-A311-FF36DF14A380"
+      },
+      {  
+         "agent":{  
+            "radius":50,
+            "imageFile":"Agent07.png",
+            "maxAcceleration":100,
+            "position":[  
+               -26.160673141479492,
+               14.865715026855469
+            ],
+            "maxSpeed":100,
+            "motivator":{  
+               "enabled":true,
+               "behaviors":[  
+                  {  
+                     "enabled":true,
+                     "goals":[  
+                        {  
+                           "pathname":"",
+                           "weight":100,
+                           "enabled":true,
+                           "forward":true,
+                           "angle":0,
+                           "distance":0,
+                           "speed":0,
+                           "agentNames":[  
+
+                           ],
+                           "goalType":"toAvoidObstacles",
+                           "time":10,
+                           "name":"AE95ECB3-2B85-4817-B722-58CEB5A03892"
+                        }
+                     ],
+                     "weight":100
+                  },
+                  {  
+                     "enabled":true,
+                     "goals":[  
+                        {  
+                           "pathname":"",
+                           "weight":10,
+                           "enabled":true,
+                           "forward":true,
+                           "angle":1000,
+                           "distance":1000,
+                           "speed":0,
+                           "agentNames":[  
+                              "EC3483C8-49A7-4DFA-888D-D95B68C3F621",
+                              "FA7F0815-D0FD-40BA-86E4-D072CEA333F5",
+                              "EA354D61-0346-499E-AD5A-7C729EF6A0C2",
+                              "E7EE9095-F0C6-40C6-A311-FF36DF14A380",
+                              "339BA537-56B2-4466-8C7A-ABFACB70D8A0"
+                           ],
+                           "goalType":"toAlignWith",
+                           "time":0,
+                           "name":"86729597-2D45-401A-9164-80CE1FBF46A2"
+                        }
+                     ],
+                     "weight":142
+                  }
+               ]
+            },
+            "name":"FA7F0815-D0FD-40BA-86E4-D072CEA333F5",
+            "mass":0.10000000149011612
+         },
+         "name":"FA7F0815-D0FD-40BA-86E4-D072CEA333F5"
+      },
+      {  
+         "agent":{  
+            "radius":50,
+            "imageFile":"Agent07.png",
+            "maxAcceleration":100,
+            "position":[  
+               72.152473449707031,
+               -91.057838439941406
+            ],
+            "maxSpeed":100,
+            "motivator":{  
+               "enabled":true,
+               "behaviors":[  
+                  {  
+                     "enabled":true,
+                     "goals":[  
+                        {  
+                           "pathname":"",
+                           "weight":100,
+                           "enabled":true,
+                           "forward":true,
+                           "angle":0,
+                           "distance":0,
+                           "speed":0,
+                           "agentNames":[  
+
+                           ],
+                           "goalType":"toAvoidObstacles",
+                           "time":10,
+                           "name":"B8E3F1C8-5A13-4A4C-943C-B0AA567FA398"
+                        }
+                     ],
+                     "weight":100
+                  },
+                  {  
+                     "enabled":true,
+                     "goals":[  
+                        {  
+                           "pathname":"",
+                           "weight":10,
+                           "enabled":true,
+                           "forward":true,
+                           "angle":1000,
+                           "distance":1000,
+                           "speed":0,
+                           "agentNames":[  
+                              "EC3483C8-49A7-4DFA-888D-D95B68C3F621",
+                              "FA7F0815-D0FD-40BA-86E4-D072CEA333F5",
+                              "EA354D61-0346-499E-AD5A-7C729EF6A0C2",
+                              "E7EE9095-F0C6-40C6-A311-FF36DF14A380",
+                              "339BA537-56B2-4466-8C7A-ABFACB70D8A0"
+                           ],
+                           "goalType":"toAlignWith",
+                           "time":0,
+                           "name":"86729597-2D45-401A-9164-80CE1FBF46A2"
+                        }
+                     ],
+                     "weight":142
+                  }
+               ]
+            },
+            "name":"339BA537-56B2-4466-8C7A-ABFACB70D8A0",
+            "mass":0.10000000149011612
+         },
+         "name":"339BA537-56B2-4466-8C7A-ABFACB70D8A0"
+      },
+      {  
+         "agent":{  
+            "radius":50,
+            "imageFile":"Agent07.png",
+            "maxAcceleration":100,
+            "position":[  
+               -351.69931030273438,
+               -456.55706787109375
+            ],
+            "maxSpeed":100,
+            "motivator":{  
+               "enabled":true,
+               "behaviors":[  
+                  {  
+                     "enabled":true,
+                     "goals":[  
+                        {  
+                           "pathname":"",
+                           "weight":100,
+                           "enabled":true,
+                           "forward":true,
+                           "angle":0,
+                           "distance":0,
+                           "speed":0,
+                           "agentNames":[  
+
+                           ],
+                           "goalType":"toAvoidObstacles",
+                           "time":10,
+                           "name":"E8B4E4A9-CE46-457A-A6EA-BA527120B2AB"
+                        }
+                     ],
+                     "weight":100
+                  },
+                  {  
+                     "enabled":true,
+                     "goals":[  
+                        {  
+                           "pathname":"",
+                           "weight":10,
+                           "enabled":true,
+                           "forward":true,
+                           "angle":1000,
+                           "distance":1000,
+                           "speed":0,
+                           "agentNames":[  
+                              "EC3483C8-49A7-4DFA-888D-D95B68C3F621",
+                              "FA7F0815-D0FD-40BA-86E4-D072CEA333F5",
+                              "EA354D61-0346-499E-AD5A-7C729EF6A0C2",
+                              "E7EE9095-F0C6-40C6-A311-FF36DF14A380",
+                              "339BA537-56B2-4466-8C7A-ABFACB70D8A0"
+                           ],
+                           "goalType":"toAlignWith",
+                           "time":0,
+                           "name":"86729597-2D45-401A-9164-80CE1FBF46A2"
+                        }
+                     ],
+                     "weight":142
+                  }
+               ]
+            },
+            "name":"EC3483C8-49A7-4DFA-888D-D95B68C3F621",
+            "mass":0.10000000149011612
+         },
+         "name":"EC3483C8-49A7-4DFA-888D-D95B68C3F621"
+      }
+   ]
 }

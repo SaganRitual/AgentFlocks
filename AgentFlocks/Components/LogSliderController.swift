@@ -55,11 +55,12 @@ class LogSliderController: NSViewController {
 				_exponentValue = newValue
 			}
 			maxValue = pow(10.0, Double(_exponentValue))
-			if _value > maxValue {
+            
+            if exponentTakesPrecedence && _value > maxValue {
 				_value = maxValue
 				delegate?.logSlider(self, newValue: _value)
 			}
-			incrementValue = (_exponentValue > 1) ? 0.1 : pow(10.0, Double(_exponentValue - 3))
+			incrementValue = pow(10.0, Double(_exponentValue - 2))
 		}
 	}
 
@@ -112,6 +113,8 @@ class LogSliderController: NSViewController {
 	@IBOutlet private weak var exponentSlider: NSSlider!
 	@IBOutlet private weak var slider: NSSlider!
 	@IBOutlet private weak var valueLabel: NSTextField!
+    
+    var exponentTakesPrecedence = false
 	
 	// MARK: - Initialization
 	
@@ -157,6 +160,11 @@ class LogSliderController: NSViewController {
 	}
 	
 	// MARK: - Public methods
+    
+    // Force recalibration on the next time someone sets the value
+    func resetExponent() {
+        exponentValue = -1
+    }
 	
 	func addToView(_ superview: NSView) {
 		superview.addSubview(self.view)
@@ -198,7 +206,12 @@ class LogSliderController: NSViewController {
 	}
 	
 	@IBAction func exponentSliderDidMove(_ sender: NSSlider) {
+        // The exponent should force the slider value only when
+        // the user is actually dragging the exponent slider around.
+        // At any other time, the value has precedence over the exponent.
+        exponentTakesPrecedence = true
 		self.exponentValue = self.exponentSlider.integerValue
+        exponentTakesPrecedence = false
 	}
 
 }

@@ -61,6 +61,8 @@ class AFAgent2D: GKAgent2D {
         spriteContainer = cc
         sprite = ss
         
+        sprite.name = prototype.name
+        
         GameScene.me!.addChild(spriteContainer)
         
         originalSize = sprite.size
@@ -93,10 +95,6 @@ class AFAgent2D: GKAgent2D {
         let b = AFBehavior(agent: self)
         b.weight = 100
         (behavior as! AFCompositeBehavior).setWeight(100, for: b)
-        
-        let g1 = AFGoal.makeGoal(.toAvoidObstacles, obstacles: scene.corral, time: 10)
-        
-        b.setWeight(100, for: g1); g1.weight = 100
 
         mass = 0.1
         maxSpeed = 100
@@ -116,7 +114,7 @@ class AFAgent2D: GKAgent2D {
         // The guys who aren't selected have no control over where their
         // new group goal goes. Just put everyone's in a new behavior.
         let b = AFBehavior(agent: self)
-        b.setWeight(goal.weight, for: goal)
+        b.setWeightage(goal.weight, for: goal)
         (behavior as! AFCompositeBehavior).setWeight(goal.weight, for: b)
     }
 
@@ -129,7 +127,14 @@ class AFAgent2D: GKAgent2D {
         let node = SKNode()
         node.position = position
         
-        let texture = SKTexture(image: image)
+        var texture: SKTexture!
+        
+        if image.isValid {
+            texture = SKTexture(image: image)
+        } else {
+            texture = SKTexture(imageNamed: "Herman")
+        }
+        
         let sprite = SKSpriteNode(texture: texture)
         sprite.zPosition = 0
         node.addChild(sprite)
@@ -145,8 +150,8 @@ class AFAgent2D: GKAgent2D {
 
     static func makeSpriteContainer(imageFile: String, position: CGPoint, _ name: String? = nil) -> (SKNode, SKSpriteNode) {
         let path = Bundle.main.resourcePath!
-        let image = NSImage(byReferencingFile: "\(path)/\(imageFile)")
-        return makeSpriteContainer(image: image!, position: position, name)
+        let image = NSImage(byReferencingFile: "\(path)/\(imageFile)")!
+        return makeSpriteContainer(image: image, position: position, name)
     }
 
     func select(primary: Bool = true) {
