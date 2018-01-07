@@ -96,10 +96,10 @@ class AFAgent2D: GKAgent2D {
         b.weight = 100
         (behavior as! AFCompositeBehavior).setWeight(100, for: b)
         
-        let g1 = AFGoal.makeGoal(.toAvoidObstacles, obstacles: scene.corral, time: 10)
-        
-        g1.weight = 100
-        b.setWeightage(g1.weight, for: g1)
+//        let g1 = AFGoal.makeGoal(.toAvoidObstacles, obstacles: scene.corral, time: 10)
+//        
+//        g1.weight = 100
+//        b.setWeightage(g1.weight, for: g1)
 
         mass = 0.1
         maxSpeed = 100
