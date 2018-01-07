@@ -40,6 +40,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var obstacles = [ObstacleType]()
     
     var editedObstacleIndex:Int?
+    var agentImageIndex = 0
     var stopTime: TimeInterval = 0
 
 	private var activePopover:NSPopover?
@@ -390,11 +391,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         if dialog.runModal() == NSApplication.ModalResponse.OK {
             if let result = dialog.url {
-                print("Saving to \(result)")
                 saveJSON(url: result)
-            } else {
-                print("Not saving")
-                return
             }
         }
 	}
@@ -414,16 +411,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 extension AppDelegate: TopBarDelegate {
     
 	func topBar(_ controller: TopBarController, actionChangedTo action: TopBarController.Action, for object: TopBarController.Object) {
-		switch object {
-		case .Agent:
-			break
-		case .Path:
-			if action == .Draw {
-				GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegateDraw
-			}
-		case .Obstacle:
-			break
-		}
+        GameScene.me!.selectionDelegate.deselectAll()
+        
+        switch action {
+        case .Place:
+            GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
+        case .Draw:
+            GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegateDraw
+        case .Edit: break
+        }
 		
 		if (object != .Path) || (action != .Draw) {
 			let drawer = GameScene.me!.selectionDelegateDraw!
@@ -440,6 +436,10 @@ extension AppDelegate: TopBarDelegate {
     func topBar(_ controller: TopBarController, obstacleSelected index: Int) {
         if 0..<obstacles.count ~= index {
             NSLog("Obstacle selected")
+            
+            GameScene.me!.selectionDelegate.deselectAll()
+
+
             editedObstacleIndex = index
             self.removeAgentFrames()
         }
@@ -450,16 +450,7 @@ extension AppDelegate: TopBarDelegate {
             NSLog("Agent selected")
             
             GameScene.me!.selectionDelegate.deselectAll()
-
-            let entity = sceneController.addNode(image: agents[index].image)
-            AppDelegate.agentEditorController.goalsController.dataSource = entity
-            AppDelegate.agentEditorController.attributesController.delegate = entity.agent
-
-            let nodeIndex = GameScene.me!.entities.count - 1
-            
-            GameScene.me!.newAgent(nodeIndex)
-            
-            self.placeAgentFrames(agentIndex: nodeIndex)
+            agentImageIndex = index
         }
     }
 

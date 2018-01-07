@@ -11,6 +11,14 @@
             <connections>
                 <outlet property="imageView" destination="D54-Pl-aPK" id="v1q-KW-0jD"/>
                 <outlet property="playPauseButton" destination="yPH-jb-RZz" id="p8J-lU-xpi"/>
+                <outlet property="radioButtonAgent" destination="WFb-K8-4nE" id="Zb1-qh-dEQ"/>
+                <outlet property="radioButtonDraw" destination="3aG-i7-GD7" id="Mc6-7L-wgd"/>
+                <outlet property="radioButtonEdit" destination="3vT-Zz-HLB" id="gfi-me-ZrP"/>
+                <outlet property="radioButtonObstacle" destination="FDI-Vs-mUJ" id="hiJ-co-8ec"/>
+                <outlet property="radioButtonPath" destination="uFc-Nb-XiR" id="fkC-Si-H7T"/>
+                <outlet property="radioButtonPlace" destination="LFT-d2-47s" id="JhX-Ta-w7b"/>
+                <outlet property="radioButtonVerbBox" destination="3Gi-Rs-0WG" id="xNT-gk-GX4"/>
+                <outlet property="radioButtonVerbView" destination="ZAm-X3-Auk" id="HjZ-Sh-t7Z"/>
                 <outlet property="recallAgentsButton" destination="KEH-SL-ZCm" id="oD1-Ue-Hcn"/>
                 <outlet property="sliderContainerView" destination="6uf-Yz-6OL" id="s7b-y3-1BX"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>

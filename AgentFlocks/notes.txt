@@ -1,7 +1,6 @@
 - Need a "use as defaults" button on the agent attributes view
 - Need an "apply defaults" button there too
 - Need a multi-select mechanism
-- Load & save json
 - Shared motivators: change a setting, it affects everyone using that motivator
 - Private motivators: you have your own copy
 - Motivators library; select an item, everyone using it lights up
@@ -11,3 +10,7 @@
 - Zoom with pinch gesture
 - Paths library with scrollable list view
 - Show/hide radius
+- Draggable & editable obstacles & paths
+- Path & obstacle drawing & editing need a lot of work
+- Unique names & lookup thing
+- Gray out child goals in outline view when parent behavior is disabled

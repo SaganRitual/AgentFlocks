@@ -33,6 +33,8 @@ class AFEntity: GKEntity {
     
     init(scene: GameScene, image: NSImage, position: CGPoint) {
         agent = AFAgent2D(scene: scene, image: image, position: position)
+        agent.position.x = Float(position.x)
+        agent.position.y = Float(position.y)
         
         super.init()
         
