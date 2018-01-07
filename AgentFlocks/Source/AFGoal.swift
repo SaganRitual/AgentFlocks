@@ -114,18 +114,12 @@ class AFGoal {
             gkGoal = GKGoal(toAvoid: gkAgents, maxPredictionTime: TimeInterval(time))
             
         case .toAvoidObstacles:
-            if let p = pathname {
-                if p == "" {
-                    // This is the special boundary we draw around the scene. We don't
-                    // include it in the path map.
-                    gkGoal = GKGoal(toAvoid: GameScene.me!.corral, maxPredictionTime: 10)
-                } else {
-                    print(p, GameScene.me!.paths)
-                    let afPath = GameScene.me!.paths[p]!
-                    let obstacle = afPath.makeObstacle()
+            if let p = pathname, p != "" {
+                print(p, GameScene.me!.paths)
+                let afPath = GameScene.me!.paths[p]!
+                let obstacle = afPath.makeObstacle()
 
-                    gkGoal = GKGoal(toAvoid: [obstacle], maxPredictionTime: TimeInterval(time))
-                }
+                gkGoal = GKGoal(toAvoid: [obstacle], maxPredictionTime: TimeInterval(time))
             } else {
                 fatalError()
             }
