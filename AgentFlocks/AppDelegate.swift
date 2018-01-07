@@ -167,81 +167,82 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    func saveJSON(_ controller: TopBarController) {
-        do {
-            var entities_ = [AFEntity_Script]()
-            
-            for entity in GameScene.me!.entities {
-                let entity_ = AFEntity_Script(entity: entity)
-                entities_.append(entity_)
-            }
-            
-            var paths_ = [AFPath_Script]()
-            
-            for (_, afPath) in GameScene.me!.paths {
-                let afPath_Script = AFPath_Script(afPath: afPath)
-                paths_.append(afPath_Script)
-            }
-            
-            let bigger = jsonOut(entities: entities_, paths: paths_)
-            let encoder = JSONEncoder()
-            let script = try encoder.encode(bigger)
-            let file = "setup.json"
-            
-            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-                
-                let fileURL = dir.appendingPathComponent(file)
-                print(fileURL)
-                
-                //writing
-                do {
-                    try script.write(to: fileURL)
-                }
-                catch { print(error) }
-            }
-        } catch { print(error) }
-    }
-    
     // MARK: - Custom methods
-    func loadJSON(_ controller: TopBarController) {
-        // Get out of draw mode. Seems weird to be doing this in a function about
-        // loading a script, but this is the only reasonable place to put it, I think?
-
-        GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
-
-        do {
-            if let resourcesPath = Bundle.main.resourcePath {
-                let url = URL(string: "file://\(resourcesPath)/setup.json")!
-                print(url)
-                let jsonData = try Data(contentsOf: url)
-                let decoder = JSONDecoder()
-                let entities_ = try decoder.decode(AFEntities.self, from: jsonData)
-
-                let paths_ = try decoder.decode(AFPaths.self, from: jsonData)
-                
-                for path_ in paths_.paths {
-                    let path = AFPath(prototype: path_)
-                    GameScene.me!.paths[path.name] = path
-                    GameScene.me!.pathnames.append(path.name)
-                }
-
-                var selectionSet = false
-                for entity_ in entities_.entities {
-                    let entity = AFEntity(prototype: entity_)
-                    GameScene.me!.entities.append(entity)
-                    
-                    if !selectionSet {
-                        AppDelegate.agentEditorController.goalsController.dataSource = entity
-                        AppDelegate.agentEditorController.attributesController.delegate = entity.agent
-                        selectionSet = true
-                    }
-
-                    let nodeIndex = GameScene.me!.entities.count - 1
-                    GameScene.me!.newAgent(nodeIndex)
-                }
-            }
-        } catch { print(error) }
-   }
+	
+	func loadJSON() {
+		// Get out of draw mode. Seems weird to be doing this in a function about
+		// loading a script, but this is the only reasonable place to put it, I think?
+		
+		GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
+		
+		do {
+			if let resourcesPath = Bundle.main.resourcePath {
+				let url = URL(string: "file://\(resourcesPath)/setup.json")!
+				print(url)
+				let jsonData = try Data(contentsOf: url)
+				let decoder = JSONDecoder()
+				let entities_ = try decoder.decode(AFEntities.self, from: jsonData)
+				
+				let paths_ = try decoder.decode(AFPaths.self, from: jsonData)
+				
+				for path_ in paths_.paths {
+					let path = AFPath(prototype: path_)
+					GameScene.me!.paths[path.name] = path
+					GameScene.me!.pathnames.append(path.name)
+				}
+				
+				var selectionSet = false
+				for entity_ in entities_.entities {
+					let entity = AFEntity(prototype: entity_)
+					GameScene.me!.entities.append(entity)
+					
+					if !selectionSet {
+						AppDelegate.agentEditorController.goalsController.dataSource = entity
+						AppDelegate.agentEditorController.attributesController.delegate = entity.agent
+						selectionSet = true
+					}
+					
+					let nodeIndex = GameScene.me!.entities.count - 1
+					GameScene.me!.newAgent(nodeIndex)
+				}
+			}
+		} catch { print(error) }
+	}
+	
+	func saveJSON() {
+		do {
+			var entities_ = [AFEntity_Script]()
+			
+			for entity in GameScene.me!.entities {
+				let entity_ = AFEntity_Script(entity: entity)
+				entities_.append(entity_)
+			}
+			
+			var paths_ = [AFPath_Script]()
+			
+			for (_, afPath) in GameScene.me!.paths {
+				let afPath_Script = AFPath_Script(afPath: afPath)
+				paths_.append(afPath_Script)
+			}
+			
+			let bigger = jsonOut(entities: entities_, paths: paths_)
+			let encoder = JSONEncoder()
+			let script = try encoder.encode(bigger)
+			let file = "setup.json"
+			
+			if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+				
+				let fileURL = dir.appendingPathComponent(file)
+				print(fileURL)
+				
+				//writing
+				do {
+					try script.write(to: fileURL)
+				}
+				catch { print(error) }
+			}
+		} catch { print(error) }
+	}
 	
 	func loadAgents() -> [AgentType] {
 		
@@ -392,45 +393,30 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 extension AppDelegate: TopBarDelegate {
     
-    func topBarDrawPath(_ controller: TopBarController) {
-        GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegateDraw
-    }
-    
-    func path0Clicked(_ controller: TopBarController) {
-//        GameScene.me!.pathForNextPathGoal = 0
-    }
-    
-    func path1Clicked(_ controller: TopBarController) {
-        GameScene.me!.pathForNextPathGoal = 1
-    }
-    
-    func path2Clicked(_ controller: TopBarController) {
-        GameScene.me!.pathForNextPathGoal = 2
-    }
-    
-    func path3Clicked(_ controller: TopBarController) {
-        GameScene.me!.pathForNextPathGoal = 3
-    }
-    
-    func path4Clicked(_ controller: TopBarController) {
-        GameScene.me!.pathForNextPathGoal = 4
-    }
-    
-    func path5Clicked(_ controller: TopBarController) {
-        GameScene.me!.pathForNextPathGoal = 5
-    }
-
-    func finishPathClicked(_ controller: TopBarController) {
-        let drawer = GameScene.me!.selectionDelegateDraw!
-        
-        drawer.afPath.refresh(final: true) // Auto-add the closing line segment
-        GameScene.me!.paths[drawer.afPath.name] = drawer.afPath
-        GameScene.me!.pathnames.append(drawer.afPath.name)
-        drawer.afPath = AFPath()
-
-        GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
-    }
-    
+	func topBar(_ controller: TopBarController, actionChangedTo action: TopBarController.Action, for object: TopBarController.Object) {
+		switch object {
+		case .Agent:
+			break
+		case .Path:
+			if action == .Draw {
+				GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegateDraw
+			}
+		case .Obstacle:
+			break
+		}
+		
+		if (object != .Path) || (action != .Draw) {
+			let drawer = GameScene.me!.selectionDelegateDraw!
+			
+			drawer.afPath.refresh(final: true) // Auto-add the closing line segment
+			GameScene.me!.paths[drawer.afPath.name] = drawer.afPath
+			GameScene.me!.pathnames.append(drawer.afPath.name)
+			drawer.afPath = AFPath()
+			
+			GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
+		}
+	}
+	
     func topBar(_ controller: TopBarController, obstacleSelected index: Int) {
         if 0..<obstacles.count ~= index {
             NSLog("Obstacle selected")
@@ -439,13 +425,13 @@ extension AppDelegate: TopBarDelegate {
         }
     }
     
-    func topBar(_ controller: TopBarController, imageIndex: Int) {
-        if 0..<agents.count ~= imageIndex {
+    func topBar(_ controller: TopBarController, agentSelected index: Int) {
+        if 0..<agents.count ~= index {
             NSLog("Agent selected")
             
             GameScene.me!.selectionDelegate.deselectAll()
 
-            let entity = sceneController.addNode(image: agents[imageIndex].image)
+            let entity = sceneController.addNode(image: agents[index].image)
             AppDelegate.agentEditorController.goalsController.dataSource = entity
             AppDelegate.agentEditorController.attributesController.delegate = entity.agent
 
@@ -455,11 +441,6 @@ extension AppDelegate: TopBarDelegate {
             
             self.placeAgentFrames(agentIndex: nodeIndex)
         }
-    }
-
-    func topBar(_ controller: TopBarController, flockSelected flock: TopBarController.FlockType) {
-        NSLog("Flock selected: \(flock)")
-        self.removeAgentFrames()
     }
 
     func topBar(_ controller: TopBarController, statusChangedTo newStatus: TopBarController.Status) {
@@ -474,9 +455,8 @@ extension AppDelegate: TopBarDelegate {
 
     func topBar(_ controller: TopBarController, speedChangedTo newSpeed: Double) {
         NSLog("Speed: %f", newSpeed)
-        
     }
-
+	
 }
 
 // MARK: - AgentGoalsDelegate

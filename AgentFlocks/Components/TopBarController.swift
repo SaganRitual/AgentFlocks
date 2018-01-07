@@ -9,19 +9,9 @@
 import Cocoa
 
 protocol TopBarDelegate {
-	func topBarDrawPath(_ controller: TopBarController)
-    func finishPathClicked(_ controller: TopBarController)
-    func path0Clicked(_ controller: TopBarController)
-    func path1Clicked(_ controller: TopBarController)
-    func path2Clicked(_ controller: TopBarController)
-    func path3Clicked(_ controller: TopBarController)
-    func path4Clicked(_ controller: TopBarController)
-    func path5Clicked(_ controller: TopBarController)
-    func loadJSON(_ controller: TopBarController)
-    func saveJSON(_ controller: TopBarController)
+	func topBar(_ controller: TopBarController, actionChangedTo action: TopBarController.Action, for object: TopBarController.Object)
 	func topBar(_ controller: TopBarController, obstacleSelected index:Int)
-	func topBar(_ controller: TopBarController, imageIndex:Int)
-	func topBar(_ controller: TopBarController, flockSelected flock:TopBarController.FlockType)
+	func topBar(_ controller: TopBarController, agentSelected index:Int)
 	func topBar(_ controller: TopBarController, statusChangedTo newStatus: TopBarController.Status)
 	func topBar(_ controller: TopBarController, speedChangedTo newSpeed:Double)
 }
@@ -33,28 +23,35 @@ class TopBarController: NSViewController {
 		case Paused
 	}
 	
-	enum FlockType {
-		case Agents5
-		case Agents10
-		case Agents15
-		case Custom
+	enum Action {
+		case Place
+		case Draw
+		case Edit
 	}
-
+	
+	enum Object {
+		case Agent
+		case Path
+		case Obstacle
+	}
+	
 	// MARK: - Attributes (private)
 
+	@IBOutlet private weak var imageView: ActiveImageView!
+	@IBOutlet private weak var recallAgentsButton: NSButton!
 	@IBOutlet private weak var playPauseButton: NSButton!
 	@IBOutlet private weak var sliderContainerView: NSView!
 	
+	private var action = Action.Place
+	private var object = Object.Agent
+
 	private let playImage = NSImage(named: NSImage.Name(rawValue: "Play"))
 	private let pauseImage = NSImage(named: NSImage.Name(rawValue: "Pause"))
 	
 	private var activePopover:NSPopover?
 	
-	typealias FlockEntity = (type:FlockType, name:String)
-	private let flocks:[FlockEntity] = [	(.Agents5,	"5 agents"),
-	                                    	(.Agents10,	"10 agents"),
-	                                    	(.Agents15,	"15 agents"),
-	                                    	(.Custom,	"Custom...") ]
+	private(set) var activeAgentImage:NSImage?
+	private(set) var activeObstacleImage:NSImage?
 	
 	private let speedSliderController = LogSliderController()
 
@@ -62,8 +59,16 @@ class TopBarController: NSViewController {
 	
 	var delegate:TopBarDelegate?
 
-	var agentImages = [NSImage]()
-	var obstacleImages = [NSImage]()
+	var agentImages = [NSImage]() {
+		didSet {
+			activeAgentImage = agentImages.first
+		}
+	}
+	var obstacleImages = [NSImage]() {
+		didSet {
+			activeObstacleImage = obstacleImages.first
+		}
+	}
 	
 	var speed:Double {
 		get {
@@ -94,6 +99,7 @@ class TopBarController: NSViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
+		imageView!.delegate = self
 		
 		// Set play to the same value (this invokes UI actualization)
 		self.play = self.play ? true : false
@@ -103,11 +109,29 @@ class TopBarController: NSViewController {
 		
 		// Add speed slider view to topbar
 		speedSliderController.addToView(sliderContainerView)
+		
+		actualizeLayout()
 	}
 
 	// MARK: - Actions and methods (private)
 	
-	private func showPopover(withTitle title:String, andImages images:[NSImage], forButton button:NSButton) {
+	private func actualizeLayout() {
+		switch object {
+		case .Agent:
+			imageView.image = self.activeAgentImage
+			imageView.isHidden = false
+			recallAgentsButton.isHidden = false
+		case .Obstacle:
+			imageView.image = self.activeObstacleImage
+			imageView.isHidden = false
+			recallAgentsButton.isHidden = true
+		case .Path:
+			imageView.isHidden = true
+			recallAgentsButton.isHidden = true
+		}
+	}
+	
+	private func showPopover(withTitle title:String, andImages images:[NSImage], forView view:NSView) {
 		
 		guard let mainView = NSApp.mainWindow?.contentView else { return }
         
@@ -125,55 +149,45 @@ class TopBarController: NSViewController {
 		popover.contentViewController = contentController
 		
 		// Convert point to main window coordinates
-		let entryRect = button.convert(button.bounds, to: mainView)
+		let entryRect = view.convert(view.bounds, to: mainView)
 		
 		// Show popover
 		popover.show(relativeTo: entryRect, of: mainView, preferredEdge: .minY)
 		activePopover = popover
 	}
 	
-	@objc private func flockMenuItemSelected(_ sender: AnyObject) {
-		if let index = sender.tag,
-			0..<flocks.count ~= index
-		{
-			delegate?.topBar(self, flockSelected: flocks[index].type)
-		}
+	// MARK: - Actions and methods (public)
+	
+	func setImageFrame(enabled: Bool) {
+		imageView.imageFrameStyle = enabled ? .grayBezel : .none
 	}
-    
-    @IBAction func path0Clicked(_ sender: NSButton) {
-        delegate?.path0Clicked(self)
-    }
-    @IBAction func path1Clicked(_ sender: NSButton) {
-        delegate?.path1Clicked(self)
-    }
-    @IBAction func path2Clicked(_ sender: NSButton) {
-        delegate?.path2Clicked(self)
-    }
-    @IBAction func path3Clicked(_ sender: NSButton) {
-        delegate?.path3Clicked(self)
-    }
-    @IBAction func path4Clicked(_ sender: NSButton) {
-        delegate?.path4Clicked(self)
-    }
-    @IBAction func path5Clicked(_ sender: NSButton) {
-        delegate?.path5Clicked(self)
-    }
-    @IBAction func loadFileClicked(_ sender: NSButton) {
-        delegate?.loadJSON(self)
-    }
 
-    @IBAction func saveFileClicked(_ sender: NSButton) {
-        delegate?.saveJSON(self)
-    }
-
-    @IBAction private func drawPathClicked(_ sender: NSButton) {
-		delegate?.topBarDrawPath(self)
+	@IBAction func actionRadioButtonChecked(_ sender: NSButton) {
+		switch sender.tag {
+		case 2:
+			action = .Draw
+		case 3:
+			action = .Edit
+		default:
+			action = .Place
+		}
+		actualizeLayout()
+		delegate?.topBar(self, actionChangedTo: action, for: object)
 	}
 	
-    @IBAction func finishPathClicked(_ sender: NSButton) {
-        delegate?.finishPathClicked(self)
-    }
-    
+	@IBAction func objectRadioButtonChecked(_ sender: NSButton) {
+		switch sender.tag {
+		case 2:
+			object = .Path
+		case 3:
+			object = .Obstacle
+		default:
+			object = .Agent
+		}
+		actualizeLayout()
+		delegate?.topBar(self, actionChangedTo: action, for: object)
+	}
+	
     @IBAction func recallAgents(_ sender: NSButton) {
         for entity in GameScene.me!.entities {
             let spriteContainer = entity.agent.spriteContainer
@@ -184,14 +198,25 @@ class TopBarController: NSViewController {
         }
     }
 	
-	@IBAction private func placeAgentClicked(_ sender: NSButton) {
-		self.showPopover(withTitle: "Agents", andImages: self.agentImages, forButton: sender)
-	}
-	
 	@IBAction private func playClicked(_ sender: NSButton) {
         GameScene.me!.isPaused = !GameScene.me!.isPaused
 		self.play = !self.play
 		delegate?.topBar(self, statusChangedTo: self.play ? TopBarController.Status.Running : TopBarController.Status.Paused)
+	}
+	
+}
+
+// MARK: -
+
+extension TopBarController: ActiveImageViewDelegate {
+	
+	func imageView(mouseUpWithEvent event: NSEvent) {
+		if object == .Agent {
+			self.showPopover(withTitle: "Agents", andImages: self.agentImages, forView: imageView!)
+		}
+		else if object == .Obstacle {
+			self.showPopover(withTitle: "Obstacles", andImages: self.obstacleImages, forView: imageView!)
+		}
 	}
 	
 }
@@ -226,9 +251,17 @@ extension TopBarController: ImagesListDelegate {
 			popover.close()
 		}
 		if controller.listTitle.compare("Agents") == .orderedSame {
-			delegate?.topBar(self, imageIndex: imageIndex)
+			if imageIndex < self.agentImages.count {
+				self.activeAgentImage = self.agentImages[imageIndex]
+			}
+			self.imageView.image = self.activeAgentImage
+			delegate?.topBar(self, agentSelected: imageIndex)
 		}
 		else if controller.listTitle.compare("Obstacles") == .orderedSame {
+			if imageIndex < self.obstacleImages.count {
+				self.activeObstacleImage = self.obstacleImages[imageIndex]
+			}
+			self.imageView.image = self.activeObstacleImage
 			delegate?.topBar(self, obstacleSelected: imageIndex)
 		}
 	}
