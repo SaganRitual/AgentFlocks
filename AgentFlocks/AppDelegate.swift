@@ -403,7 +403,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	@IBAction func menuFileMenuRevertToSavedClicked(_ sender: NSMenuItem) {
 		NSLog("Menu: File->Revert to Saved")
 	}
-
+    @IBAction func menuTempMenuRegisterPathClicked(_ sender: NSMenuItem) {
+        print("Menu: Temp->Register open path")
+    }
+    
+    
+    @IBAction func menuTempMenuSelectPathClicked(_ sender: NSMenuItem) {
+        GameScene.me!.pathForNextPathGoal = sender.tag
+    }
 }
 
 // MARK: - TopBarDelegate
@@ -420,17 +427,6 @@ extension AppDelegate: TopBarDelegate {
             GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegateDraw
         case .Edit: break
         }
-		
-		if (object != .Path) || (action != .Draw) {
-			let drawer = GameScene.me!.selectionDelegateDraw!
-			
-			drawer.afPath.refresh(final: true) // Auto-add the closing line segment
-			GameScene.me!.paths[drawer.afPath.name] = drawer.afPath
-			GameScene.me!.pathnames.append(drawer.afPath.name)
-			drawer.afPath = AFPath()
-			
-			GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
-		}
 	}
 	
     func topBar(_ controller: TopBarController, obstacleSelected index: Int) {
@@ -759,7 +755,8 @@ extension AppDelegate: ItemEditorDelegate {
                     }
                     
                     for (i, _) in group.enumerated() {
-                        if group[i] == primarySelected.agent {
+                        let agent = group[i] as! AFAgent2D
+                        if agent.name == primarySelected.agent.name {
                             group.remove(at: i)
                             break;
                         }

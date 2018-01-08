@@ -9,11 +9,11 @@
 import GameplayKit
 
 class AFEntities: Codable {
-    let entities: [AFEntity_Script]
+    let entities = [AFEntity_Script]()
 }
 
 class AFPaths: Codable {
-    let paths: [AFPath_Script]
+    let paths = [AFPath_Script]()
 }
 
 class AFEntity_Script: Codable {

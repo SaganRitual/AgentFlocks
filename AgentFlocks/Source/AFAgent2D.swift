@@ -32,7 +32,7 @@ class AFAgent2D_Script: Codable {
     }
 }
 
-class AFAgent2D: GKAgent2D {
+class AFAgent2D: GKAgent2D, AFScenoid {
     let originalSize: CGSize
     var radiusIndicator: SKNode?
     let radiusIndicatorRadius: CGFloat = 100.0
@@ -45,7 +45,7 @@ class AFAgent2D: GKAgent2D {
 
     static var once: Bool = false
 
-    var name: String { return sprite.name! }
+    var name: String { get { return sprite.name! } set { return } }
     
     var scale: Float {
         willSet(newValue) {

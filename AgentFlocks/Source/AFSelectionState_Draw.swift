@@ -42,16 +42,19 @@ class AFSelectionState_Draw: AFSelectionState {
     }
     
     func getPrimarySelectionIndex() -> Int? { return nil }
-    func getSelectedAgents() -> [GKAgent2D] { return [GKAgent2D]() }
     func getSelectedIndexes() -> Set<Int> { return Set<Int>() }
-    
+
+    func getSelectedScenoids() -> [AFScenoid] {
+        return [AFScenoid]()
+    }
+
     func getTouchedNodeIndex() -> Int? {
         touchedNodes = gameScene.nodes(at: currentPosition!)
         
         var ix: Int?
-        for (index, pathHandle) in gameScene.pathHandles.enumerated() {
-            if touchedNodes.contains(pathHandle) {
-                ix = index
+        for (index, pathVertex) in gameScene.pathVertices.enumerated() {
+            if touchedNodes.contains(pathVertex.sprite) {
+                ix = index - GameScene.baseSKNodeIndex
                 break
             }
         }
@@ -59,16 +62,48 @@ class AFSelectionState_Draw: AFSelectionState {
         return ix
     }
     
-    func getTouchedNode() -> SKNode? {
+    func getTouchedNode() -> AFVertex? {
         touchedNodes = gameScene.nodes(at: currentPosition!)
         
-        for pathHandle in gameScene.pathHandles {
-            if touchedNodes.contains(pathHandle) {
-                return pathHandle
+        for pathVertex in gameScene.pathVertices {
+            if touchedNodes.contains(pathVertex.sprite) {
+                return pathVertex
             }
         }
         
         return nil
+    }
+    
+    func keyDown(with event: NSEvent) {
+        print("down in draw")
+    }
+    
+    func keyUp(with event: NSEvent) {
+        if event.keyCode == AFKeyCodes.delete.rawValue {
+            var newVertices = [AFVertex]()
+            var newNodes = [AFGraphNode2D]()
+            
+            for (i, vertex) in gameScene.pathVertices.enumerated() {
+                if !selectedIndexes.contains(i) {
+                    newVertices.append(vertex)
+                }
+            }
+            
+            for (i, _) in afPath.nodes_new.enumerated() {
+                if !selectedIndexes.contains(i) {
+                    newNodes.append(afPath.nodes_new[i])
+                }
+            }
+
+            // If I understand the way Swift works, when we assign this
+            // new array, the old one will be discarded, and all the elements
+            // in that array that don't have references in our new array will
+            // be destructed. I'm counting on the AFVertex destructor to take
+            // care of all the business.
+            afPath.nodes_new = newNodes
+            gameScene.pathVertices = newVertices
+            afPath.refresh()
+        }
     }
 
     func mouseDown(with event: NSEvent) {
@@ -79,7 +114,7 @@ class AFSelectionState_Draw: AFSelectionState {
         mouseState = .down
         
         if let index = downNodeIndex {
-            let p = gameScene.pathHandles[index].position
+            let p = gameScene.pathVertices[index].position
             nodeToMouseOffset.x = p.x - currentPosition!.x
             nodeToMouseOffset.y = p.y - currentPosition!.y
         }
@@ -93,22 +128,25 @@ class AFSelectionState_Draw: AFSelectionState {
         currentPosition = event.location(in: gameScene)
         upNodeIndex = getTouchedNodeIndex()
         
-        if upNodeIndex == nil {
-            // Clicked in the black; add a node
-            vertices.append(currentPosition!)
-            
-            afPath.add(point: currentPosition!)
-            
-            let marker = SKShapeNode(circleOfRadius: 5)
-            marker.fillColor = .yellow
-            marker.position = currentPosition!
-            gameScene.addChild(marker)
-            gameScene.pathHandles.append(marker)
+        if let ix = upNodeIndex {
+            deselectAll()
+            select(ix, primary: true)
+
+            if ix == 0 && gameScene.pathVertices.count > 1 {
+                afPath.refresh(final: true) // Auto-add the closing line segment
+                gameScene.paths[afPath.name] = afPath
+                gameScene.pathnames.append(afPath.name)
+                afPath = AFPath()
+            }
         } else {
-            // Clicked a node without moving it; delete it
-            let touchedNode = getTouchedNode()!
-            afPath.remove(node: touchedNode)
-            gameScene.pathHandles.remove(at: upNodeIndex!)
+            // Clicked in the black; add a node
+            deselectAll()
+            
+            let vertex = AFVertex(scene: gameScene, position: currentPosition!)
+            
+            afPath.add(vertex: vertex)
+            gameScene.pathVertices.append(vertex)
+            select((afPath.nodes_new.count - 1), primary: true)
         }
         
         downNodeIndex = nil
@@ -116,16 +154,25 @@ class AFSelectionState_Draw: AFSelectionState {
     }
 
     func deselectAll() {
-        for entity in gameScene.entities {
-            entity.agent.deselect()
+        for vertex in gameScene.pathVertices {
+            vertex.deselect()
         }
         
         selectedIndexes.removeAll()
         primarySelectionIndex = nil
-        AppDelegate.me!.removeAgentFrames()
+    }
+
+    func select(_ ix: Int, primary: Bool) {
+        print(gameScene.pathVertices.count)
+        gameScene.pathVertices[ix + GameScene.baseSKNodeIndex].select(primary: primary)
+        selectedIndexes.insert(ix)
+        
+        
+        if selectedIndexes.count == 1 {
+            primarySelectionIndex = ix
+        }
     }
 
     func newAgent(_ nodeIndex: Int) {}
-    func select(_ nodeIndex: Int, primary: Bool) {}
     func toggleMultiSelectMode() {}
 }

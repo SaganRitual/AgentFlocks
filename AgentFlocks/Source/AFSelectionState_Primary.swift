@@ -24,11 +24,17 @@
 
 import GameplayKit
 
+protocol AFScenoid {
+    func select(primary: Bool)
+}
+
 protocol AFSelectionState {
     func deselectAll()
     func getPrimarySelectionIndex() -> Int?
-    func getSelectedAgents() -> [GKAgent2D]
     func getSelectedIndexes() -> Set<Int>
+    func getSelectedScenoids() -> [AFScenoid]
+    func keyDown(with event: NSEvent)
+    func keyUp(with event: NSEvent)
     func mouseDown(with event: NSEvent)
     func mouseDragged(with event: NSEvent)
     func mouseUp(with event: NSEvent)
@@ -109,8 +115,8 @@ class AFSelectionState_Primary: AFSelectionState {
         return primarySelectionIndex
     }
     
-    func getSelectedAgents() -> [GKAgent2D] {
-        var agents = [GKAgent2D]()
+    func getSelectedScenoids() -> [AFScenoid] {
+        var agents = [AFAgent2D]()
         
         let indexes = getSelectedIndexes()
         for i in indexes {
@@ -136,6 +142,14 @@ class AFSelectionState_Primary: AFSelectionState {
         }
         
         return ix
+    }
+    
+    func keyDown(with event: NSEvent) {
+        print("keyDown in primary")
+    }
+    
+    func keyUp(with event: NSEvent) {
+        print("keyUp in primary selection state")
     }
     
     func mouseDown(with event: NSEvent) {
