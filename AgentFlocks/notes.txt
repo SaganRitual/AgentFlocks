@@ -14,3 +14,5 @@
 - Path & obstacle drawing & editing need a lot of work
 - Unique names & lookup thing
 - Gray out child goals in outline view when parent behavior is disabled
+- Implement preview
+- Implement forward/backward on .toFollowPath
