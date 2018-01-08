@@ -25,15 +25,26 @@
 import SpriteKit
 import GameplayKit
 
+enum AFKeyCodes: UInt {
+    case delete = 51
+    case enter = 36
+}
+
 class GameScene: SKScene, SKViewDelegate {
     static var me: GameScene?
+    
+    // Each AFPath thinks of its first vertex as index zero. But
+    // we have to map its vertices to actual SKNodes in the scene.
+    // So we have to track the base index so each AFPath can add
+    // it to their zero.
+    static var baseSKNodeIndex = 0
 
     var entities = [AFEntity]()
     var graphs = [String : GKGraph]()
     var inputMode = AFSelectionState_Primary.InputMode.primary
     var pathForNextPathGoal = 0
     var pathnames = [String]()
-    var pathHandles = [SKShapeNode]()
+    var pathVertices = [AFVertex]()
     var paths = [String : AFPath]()
 
     var lastUpdateTime : TimeInterval = 0
@@ -75,9 +86,11 @@ class GameScene: SKScene, SKViewDelegate {
 }
 
 extension GameScene {
-    func getSelectedAgents() -> [GKAgent2D] { return selectionDelegate.getSelectedAgents() }
+    func getSelectedAgents() -> [AFScenoid] { return selectionDelegate.getSelectedScenoids() }
     func getSelectedIndexes() -> Set<Int> { return selectionDelegate.getSelectedIndexes() }
     func getPrimarySelectionIndex() -> Int? { return selectionDelegate.getPrimarySelectionIndex() }
+    override func keyDown(with event: NSEvent) { selectionDelegate.keyDown(with: event) }
+    override func keyUp(with event: NSEvent) { selectionDelegate.keyUp(with: event) }
     override func mouseDown(with event: NSEvent) { selectionDelegate.mouseDown(with: event) }
     override func mouseDragged(with event: NSEvent) { selectionDelegate.mouseDragged(with: event) }
     override func mouseUp(with event: NSEvent) { selectionDelegate.mouseUp(with: event) }

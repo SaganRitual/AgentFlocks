@@ -61,7 +61,7 @@ class ImagesListController: NSViewController {
 	
 	override func keyUp(with event: NSEvent) {
 		super.keyUp(with: event)
-		if event.keyCode == 36 {
+		if event.keyCode == AFKeyCodes.enter.rawValue {
 			delegate?.imagesList(self, imageIndex: self.tableView.selectedRow)
 		}
 	}

@@ -77,6 +77,7 @@
 		D472A3711FFFD6860030ACA8 /* LogSliderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D472A36F1FFFD6850030ACA8 /* LogSliderController.swift */; };
 		D472A3721FFFD6860030ACA8 /* LogSliderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D472A3701FFFD6860030ACA8 /* LogSliderView.xib */; };
 		D47BC1F41FECCFE600B3CE6B /* Round2.txt in Resources */ = {isa = PBXBuildFile; fileRef = D47BC1F31FECCFE600B3CE6B /* Round2.txt */; };
+		D480D9A82002E738009813B7 /* AFVertex.swift in Sources */ = {isa = PBXBuildFile; fileRef = D480D9A72002E738009813B7 /* AFVertex.swift */; };
 		D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */; };
 		D4C7EADF1FFD04730008FBCD /* AFBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */; };
 		D4C7EAE11FFD06EE0008FBCD /* AFGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */; };
@@ -156,6 +157,7 @@
 		D472A36F1FFFD6850030ACA8 /* LogSliderController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogSliderController.swift; sourceTree = "<group>"; };
 		D472A3701FFFD6860030ACA8 /* LogSliderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LogSliderView.xib; sourceTree = "<group>"; };
 		D47BC1F31FECCFE600B3CE6B /* Round2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Round2.txt; sourceTree = "<group>"; };
+		D480D9A72002E738009813B7 /* AFVertex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFVertex.swift; sourceTree = "<group>"; };
 		D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFCompositeBehavior.swift; sourceTree = "<group>"; };
 		D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFBehavior.swift; sourceTree = "<group>"; };
 		D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFGoal.swift; sourceTree = "<group>"; };
@@ -307,6 +309,7 @@
 				D4506DD41FFE65B50077A42A /* AFPath.swift */,
 				D46AFB581FF968DA001CD4ED /* AFSelectionState_Draw.swift */,
 				D417BBB61FF95236001D9892 /* AFSelectionState_Primary.swift */,
+				D480D9A72002E738009813B7 /* AFVertex.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -441,6 +444,7 @@
 				744D8F241F91E38300D4B048 /* AppDelegate.swift in Sources */,
 				D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */,
 				D44256251FE8048100FC454B /* AFEntity.swift in Sources */,
+				D480D9A82002E738009813B7 /* AFVertex.swift in Sources */,
 				74ECDF661F9B132C0096468F /* AgentGoalsController.swift in Sources */,
 				D46AFB591FF968DA001CD4ED /* AFSelectionState_Draw.swift in Sources */,
 				74622E7B1F9249CA00690C3C /* ImagesListController.swift in Sources */,
