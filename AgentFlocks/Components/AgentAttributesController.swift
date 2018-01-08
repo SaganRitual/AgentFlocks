@@ -59,19 +59,66 @@ class AgentAttributesController: NSViewController {
 		}
 	}
 
+	var defaultMass:Double {
+		get {
+			return massDefaultEntry.doubleValue
+		}
+		set {
+			massDefaultEntry.stringValue = String(newValue)
+		}
+	}
+	var defaultMaxAcceleration:Double {
+		get {
+			return maxAccelerationDefulatEntry.doubleValue
+		}
+		set {
+			maxAccelerationDefulatEntry.stringValue = String(newValue)
+		}
+	}
+	var defaultMaxSpeed:Double {
+		get {
+			return maxSpeedDefaultEntry.doubleValue
+		}
+		set {
+			maxSpeedDefaultEntry.stringValue = String(newValue)
+		}
+	}
+	var defaultRadius:Double {
+		get {
+			return radiusDefaultEntry.doubleValue
+		}
+		set {
+			radiusDefaultEntry.stringValue = String(newValue)
+		}
+	}
+	var defaultScale:Double {
+		get {
+			return scaleDefaultEntry.doubleValue
+		}
+		set {
+			scaleDefaultEntry.stringValue = String(newValue)
+		}
+	}
+	
 	var delegate:AgentAttributesDelegate?
 	
 	// MARK: - Attributes (private)
 	
 	@IBOutlet private weak var massSliderContainer: NSView!
+	@IBOutlet private weak var maxSpeedSliderContainer: NSView!
     @IBOutlet private weak var maxAccelerationSliderContainer: NSView!
-    @IBOutlet private weak var maxSpeedSliderContainer: NSView!
     @IBOutlet private weak var radiusSliderContainer: NSView!
     @IBOutlet private weak var scaleSliderContainer: NSView!
-
+	
+	@IBOutlet weak var massDefaultEntry: NSTextField!
+	@IBOutlet weak var maxSpeedDefaultEntry: NSTextField!
+	@IBOutlet weak var maxAccelerationDefulatEntry: NSTextField!
+	@IBOutlet weak var radiusDefaultEntry: NSTextField!
+	@IBOutlet weak var scaleDefaultEntry: NSTextField!
+	
 	private let massSliderController = LogSliderController()
+	private let maxSpeedSliderController = LogSliderController()
     private let maxAccelerationSliderController = LogSliderController()
-    private let maxSpeedSliderController = LogSliderController()
     private let radiusSliderController = LogSliderController()
     private let scaleSliderController = LogSliderController()
 
@@ -104,7 +151,19 @@ class AgentAttributesController: NSViewController {
 			s.roller.addToView(s.container!)
         }
     }
-    
+	
+	override func viewWillAppear() {
+		makeDefaults()
+	}
+	
+	private func makeDefaults() {
+		defaultMass = massSliderController.value
+		defaultMaxSpeed = maxSpeedSliderController.value
+		defaultMaxAcceleration = maxAccelerationSliderController.value
+		defaultRadius = radiusSliderController.value
+		defaultScale = scaleSliderController.value
+	}
+	
     // Any time we select a new agent, we need to force the sliders to recalculate their exponents
     func resetSliderControllers() {
         let controllers = [
@@ -114,7 +173,19 @@ class AgentAttributesController: NSViewController {
 
         for controller in controllers { controller.resetExponent() }
     }
-    
+	
+	@IBAction func buttonMakeDefaultsClicked(_ sender: NSButton) {
+		makeDefaults()
+	}
+	
+	@IBAction func buttonApplyDefaultsClicked(_ sender: NSButton) {
+		massSliderController.value = defaultMass
+		maxSpeedSliderController.value = defaultMaxSpeed
+		maxAccelerationSliderController.value = defaultMaxAcceleration
+		radiusSliderController.value = defaultRadius
+		scaleSliderController.value = defaultScale
+	}
+	
 }
 
 // MARK: -

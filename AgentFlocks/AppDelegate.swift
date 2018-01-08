@@ -26,7 +26,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	
 	static let agentEditorController = AgentEditorController()
     static var me: AppDelegate!
-	let leftBarWidth:CGFloat = 250.0
+	let leftBarWidth:CGFloat = 300.0
 	
 	let sceneController = SceneController()
 	
