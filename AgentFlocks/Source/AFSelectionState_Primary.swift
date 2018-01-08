@@ -149,7 +149,9 @@ class AFSelectionState_Primary: AFSelectionState {
     }
     
     func keyUp(with event: NSEvent) {
-        print("keyUp in primary selection state")
+        if event.keyCode == AFKeyCodes.escape.rawValue {
+            deselectAll()
+        }
     }
     
     func mouseDown(with event: NSEvent) {

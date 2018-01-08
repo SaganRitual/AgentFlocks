@@ -41,6 +41,13 @@ class AFSelectionState_Draw: AFSelectionState {
         self.gameScene = gameScene
     }
     
+    func finalizePath(close: Bool) {
+        afPath.refresh(final: close) // Auto-add the closing line segment
+        gameScene.paths[afPath.name] = afPath
+        gameScene.pathnames.append(afPath.name)
+        afPath = AFPath()
+    }
+    
     func getPrimarySelectionIndex() -> Int? { return nil }
     func getSelectedIndexes() -> Set<Int> { return Set<Int>() }
 
@@ -79,7 +86,9 @@ class AFSelectionState_Draw: AFSelectionState {
     }
     
     func keyUp(with event: NSEvent) {
-        if event.keyCode == AFKeyCodes.delete.rawValue {
+        if event.keyCode == AFKeyCodes.escape.rawValue {
+            deselectAll()
+        } else if event.keyCode == AFKeyCodes.delete.rawValue {
             var newVertices = [AFVertex]()
             var newNodes = [AFGraphNode2D]()
             
@@ -133,10 +142,7 @@ class AFSelectionState_Draw: AFSelectionState {
             select(ix, primary: true)
 
             if ix == 0 && gameScene.pathVertices.count > 1 {
-                afPath.refresh(final: true) // Auto-add the closing line segment
-                gameScene.paths[afPath.name] = afPath
-                gameScene.pathnames.append(afPath.name)
-                afPath = AFPath()
+                finalizePath(close: true)
             }
         } else {
             // Clicked in the black; add a node

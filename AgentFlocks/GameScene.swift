@@ -28,6 +28,7 @@ import GameplayKit
 enum AFKeyCodes: UInt {
     case delete = 51
     case enter = 36
+    case escape = 53
 }
 
 class GameScene: SKScene, SKViewDelegate {

@@ -404,7 +404,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		NSLog("Menu: File->Revert to Saved")
 	}
     @IBAction func menuTempMenuRegisterPathClicked(_ sender: NSMenuItem) {
-        print("Menu: Temp->Register open path")
+        GameScene.me!.selectionDelegateDraw.finalizePath(close: false)
     }
     
     
