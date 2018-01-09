@@ -79,13 +79,18 @@ class LogSliderController: NSViewController {
 	// Slider value
 	private var _value:Double = 10.0
 	var valueChanged = false
+    static var valueReentrant = false
 	
 	@objc dynamic var value:Double {
 		get {
 			return _value
 		}
 		set {
-			valueChanged = true
+            guard !LogSliderController.valueReentrant else { return }
+            
+            LogSliderController.valueReentrant = true
+
+            valueChanged = true
 			if newValue < minValue {
 				_value = minValue
 			}
@@ -106,11 +111,13 @@ class LogSliderController: NSViewController {
             if _value != newValue {
                 delegate?.logSlider(self, newValue: _value)
             }
+
+            LogSliderController.valueReentrant = false
 		}
 	}
 	
 	// Maximum allowed value (its maximum value and one unit when changed by stepper)
-	private(set) var incrementValue:Double = 0.1
+	private(set) var incrementValue:Double = 0.4
 
 	var delegate:LogSliderDelegate?
 	
@@ -156,7 +163,7 @@ class LogSliderController: NSViewController {
 		exponentSlider.integerValue = self.exponentValue
 		slider.doubleValue = self.value
         
-        delegate = AppDelegate.me!
+//        delegate = AppDelegate.me!
 	}
 	
 	// MARK: - Private methods

@@ -198,6 +198,8 @@ class AFSelectionState_Primary: AFSelectionState {
                 if mouseState == .down {
                     // cmd+click on a node
                     toggleSelection(upNodeIndex!)
+                } else {
+                    print("drag")
                 }
             } else {
                 if mouseState == .down {    // That is, we're coming out of down as opposed to drag
@@ -236,15 +238,21 @@ class AFSelectionState_Primary: AFSelectionState {
     }
     
     func select(_ ix: Int, primary: Bool) {
-        gameScene.entities[ix].agent.select(primary: primary)
         selectedIndexes.insert(ix)
         
+        for entity in gameScene.entities {
+            entity.agent.deselect()
+        }
+
+        
         if selectedIndexes.count == 1 {
-            primarySelectionIndex = ix
-            AppDelegate.me!.placeAgentFrames(agentIndex: ix)
+            gameScene.entities[ix].agent.select(primary: primary)
             
             AppDelegate.agentEditorController.goalsController.dataSource = GameScene.me!.entities[ix]
             AppDelegate.agentEditorController.attributesController.delegate = GameScene.me!.entities[ix].agent
+
+            primarySelectionIndex = ix
+            AppDelegate.me!.placeAgentFrames(agentIndex: ix)
         }
     }
     

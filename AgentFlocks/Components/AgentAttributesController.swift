@@ -23,15 +23,38 @@ class AgentAttributesController: NSViewController {
             return massSliderController.value
         }
         set {
+            guard !AgentAttributesController.massReentrant else { return }
+            
+            AgentAttributesController.massReentrant = true
             massSliderController.value = newValue
+            reloadAgentAttributes(skip: .mass)
+            AgentAttributesController.massReentrant = false
         }
     }
+    
+    func reloadAgentAttributes(skip: AgentAttributesController.Attribute) {
+        guard let ix = GameScene.me!.getPrimarySelectionIndex() else { return }
+
+        let agent = GameScene.me!.entities[ix].agent
+
+        if skip != .mass { mass = Double(agent.mass) }
+        if skip != .maxAcceleration { maxAcceleration = Double(agent.maxAcceleration) }
+        if skip != .maxSpeed { maxSpeed = Double(agent.maxSpeed) }
+        if skip != .radius { radius = Double(agent.radius) }
+        if skip != .scale { scale = Double(agent.scale) }
+    }
+
     var maxAcceleration:Double {
         get {
             return maxAccelerationSliderController.value
         }
         set {
+            guard !AgentAttributesController.maxAccelerationReentrant else { return }
+            
+            AgentAttributesController.maxAccelerationReentrant = true
             maxAccelerationSliderController.value = newValue
+            reloadAgentAttributes(skip: .maxAcceleration)
+            AgentAttributesController.maxAccelerationReentrant = false
         }
     }
     var maxSpeed:Double {
@@ -39,7 +62,12 @@ class AgentAttributesController: NSViewController {
             return maxSpeedSliderController.value
         }
         set {
+            guard !AgentAttributesController.maxSpeedReentrant else { return }
+            
+            AgentAttributesController.maxSpeedReentrant = true
             maxSpeedSliderController.value = newValue
+            reloadAgentAttributes(skip: .maxSpeed)
+            AgentAttributesController.maxSpeedReentrant = false
         }
     }
     var radius:Double {
@@ -47,7 +75,12 @@ class AgentAttributesController: NSViewController {
             return radiusSliderController.value
         }
         set {
+            guard !AgentAttributesController.radiusReentrant else { return }
+            
+            AgentAttributesController.radiusReentrant = true
             radiusSliderController.value = newValue
+            reloadAgentAttributes(skip: .radius)
+            AgentAttributesController.radiusReentrant = false
         }
     }
 	var scale:Double {
@@ -55,7 +88,11 @@ class AgentAttributesController: NSViewController {
 			return scaleSliderController.value
 		}
 		set {
+            guard !AgentAttributesController.scaleReentrant else { return }
+            
+            AgentAttributesController.scaleReentrant = true
 			scaleSliderController.value = newValue
+            AgentAttributesController.scaleReentrant = false
 		}
 	}
 
@@ -122,6 +159,14 @@ class AgentAttributesController: NSViewController {
     private let radiusSliderController = LogSliderController()
     private let scaleSliderController = LogSliderController()
 
+    static var massReentrant = false
+    static var maxAccelerationReentrant = false
+    static var maxSpeedReentrant = false
+    static var radiusReentrant = false
+    static var scaleReentrant = false
+    
+    private var persistentDefaultsLoaded = false
+    
 	// MARK: - Initialization
 	
 	init() {
@@ -135,25 +180,32 @@ class AgentAttributesController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        typealias AttributeSet = (container: NSView?, roller: LogSliderController, label: String, value: Double)
+        typealias AttributeSet = (container: NSView?, controller: LogSliderController, label: String)
         let attributeSets: [AttributeSet] = [
-            (massSliderContainer, massSliderController, "Mass", 1),
-            (maxAccelerationSliderContainer, maxAccelerationSliderController, "Max Accel", 100),
-            (maxSpeedSliderContainer, maxSpeedSliderController, "Max Speed", 100),
-            (radiusSliderContainer, radiusSliderController, "Radius", 100),
-            (scaleSliderContainer, scaleSliderController, "Scale", 1)
+            (massSliderContainer, massSliderController, "Mass"),
+            (maxAccelerationSliderContainer, maxAccelerationSliderController, "Max Accel"),
+            (maxSpeedSliderContainer, maxSpeedSliderController, "Max Speed"),
+            (radiusSliderContainer, radiusSliderController, "Radius"),
+            (scaleSliderContainer, scaleSliderController, "Scale")
         ]
         
         for s in attributeSets {
-            s.roller.sliderName = s.label
-            s.roller.delegate = self
-            s.roller.value = s.value
-			s.roller.addToView(s.container!)
+            s.controller.sliderName = s.label
+            s.controller.delegate = self
+			s.controller.addToView(s.container!)
+        }
+
+        if !persistentDefaultsLoaded {
+            persistentDefaultsLoaded = true
+            defaultMass = 0.1
+            defaultMaxAcceleration = 100
+            defaultMaxSpeed = 100
+            defaultRadius = 25
+            defaultScale = 1
         }
     }
 	
 	override func viewWillAppear() {
-		makeDefaults()
 	}
 	
 	private func makeDefaults() {

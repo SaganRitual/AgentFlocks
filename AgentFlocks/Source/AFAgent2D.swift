@@ -97,10 +97,16 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         b.weight = 100
         (behavior as! AFCompositeBehavior).setWeight(100, for: b)
 
-        mass = 0.1
-        maxSpeed = 100
-        maxAcceleration = 100
-        radius = 50
+        //
+        // This is the first data source for agent attributes
+        //
+        let ac = AppDelegate.agentEditorController.attributesController
+        
+        mass = Float(ac.defaultMass)
+        maxSpeed = Float(ac.defaultMaxAcceleration)
+        maxAcceleration = Float(ac.defaultMaxSpeed)
+        radius = Float(ac.defaultRadius)
+        scale = Float(ac.defaultScale)
     }
     
     deinit {
@@ -255,13 +261,17 @@ extension AFAgent2D {
 
 // MARK: Basic agent attributes
 
+
 extension AFAgent2D: AgentAttributesDelegate {
     func agent(_ controller: AgentAttributesController, newValue value: Double, ofAttribute: AgentAttributesController.Attribute) {
+        // This is where we come when the slider is moved around
         let v = Float(value)
         switch ofAttribute {
-        case .mass: mass = v; break
-        case .maxAcceleration: maxAcceleration = v; break
-        case .maxSpeed: maxSpeed = v; break
+        case .mass:            mass = v
+        case .maxAcceleration: maxAcceleration = v
+        case .maxSpeed:        maxSpeed = v
+        case .scale:           scale = v
+
         case .radius:
             radius = v
 
@@ -270,7 +280,6 @@ extension AFAgent2D: AgentAttributesDelegate {
             radiusIndicator = AFAgent2D.makeRing(radius: radius, isForSelector: false, primary: false)
             spriteContainer.addChild(radiusIndicator!)
             break
-        case .scale: scale = v; break
         }
     }
 }

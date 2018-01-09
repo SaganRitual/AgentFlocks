@@ -213,6 +213,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let agent = GameScene.me!.entities[agentIndex].agent
         let ac = AppDelegate.agentEditorController.attributesController
         
+        // This is where we finally read back out the actual
+        // values from the GKAgent and store them in the attributes controller
         ac.mass = Double(agent.mass)
         ac.maxAcceleration = Double(agent.maxAcceleration)
         ac.maxSpeed = Double(agent.maxSpeed)
