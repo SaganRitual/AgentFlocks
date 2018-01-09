@@ -19,6 +19,7 @@ class ItemEditorController: NSViewController {
 	
 	var delegate:ItemEditorDelegate?
 	var editedItem:Any?
+    var editedAFGoal:AFGoal?
     var newItemType:AgentGoalsController.GoalType?
 	
 	@objc dynamic var preview:Bool = false
@@ -62,6 +63,7 @@ class ItemEditorController: NSViewController {
 		for key in orderedSliderNames {
 			if let sliderController = sliders[key] {
 				sliderStackView.addView(sliderController.view, in: .trailing)
+                sliderController.parentItemEditorController = self
 			}
 		}
     }

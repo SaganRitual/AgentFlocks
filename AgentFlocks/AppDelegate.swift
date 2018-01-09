@@ -46,6 +46,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	private var activePopover:NSPopover?
     
     var parentOfNewMotivator: AFBehavior?
+    
+    var behaviorMap = [GKGoal : AFBehavior]()
 	
 	func applicationWillFinishLaunching(_ notification: Notification) {
 		
@@ -534,6 +536,7 @@ extension AppDelegate: AgentGoalsDelegate {
             let editorController = ItemEditorController(withAttributes: attributes)
             editorController.delegate = self
             editorController.editedItem = item
+            editorController.editedAFGoal = afGoal
  
             editorController.setValue(ofSlider: "Angle", to: Double(afGoal.angle), resetDirtyFlag: true)
             editorController.setValue(ofSlider: "Distance", to: Double(afGoal.distance), resetDirtyFlag: true)
@@ -639,6 +642,31 @@ extension AppDelegate: AgentGoalsDelegate {
 
 extension AppDelegate: ItemEditorDelegate {
     
+    func retransmitGoal(controller: ItemEditorController, afGoal: AFGoal) {
+        let newGoal = AFGoal.makeGoal(copyFrom: afGoal)
+
+        let angle = controller.value(ofSlider: "Angle")
+        let distance = controller.value(ofSlider: "Distance")
+        let speed = controller.value(ofSlider: "Speed")
+        let time = controller.value(ofSlider: "Time")
+
+        // Everyone has a weight
+        let weight = Float(controller.value(ofSlider: "Weight")!)
+
+        if let angle = angle { newGoal.angle = Float(angle) }
+        if let distance = distance { newGoal.distance = Float(distance) }
+        if let speed = speed { newGoal.speed = Float(speed) }
+        if let time = time { newGoal.time = Float(time) }
+
+        newGoal.weight = weight
+
+        parentOfNewMotivator!.remove(afGoal)
+        parentOfNewMotivator!.setWeightage(weight, for: newGoal)
+        controller.editedAFGoal = newGoal
+
+        AgentGoalsController.me!.outlineView.reloadData()
+    }
+    
     func getParentForNewMotivator() -> AFBehavior {
         if let p = parentOfNewMotivator { return p }
         else {
@@ -668,12 +696,8 @@ extension AppDelegate: ItemEditorDelegate {
             // Edit existing behavior
             behavior.weight = weight
             (entity.agent.behavior! as! AFCompositeBehavior).setWeight(weight, for: behavior)
-        } else if let gkGoal = controller.editedItem as? GKGoal {
-            let index = GameScene.me!.getPrimarySelectionIndex()!
-            let agent = GameScene.me!.entities[index].agent
-            let composite = agent.behavior as! AFCompositeBehavior
-            let behavior = composite.findParent(ofGoal: gkGoal)
-            let afGoal = behavior!.goalsMap[gkGoal]!
+        } else if let _ = controller.editedItem as? GKGoal {
+            let afGoal = controller.editedAFGoal!
 
             // Edit existing goal -- note AFBehavior doesn't give us a way
             // to update the goal. If we want to assign any new values to
@@ -689,17 +713,7 @@ extension AppDelegate: ItemEditorDelegate {
             // So if all we're updating is the weight, we can just change that
             // directly in the behavior, without creating a new goal.
             if replacementGoalRequired {
-                let newGoal = AFGoal.makeGoal(copyFrom: afGoal)
-                
-                newGoal.weight = weight
-
-                if let angle = angle { newGoal.angle = Float(angle) }
-                if let distance = distance { newGoal.distance = Float(distance) }
-                if let speed = speed { newGoal.speed = Float(speed) }
-                if let time = time { newGoal.time = Float(time) }
-                
-                parentOfNewMotivator.remove(afGoal)
-                parentOfNewMotivator.setWeightage(weight, for: newGoal)
+                retransmitGoal(controller: controller, afGoal: afGoal)
             } else {
                 afGoal.weight = weight
                 parentOfNewMotivator.setWeightage(weight, for: afGoal)
@@ -856,6 +870,18 @@ extension AppDelegate: ItemEditorDelegate {
 	}
 	
 }
+
+extension AppDelegate: LogSliderDelegate {
+    func logSlider(_ controller: LogSliderController, newValue value: Double) {
+        if let itemEditorController = controller.parentItemEditorController {
+            if itemEditorController.preview {
+                let afGoal = itemEditorController.editedAFGoal!
+                retransmitGoal(controller: itemEditorController, afGoal: afGoal)
+            }
+        }
+    }
+}
+
 
 // MARK: - NSPopoverDelegate
 
