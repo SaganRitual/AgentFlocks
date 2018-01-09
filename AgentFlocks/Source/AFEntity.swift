@@ -116,6 +116,18 @@ extension AFEntity: AgentGoalsDataSource {
             return "<Rob broke something>"
         }
     }
+	
+	func agentGoals(_ agentGoalsController: AgentGoalsController, weightOfItem item: Any) -> Double {
+		if let behavior = item as? AFBehavior {
+			return Double(behavior.weight)
+		} else if let gkGoal = item as? GKGoal {
+			let parent = agentGoalsController.outlineView.parent(forItem: item) as! AFBehavior
+			
+			return Double(parent.goalsMap[gkGoal]!.weight)
+		} else {
+			return 0.0
+		}
+	}
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemEnabled item: Any) -> Bool {
         if let c = item as? AFCompositeBehavior {

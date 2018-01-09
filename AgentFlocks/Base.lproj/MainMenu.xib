@@ -16,6 +16,7 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="AgentFlocks" customModuleProvider="target">
             <connections>
+                <outlet property="contextMenu" destination="pP6-ss-y8B" id="6rc-yN-8X2"/>
                 <outlet property="sceneView" destination="FLd-ij-v2r" id="Fpt-hb-tz3"/>
                 <outlet property="settingsView" destination="7sx-CT-6PU" id="vbP-Cc-lqf"/>
                 <outlet property="topbarView" destination="IG8-9D-K7M" id="41i-r5-G4b"/>
@@ -493,7 +494,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="390" width="480" height="360"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
             <view key="contentView" wantsLayer="YES" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="480" height="360"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -504,10 +505,10 @@
                             <constraint firstAttribute="height" constant="60" placeholder="YES" id="t0h-aW-dsq"/>
                         </constraints>
                     </customView>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="FLd-ij-v2r">
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="FLd-ij-v2r" customClass="CursorView" customModule="AgentFlocks" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="300"/>
                     </customView>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="7sx-CT-6PU">
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="7sx-CT-6PU" customClass="CursorView" customModule="AgentFlocks" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="120" height="300"/>
                         <subviews>
                             <box boxType="custom" borderWidth="0.0" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="RG2-sl-FT9">
@@ -544,28 +545,28 @@
             </view>
             <point key="canvasLocation" x="139" y="190"/>
         </window>
-        <menuItem title="Menu" id="mJu-u4-J59">
-            <modifierMask key="keyEquivalentModifierMask"/>
-            <menu key="submenu" title="Menu" id="iU9-79-b8g">
-                <items>
-                    <menuItem title="Item" id="HGH-p6-kt3">
-                        <modifierMask key="keyEquivalentModifierMask"/>
-                    </menuItem>
-                </items>
-            </menu>
-        </menuItem>
-        <menuItem title="Menu" id="SM4-mj-PJI">
-            <modifierMask key="keyEquivalentModifierMask"/>
-            <menu key="submenu" title="Menu" id="eZX-B0-YTR">
-                <items>
-                    <menuItem title="Item" id="GPp-oA-y7Q">
-                        <modifierMask key="keyEquivalentModifierMask"/>
-                    </menuItem>
-                </items>
-            </menu>
-        </menuItem>
-        <menuItem title="Item" id="taj-T8-8g3">
-            <modifierMask key="keyEquivalentModifierMask"/>
-        </menuItem>
+        <menu id="pP6-ss-y8B">
+            <items>
+                <menuItem title="Item 1" id="aVt-Fo-c0j">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="contextMenuClicked:" target="Voe-Tx-rLC" id="kCd-bp-Rg0"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Item 2" id="RdP-Ld-wMg">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="contextMenuClicked:" target="Voe-Tx-rLC" id="REM-BV-9vT"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Item 3" id="XoH-Hn-fyU">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="contextMenuClicked:" target="Voe-Tx-rLC" id="uhO-6u-hwO"/>
+                    </connections>
+                </menuItem>
+            </items>
+            <point key="canvasLocation" x="458" y="-100"/>
+        </menu>
     </objects>
 </document>

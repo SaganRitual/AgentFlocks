@@ -158,7 +158,13 @@ class AFSelectionState_Draw: AFSelectionState {
         downNodeIndex = nil
         mouseState = .up
     }
-
+	
+	func rightMouseDown(with event: NSEvent) {
+	}
+	
+	func rightMouseUp(with event: NSEvent) {
+	}
+	
     func deselectAll() {
         for vertex in gameScene.pathVertices {
             vertex.deselect()

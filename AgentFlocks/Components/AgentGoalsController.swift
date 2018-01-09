@@ -26,6 +26,7 @@ protocol AgentGoalsDataSource {
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemExpandable item: Any) -> Bool
     func agentGoals(_ agentGoalsController: AgentGoalsController, child index: Int, ofItem item: Any?) -> Any
     func agentGoals(_ agentGoalsController: AgentGoalsController, labelOfItem item: Any) -> String
+	func agentGoals(_ agentGoalsController: AgentGoalsController, weightOfItem item: Any) -> Double
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemEnabled item: Any) -> Bool
 }
 
@@ -162,18 +163,26 @@ extension AgentGoalsController: NSOutlineViewDataSource {
 	}
 	
 	func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
-		if let cellView = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "GoalsCellView"), owner: self) as? AgentGoalsCellView {
-			cellView.textField?.stringValue = dataSource?.agentGoals(self, labelOfItem: item) ?? ""
-			cellView.checkButton.target = self
-			cellView.checkButton.action = #selector(onItemChecked(_:))
-			cellView.checkButton.item = item
-			if let enabled = dataSource?.agentGoals(self, isItemEnabled: item) {
-				cellView.checkButton.state = enabled ? .on : .off
+		if (tableColumn?.title ?? "") == "Name" {
+			if let cellView = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "GoalNameCellView"), owner: self) as? AgentGoalsCellView {
+				cellView.textField?.stringValue = dataSource?.agentGoals(self, labelOfItem: item) ?? ""
+				cellView.checkButton.target = self
+				cellView.checkButton.action = #selector(onItemChecked(_:))
+				cellView.checkButton.item = item
+				if let enabled = dataSource?.agentGoals(self, isItemEnabled: item) {
+					cellView.checkButton.state = enabled ? .on : .off
+				}
+				else {
+					cellView.checkButton.state = .off
+				}
+				return cellView
 			}
-			else {
-				cellView.checkButton.state = .off
+		}
+		else if (tableColumn?.title ?? "") == "Weight" {
+			if let cellView = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "GoalWeightCellView"), owner: self) as? NSTableCellView {
+				cellView.textField?.stringValue = String(dataSource?.agentGoals(self, weightOfItem: item) ?? 0.0)
+				return cellView
 			}
-			return cellView
 		}
 		return nil
 	}
