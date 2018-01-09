@@ -244,14 +244,11 @@ class AFSelectionState_Primary: AFSelectionState {
     func select(_ ix: Int, primary: Bool) {
         selectedIndexes.insert(ix)
         
-        for entity in gameScene.entities {
-            entity.agent.deselect()
+        if selectedIndexes.count >= 1 {
+            gameScene.entities[ix].agent.select(primary: primary)
         }
-
         
         if selectedIndexes.count == 1 {
-            gameScene.entities[ix].agent.select(primary: primary)
-            
             AppDelegate.agentEditorController.goalsController.dataSource = GameScene.me!.entities[ix]
             AppDelegate.agentEditorController.attributesController.delegate = GameScene.me!.entities[ix].agent
 
