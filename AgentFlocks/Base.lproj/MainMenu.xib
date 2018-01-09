@@ -493,7 +493,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="335" y="390" width="480" height="360"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
             <view key="contentView" wantsLayer="YES" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="480" height="360"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -504,10 +504,10 @@
                             <constraint firstAttribute="height" constant="60" placeholder="YES" id="t0h-aW-dsq"/>
                         </constraints>
                     </customView>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="FLd-ij-v2r">
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="FLd-ij-v2r" customClass="CursorView" customModule="AgentFlocks" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="300"/>
                     </customView>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="7sx-CT-6PU">
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="7sx-CT-6PU" customClass="CursorView" customModule="AgentFlocks" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="120" height="300"/>
                         <subviews>
                             <box boxType="custom" borderWidth="0.0" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="RG2-sl-FT9">

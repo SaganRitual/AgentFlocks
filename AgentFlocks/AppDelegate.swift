@@ -15,8 +15,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	
 	@IBOutlet weak var window: NSWindow!
 	@IBOutlet weak var topbarView: NSView!
-	@IBOutlet weak var settingsView: NSView!
-	@IBOutlet weak var sceneView: NSView!
+	@IBOutlet weak var settingsView: CursorView!
+	@IBOutlet weak var sceneView: CursorView!
 	
 	let configuration = Configuration.shared
 	let preferencesWindowController = PreferencesController(windowNibName: NSNib.Name.init(rawValue: "PreferencesWindow"))
@@ -151,6 +151,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		                   attribute: .bottom,
 		                   multiplier: 1.0,
 		                   constant: 0.0).isActive = true
+		sceneView.cursor = .pointingHand
 	}
 	
 	func applicationWillTerminate(_ aNotification: Notification) {
