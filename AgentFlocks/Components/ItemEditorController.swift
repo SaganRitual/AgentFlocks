@@ -10,6 +10,7 @@ import Cocoa
 
 protocol ItemEditorDelegate {
 	func itemEditorApplyPressed(_ controller: ItemEditorController)
+	func itemEditorCancelPressed(_ controller: ItemEditorController)
 }
 
 class ItemEditorController: NSViewController {
@@ -108,6 +109,10 @@ class ItemEditorController: NSViewController {
 	
 	@IBAction private func applyButtonPressed(_ sender: NSButton) {
 		delegate?.itemEditorApplyPressed(self)
+	}
+	
+	@IBAction func cancelButtonPressed(_ sender: NSButton) {
+		delegate?.itemEditorCancelPressed(self)
 	}
 	
 }

@@ -268,7 +268,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		
 		// Create popover
 		let popover = NSPopover()
-		popover.behavior = .transient
+		popover.behavior = .applicationDefined
 		popover.animates = false
 		popover.delegate = self
 		popover.contentViewController = contentController
@@ -851,6 +851,10 @@ extension AppDelegate: ItemEditorDelegate {
 		}
 
         AppDelegate.agentEditorController.refresh()
+		activePopover?.close()
+	}
+	
+	func itemEditorCancelPressed(_ controller: ItemEditorController) {
 		activePopover?.close()
 	}
 	

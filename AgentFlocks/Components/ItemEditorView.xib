@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13196" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13196"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
         <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
@@ -44,13 +45,28 @@
                         <constraint firstAttribute="height" constant="100" placeholder="YES" id="z1L-W6-sL5"/>
                     </constraints>
                 </stackView>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Igx-Ge-aOE">
+                    <rect key="frame" x="73" y="1" width="82" height="32"/>
+                    <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="V2Q-eu-OUR">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                        <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                    </buttonCell>
+                    <connections>
+                        <action selector="cancelButtonPressed:" target="-2" id="jvB-U0-i6N"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
                 <constraint firstItem="8J2-wH-fB3" firstAttribute="centerY" secondItem="sRA-ed-hA2" secondAttribute="centerY" id="9pQ-L3-yil"/>
                 <constraint firstAttribute="trailing" secondItem="CKK-cL-S92" secondAttribute="trailing" constant="8" id="M8p-Eb-uD9"/>
                 <constraint firstAttribute="bottom" secondItem="sRA-ed-hA2" secondAttribute="bottom" constant="8" id="NGY-9r-uhL"/>
                 <constraint firstItem="sRA-ed-hA2" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="8" id="SIP-dX-8Uk"/>
+                <constraint firstAttribute="bottom" secondItem="Igx-Ge-aOE" secondAttribute="bottom" constant="8" id="TS2-Ej-UT6"/>
                 <constraint firstItem="CKK-cL-S92" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="8" id="Zec-gE-RV4"/>
+                <constraint firstItem="Igx-Ge-aOE" firstAttribute="leading" secondItem="sRA-ed-hA2" secondAttribute="trailing" constant="8" id="ewf-WY-crT"/>
                 <constraint firstItem="sRA-ed-hA2" firstAttribute="top" secondItem="CKK-cL-S92" secondAttribute="bottom" constant="8" id="gYM-Tw-T9r"/>
                 <constraint firstItem="CKK-cL-S92" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="8" id="kxj-VF-3Vg"/>
                 <constraint firstAttribute="trailing" secondItem="8J2-wH-fB3" secondAttribute="trailing" constant="8" id="sUb-pC-xNs"/>
