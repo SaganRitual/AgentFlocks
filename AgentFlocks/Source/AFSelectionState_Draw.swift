@@ -169,7 +169,6 @@ class AFSelectionState_Draw: AFSelectionState {
     }
 
     func select(_ ix: Int, primary: Bool) {
-        print(gameScene.pathVertices.count)
         gameScene.pathVertices[ix + GameScene.baseSKNodeIndex].select(primary: primary)
         selectedIndexes.insert(ix)
         

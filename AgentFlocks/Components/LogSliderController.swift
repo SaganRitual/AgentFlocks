@@ -15,6 +15,7 @@ protocol LogSliderDelegate {
 class LogSliderController: NSViewController {
 	
 	// MARK: - Attributes (public)
+    var parentItemEditorController: ItemEditorController!
 	
 	// Name of the slider (name of value the slider changes)
 	@objc dynamic var sliderName:String = "Name"
@@ -100,6 +101,11 @@ class LogSliderController: NSViewController {
 					_value = newValue - newValue.remainder(dividingBy: incrementValue)
 				}
 			}
+
+            // This whole endeavor keeps tending toward the hackish
+            if _value != newValue {
+                delegate?.logSlider(self, newValue: _value)
+            }
 		}
 	}
 	
@@ -149,6 +155,8 @@ class LogSliderController: NSViewController {
 		
 		exponentSlider.integerValue = self.exponentValue
 		slider.doubleValue = self.value
+        
+        delegate = AppDelegate.me!
 	}
 	
 	// MARK: - Private methods

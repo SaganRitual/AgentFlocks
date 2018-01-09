@@ -46,6 +46,7 @@ class AFBehavior: GKBehavior {
     let agent: AFAgent2D
     var enabled = true
     var goalsMap = [GKGoal: AFGoal]()
+    var secondaryMap = [GKGoal: GKGoal]()
     var savedState: (weight: Float, goal: AFGoal)?
     var weight: Float
 
@@ -106,12 +107,12 @@ class AFBehavior: GKBehavior {
         super.remove(goal.gkGoal)
     }
     
-    func setWeightage(_ weight: Float, for goal: AFGoal) {
-        super.setWeight(weight, for: goal.gkGoal)
+    func setWeightage(_ weight: Float, for afGoal: AFGoal) {
+        super.setWeight(weight, for: afGoal.gkGoal)
         
         // AFBehavior has to track goals, because there's no way to read
         // them back out of the GKBehavior structures
-        goalsMap[goal.gkGoal] = goal
+        goalsMap[afGoal.gkGoal] = afGoal
     }
     
     func toString() -> String {
