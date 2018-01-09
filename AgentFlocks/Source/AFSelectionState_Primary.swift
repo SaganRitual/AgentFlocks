@@ -38,6 +38,8 @@ protocol AFSelectionState {
     func mouseDown(with event: NSEvent)
     func mouseDragged(with event: NSEvent)
     func mouseUp(with event: NSEvent)
+	func rightMouseDown(with event: NSEvent)
+	func rightMouseUp(with event: NSEvent)
     func newAgent(_ nodeIndex: Int)
     func select(_ nodeIndex: Int, primary: Bool)
 }
@@ -227,12 +229,14 @@ class AFSelectionState_Primary: AFSelectionState {
         downNodeIndex = nil
         mouseState = .rightDown
     }
-    
+	
     func rightMouseUp(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
         upNodeIndex = getTouchedNodeIndex()
         downNodeIndex = nil
         mouseState = .rightUp
+		
+		(NSApp.delegate as? AppDelegate)?.showContextMenu(at: event.locationInWindow)
     }
     
     func select(_ ix: Int, primary: Bool) {

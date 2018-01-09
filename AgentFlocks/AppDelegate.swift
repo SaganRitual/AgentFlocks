@@ -18,6 +18,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	@IBOutlet weak var settingsView: CursorView!
 	@IBOutlet weak var sceneView: CursorView!
 	
+	@IBOutlet weak var contextMenu: NSMenu!
+	
 	let configuration = Configuration.shared
 	let preferencesWindowController = PreferencesController(windowNibName: NSNib.Name.init(rawValue: "PreferencesWindow"))
 	
@@ -344,7 +346,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             } catch { print(error) }
         } catch { print(error) }
     }
-
+	
+	func showContextMenu(at location: NSPoint) {
+		contextMenu.popUp(positioning: nil, at: location, in: sceneView)
+	}
+	
 	// MARK: - Menu callbacks
 	
 	@IBAction func menuPreferencesClicked(_ sender: NSMenuItem) {
@@ -409,11 +415,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBAction func menuTempMenuRegisterPathClicked(_ sender: NSMenuItem) {
         GameScene.me!.selectionDelegateDraw.finalizePath(close: false)
     }
-    
-    
+	
     @IBAction func menuTempMenuSelectPathClicked(_ sender: NSMenuItem) {
         GameScene.me!.pathForNextPathGoal = sender.tag
     }
+	
+	// MARK: - Context Menu callbacks
+	
+	@IBAction func contextMenuClicked(_ sender: NSMenuItem) {
+		NSLog("Item selected: \(sender.title)")
+	}
+	
 }
 
 // MARK: - TopBarDelegate

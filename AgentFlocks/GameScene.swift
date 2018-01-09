@@ -95,6 +95,8 @@ extension GameScene {
     override func mouseDown(with event: NSEvent) { selectionDelegate.mouseDown(with: event) }
     override func mouseDragged(with event: NSEvent) { selectionDelegate.mouseDragged(with: event) }
     override func mouseUp(with event: NSEvent) { selectionDelegate.mouseUp(with: event) }
+	override func rightMouseUp(with event: NSEvent) { selectionDelegate.rightMouseUp(with: event) }
+	override func rightMouseDown(with event: NSEvent) { selectionDelegate.rightMouseDown(with: event) }
     func newAgent(_ nodeIndex: Int) { selectionDelegate.newAgent(nodeIndex) }
 }
 
