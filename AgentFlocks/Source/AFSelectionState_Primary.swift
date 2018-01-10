@@ -167,6 +167,9 @@ class AFSelectionState_Primary: AFSelectionState {
             let p = gameScene.entities[index].agent.spriteContainer.position
             nodeToMouseOffset.x = p.x - currentPosition!.x
             nodeToMouseOffset.y = p.y - currentPosition!.y
+        } else {
+            nodeToMouseOffset.x = -currentPosition!.x
+            nodeToMouseOffset.y = -currentPosition!.y
         }
     }
     
@@ -188,8 +191,19 @@ class AFSelectionState_Primary: AFSelectionState {
             // Mouse up in the black; always a full deselect
             deselectAll()
             
-            let imageIndex = AppDelegate.me!.agentImageIndex
-            _ = AppDelegate.me!.sceneController.addNode(image: AppDelegate.me!.agents[imageIndex].image, at: currentPosition!)
+            if event.modifierFlags.contains(.control) {
+                // ctrl-click gives a clone of the last guy, goals and all
+                guard GameScene.me!.entities.count > 0 else { return }
+                
+                let originalIx = GameScene.me!.entities.count - 1
+                let originalEntity = GameScene.me!.entities[originalIx]
+                
+                let newEntity = AFEntity(scene: GameScene.me!, copyFrom: originalEntity, position: currentPosition!)
+                _ = AppDelegate.me!.sceneController.addNode(entity: newEntity)
+            } else {
+                let imageIndex = AppDelegate.me!.agentImageIndex
+                _ = AppDelegate.me!.sceneController.addNode(image: AppDelegate.me!.agents[imageIndex].image, at: currentPosition!)
+            }
             
             let nodeIndex = GameScene.me!.entities.count - 1
             newAgent(nodeIndex)

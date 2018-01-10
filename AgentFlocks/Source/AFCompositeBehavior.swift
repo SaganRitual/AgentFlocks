@@ -58,6 +58,19 @@ class AFCompositeBehavior: GKCompositeBehavior {
         }
     }
     
+    init(copyFrom: AFCompositeBehavior, agent: AFAgent2D) {
+        self.enabled = copyFrom.enabled
+        
+        super.init()
+        
+        print("composite, \(copyFrom.behaviorCount) behaviors")
+        for i in 0 ..< copyFrom.behaviorCount {
+            let hisKid = copyFrom.getChild(at: i)
+            let myKid = AFBehavior(agent: agent, copyFrom: hisKid)
+            setWeight(hisKid.weight, for: myKid)
+        }
+    }
+    
     init(agent: AFAgent2D) {
         enabled = true
     }

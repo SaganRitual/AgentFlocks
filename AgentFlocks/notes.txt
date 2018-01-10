@@ -1,4 +1,3 @@
-- Cloneable everything
 - Need a "use as defaults" button on the agent attributes view
 - Need an "apply defaults" button there too
 - Implement forward/backward on .toFollowPath
@@ -7,6 +6,7 @@
 - Make default values write-only fields
 - Put "draw" and "place" in a context menu
 - Add "-" to agent goals view
+- Cloneable everything
 
 - Shared motivators: change a setting, it affects everyone using that motivator
 - Private motivators: you have your own copy

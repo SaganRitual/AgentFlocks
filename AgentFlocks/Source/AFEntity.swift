@@ -41,6 +41,12 @@ class AFEntity: GKEntity {
         addComponent(agent)
     }
     
+    init(scene: GameScene, copyFrom: AFEntity, position: CGPoint) {
+        agent = AFAgent2D(scene: scene, copyFrom: copyFrom.agent, position: position)
+        super.init()
+        addComponent(agent)
+    }
+    
     init(prototype: AFEntity_Script) {
         agent = AFAgent2D(prototype: prototype.agent)
         

@@ -197,6 +197,7 @@ class AFGoal {
     
     init(copyFrom: AFGoal) {
         goalType = copyFrom.goalType
+        print("goal \(goalType)")
 
         self.agentNames = copyFrom.agentNames
         self.angle = copyFrom.angle
@@ -278,25 +279,6 @@ class AFGoal {
         gkGoal = GKGoal(toCohereWith: gkAgents, maxDistance: maxDistance, maxAngle: maxAngle)
     }
     
-    init(toInterceptAgent agentName: String, time: TimeInterval, weight: Float) {
-        goalType = .toInterceptAgent
-        
-        var gkAgents = [GKAgent]()
-        for entity in GameScene.me!.entities {
-            if agentName == entity.name {
-                gkAgents.append(entity.agent)
-            }
-        }
-
-        self.agentNames = [agentName]
-        self.agents = gkAgents
-        self.time = Float(time)
-        self.name = NSUUID().uuidString
-        self.weight = weight
-        
-        gkGoal = GKGoal(toInterceptAgent: self.agents[0], maxPredictionTime: time)
-    }
-    
     init(toFleeAgent agentName: String, weight: Float) {
         goalType = .toFleeAgent
         
@@ -315,16 +297,37 @@ class AFGoal {
         gkGoal = GKGoal(toFleeAgent: self.agents[0])
     }
 
-    init(toFollow path: GKPath, time t: Float, forward: Bool, weight: Float) {
+    init(toFollow pathname: String, time t: Float, forward: Bool, weight: Float) {
         goalType = .toFollow
         
         self.name = NSUUID().uuidString
+        self.pathname = pathname
         self.time = t
         self.weight = weight
         
-        gkGoal = GKGoal(toFollow: path, maxPredictionTime: TimeInterval(t), forward: true)
+        let afPath = AFPath(copyFrom: GameScene.me!.paths[pathname]!)
+        gkGoal = GKGoal(toFollow: afPath.gkPath, maxPredictionTime: TimeInterval(t), forward: true)
     }
     
+    init(toInterceptAgent agentName: String, time: TimeInterval, weight: Float) {
+        goalType = .toInterceptAgent
+        
+        var gkAgents = [GKAgent]()
+        for entity in GameScene.me!.entities {
+            if agentName == entity.name {
+                gkAgents.append(entity.agent)
+            }
+        }
+        
+        self.agentNames = [agentName]
+        self.agents = gkAgents
+        self.time = Float(time)
+        self.name = NSUUID().uuidString
+        self.weight = weight
+        
+        gkGoal = GKGoal(toInterceptAgent: self.agents[0], maxPredictionTime: time)
+    }
+
     init(toReachTargetSpeed speed: Float, weight: Float) {
         goalType = .toReachTargetSpeed
         
@@ -373,16 +376,18 @@ class AFGoal {
         gkGoal = GKGoal(toSeparateFrom: gkAgents, maxDistance: maxDistance, maxAngle: maxAngle)
     }
     
-    init(toStayOn path: GKPath, time t: Float, weight: Float) {
+    init(toStayOn pathname: String, time t: Float, weight: Float) {
         goalType = .toStayOn
         
         self.name = NSUUID().uuidString
+        self.pathname = pathname
         self.time = t
         self.weight = weight
         
-        gkGoal = GKGoal(toStayOn: path, maxPredictionTime: TimeInterval(t))
+        let afPath = AFPath(copyFrom: GameScene.me!.paths[pathname]!)
+        gkGoal = GKGoal(toStayOn: afPath.gkPath, maxPredictionTime: TimeInterval(t))
     }
-    
+
     init(toWander speed: Float, weight: Float) {
         goalType = .toWander
 
@@ -415,76 +420,76 @@ class AFGoal {
 // MARK: Goal factory
 
 extension AFGoal {
-    static func makeGoal(copyFrom: AFGoal) -> AFGoal {
+    static func makeGoal(copyFrom: AFGoal, weight: Float) -> AFGoal {
         switch copyFrom.goalType {
         case .toSeekAgent:        fallthrough
-        case .toFleeAgent:        return makeGoal(copyFrom.goalType, agent: copyFrom.agentNames[0])
+        case .toFleeAgent:        return makeGoal(copyFrom.goalType, agent: copyFrom.agentNames[0], weight: weight)
 
         case .toReachTargetSpeed: fallthrough
-        case .toWander:           return makeGoal(copyFrom.goalType, speed: copyFrom.speed)
+        case .toWander:           return makeGoal(copyFrom.goalType, speed: copyFrom.speed, weight: weight)
 
-        case .toAvoidAgents:      return makeGoal(copyFrom.goalType, agents: copyFrom.agentNames, time: copyFrom.time)
-        case .toAvoidObstacles:   return makeGoal(copyFrom.goalType, obstacles: copyFrom.obstacles, time: copyFrom.time)
-        case .toInterceptAgent:   return makeGoal(copyFrom.goalType, agent: copyFrom.agentNames[0], time: copyFrom.time)
+        case .toAvoidAgents:      return makeGoal(copyFrom.goalType, agents: copyFrom.agentNames, time: copyFrom.time, weight: weight)
+        case .toAvoidObstacles:   return makeGoal(copyFrom.goalType, obstacles: copyFrom.obstacles, time: copyFrom.time, weight: weight)
+        case .toInterceptAgent:   return makeGoal(copyFrom.goalType, agents: copyFrom.agentNames, time: copyFrom.time, weight: weight)
 
         case .toAlignWith:        fallthrough
         case .toCohereWith:       fallthrough
         case .toSeparateFrom:
-            return makeGoal(copyFrom.goalType, agentNames: copyFrom.agentNames, distance: copyFrom.distance, angle: copyFrom.angle)
+            return makeGoal(copyFrom.goalType, agentNames: copyFrom.agentNames, distance: copyFrom.distance, angle: copyFrom.angle, weight: weight)
 
         case .toFollow:           fallthrough
-        case .toStayOn:           return makeGoal(copyFrom.goalType, path: copyFrom.path, time: copyFrom.time, forward: copyFrom.forward)
+        case .toStayOn:           return makeGoal(copyFrom.goalType, pathname: copyFrom.pathname!, time: copyFrom.time, forward: copyFrom.forward, weight: weight)
         }
     }
     
-    static func makeGoal(_ type: AFGoalType, path: GKPath, time: Float, forward: Bool) -> AFGoal {
+    static func makeGoal(_ type: AFGoalType, pathname: String, time: Float, forward: Bool, weight: Float) -> AFGoal {
         switch type {
-        case .toFollow: return AFGoal(toFollow: path, time: time, forward: forward, weight: -1)
-        case .toStayOn: return AFGoal(toStayOn: path, time: time, weight: -1)
+        case .toFollow: return AFGoal(toFollow: pathname, time: time, forward: forward, weight: weight)
+        case .toStayOn: return AFGoal(toStayOn: pathname, time: time, weight: weight)
             
         default: fatalError()
         }
     }
     
-    static func makeGoal(_ type: AFGoalType, agentNames: [String], distance: Float, angle: Float) -> AFGoal {
+    static func makeGoal(_ type: AFGoalType, agentNames: [String], distance: Float, angle: Float, weight: Float) -> AFGoal {
         switch type {
-        case .toAlignWith:    return AFGoal(toAlignWith: agentNames, maxDistance: distance, maxAngle: angle, weight: -1)
-        case .toCohereWith:   return AFGoal(toCohereWith: agentNames, maxDistance: distance, maxAngle: angle, weight: -1)
-        case .toSeparateFrom: return AFGoal(toSeparateFrom: agentNames, maxDistance: distance, maxAngle: angle, weight: -1)
+        case .toAlignWith:    return AFGoal(toAlignWith: agentNames, maxDistance: distance, maxAngle: angle, weight: weight)
+        case .toCohereWith:   return AFGoal(toCohereWith: agentNames, maxDistance: distance, maxAngle: angle, weight: weight)
+        case .toSeparateFrom: return AFGoal(toSeparateFrom: agentNames, maxDistance: distance, maxAngle: angle, weight: weight)
             
         default: fatalError()
         }
     }
     
-    static func makeGoal(_ type: AFGoalType, obstacles: [GKObstacle], time: Float) -> AFGoal {
+    static func makeGoal(_ type: AFGoalType, obstacles: [GKObstacle], time: Float, weight: Float) -> AFGoal {
         switch type {
-        case .toAvoidObstacles: return AFGoal(toAvoidObstacles: obstacles, time: TimeInterval(time), weight: -1)
+        case .toAvoidObstacles: return AFGoal(toAvoidObstacles: obstacles, time: TimeInterval(time), weight: weight)
             
         default: fatalError()
         }
     }
 
-    static func makeGoal(_ type: AFGoalType, agents: [String], time: Float) -> AFGoal {
+    static func makeGoal(_ type: AFGoalType, agents: [String], time: Float, weight: Float) -> AFGoal {
         switch type {
-        case .toAvoidAgents: return AFGoal(toAvoidAgents: agents, time: TimeInterval(time), weight: -1)
+        case .toAvoidAgents: return AFGoal(toAvoidAgents: agents, time: TimeInterval(time), weight: weight)
             
         default: fatalError()
         }
     }
     
-    static func makeGoal(_ type: AFGoalType, agent: String, time: Float? = nil) -> AFGoal {
+    static func makeGoal(_ type: AFGoalType, agent: String, weight: Float) -> AFGoal {
         switch type {
-        case .toFleeAgent: return AFGoal(toFleeAgent: agent, weight: -1)
-        case .toSeekAgent: return AFGoal(toSeekAgent: agent, weight: -1)
+        case .toFleeAgent: return AFGoal(toFleeAgent: agent, weight: weight)
+        case .toSeekAgent: return AFGoal(toSeekAgent: agent, weight: weight)
             
         default: fatalError()
         }
     }
 
-    static func makeGoal(_ type: AFGoalType, speed: Float) -> AFGoal {
+    static func makeGoal(_ type: AFGoalType, speed: Float, weight: Float) -> AFGoal {
         switch type {
-        case .toReachTargetSpeed: return AFGoal(toReachTargetSpeed: speed, weight: -1)
-        case .toWander:           return AFGoal(toWander: speed, weight: -1)
+        case .toReachTargetSpeed: return AFGoal(toReachTargetSpeed: speed, weight: weight)
+        case .toWander:           return AFGoal(toWander: speed, weight: weight)
             
         default: fatalError()
         }

@@ -681,7 +681,7 @@ extension AppDelegate: AgentGoalsDelegate {
 extension AppDelegate: ItemEditorDelegate {
     
     func retransmitGoal(controller: ItemEditorController, afGoal: AFGoal) {
-        let newGoal = AFGoal.makeGoal(copyFrom: afGoal)
+        let newGoal = AFGoal.makeGoal(copyFrom: afGoal, weight: afGoal.weight)
 
         let angle = controller.value(ofSlider: "Angle")
         let distance = controller.value(ofSlider: "Distance")
@@ -841,11 +841,10 @@ extension AppDelegate: ItemEditorDelegate {
                 case .toFollow:
                     let pathIndex = GameScene.me!.pathForNextPathGoal
                     let pathname = GameScene.me!.pathnames[pathIndex]
-                    let afPath = GameScene.me!.paths[pathname]!
-                    goal = AFGoal(toFollow: afPath.gkPath!, time: Float(time!), forward: true, weight: weight)
+                    goal = AFGoal(toFollow: pathname, time: Float(time!), forward: true, weight: weight)
                     
                     goal!.pathname = pathname
-                    
+
                 case .toInterceptAgent:
                     let selectedIndexes = GameScene.me!.getSelectedIndexes()
                     guard selectedIndexes.count == 2 else { return }
@@ -877,8 +876,7 @@ extension AppDelegate: ItemEditorDelegate {
                 case .toStayOn:
                     let pathIndex = GameScene.me!.pathForNextPathGoal
                     let pathname = GameScene.me!.pathnames[pathIndex]
-                    let afPath = GameScene.me!.paths[pathname]!
-                    goal = AFGoal(toStayOn: afPath.gkPath!, time: Float(time!), weight: weight)
+                    goal = AFGoal(toStayOn: pathname, time: Float(time!), weight: weight)
                     
                     goal!.pathname = pathname
 
