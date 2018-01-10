@@ -10,6 +10,7 @@ import Cocoa
 
 protocol AgentGoalsDelegate {
     func agentGoalsPlayClicked(_ agentGoalsController: AgentGoalsController)
+    func agentGoalsDeleteItem(_ agentGoalsController: AgentGoalsController)
     func agentGoals(_ agentGoalsController: AgentGoalsController, newBehaviorShowForRect rect: NSRect)
     func agentGoals(_ agentGoalsController: AgentGoalsController, newGoalShowForRect rect: NSRect, goalType type:AgentGoalsController.GoalType)
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemClicked item: Any, inRect rect: NSRect)
@@ -49,6 +50,16 @@ class AgentGoalsController: NSViewController {
 	@IBOutlet var addContextMenu: NSMenu!
 	
 	// MARK: - Initialization
+    
+    override func keyUp(with event: NSEvent) {
+        if event.keyCode == AFKeyCodes.delete.rawValue {
+            delegate?.agentGoalsDeleteItem(self)
+        }
+    }
+    
+    override func keyDown(with event: NSEvent) {
+        print("keydown")
+    }
 	
 	init() {
 		super.init(nibName: NSNib.Name(rawValue: "AgentGoalsView"), bundle: nil)
@@ -180,7 +191,10 @@ extension AgentGoalsController: NSOutlineViewDataSource {
 		}
 		else if (tableColumn?.title ?? "") == "Weight" {
 			if let cellView = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "GoalWeightCellView"), owner: self) as? NSTableCellView {
-				cellView.textField?.stringValue = String(dataSource?.agentGoals(self, weightOfItem: item) ?? 0.0)
+                let w = (dataSource?.agentGoals(self, weightOfItem: item) ?? 0)
+                
+                let formatString = (w > pow(10, 4)) ? "%.f" : (w > pow(10, 2) ? "%.1f" : "%.2f")
+                cellView.textField?.stringValue = String(format: formatString, "", w)
 				return cellView
 			}
 		}

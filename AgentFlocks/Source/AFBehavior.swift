@@ -116,7 +116,7 @@ class AFBehavior: GKBehavior {
     }
     
     func toString() -> String {
-        return String(format: "Behavior: %.0f", weight)
+        return String(format: "Behavior", weight)
     }
     
     func weight(for goal: AFGoal) -> Float {

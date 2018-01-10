@@ -490,6 +490,29 @@ extension AppDelegate: AgentGoalsDelegate {
     func agentGoalsPlayClicked(_ agentGoalsController: AgentGoalsController) {
         print("We're not doing anything with the play button on the agent goals controller")
     }
+    
+    func agentGoalsDeleteItem(_ agentGoalsController: AgentGoalsController) {
+        let index = GameScene.me!.getPrimarySelectionIndex()!
+        let agent = GameScene.me!.entities[index].agent
+        let composite = agent.behavior as! AFCompositeBehavior
+        
+        if let outlineView = agentGoalsController.outlineView {
+            let row = outlineView.selectedRow
+            let protoItem = outlineView.item(atRow: row)
+            var reloadOutline = false
+
+            if let hotBehavior = protoItem as? AFBehavior {
+                reloadOutline = true
+                composite.remove(hotBehavior)
+            } else if let hotGoal = protoItem as? GKGoal {
+                let hotBehavior = composite.findParent(ofGoal: hotGoal)!
+                reloadOutline = true
+                hotBehavior.remove(hotGoal)
+            }
+            
+            if reloadOutline { outlineView.reloadData() }
+        }
+    }
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemClicked item: Any, inRect rect: NSRect) {
         if let motivator = item as? AFBehavior {
