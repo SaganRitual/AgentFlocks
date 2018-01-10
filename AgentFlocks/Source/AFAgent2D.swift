@@ -33,6 +33,7 @@ class AFAgent2D_Script: Codable {
 }
 
 class AFAgent2D: GKAgent2D, AFScenoid {
+    var isPlaying = true
     let originalSize: CGSize
     var radiusIndicator: SKNode?
     let radiusIndicatorRadius: CGFloat = 100.0
@@ -213,6 +214,8 @@ class AFAgent2D: GKAgent2D, AFScenoid {
     }
     
     override func update(deltaTime seconds: TimeInterval) {
+        guard isPlaying else { return }
+
         super.update(deltaTime: seconds)
         spriteContainer.position = CGPoint(x: Double(position.x), y: Double(position.y))
         spriteContainer.zRotation = CGFloat(Double(rotation) - Double.pi / 2.0)

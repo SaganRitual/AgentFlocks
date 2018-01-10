@@ -216,7 +216,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	func placeAgentFrames(agentIndex: Int) {
         let agent = GameScene.me!.entities[agentIndex].agent
         let ac = AppDelegate.agentEditorController.attributesController
-        
+        let gc = AppDelegate.agentEditorController.goalsController
+
+        // Play/pause button image
+        gc.playButton.image = agent.isPlaying ? gc.pauseImage : gc.playImage
+
         // This is where we finally read back out the actual
         // values from the GKAgent and store them in the attributes controller
         ac.mass = Double(agent.mass)
@@ -488,8 +492,11 @@ extension AppDelegate: TopBarDelegate {
 
 extension AppDelegate: AgentGoalsDelegate {
 
-    func agentGoalsPlayClicked(_ agentGoalsController: AgentGoalsController) {
-        print("We're not doing anything with the play button on the agent goals controller")
+    func agentGoalsPlayClicked(_ agentGoalsController: AgentGoalsController, actionPlay: Bool) {
+        let index = GameScene.me!.getPrimarySelectionIndex()!
+        let agent = GameScene.me!.entities[index].agent
+        
+        agent.isPlaying = actionPlay
     }
     
     func agentGoalsDeleteItem(_ agentGoalsController: AgentGoalsController) {

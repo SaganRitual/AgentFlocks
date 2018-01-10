@@ -1,6 +1,5 @@
 - Need a "use as defaults" button on the agent attributes view
 - Need an "apply defaults" button there too
-- Implement forward/backward on .toFollowPath
 - Put "register open path" in a context menu
 - Save/load defaults
 - Make default values write-only fields
