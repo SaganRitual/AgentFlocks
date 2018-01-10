@@ -44,6 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var editedObstacleIndex:Int?
     var agentImageIndex = 0
     var stopTime: TimeInterval = 0
+    var followPathFoward = true
 
 	private var activePopover:NSPopover?
     
@@ -841,7 +842,7 @@ extension AppDelegate: ItemEditorDelegate {
                 case .toFollow:
                     let pathIndex = GameScene.me!.pathForNextPathGoal
                     let pathname = GameScene.me!.pathnames[pathIndex]
-                    goal = AFGoal(toFollow: pathname, time: Float(time!), forward: true, weight: weight)
+                    goal = AFGoal(toFollow: pathname, time: Float(time!), forward: followPathFoward, weight: weight)
                     
                     goal!.pathname = pathname
 

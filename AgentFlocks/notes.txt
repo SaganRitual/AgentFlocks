@@ -6,7 +6,6 @@
 - Make default values write-only fields
 - Put "draw" and "place" in a context menu
 - Add "-" to agent goals view
-- Cloneable everything
 
 - Shared motivators: change a setting, it affects everyone using that motivator
 - Private motivators: you have your own copy
@@ -23,3 +22,4 @@
 - Allow assigning same goal to multiple agents
 - Highlight target objects/agents of align/cohere/seek/etc
 - Delete agent
+- Cloneable everything

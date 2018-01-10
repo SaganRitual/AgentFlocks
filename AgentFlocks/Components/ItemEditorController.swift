@@ -24,6 +24,10 @@ class ItemEditorController: NSViewController {
 	
 	@objc dynamic var preview:Bool = false
 	
+    @IBAction func forwardCheckClicked(_ sender: NSButton) {
+        AppDelegate.me!.followPathFoward = (sender.state == .on)
+    }
+    
 	// MARK: - Attributes (private)
 	
 	@IBOutlet private weak var sliderStackView: NSStackView!

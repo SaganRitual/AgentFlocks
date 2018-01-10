@@ -306,7 +306,7 @@ class AFGoal {
         self.weight = weight
         
         let afPath = AFPath(copyFrom: GameScene.me!.paths[pathname]!)
-        gkGoal = GKGoal(toFollow: afPath.gkPath, maxPredictionTime: TimeInterval(t), forward: true)
+        gkGoal = GKGoal(toFollow: afPath.gkPath, maxPredictionTime: TimeInterval(t), forward: forward)
     }
     
     init(toInterceptAgent agentName: String, time: TimeInterval, weight: Float) {
