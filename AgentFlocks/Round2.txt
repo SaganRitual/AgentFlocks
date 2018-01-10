@@ -1,17 +1,12 @@
-1. I need a context menu. I think I know how to construct the menu items programmatically..
+- Please add a "minus" button to the bottom of the agent goals view
+- Is there a way to fix the "fwd" checkbox I added to the ItemEditor?
+I got it to work, but it looks terrible.
 
 2. In the agent goals outline view, when I disable a behavior with the checkbox,
 I need to gray-out all of its children such that they can't be edited by the user.
 
 3. I'd like for keyboard input to be passed to my SKScene by default. As it is now,
 I have to click the scene with the mouse to direct keyboard input to it
-
-- I need File-> open & save connected. I will do the file processing, of course, but as I told you before,
-I was totally defeated by menus. I need you to put the menus there and tell them to notify me.
-
-- I'd like to have a preferences dialog. Maybe with just some radio buttons on it for now. And I'd like
-the app to remember those preferences. I know some apps do it automatically, without the user telling them to.
-Do you know how this kind of thing is done?
 
 - On a similar note, I'd like to have some way of saving some state and reloading it on future runs.
 

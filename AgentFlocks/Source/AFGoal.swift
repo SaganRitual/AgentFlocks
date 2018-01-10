@@ -300,6 +300,7 @@ class AFGoal {
     init(toFollow pathname: String, time t: Float, forward: Bool, weight: Float) {
         goalType = .toFollow
         
+        self.forward = forward
         self.name = NSUUID().uuidString
         self.pathname = pathname
         self.time = t

@@ -353,6 +353,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             } catch { print(error) }
         } catch { print(error) }
     }
+    
+    enum ContextMenuItems { case CloneAgent, DrawPaths, PlaceAgents, RegisterOpenPath }
+    let contextMenuTitles: [ContextMenuItems : String] = [
+        ContextMenuItems.CloneAgent: "Clone agent",
+        ContextMenuItems.DrawPaths: "Draw paths",
+        ContextMenuItems.PlaceAgents: "Place agents",
+        ContextMenuItems.RegisterOpenPath: "Register open path"
+    ]
 	
 	func showContextMenu(at location: NSPoint) {
 		contextMenu.popUp(positioning: nil, at: location, in: sceneView)
@@ -430,7 +438,32 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	// MARK: - Context Menu callbacks
 	
 	@IBAction func contextMenuClicked(_ sender: NSMenuItem) {
-		NSLog("Item selected: \(sender.title)")
+        switch sender.title {
+        case contextMenuTitles[.PlaceAgents]!:
+            topBarController.radioButtonPlace.state = NSControl.StateValue.on
+            topBarController.radioButtonAgent.state = NSControl.StateValue.on
+            topBarController.radioButtonAgent.isEnabled = true
+            GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
+            
+        case contextMenuTitles[.DrawPaths]!:
+            topBarController.radioButtonDraw.state = NSControl.StateValue.on
+            topBarController.radioButtonPath.state = NSControl.StateValue.on
+            topBarController.radioButtonAgent.isEnabled = false
+            GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegateDraw
+
+        case contextMenuTitles[.CloneAgent]!:
+            let selector = GameScene.me!.selectionDelegatePrimary!
+            let originalEntity = GameScene.me!.entities[selector.upNodeIndex!]
+            
+            let currentPosition = selector.currentPosition
+            let newEntity = AFEntity(scene: GameScene.me!, copyFrom: originalEntity, position: currentPosition!)
+            _ = AppDelegate.me!.sceneController.addNode(entity: newEntity)
+
+        case contextMenuTitles[.RegisterOpenPath]!: break
+            
+        default:
+            fatalError()
+        }
 	}
 	
 }

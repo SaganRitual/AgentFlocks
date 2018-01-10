@@ -160,6 +160,7 @@ class AFSelectionState_Primary: AFSelectionState {
         currentPosition = event.location(in: gameScene)
         downNodeIndex = getTouchedNodeIndex()
         upNodeIndex = nil
+        print("mouse down")
         
         mouseState = .down
         
@@ -251,8 +252,20 @@ class AFSelectionState_Primary: AFSelectionState {
         upNodeIndex = getTouchedNodeIndex()
         downNodeIndex = nil
         mouseState = .rightUp
-		
-		(NSApp.delegate as? AppDelegate)?.showContextMenu(at: event.locationInWindow)
+        
+        let contextMenu = AppDelegate.me!.contextMenu!
+        let titles = AppDelegate.me!.contextMenuTitles
+
+        contextMenu.removeAllItems()
+        contextMenu.autoenablesItems = false
+
+        if upNodeIndex == nil {
+            contextMenu.addItem(withTitle: titles[.DrawPaths]!, action: #selector(AppDelegate.contextMenuClicked(_:)), keyEquivalent: "")
+        } else {
+            contextMenu.addItem(withTitle: titles[.CloneAgent]!, action: #selector(AppDelegate.contextMenuClicked(_:)), keyEquivalent: "")
+        }
+
+        (NSApp.delegate as? AppDelegate)?.showContextMenu(at: event.locationInWindow)
     }
     
     func select(_ ix: Int, primary: Bool) {
