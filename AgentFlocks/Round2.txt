@@ -1,19 +1,24 @@
-1. I need a context menu. I think I know how to construct the menu items programmatically..
+DONE:
+	1. I need a context menu. I think I know how to construct the menu items programmatically..
 
 2. In the agent goals outline view, when I disable a behavior with the checkbox,
 I need to gray-out all of its children such that they can't be edited by the user.
 
-3. I'd like for keyboard input to be passed to my SKScene by default. As it is now,
-I have to click the scene with the mouse to direct keyboard input to it
+DONE:
+	3. I'd like for keyboard input to be passed to my SKScene by default. As it is now,
+	I have to click the scene with the mouse to direct keyboard input to it
 
-- I need File-> open & save connected. I will do the file processing, of course, but as I told you before,
-I was totally defeated by menus. I need you to put the menus there and tell them to notify me.
+DONE:
+	- I need File-> open & save connected. I will do the file processing, of course, but as I told you before,
+	I was totally defeated by menus. I need you to put the menus there and tell them to notify me.
 
-- I'd like to have a preferences dialog. Maybe with just some radio buttons on it for now. And I'd like
-the app to remember those preferences. I know some apps do it automatically, without the user telling them to.
-Do you know how this kind of thing is done?
+DONE:
+	- I'd like to have a preferences dialog. Maybe with just some radio buttons on it for now. And I'd like
+	the app to remember those preferences. I know some apps do it automatically, without the user telling them to.
+	Do you know how this kind of thing is done?
 
-- On a similar note, I'd like to have some way of saving some state and reloading it on future runs.
+DONE: (Configuration.swift)
+	- On a similar note, I'd like to have some way of saving some state and reloading it on future runs.
 
 - I need a general-purpose menu, call it "Actions", with any sort of items in it. This is so I can add
 features, until my shame becomes too great and I must hire you again to do it the proper way.
@@ -26,7 +31,7 @@ Goalkeeper
 The first diagram, titled, "Goalkeeper (AgentFlocks)" shows the layout of the page. I've given names to
 each of the boxes on the page, each of which is shown in detail in subsequent diagrams.
 
-Agent Goals
+Agent Goals [DONE]
 -----------
 
 I've added a "Weight" field, with a popout slider next to each one. I said "popout slider" in the
@@ -47,14 +52,14 @@ I mention this because the attribute editor dialogs auto-dismiss when I click an
 their boundaries. I need them to persist while the user clicks around in the scene. I suppose this
 also means that we'll need a "cancel" button on those views. Or maybe an "x" in the corner?
 
-Agent Attributes
+Agent Attributes [DONE]
 ----------------
 
 This one is similar to the current incarnation. It will use the new sliders, all set to the same width. In the
 "Defaults" column are output text fields that I can write values to. The "Make Default" and "Apply
 Defaults" are push buttons, the kind that go dark while the mouse is down, then back to normal on mouse up.
 
-Placement Panel
+Placement Panel [DONE]
 ---------------
 
 The "verb" set of radio buttons, and the separate set of "noun" radio buttons. For some combinations of
@@ -75,7 +80,7 @@ I forgot to put it into the diagram, but I need a "Recall agents" button in this
 nice to have a button that goes dark while the mouse is down, then goes normal on mouse up?
 Is that a pain to implement?
 
-Play/pause/slider
+Play/pause/slider [DONE]
 -----------------
 
 This needs only the new slider to replace the old one.
