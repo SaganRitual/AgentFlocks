@@ -55,6 +55,7 @@
 		749386391FFFECC300BAAF8E /* PreferencesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 749386371FFFECC300BAAF8E /* PreferencesWindow.xib */; };
 		7493863B200145C700BAAF8E /* ActiveImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7493863A200145C700BAAF8E /* ActiveImageView.swift */; };
 		7493863D20052B3900BAAF8E /* CursorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7493863C20052B3900BAAF8E /* CursorView.swift */; };
+		749386412007C9F700BAAF8E /* WindowContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749386402007C9F700BAAF8E /* WindowContentView.swift */; };
 		74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74ECDF601F9913260096468F /* AgentAttributesController.swift */; };
 		74ECDF631F9913260096468F /* AgentAttributesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 74ECDF611F9913260096468F /* AgentAttributesView.xib */; };
 		74ECDF661F9B132C0096468F /* AgentGoalsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74ECDF641F9B132C0096468F /* AgentGoalsController.swift */; };
@@ -137,6 +138,7 @@
 		749386371FFFECC300BAAF8E /* PreferencesWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PreferencesWindow.xib; sourceTree = "<group>"; };
 		7493863A200145C700BAAF8E /* ActiveImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveImageView.swift; sourceTree = "<group>"; };
 		7493863C20052B3900BAAF8E /* CursorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CursorView.swift; sourceTree = "<group>"; };
+		749386402007C9F700BAAF8E /* WindowContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowContentView.swift; sourceTree = "<group>"; };
 		74ECDF601F9913260096468F /* AgentAttributesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentAttributesController.swift; sourceTree = "<group>"; };
 		74ECDF611F9913260096468F /* AgentAttributesView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AgentAttributesView.xib; sourceTree = "<group>"; };
 		74ECDF641F9B132C0096468F /* AgentGoalsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentGoalsController.swift; sourceTree = "<group>"; };
@@ -238,6 +240,7 @@
 				749386371FFFECC300BAAF8E /* PreferencesWindow.xib */,
 				7493863A200145C700BAAF8E /* ActiveImageView.swift */,
 				7493863C20052B3900BAAF8E /* CursorView.swift */,
+				749386402007C9F700BAAF8E /* WindowContentView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -447,6 +450,7 @@
 				744D8F241F91E38300D4B048 /* AppDelegate.swift in Sources */,
 				D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */,
 				D44256251FE8048100FC454B /* AFEntity.swift in Sources */,
+				749386412007C9F700BAAF8E /* WindowContentView.swift in Sources */,
 				D480D9A82002E738009813B7 /* AFVertex.swift in Sources */,
 				74ECDF661F9B132C0096468F /* AgentGoalsController.swift in Sources */,
 				D46AFB591FF968DA001CD4ED /* AFSelectionState_Draw.swift in Sources */,
