@@ -12,6 +12,7 @@
                 <outlet property="addContextMenu" destination="JVR-AK-ZWM" id="kTq-Hm-J8o"/>
                 <outlet property="outlineView" destination="88F-gC-oPm" id="nda-hI-JVO"/>
                 <outlet property="playButton" destination="u1k-Jp-EPm" id="vc0-MO-c76"/>
+                <outlet property="removeButton" destination="gok-AS-fj4" id="F1Y-re-GYh"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
@@ -142,6 +143,16 @@
                         <action selector="addButtonPressed:" target="-2" id="5d1-G0-8kh"/>
                     </connections>
                 </button>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gok-AS-fj4">
+                    <rect key="frame" x="45" y="1" width="47" height="32"/>
+                    <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" image="NSRemoveTemplate" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="pa9-kD-uL0">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="removeButtonPressed:" target="-2" id="yfI-e6-oVo"/>
+                    </connections>
+                </button>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="u1k-Jp-EPm">
                     <rect key="frame" x="245" y="1" width="53" height="32"/>
                     <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" image="NSSlideshowTemplate" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="K6c-5d-GaZ">
@@ -158,11 +169,14 @@
                 <constraint firstAttribute="bottom" secondItem="u1k-Jp-EPm" secondAttribute="bottom" constant="8" id="31W-2P-hkg"/>
                 <constraint firstAttribute="trailing" secondItem="fIE-O3-fJy" secondAttribute="trailing" constant="8" id="5uS-WD-q1S"/>
                 <constraint firstAttribute="trailing" secondItem="u1k-Jp-EPm" secondAttribute="trailing" constant="8" id="8Iy-AA-Dhc"/>
+                <constraint firstItem="gok-AS-fj4" firstAttribute="width" secondItem="R9b-hx-W8v" secondAttribute="width" id="GJI-2g-Zne"/>
                 <constraint firstAttribute="bottom" secondItem="R9b-hx-W8v" secondAttribute="bottom" constant="8" id="Ght-Ua-Que"/>
                 <constraint firstItem="u1k-Jp-EPm" firstAttribute="top" secondItem="fIE-O3-fJy" secondAttribute="bottom" constant="8" id="MUN-D6-Mkz"/>
                 <constraint firstItem="fIE-O3-fJy" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="8" id="ORi-LS-0uv"/>
                 <constraint firstItem="fIE-O3-fJy" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="8" id="WV6-m5-7xF"/>
+                <constraint firstItem="gok-AS-fj4" firstAttribute="leading" secondItem="R9b-hx-W8v" secondAttribute="trailing" constant="8" id="dcj-VN-VaF"/>
                 <constraint firstItem="R9b-hx-W8v" firstAttribute="top" secondItem="fIE-O3-fJy" secondAttribute="bottom" constant="8" id="f1T-Kt-lTZ"/>
+                <constraint firstItem="gok-AS-fj4" firstAttribute="centerY" secondItem="R9b-hx-W8v" secondAttribute="centerY" id="k5V-7U-jBT"/>
             </constraints>
             <point key="canvasLocation" x="54" y="232"/>
         </customView>
@@ -253,6 +267,7 @@
     </objects>
     <resources>
         <image name="NSAddTemplate" width="11" height="11"/>
+        <image name="NSRemoveTemplate" width="11" height="11"/>
         <image name="NSSlideshowTemplate" width="17" height="14"/>
     </resources>
 </document>

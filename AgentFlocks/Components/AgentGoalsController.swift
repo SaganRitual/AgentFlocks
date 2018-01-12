@@ -45,6 +45,7 @@ class AgentGoalsController: NSViewController {
 	
 	@IBOutlet weak var outlineView: NSOutlineView!
 	@IBOutlet weak var addButton: NSButton!
+	@IBOutlet weak var removeButton: NSButton!
 	@IBOutlet weak var playButton: NSButton!
     
     var playImage: NSImage?
@@ -130,6 +131,9 @@ class AgentGoalsController: NSViewController {
 	
 	@IBAction func addButtonPressed(_ sender: NSButton) {
 		addContextMenu.popUp(positioning: nil, at: NSMakePoint(0, 0), in: sender)
+	}
+	
+	@IBAction func removeButtonPressed(_ sender: NSButton) {
 	}
 	
 	@IBAction func playButtonPressed(_ sender: NSButton) {

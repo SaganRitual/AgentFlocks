@@ -1,4 +1,6 @@
-- Please add a "minus" button to the bottom of the agent goals view
+DONE:
+	- Please add a "minus" button to the bottom of the agent goals view
+
 - Is there a way to fix the "fwd" checkbox I added to the ItemEditor?
 I got it to work, but it looks terrible.
 
