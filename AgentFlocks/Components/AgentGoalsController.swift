@@ -196,15 +196,30 @@ extension AgentGoalsController: NSOutlineViewDataSource {
 				else {
 					cellView.checkButton.state = .off
 				}
+				
+				if let parent = outlineView.parent(forItem: item) as? AFBehavior,
+					let enabled = dataSource?.agentGoals(self, isItemEnabled: parent)
+				{
+					cellView.textField?.textColor = enabled ? NSColor.textColor : NSColor.lightGray
+					cellView.checkButton?.isEnabled = enabled
+				}
+				
 				return cellView
 			}
 		}
 		else if (tableColumn?.title ?? "") == "Weight" {
 			if let cellView = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "GoalWeightCellView"), owner: self) as? NSTableCellView {
-                let w = (dataSource?.agentGoals(self, weightOfItem: item) ?? 0)
-                
-                let formatString = (w > pow(10, 4)) ? "%.f" : (w > pow(10, 2) ? "%.1f" : "%.2f")
-                cellView.textField?.stringValue = String(format: formatString, "", w)
+        let w = (dataSource?.agentGoals(self, weightOfItem: item) ?? 0)
+        
+        let formatString = (w > pow(10, 4)) ? "%.f" : (w > pow(10, 2) ? "%.1f" : "%.2f")
+        cellView.textField?.stringValue = String(format: formatString, "", w)
+				
+				if let parent = outlineView.parent(forItem: item) as? AFBehavior,
+					let enabled = dataSource?.agentGoals(self, isItemEnabled: parent)
+				{
+					cellView.textField?.textColor = enabled ? NSColor.textColor : NSColor.lightGray
+				}
+				
 				return cellView
 			}
 		}
