@@ -1,6 +1,9 @@
-- Please add a "minus" button to the bottom of the agent goals view
-- Is there a way to fix the "fwd" checkbox I added to the ItemEditor?
-I got it to work, but it looks terrible.
+DONE:
+	- Please add a "minus" button to the bottom of the agent goals view
+
+DONE:
+	- Is there a way to fix the "fwd" checkbox I added to the ItemEditor?
+	  I got it to work, but it looks terrible.
 
 DONE:
 	1. I need a context menu. I think I know how to construct the menu items programmatically..
@@ -75,7 +78,7 @@ kind of placeholder you could put there?
 
 Also, I've just realized that the "verb" radio button list set needs an "off" setting. I didn't draw that in the diagrams.
 
-Control Panel
+Control Panel [DONE]
 -------------
 
 There will be checkboxes here, for showing and hiding the "paths library"-style lists. Also, if

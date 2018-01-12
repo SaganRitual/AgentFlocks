@@ -19,6 +19,12 @@
             <rect key="frame" x="0.0" y="0.0" width="300" height="145"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
+                <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CKK-cL-S92">
+                    <rect key="frame" x="8" y="37" width="284" height="100"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="100" placeholder="YES" id="z1L-W6-sL5"/>
+                    </constraints>
+                </stackView>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="sRA-ed-hA2">
                     <rect key="frame" x="2" y="1" width="75" height="32"/>
                     <buttonCell key="cell" type="push" title="Apply" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Yl0-CA-qXG">
@@ -29,22 +35,6 @@
                         <action selector="applyButtonPressed:" target="-2" id="nuq-RB-0KH"/>
                     </connections>
                 </button>
-                <button translatesAutoresizingMaskIntoConstraints="NO" id="8J2-wH-fB3">
-                    <rect key="frame" x="224" y="10" width="70" height="18"/>
-                    <buttonCell key="cell" type="check" title="Preview" bezelStyle="regularSquare" imagePosition="left" inset="2" id="7tr-c2-ggp">
-                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <binding destination="-2" name="value" keyPath="self.preview" id="FsB-3R-5Qx"/>
-                    </connections>
-                </button>
-                <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CKK-cL-S92">
-                    <rect key="frame" x="8" y="37" width="284" height="100"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="100" placeholder="YES" id="z1L-W6-sL5"/>
-                    </constraints>
-                </stackView>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Igx-Ge-aOE">
                     <rect key="frame" x="73" y="1" width="82" height="32"/>
                     <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="V2Q-eu-OUR">
@@ -58,9 +48,8 @@ Gw
                         <action selector="cancelButtonPressed:" target="-2" id="jvB-U0-i6N"/>
                     </connections>
                 </button>
-                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PYH-XN-xx1">
-                    <rect key="frame" x="165" y="9" width="48" height="19"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PYH-XN-xx1">
+                    <rect key="frame" x="172" y="10" width="48" height="18"/>
                     <buttonCell key="cell" type="check" title="Fwd" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="tbd-vt-TtJ">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                         <font key="font" metaFont="system"/>
@@ -69,18 +58,31 @@ Gw
                         <action selector="forwardCheckClicked:" target="-2" id="AVu-RD-3Q5"/>
                     </connections>
                 </button>
+                <button translatesAutoresizingMaskIntoConstraints="NO" id="8J2-wH-fB3">
+                    <rect key="frame" x="224" y="10" width="70" height="18"/>
+                    <buttonCell key="cell" type="check" title="Preview" bezelStyle="regularSquare" imagePosition="left" inset="2" id="7tr-c2-ggp">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <binding destination="-2" name="value" keyPath="self.preview" id="FsB-3R-5Qx"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
                 <constraint firstItem="8J2-wH-fB3" firstAttribute="centerY" secondItem="sRA-ed-hA2" secondAttribute="centerY" id="9pQ-L3-yil"/>
+                <constraint firstItem="8J2-wH-fB3" firstAttribute="leading" secondItem="PYH-XN-xx1" secondAttribute="trailing" constant="8" id="AtH-og-Buo"/>
                 <constraint firstAttribute="trailing" secondItem="CKK-cL-S92" secondAttribute="trailing" constant="8" id="M8p-Eb-uD9"/>
                 <constraint firstAttribute="bottom" secondItem="sRA-ed-hA2" secondAttribute="bottom" constant="8" id="NGY-9r-uhL"/>
                 <constraint firstItem="sRA-ed-hA2" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="8" id="SIP-dX-8Uk"/>
+                <constraint firstItem="PYH-XN-xx1" firstAttribute="centerY" secondItem="sRA-ed-hA2" secondAttribute="centerY" id="SWr-6G-fCy"/>
                 <constraint firstAttribute="bottom" secondItem="Igx-Ge-aOE" secondAttribute="bottom" constant="8" id="TS2-Ej-UT6"/>
                 <constraint firstItem="CKK-cL-S92" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" constant="8" id="Zec-gE-RV4"/>
                 <constraint firstItem="Igx-Ge-aOE" firstAttribute="leading" secondItem="sRA-ed-hA2" secondAttribute="trailing" constant="8" id="ewf-WY-crT"/>
                 <constraint firstItem="sRA-ed-hA2" firstAttribute="top" secondItem="CKK-cL-S92" secondAttribute="bottom" constant="8" id="gYM-Tw-T9r"/>
                 <constraint firstItem="CKK-cL-S92" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" constant="8" id="kxj-VF-3Vg"/>
                 <constraint firstAttribute="trailing" secondItem="8J2-wH-fB3" secondAttribute="trailing" constant="8" id="sUb-pC-xNs"/>
+                <constraint firstItem="PYH-XN-xx1" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Igx-Ge-aOE" secondAttribute="trailing" constant="8" id="wZB-Rx-f1J"/>
             </constraints>
             <point key="canvasLocation" x="3" y="53.5"/>
         </customView>

@@ -82,7 +82,7 @@
                     </view>
                     <color key="borderColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
-                <box boxType="custom" cornerRadius="4" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="yQ7-Vy-maV">
+                <box boxType="custom" cornerRadius="4" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="yQ7-Vy-maV" userLabel="Radio Button Noun Box">
                     <rect key="frame" x="61" y="0.0" width="88" height="62"/>
                     <view key="contentView" id="XWy-6n-4Of">
                         <rect key="frame" x="1" y="1" width="86" height="60"/>
@@ -134,6 +134,115 @@
                     </view>
                     <color key="borderColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
+                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="D54-Pl-aPK" customClass="ActiveImageView" customModule="AgentFlocks" customModuleProvider="target">
+                    <rect key="frame" x="166" y="4" width="54" height="54"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="48" id="N6P-jd-CEH"/>
+                        <constraint firstAttribute="width" constant="48" id="ySD-F0-3Gz"/>
+                    </constraints>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" imageFrameStyle="grayBezel" id="cg8-dB-Apc"/>
+                </imageView>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KEH-SL-ZCm">
+                    <rect key="frame" x="235" y="8" width="67" height="46"/>
+                    <buttonCell key="cell" type="bevel" title="Recall Agents" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uTa-Vf-5ng">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="recallAgents:" target="-2" id="F73-2Q-1K6"/>
+                    </connections>
+                </button>
+                <box boxType="custom" cornerRadius="4" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="XPi-Sy-pZF" userLabel="Library Box">
+                    <rect key="frame" x="398" y="0.0" width="155" height="62"/>
+                    <view key="contentView" id="1PM-GK-5jO">
+                        <rect key="frame" x="1" y="1" width="153" height="60"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button verticalHuggingPriority="750" tag="1" translatesAutoresizingMaskIntoConstraints="NO" id="EeY-pS-36l">
+                                <rect key="frame" x="-2" y="44" width="76" height="18"/>
+                                <buttonCell key="cell" type="check" title="Library 1" bezelStyle="regularSquare" imagePosition="left" inset="2" id="RJk-Pe-SXM">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="libraryCheckButtonChecked:" target="-2" id="6lB-LS-SNC"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" tag="2" translatesAutoresizingMaskIntoConstraints="NO" id="vgx-Zn-gXr">
+                                <rect key="frame" x="-2" y="21" width="76" height="18"/>
+                                <buttonCell key="cell" type="check" title="Library 2" bezelStyle="regularSquare" imagePosition="left" inset="2" id="qbl-vk-OnJ">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="libraryCheckButtonChecked:" target="-2" id="zyM-Il-FGM"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" tag="3" translatesAutoresizingMaskIntoConstraints="NO" id="3bA-yb-DFZ">
+                                <rect key="frame" x="-2" y="-2" width="76" height="18"/>
+                                <buttonCell key="cell" type="check" title="Library 3" bezelStyle="regularSquare" imagePosition="left" inset="2" id="Du2-eK-bV5">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="libraryCheckButtonChecked:" target="-2" id="Qt5-8W-jDD"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" tag="4" translatesAutoresizingMaskIntoConstraints="NO" id="bLB-xX-AVF">
+                                <rect key="frame" x="78" y="44" width="77" height="18"/>
+                                <buttonCell key="cell" type="check" title="Library 4" bezelStyle="regularSquare" imagePosition="left" inset="2" id="Ouq-zZ-Yw4">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="libraryCheckButtonChecked:" target="-2" id="vvC-I3-7mK"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" tag="5" translatesAutoresizingMaskIntoConstraints="NO" id="akv-4n-7SM">
+                                <rect key="frame" x="78" y="21" width="77" height="18"/>
+                                <buttonCell key="cell" type="check" title="Library 5" bezelStyle="regularSquare" imagePosition="left" inset="2" id="BON-z2-Vm4">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="libraryCheckButtonChecked:" target="-2" id="hT2-Iu-lLt"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" tag="6" translatesAutoresizingMaskIntoConstraints="NO" id="Cei-ka-9Ge">
+                                <rect key="frame" x="78" y="-2" width="77" height="18"/>
+                                <buttonCell key="cell" type="check" title="Library 6" bezelStyle="regularSquare" imagePosition="left" inset="2" id="BoF-eD-suU">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="libraryCheckButtonChecked:" target="-2" id="W1T-MU-hGc"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="EeY-pS-36l" firstAttribute="leading" secondItem="1PM-GK-5jO" secondAttribute="leading" id="1kq-OF-Gwa"/>
+                            <constraint firstItem="3bA-yb-DFZ" firstAttribute="leading" secondItem="1PM-GK-5jO" secondAttribute="leading" id="7gb-Lf-7fd"/>
+                            <constraint firstItem="vgx-Zn-gXr" firstAttribute="trailing" secondItem="EeY-pS-36l" secondAttribute="trailing" id="A8y-M7-R7i"/>
+                            <constraint firstAttribute="bottom" secondItem="3bA-yb-DFZ" secondAttribute="bottom" id="LZt-Os-teX"/>
+                            <constraint firstItem="vgx-Zn-gXr" firstAttribute="top" secondItem="EeY-pS-36l" secondAttribute="bottom" constant="9" id="LhQ-0L-yCC"/>
+                            <constraint firstItem="akv-4n-7SM" firstAttribute="top" secondItem="bLB-xX-AVF" secondAttribute="bottom" constant="9" id="LhR-15-LKc"/>
+                            <constraint firstItem="3bA-yb-DFZ" firstAttribute="top" secondItem="vgx-Zn-gXr" secondAttribute="bottom" constant="9" id="MD5-6U-exi"/>
+                            <constraint firstItem="Cei-ka-9Ge" firstAttribute="top" secondItem="akv-4n-7SM" secondAttribute="bottom" constant="9" id="S4E-ok-FUv"/>
+                            <constraint firstItem="3bA-yb-DFZ" firstAttribute="trailing" secondItem="EeY-pS-36l" secondAttribute="trailing" id="TvJ-Xp-2se"/>
+                            <constraint firstAttribute="trailing" secondItem="bLB-xX-AVF" secondAttribute="trailing" id="XAO-Hc-43k"/>
+                            <constraint firstItem="bLB-xX-AVF" firstAttribute="top" secondItem="1PM-GK-5jO" secondAttribute="top" id="XqS-Vz-LrY"/>
+                            <constraint firstItem="bLB-xX-AVF" firstAttribute="leading" secondItem="EeY-pS-36l" secondAttribute="trailing" constant="8" id="Zhi-EN-5CB"/>
+                            <constraint firstItem="Cei-ka-9Ge" firstAttribute="leading" secondItem="bLB-xX-AVF" secondAttribute="leading" id="Zvy-GE-PDB"/>
+                            <constraint firstItem="vgx-Zn-gXr" firstAttribute="leading" secondItem="1PM-GK-5jO" secondAttribute="leading" id="d4r-HI-bWb"/>
+                            <constraint firstAttribute="trailing" secondItem="akv-4n-7SM" secondAttribute="trailing" id="p2c-qB-YuW"/>
+                            <constraint firstItem="EeY-pS-36l" firstAttribute="top" secondItem="1PM-GK-5jO" secondAttribute="top" id="rds-eb-Yk9"/>
+                            <constraint firstItem="akv-4n-7SM" firstAttribute="leading" secondItem="bLB-xX-AVF" secondAttribute="leading" id="u3d-er-8qp"/>
+                            <constraint firstAttribute="trailing" secondItem="Cei-ka-9Ge" secondAttribute="trailing" id="zZh-Dr-HPZ"/>
+                            <constraint firstAttribute="bottom" secondItem="Cei-ka-9Ge" secondAttribute="bottom" id="zvx-mD-BdN"/>
+                        </constraints>
+                    </view>
+                    <color key="borderColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </box>
                 <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yPH-jb-RZz">
                     <rect key="frame" x="571" y="7" width="60" height="47"/>
                     <constraints>
@@ -155,30 +264,13 @@
                         <constraint firstAttribute="width" constant="240" id="YZO-gi-TmZ"/>
                     </constraints>
                 </customView>
-                <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="D54-Pl-aPK" customClass="ActiveImageView" customModule="AgentFlocks" customModuleProvider="target">
-                    <rect key="frame" x="166" y="4" width="54" height="54"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="48" id="N6P-jd-CEH"/>
-                        <constraint firstAttribute="width" constant="48" id="ySD-F0-3Gz"/>
-                    </constraints>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" imageFrameStyle="grayBezel" id="cg8-dB-Apc"/>
-                </imageView>
-                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="KEH-SL-ZCm">
-                    <rect key="frame" x="235" y="8" width="67" height="46"/>
-                    <buttonCell key="cell" type="bevel" title="Recall Agents" bezelStyle="regularSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="uTa-Vf-5ng">
-                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="recallAgents:" target="-2" id="F73-2Q-1K6"/>
-                    </connections>
-                </button>
             </subviews>
             <constraints>
                 <constraint firstItem="yPH-jb-RZz" firstAttribute="centerY" secondItem="Hz6-mo-xeY" secondAttribute="centerY" id="0rT-OA-E44"/>
                 <constraint firstItem="KEH-SL-ZCm" firstAttribute="centerY" secondItem="Hz6-mo-xeY" secondAttribute="centerY" id="1RT-p1-ark"/>
+                <constraint firstItem="XPi-Sy-pZF" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="KEH-SL-ZCm" secondAttribute="trailing" constant="20" id="39d-UV-PCd"/>
+                <constraint firstItem="XPi-Sy-pZF" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="3dP-0G-2aJ"/>
                 <constraint firstItem="D54-Pl-aPK" firstAttribute="centerY" secondItem="Hz6-mo-xeY" secondAttribute="centerY" id="4bs-iL-5bV"/>
-                <constraint firstItem="yPH-jb-RZz" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="KEH-SL-ZCm" secondAttribute="trailing" constant="20" id="4ml-CI-2R9"/>
                 <constraint firstItem="3Gi-Rs-0WG" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="6Ig-yy-cbp"/>
                 <constraint firstItem="D54-Pl-aPK" firstAttribute="leading" secondItem="yQ7-Vy-maV" secondAttribute="trailing" constant="20" id="7Jp-SY-6V3"/>
                 <constraint firstAttribute="trailing" secondItem="6uf-Yz-6OL" secondAttribute="trailing" id="8mC-Us-6aX"/>
@@ -189,7 +281,9 @@
                 <constraint firstItem="6uf-Yz-6OL" firstAttribute="centerY" secondItem="Hz6-mo-xeY" secondAttribute="centerY" id="Yfz-YW-IEk"/>
                 <constraint firstItem="KEH-SL-ZCm" firstAttribute="leading" secondItem="D54-Pl-aPK" secondAttribute="trailing" constant="20" id="hY5-I3-Zhi"/>
                 <constraint firstItem="yQ7-Vy-maV" firstAttribute="leading" secondItem="3Gi-Rs-0WG" secondAttribute="trailing" id="hls-fY-SbP"/>
+                <constraint firstAttribute="bottom" secondItem="XPi-Sy-pZF" secondAttribute="bottom" id="iYk-gr-Zbz"/>
                 <constraint firstItem="3Gi-Rs-0WG" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="n28-Z6-aZp"/>
+                <constraint firstItem="yPH-jb-RZz" firstAttribute="leading" secondItem="XPi-Sy-pZF" secondAttribute="trailing" constant="20" id="tc7-G0-OVE"/>
             </constraints>
             <point key="canvasLocation" x="250.5" y="245"/>
         </customView>
