@@ -97,8 +97,7 @@ class AFSelectionState_Draw: AFSelectionState {
         } else if event.keyCode == AFKeyCodes.delete.rawValue {
             let newNodes = AFOrderedMap<String, AFGraphNode2D>()
             
-            for i in 0 ..< afPath.graphNodes.count {
-                let graphNode = afPath.graphNodes[i]
+            for graphNode in afPath.graphNodes {
                 let newNode = AFGraphNode2D(float2Point: graphNode.position)
                 if !namesOfSelectedScenoids.contains(graphNode.name) {
                     newNodes.append(key: newNode.name, value: newNode)

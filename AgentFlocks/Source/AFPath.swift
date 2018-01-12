@@ -104,8 +104,7 @@ class AFPath: Equatable {
         if gkObstacle == nil {
             var floats = [float2]()
             
-            for i in 0 ..< graphNodes.count {
-                let node = graphNodes[i]
+            for node in graphNodes {
                 floats.append(float2(x: node.position.x, y: node.position.y))
             }
             
@@ -121,8 +120,7 @@ class AFPath: Equatable {
         if gkPath == nil {
             var floats = [float2]()
             
-            for i in 0 ..< graphNodes.count {
-                let node = graphNodes[i]
+            for node in graphNodes {
                 floats.append(float2(x: node.position.x, y: node.position.y))
             }
             
@@ -137,9 +135,8 @@ class AFPath: Equatable {
     }
     
     func deselectAll() {
-        for i in 0 ..< graphNodes.count {
-            let graphNode = graphNodes[i]
-            graphNode.deselect()
+        for node in graphNodes {
+            node.deselect()
         }
     }
     
@@ -158,8 +155,7 @@ class AFPath: Equatable {
         var nodesArray = [float2]()
         var visualDotsArray = [CGPoint]()
         
-        for i in 0 ..< graphNodes.count {
-            let node = graphNodes[i]
+        for node in graphNodes {
             let cgPoint = CGPoint(x: CGFloat(node.position.x), y: CGFloat(node.position.y))
             let float2Point = vector_float2(node.position.x, node.position.y)
             

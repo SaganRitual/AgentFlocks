@@ -23,8 +23,6 @@
 //
 
 class AFOrderedMap<KeyType: Hashable, ValueType: Equatable> {
-    typealias Iterator = DictionaryIterator<KeyType, ValueType>
-    
     var keys = [KeyType]()
     var map = [KeyType : ValueType]()
     
@@ -75,5 +73,25 @@ class AFOrderedMap<KeyType: Hashable, ValueType: Equatable> {
     
     subscript(_ ix: Int) -> ValueType { return getValue(at: ix) }
     subscript(_ key: KeyType) -> ValueType { return getValue(for: key) }
+}
+
+extension AFOrderedMap: Sequence {
+    func makeIterator() -> AFOrderedMap.Iterator {
+        return AFOrderedMap.Iterator(orderedMap: self, current: 0)
+    }
+    
+    struct Iterator: IteratorProtocol {
+        let orderedMap: AFOrderedMap<KeyType, ValueType>
+        var current = 0
+        
+        mutating func next() -> ValueType? {
+            guard current < orderedMap.keys.count else { return nil }
+
+            defer { current += 1 }
+            let key = orderedMap.keys[current]
+            let value = orderedMap.map[key]!
+            return orderedMap.keys.count > current ? value : nil
+        }
+    }
 }
 

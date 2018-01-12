@@ -83,8 +83,7 @@ class AFSelectionState_Primary: AFSelectionState {
     }
     
     func deselectAll() {
-        for i in 0 ..< GameScene.me!.entities.count {
-            let entity = GameScene.me!.entities[i]
+        for entity in GameScene.me!.entities {
             entity.agent.deselect()
         }
         

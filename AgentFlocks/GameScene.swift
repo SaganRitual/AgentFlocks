@@ -69,8 +69,7 @@ class GameScene: SKScene, SKViewDelegate {
         let dt = currentTime - self.lastUpdateTime
         
         // Update entities
-        for i in 0 ..< entities.count {
-            let entity = entities[i]
+        for entity in entities {
             entity.update(deltaTime: dt)
         }
         

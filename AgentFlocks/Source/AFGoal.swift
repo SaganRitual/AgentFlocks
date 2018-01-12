@@ -94,8 +94,7 @@ class AFGoal {
         case .toAlignWith:
             var gkAgents = [GKAgent]()
             for aligneeName in agentNames {
-                for i in 0 ..< GameScene.me!.entities.count {
-                    let entity = GameScene.me!.entities[i]
+                for entity in GameScene.me!.entities {
                     if entity.name == aligneeName {
                         gkAgents.append(entity.agent)
                     }
@@ -106,8 +105,7 @@ class AFGoal {
         case .toAvoidAgents:
             var gkAgents = [GKAgent]()
             for avoideeName in agentNames {
-                for i in 0 ..< GameScene.me!.entities.count {
-                    let entity = GameScene.me!.entities[i]
+                for entity in GameScene.me!.entities {
                     if entity.name == avoideeName {
                         gkAgents.append(entity.agent)
                     }
@@ -129,8 +127,7 @@ class AFGoal {
         case .toCohereWith:
             var gkAgents = [GKAgent]()
             for coheree in agentNames {
-                for i in 0 ..< GameScene.me!.entities.count {
-                    let entity = GameScene.me!.entities[i]
+                for entity in GameScene.me!.entities {
                     if entity.name == coheree {
                         gkAgents.append(entity.agent)
                     }
@@ -141,8 +138,7 @@ class AFGoal {
 
         case .toFleeAgent:
             for agentName in agentNames {
-                for i in 0 ..< GameScene.me!.entities.count {
-                    let entity = GameScene.me!.entities[i]
+                for entity in GameScene.me!.entities {
                     if entity.name == agentName {
                         gkGoal = GKGoal(toFleeAgent: entity.agent)
                         break
@@ -156,8 +152,7 @@ class AFGoal {
 
         case .toInterceptAgent:
             for agentName in agentNames {
-                for i in 0 ..< GameScene.me!.entities.count {
-                    let entity = GameScene.me!.entities[i]
+                for entity in GameScene.me!.entities {
                     if entity.name == agentName {
                         gkGoal = GKGoal(toInterceptAgent: entity.agent, maxPredictionTime: TimeInterval(time))
                         break
@@ -170,8 +165,7 @@ class AFGoal {
             
         case .toSeekAgent:
             for agentName in agentNames {
-                for i in 0 ..< GameScene.me!.entities.count {
-                    let entity = GameScene.me!.entities[i]
+                for entity in GameScene.me!.entities {
                     if entity.name == agentName {
                         gkGoal = GKGoal(toSeekAgent: entity.agent)
                         break
@@ -182,8 +176,7 @@ class AFGoal {
         case .toSeparateFrom:
             var gkAgents = [GKAgent]()
             for separatees in agentNames {
-                for i in 0 ..< GameScene.me!.entities.count {
-                    let entity = GameScene.me!.entities[i]
+                for entity in GameScene.me!.entities {
                     if entity.name == separatees {
                         gkAgents.append(entity.agent)
                     }
@@ -218,8 +211,7 @@ class AFGoal {
         goalType = .toAlignWith
         
         var gkAgents = [GKAgent]()
-        for i in 0 ..< GameScene.me!.entities.count {
-            let entity = GameScene.me!.entities[i]
+        for entity in GameScene.me!.entities {
             if agentNames.contains(entity.name) {
                 gkAgents.append(entity.agent)
             }
@@ -239,8 +231,7 @@ class AFGoal {
         goalType = .toAvoidAgents
         
         var gkAgents = [GKAgent]()
-        for i in 0 ..< GameScene.me!.entities.count {
-            let entity = GameScene.me!.entities[i]
+        for entity in GameScene.me!.entities {
             if agentNames.contains(entity.name) {
                 gkAgents.append(entity.agent)
             }
@@ -275,8 +266,7 @@ class AFGoal {
         goalType = .toCohereWith
         
         var gkAgents = [GKAgent]()
-        for i in 0 ..< GameScene.me!.entities.count {
-            let entity = GameScene.me!.entities[i]
+        for entity in GameScene.me!.entities {
             if agentNames.contains(entity.name) {
                 gkAgents.append(entity.agent)
             }
@@ -296,8 +286,7 @@ class AFGoal {
         goalType = .toFleeAgent
         
         var gkAgents = [GKAgent]()
-        for i in 0 ..< GameScene.me!.entities.count {
-            let entity = GameScene.me!.entities[i]
+        for entity in GameScene.me!.entities {
             if agentName == entity.name {
                 gkAgents.append(entity.agent)
             }
@@ -328,8 +317,7 @@ class AFGoal {
         goalType = .toInterceptAgent
         
         var gkAgents = [GKAgent]()
-        for i in 0 ..< GameScene.me!.entities.count {
-            let entity = GameScene.me!.entities[i]
+        for entity in GameScene.me!.entities {
             if agentName == entity.name {
                 gkAgents.append(entity.agent)
             }
@@ -358,8 +346,7 @@ class AFGoal {
         goalType = .toSeekAgent
         
         var gkAgents = [GKAgent]()
-        for i in 0 ..< GameScene.me!.entities.count {
-            let entity = GameScene.me!.entities[i]
+        for entity in GameScene.me!.entities {
             if agentName == entity.name {
                 gkAgents.append(entity.agent)
             }
@@ -377,8 +364,7 @@ class AFGoal {
         goalType = .toSeparateFrom
         
         var gkAgents = [GKAgent]()
-        for i in 0 ..< GameScene.me!.entities.count {
-            let entity = GameScene.me!.entities[i]
+        for entity in GameScene.me!.entities {
             if agentNames.contains(entity.name) {
                 gkAgents.append(entity.agent)
             }
