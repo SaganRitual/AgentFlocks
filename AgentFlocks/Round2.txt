@@ -1,8 +1,9 @@
 DONE:
 	- Please add a "minus" button to the bottom of the agent goals view
 
-- Is there a way to fix the "fwd" checkbox I added to the ItemEditor?
-I got it to work, but it looks terrible.
+DONE:
+	- Is there a way to fix the "fwd" checkbox I added to the ItemEditor?
+	  I got it to work, but it looks terrible.
 
 DONE:
 	1. I need a context menu. I think I know how to construct the menu items programmatically..
