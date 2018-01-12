@@ -70,7 +70,6 @@ class AFBehavior: GKBehavior {
         
         super.init()
         
-        print("behavior, \(copyFrom.goalCount) goals")
         for i in 0 ..< copyFrom.goalCount {
             let hisAFGoal = copyFrom.getChild(at: i)
             let myAFGoal = AFGoal.makeGoal(copyFrom: hisAFGoal, weight: hisAFGoal.weight)

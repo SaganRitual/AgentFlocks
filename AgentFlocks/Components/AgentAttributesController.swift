@@ -33,9 +33,9 @@ class AgentAttributesController: NSViewController {
     }
     
     func reloadAgentAttributes(skip: AgentAttributesController.Attribute) {
-        guard let ix = GameScene.me!.getPrimarySelectionIndex() else { return }
+        guard let name = GameScene.me!.getPrimarySelectionName() else { return }
 
-        let agent = GameScene.me!.entities[ix].agent
+        let agent = GameScene.me!.entities[name].agent
 
         if skip != .mass { mass = Double(agent.mass) }
         if skip != .maxAcceleration { maxAcceleration = Double(agent.maxAcceleration) }

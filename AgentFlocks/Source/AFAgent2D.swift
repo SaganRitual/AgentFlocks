@@ -65,7 +65,7 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         sprite.name = prototype.name
         
         GameScene.me!.addChild(spriteContainer)
-        
+
         originalSize = sprite.size
 
         super.init()
@@ -87,7 +87,7 @@ class AFAgent2D: GKAgent2D, AFScenoid {
 
         spriteContainer.position = position
         scene.addChild(spriteContainer)
-        
+
         originalSize = sprite.size
         
         super.init()
@@ -118,7 +118,7 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         
         spriteContainer.position = position
         scene.addChild(spriteContainer)
-        
+
         originalSize = sprite.size
         
         super.init()

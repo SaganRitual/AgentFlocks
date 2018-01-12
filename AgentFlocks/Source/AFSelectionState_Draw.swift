@@ -24,17 +24,25 @@
 
 import GameplayKit
 
+extension CGPoint {
+    init(float2Point: vector_float2) {
+        self.x = CGFloat(float2Point.x)
+        self.y = CGFloat(float2Point.y)
+    }
+}
+
 class AFSelectionState_Draw: AFSelectionState {
     var currentPosition: CGPoint?
-    var downNodeIndex: Int?
+    var downNodeName: String?
     unowned let gameScene: GameScene
     var mouseState = AFSelectionState_Primary.MouseStates.up
     var nodeToMouseOffset = CGPoint.zero
     var afPath = AFPath()
-    var primarySelectionIndex: Int?
-    var selectedIndexes = Set<Int>()
+    var primarySelectionName: String?
+    var namesOfSelectedScenoids = [String]()
+    var selectedNames = Set<String>()
     var touchedNodes = [SKNode]()
-    var upNodeIndex: Int?
+    var upNodeName: String?
     var vertices = [CGPoint]()
 
     init(gameScene: GameScene) {
@@ -43,42 +51,40 @@ class AFSelectionState_Draw: AFSelectionState {
     
     func finalizePath(close: Bool) {
         afPath.refresh(final: close) // Auto-add the closing line segment
-        gameScene.paths[afPath.name] = afPath
-        gameScene.pathnames.append(afPath.name)
+        gameScene.paths.append(key: afPath.name, value: afPath)
+        
+        // Start a new path in for next round of drawing
         afPath = AFPath()
     }
     
-    func getPrimarySelectionIndex() -> Int? { return nil }
-    func getSelectedIndexes() -> Set<Int> { return Set<Int>() }
+    func getPrimarySelectionName() -> String? { return nil }
+    func getSelectedNames() -> Set<String> { return Set<String>() }
 
     func getSelectedScenoids() -> [AFScenoid] {
         return [AFScenoid]()
     }
-
-    func getTouchedNodeIndex() -> Int? {
-        touchedNodes = gameScene.nodes(at: currentPosition!)
-        
-        var ix: Int?
-        for (index, pathVertex) in gameScene.pathVertices.enumerated() {
-            if touchedNodes.contains(pathVertex.sprite) {
-                ix = index - GameScene.baseSKNodeIndex
-                break
-            }
-        }
-        
-        return ix
-    }
     
-    func getTouchedNode() -> AFVertex? {
+    func getTouchedNode() -> AFGraphNode2D? {
         touchedNodes = gameScene.nodes(at: currentPosition!)
         
-        for pathVertex in gameScene.pathVertices {
-            if touchedNodes.contains(pathVertex.sprite) {
-                return pathVertex
+        // Find the last descendant; I think that will be the top one
+        for i in stride(from: afPath.graphNodes.count - 1, through: 0, by: -1) {
+            let graphNode = afPath.graphNodes[i]
+            
+            if touchedNodes.contains(graphNode.sprite) {
+                return graphNode
             }
         }
         
         return nil
+    }
+    
+    func getTouchedNodeName() -> String? {
+        if let graphNode = getTouchedNode() {
+            return graphNode.name
+        } else {
+            return nil
+        }
     }
     
     func keyDown(with event: NSEvent) {
@@ -89,18 +95,13 @@ class AFSelectionState_Draw: AFSelectionState {
         if event.keyCode == AFKeyCodes.escape.rawValue {
             deselectAll()
         } else if event.keyCode == AFKeyCodes.delete.rawValue {
-            var newVertices = [AFVertex]()
-            var newNodes = [AFGraphNode2D]()
+            let newNodes = AFOrderedMap<String, AFGraphNode2D>()
             
-            for (i, vertex) in gameScene.pathVertices.enumerated() {
-                if !selectedIndexes.contains(i) {
-                    newVertices.append(vertex)
-                }
-            }
-            
-            for (i, _) in afPath.nodes_new.enumerated() {
-                if !selectedIndexes.contains(i) {
-                    newNodes.append(afPath.nodes_new[i])
+            for i in 0 ..< afPath.graphNodes.count {
+                let graphNode = afPath.graphNodes[i]
+                let newNode = AFGraphNode2D(float2Point: graphNode.position)
+                if !namesOfSelectedScenoids.contains(graphNode.name) {
+                    newNodes.append(key: newNode.name, value: newNode)
                 }
             }
 
@@ -109,21 +110,20 @@ class AFSelectionState_Draw: AFSelectionState {
             // in that array that don't have references in our new array will
             // be destructed. I'm counting on the AFVertex destructor to take
             // care of all the business.
-            afPath.nodes_new = newNodes
-            gameScene.pathVertices = newVertices
+            afPath.graphNodes = newNodes
             afPath.refresh()
         }
     }
 
     func mouseDown(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
-        downNodeIndex = getTouchedNodeIndex()
-        upNodeIndex = nil
+        downNodeName = getTouchedNodeName()
+        upNodeName = nil
         
         mouseState = .down
         
-        if let index = downNodeIndex {
-            let p = gameScene.pathVertices[index].position
+        if let down = downNodeName {
+            let p = CGPoint(afPath.graphNodes[down].position)
             nodeToMouseOffset.x = p.x - currentPosition!.x
             nodeToMouseOffset.y = p.y - currentPosition!.y
         }
@@ -135,27 +135,25 @@ class AFSelectionState_Draw: AFSelectionState {
 
     func mouseUp(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
-        upNodeIndex = getTouchedNodeIndex()
+        upNodeName = getTouchedNodeName()
         
-        if let ix = upNodeIndex {
+        if let up = upNodeName {
             deselectAll()
-            select(ix, primary: true)
+            
+            select(up, primary: true)
 
-            if ix == 0 && gameScene.pathVertices.count > 1 {
+            if up == afPath.graphNodes[0].name && afPath.graphNodes.count > 1 {
                 finalizePath(close: true)
             }
         } else {
             // Clicked in the black; add a node
             deselectAll()
             
-            let vertex = AFVertex(scene: gameScene, position: currentPosition!)
-            
-            afPath.add(vertex: vertex)
-            gameScene.pathVertices.append(vertex)
-            select((afPath.nodes_new.count - 1), primary: true)
+            let newNode = afPath.addGraphNode(at: currentPosition!)
+            select(newNode.name, primary: true)
         }
         
-        downNodeIndex = nil
+        downNodeName = nil
         mouseState = .up
     }
 	
@@ -164,8 +162,8 @@ class AFSelectionState_Draw: AFSelectionState {
 	
 	func rightMouseUp(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
-        upNodeIndex = getTouchedNodeIndex()
-        downNodeIndex = nil
+        upNodeName = getTouchedNodeName()
+        downNodeName = nil
         mouseState = .rightUp
 
         let contextMenu = AppDelegate.me!.contextMenu!
@@ -182,24 +180,14 @@ class AFSelectionState_Draw: AFSelectionState {
 	}
 	
     func deselectAll() {
-        for vertex in gameScene.pathVertices {
-            vertex.deselect()
-        }
-        
-        selectedIndexes.removeAll()
-        primarySelectionIndex = nil
+        afPath.deselectAll()
     }
 
-    func select(_ ix: Int, primary: Bool) {
-        gameScene.pathVertices[ix + GameScene.baseSKNodeIndex].select(primary: primary)
-        selectedIndexes.insert(ix)
-        
-        
-        if selectedIndexes.count == 1 {
-            primarySelectionIndex = ix
-        }
+    func select(_ name: String, primary: Bool) {
+
+        afPath.select(name)
     }
 
-    func newAgent(_ nodeIndex: Int) {}
+    func newAgent(_ name: String) {}
     func toggleMultiSelectMode() {}
 }

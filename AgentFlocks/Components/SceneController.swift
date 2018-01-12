@@ -61,7 +61,7 @@ class SceneController: NSViewController {
     // MARK: - Public methods
     
     func addNode(entity: AFEntity) -> AFEntity {
-        sceneNode.entities.append(entity)
+        sceneNode.entities.append(key: entity.name, value: entity)
         return entity
     }
     

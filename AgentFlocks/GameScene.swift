@@ -33,20 +33,11 @@ enum AFKeyCodes: UInt {
 
 class GameScene: SKScene, SKViewDelegate {
     static var me: GameScene?
-    
-    // Each AFPath thinks of its first vertex as index zero. But
-    // we have to map its vertices to actual SKNodes in the scene.
-    // So we have to track the base index so each AFPath can add
-    // it to their zero.
-    static var baseSKNodeIndex = 0
 
-    var entities = [AFEntity]()
-    var graphs = [String : GKGraph]()
+    var entities = AFOrderedMap<String, AFEntity>()
     var inputMode = AFSelectionState_Primary.InputMode.primary
     var pathForNextPathGoal = 0
-    var pathnames = [String]()
-    var pathVertices = [AFVertex]()
-    var paths = [String : AFPath]()
+    var paths = AFOrderedMap<String, AFPath>()
 
     var lastUpdateTime : TimeInterval = 0
     var selectionDelegate: AFSelectionState!
@@ -78,7 +69,8 @@ class GameScene: SKScene, SKViewDelegate {
         let dt = currentTime - self.lastUpdateTime
         
         // Update entities
-        for entity in self.entities {
+        for i in 0 ..< entities.count {
+            let entity = entities[i]
             entity.update(deltaTime: dt)
         }
         
@@ -88,8 +80,8 @@ class GameScene: SKScene, SKViewDelegate {
 
 extension GameScene {
     func getSelectedAgents() -> [AFScenoid] { return selectionDelegate.getSelectedScenoids() }
-    func getSelectedIndexes() -> Set<Int> { return selectionDelegate.getSelectedIndexes() }
-    func getPrimarySelectionIndex() -> Int? { return selectionDelegate.getPrimarySelectionIndex() }
+    func getSelectedNames() -> Set<String> { return selectionDelegate.getSelectedNames() }
+    func getPrimarySelectionName() -> String? { return selectionDelegate.getPrimarySelectionName() }
     override func keyDown(with event: NSEvent) { selectionDelegate.keyDown(with: event) }
     override func keyUp(with event: NSEvent) { selectionDelegate.keyUp(with: event) }
     override func mouseDown(with event: NSEvent) { selectionDelegate.mouseDown(with: event) }
@@ -97,6 +89,6 @@ extension GameScene {
     override func mouseUp(with event: NSEvent) { selectionDelegate.mouseUp(with: event) }
 	override func rightMouseUp(with event: NSEvent) { selectionDelegate.rightMouseUp(with: event) }
 	override func rightMouseDown(with event: NSEvent) { selectionDelegate.rightMouseDown(with: event) }
-    func newAgent(_ nodeIndex: Int) { selectionDelegate.newAgent(nodeIndex) }
+    func newAgent(_ name: String) { selectionDelegate.newAgent(name) }
 }
 

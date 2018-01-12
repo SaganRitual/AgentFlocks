@@ -30,8 +30,8 @@ protocol AFScenoid {
 
 protocol AFSelectionState {
     func deselectAll()
-    func getPrimarySelectionIndex() -> Int?
-    func getSelectedIndexes() -> Set<Int>
+    func getPrimarySelectionName() -> String?
+    func getSelectedNames() -> Set<String>
     func getSelectedScenoids() -> [AFScenoid]
     func keyDown(with event: NSEvent)
     func keyUp(with event: NSEvent)
@@ -40,22 +40,22 @@ protocol AFSelectionState {
     func mouseUp(with event: NSEvent)
 	func rightMouseDown(with event: NSEvent)
 	func rightMouseUp(with event: NSEvent)
-    func newAgent(_ nodeIndex: Int)
-    func select(_ nodeIndex: Int, primary: Bool)
+    func newAgent(_ name: String)
+    func select(_ name: String, primary: Bool)
 }
 
 class AFSelectionState_Primary: AFSelectionState {
     unowned let gameScene: GameScene
 
     var currentPosition: CGPoint?
-    var downNodeIndex: Int?
+    var downNodeName: String?
     var mouseState = MouseStates.up
     var mouseWasDragged = false
     var nodeToMouseOffset = CGPoint.zero
-    var primarySelectionIndex: Int?
-    var selectedIndexes = Set<Int>()
+    var primarySelectionName: String?
+    var selectedNames = Set<String>()
     var touchedNodes = [SKNode]()
-    var upNodeIndex: Int?
+    var upNodeName: String?
 
     init(gameScene: GameScene) {
         self.gameScene = gameScene
@@ -64,48 +64,50 @@ class AFSelectionState_Primary: AFSelectionState {
     enum InputMode { case primary, drawPath }
     enum MouseStates { case down, dragging, rightDown, rightUp, up }
     
-    func deselect(_ ix: Int) {
-        gameScene.entities[ix].agent.deselect()
-        selectedIndexes.remove(ix)
+    func deselect(_ name: String) {
+        gameScene.entities[name].agent.deselect()
+        selectedNames.remove(name)
         
         // We just now deselected the primary. If there's anyone
         // else selected, they need to be made the primary.
-        if primarySelectionIndex == ix {
-            if selectedIndexes.count > 0 {
-                let newix = selectedIndexes.first!
-                select(newix, primary: true)
-                AppDelegate.me!.placeAgentFrames(agentIndex: newix)
+        if primarySelectionName == name {
+            if selectedNames.count > 0 {
+                let selectNew = selectedNames.first!
+                select(selectNew, primary: true)
+                AppDelegate.me!.placeAgentFrames(agentName: selectNew)
             } else {
-                primarySelectionIndex = nil
+                primarySelectionName = nil
                 AppDelegate.me!.removeAgentFrames()
             }
         }
     }
     
     func deselectAll() {
-        for entity in gameScene.entities {
+        for i in 0 ..< GameScene.me!.entities.count {
+            let entity = GameScene.me!.entities[i]
             entity.agent.deselect()
         }
         
-        selectedIndexes.removeAll()
-        primarySelectionIndex = nil
+        selectedNames.removeAll()
+        primarySelectionName = nil
         AppDelegate.me!.removeAgentFrames()
 
         // Clear out the sliders so they'll recalibrate themselves to the new values
         AppDelegate.agentEditorController.attributesController.resetSliderControllers()
     }
     
-    func getAgent(at index: Int) -> AFAgent2D {
-        let entity = gameScene.entities[index]
+    func getAgent(name: String) -> AFAgent2D {
+        let entity = gameScene.entities[name]
         return entity.agent
     }
     
     func getNode(at point: CGPoint) -> Int? {
         var nodeIndex: Int?
         
-        for (index, entity) in gameScene.entities.enumerated() {
+        for i in 0 ..< GameScene.me!.entities.count {
+            let entity = GameScene.me!.entities[i]
             if touchedNodes.contains(entity.agent.spriteContainer) {
-                nodeIndex = index
+                nodeIndex = i
                 break
             }
         }
@@ -113,39 +115,48 @@ class AFSelectionState_Primary: AFSelectionState {
         return nodeIndex
     }
     
-    func getPrimarySelectionIndex() -> Int? {
-        return primarySelectionIndex
+    func getPrimarySelectionName() -> String? {
+        return primarySelectionName
     }
     
     func getSelectedScenoids() -> [AFScenoid] {
         var agents = [AFAgent2D]()
         
-        let indexes = getSelectedIndexes()
-        for i in indexes {
-            agents.append(gameScene.entities[i].agent)
+        let names = getSelectedNames()
+        for name in names {
+            agents.append(gameScene.entities[name].agent)
         }
         
         return agents
     }
     
-    func getSelectedIndexes() -> Set<Int> {
-        return selectedIndexes
+    func getSelectedNames() -> Set<String> {
+        return selectedNames
     }
     
-    func getTouchedNodeIndex() -> Int? {
+    func getTouchedNode() -> SKNode? {
         touchedNodes = gameScene.nodes(at: currentPosition!)
         
-        var ix: Int?
-        for (index, entity) in gameScene.entities.enumerated() {
-            if touchedNodes.contains(entity.agent.spriteContainer) {
-                ix = index
-                break
+        // Find the last descendant; I think that will be the top one
+        for i in stride(from: gameScene.entities.count - 1, through: 0, by: -1) {
+            let entity = gameScene.entities[i]
+            
+            if touchedNodes.contains(entity.agent.sprite) {
+                return entity.agent.sprite
             }
         }
-        
-        return ix
+
+        return nil
     }
     
+    func getTouchedNodeName() -> String? {
+        if let agentNode = getTouchedNode() {
+            return agentNode.name
+        } else {
+            return nil
+        }
+    }
+
     func keyDown(with event: NSEvent) {
         print("keyDown in primary")
     }
@@ -158,14 +169,13 @@ class AFSelectionState_Primary: AFSelectionState {
     
     func mouseDown(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
-        downNodeIndex = getTouchedNodeIndex()
-        upNodeIndex = nil
-        print("mouse down")
+        downNodeName = getTouchedNodeName()
+        upNodeName = nil
         
         mouseState = .down
         
-        if let index = downNodeIndex {
-            let p = gameScene.entities[index].agent.spriteContainer.position
+        if let down = downNodeName {
+            let p = gameScene.entities[down].agent.spriteContainer.position
             nodeToMouseOffset.x = p.x - currentPosition!.x
             nodeToMouseOffset.y = p.y - currentPosition!.y
         } else {
@@ -178,17 +188,19 @@ class AFSelectionState_Primary: AFSelectionState {
         currentPosition = event.location(in: gameScene)
         mouseState = .dragging
         
-        if let d = downNodeIndex, let c = currentPosition {
-            trackMouse(nodeIndex: d, atPoint: c)
+        if let d = downNodeName, let c = currentPosition {
+            trackMouse(nodeName: d, atPoint: c)
         }
     }
     
     func mouseUp(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
 
-        upNodeIndex = getTouchedNodeIndex()
+        upNodeName = getTouchedNodeName()
         
-        if upNodeIndex == nil {
+        var newEntity: AFEntity!
+        
+        if upNodeName == nil {
             // Mouse up in the black; always a full deselect
             deselectAll()
             
@@ -199,58 +211,57 @@ class AFSelectionState_Primary: AFSelectionState {
                 let originalIx = GameScene.me!.entities.count - 1
                 let originalEntity = GameScene.me!.entities[originalIx]
                 
-                let newEntity = AFEntity(scene: GameScene.me!, copyFrom: originalEntity, position: currentPosition!)
+                newEntity = AFEntity(scene: GameScene.me!, copyFrom: originalEntity, position: currentPosition!)
                 _ = AppDelegate.me!.sceneController.addNode(entity: newEntity)
             } else {
                 let imageIndex = AppDelegate.me!.agentImageIndex
-                _ = AppDelegate.me!.sceneController.addNode(image: AppDelegate.me!.agents[imageIndex].image, at: currentPosition!)
+                newEntity = AppDelegate.me!.sceneController.addNode(image: AppDelegate.me!.agents[imageIndex].image, at: currentPosition!)
             }
             
-            let nodeIndex = GameScene.me!.entities.count - 1
-            newAgent(nodeIndex)
+            select(newEntity.name, primary: true)
             
-            AppDelegate.me!.placeAgentFrames(agentIndex: nodeIndex)
+            AppDelegate.me!.placeAgentFrames(agentName: newEntity.name)
         } else {
             if event.modifierFlags.contains(.command) {
                 if mouseState == .down {
                     // cmd+click on a node
-                    toggleSelection(upNodeIndex!)
+                    toggleSelection(upNodeName!)
                 } else {
                     print("drag")
                 }
             } else {
                 if mouseState == .down {    // That is, we're coming out of down as opposed to drag
-                    let setSelection = (primarySelectionIndex != upNodeIndex!)
+                    let setSelection = (primarySelectionName != upNodeName!)
 
                     deselectAll()
                     
                     if setSelection {
-                        select(upNodeIndex!, primary: true)
+                        select(upNodeName!, primary: true)
                     }
                 }
             }
         }
         
-        downNodeIndex = nil
+        downNodeName = nil
         mouseState = .up
     }
     
-    func newAgent(_ nodeIndex: Int) {
+    func newAgent(_ name: String) {
         deselectAll()
-        select(nodeIndex, primary: true)
+        select(name, primary: true)
     }
     
     func rightMouseDown(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
-        upNodeIndex = getTouchedNodeIndex()
-        downNodeIndex = nil
+        upNodeName = getTouchedNodeName()
+        downNodeName = nil
         mouseState = .rightDown
     }
 	
     func rightMouseUp(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
-        upNodeIndex = getTouchedNodeIndex()
-        downNodeIndex = nil
+        upNodeName = getTouchedNodeName()
+        downNodeName = nil
         mouseState = .rightUp
         
         let contextMenu = AppDelegate.me!.contextMenu!
@@ -259,7 +270,7 @@ class AFSelectionState_Primary: AFSelectionState {
         contextMenu.removeAllItems()
         contextMenu.autoenablesItems = false
 
-        if upNodeIndex == nil {
+        if upNodeName == nil {
             contextMenu.addItem(withTitle: titles[.DrawPaths]!, action: #selector(AppDelegate.contextMenuClicked(_:)), keyEquivalent: "")
         } else {
             contextMenu.addItem(withTitle: titles[.CloneAgent]!, action: #selector(AppDelegate.contextMenuClicked(_:)), keyEquivalent: "")
@@ -268,27 +279,27 @@ class AFSelectionState_Primary: AFSelectionState {
         (NSApp.delegate as? AppDelegate)?.showContextMenu(at: event.locationInWindow)
     }
     
-    func select(_ ix: Int, primary: Bool) {
-        selectedIndexes.insert(ix)
+    func select(_ name: String, primary: Bool) {
+        selectedNames.insert(name)
         
-        gameScene.entities[ix].agent.select(primary: primary)
+        gameScene.entities[name].agent.select(primary: primary)
         
         if primary {
-            AppDelegate.agentEditorController.goalsController.dataSource = GameScene.me!.entities[ix]
-            AppDelegate.agentEditorController.attributesController.delegate = GameScene.me!.entities[ix].agent
+            AppDelegate.agentEditorController.goalsController.dataSource = GameScene.me!.entities[name]
+            AppDelegate.agentEditorController.attributesController.delegate = GameScene.me!.entities[name].agent
 
-            primarySelectionIndex = ix
-            AppDelegate.me!.placeAgentFrames(agentIndex: ix)
+            primarySelectionName = name
+            AppDelegate.me!.placeAgentFrames(agentName: name)
         }
     }
     
-    func toggleSelection(_ ix: Int) {
-        if selectedIndexes.contains(ix) { deselect(ix) }
-        else { select(ix, primary: primarySelectionIndex == nil) }
+    func toggleSelection(_ name: String) {
+        if selectedNames.contains(name) { deselect(name) }
+        else { select(name, primary: primarySelectionName == nil) }
     }
     
-    func trackMouse(nodeIndex: Int, atPoint: CGPoint) {
-        let agent = getAgent(at: nodeIndex)
+    func trackMouse(nodeName: String, atPoint: CGPoint) {
+        let agent = getAgent(name: nodeName)
         agent.position = vector_float2(Float(atPoint.x), Float(atPoint.y))
         agent.position.x += Float(nodeToMouseOffset.x)
         agent.position.y += Float(nodeToMouseOffset.y)

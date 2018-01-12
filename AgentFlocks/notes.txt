@@ -1,3 +1,4 @@
+- Figure out how to implement a dictionary iterator
 - Need a "use as defaults" button on the agent attributes view
 - Need an "apply defaults" button there too
 - Put "register open path" in a context menu

@@ -63,7 +63,6 @@ class AFCompositeBehavior: GKCompositeBehavior {
         
         super.init()
         
-        print("composite, \(copyFrom.behaviorCount) behaviors")
         for i in 0 ..< copyFrom.behaviorCount {
             let hisKid = copyFrom.getChild(at: i)
             let myKid = AFBehavior(agent: agent, copyFrom: hisKid)
