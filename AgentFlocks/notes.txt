@@ -17,8 +17,6 @@
 - Show/hide radius
 - Draggable & editable obstacles & paths
 - Path & obstacle drawing & editing need a lot of work
-- Unique names & lookup thing
-- Gray out child goals in outline view when parent behavior is disabled
 - Allow assigning same goal to multiple agents
 - Highlight target objects/agents of align/cohere/seek/etc
 - Delete agent
