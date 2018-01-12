@@ -25,11 +25,9 @@
 import GameplayKit
 
 class AFCompositeBehavior_Script: Codable {
-    var enabled = true
     var behaviors: [AFBehavior_Script]
     
     init(composite: AFCompositeBehavior) {
-        enabled = composite.enabled
         behaviors = [AFBehavior_Script]()
         
         for i in 0 ..< composite.behaviorCount {
@@ -41,12 +39,9 @@ class AFCompositeBehavior_Script: Codable {
 }
 
 class AFCompositeBehavior: GKCompositeBehavior {
-    var enabled = true
     var savedState: (weight: Float, behavior: GKBehavior)?
     
     init(prototype: AFCompositeBehavior_Script, agent: AFAgent2D) {
-        
-        enabled = prototype.enabled
         
         super.init()
         
@@ -59,8 +54,6 @@ class AFCompositeBehavior: GKCompositeBehavior {
     }
     
     init(copyFrom: AFCompositeBehavior, agent: AFAgent2D) {
-        self.enabled = copyFrom.enabled
-        
         super.init()
         
         for i in 0 ..< copyFrom.behaviorCount {
@@ -71,7 +64,6 @@ class AFCompositeBehavior: GKCompositeBehavior {
     }
     
     init(agent: AFAgent2D) {
-        enabled = true
     }
     
     func addBehavior(_ newBehavior: AFBehavior) {
@@ -82,14 +74,14 @@ class AFCompositeBehavior: GKCompositeBehavior {
     
     func enableBehavior(_ behavior: AFBehavior, on: Bool = true) {
         if on {
-            enabled = true
+            behavior.enabled = true
             
             let weight = saveMap[behavior]!
             setWeight(weight, for: behavior)
 
             saveMap.removeValue(forKey: behavior)
         } else {
-            enabled = false
+            behavior.enabled = false
             
             let weight = self.weight(for: behavior)
             saveMap[behavior] = weight

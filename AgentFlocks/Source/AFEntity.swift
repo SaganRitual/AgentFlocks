@@ -141,7 +141,7 @@ extension AFEntity: AgentGoalsDataSource {
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemEnabled item: Any) -> Bool {
         if let c = item as? AFCompositeBehavior {
-            return c.enabled
+            fatalError()    // We don't have composites in the outline yet
         } else if let b = item as? AFBehavior {
             return b.enabled
         } else if let gkGoal = item as? GKGoal {

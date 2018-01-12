@@ -637,11 +637,10 @@ extension AppDelegate: AgentGoalsDelegate {
             
             if state == .on {
                 composite.enableBehavior(behavior, on: true)
-//                agentGoalsController.outlineView!.expandItem(item)
             } else {
                 composite.enableBehavior(behavior, on: false)
-//                agentGoalsController.outlineView!.collapseItem(item)
             }
+            
 			for gkGoal in behavior.goalsMap.keys {
 				agentGoalsController.outlineView!.reloadItem(gkGoal, reloadChildren: false)
 			}
