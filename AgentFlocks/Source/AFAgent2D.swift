@@ -33,6 +33,7 @@ class AFAgent2D_Script: Codable {
 }
 
 class AFAgent2D: GKAgent2D, AFScenoid {
+    var isPlaying = true
     let originalSize: CGSize
     var radiusIndicator: SKNode?
     let radiusIndicatorRadius: CGFloat = 100.0
@@ -77,6 +78,37 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         radius = prototype.radius
     }
     
+    init(scene: GameScene, copyFrom: AFAgent2D, position: CGPoint) {
+        scale = copyFrom.scale
+        
+        let (cc, ss) = AFAgent2D.makeSpriteContainer(copyFrom: copyFrom, position: position)
+        spriteContainer = cc
+        sprite = ss
+
+        spriteContainer.position = position
+        scene.addChild(spriteContainer)
+        
+        originalSize = sprite.size
+        
+        super.init()
+        
+        self.position.x = Float(position.x)
+        self.position.y = Float(position.y)
+
+        behavior = AFCompositeBehavior(copyFrom: (copyFrom.behavior as! AFCompositeBehavior), agent: self)
+        
+        //
+        // This is the first data source for agent attributes
+        //
+        let ac = AppDelegate.agentEditorController.attributesController
+        
+        mass = Float(ac.defaultMass)
+        maxSpeed = Float(ac.defaultMaxAcceleration)
+        maxAcceleration = Float(ac.defaultMaxSpeed)
+        radius = Float(ac.defaultRadius)
+        scale = Float(ac.defaultScale)
+    }
+
     init(scene: GameScene, image: NSImage, position: CGPoint) {
         scale = 1
         
@@ -97,10 +129,16 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         b.weight = 100
         (behavior as! AFCompositeBehavior).setWeight(100, for: b)
 
-        mass = 0.1
-        maxSpeed = 100
-        maxAcceleration = 100
-        radius = 50
+        //
+        // This is the first data source for agent attributes
+        //
+        let ac = AppDelegate.agentEditorController.attributesController
+        
+        mass = Float(ac.defaultMass)
+        maxSpeed = Float(ac.defaultMaxAcceleration)
+        maxAcceleration = Float(ac.defaultMaxSpeed)
+        radius = Float(ac.defaultRadius)
+        scale = Float(ac.defaultScale)
     }
     
     deinit {
@@ -122,6 +160,14 @@ class AFAgent2D: GKAgent2D, AFScenoid {
     func deselect() {
         selected = false;
         clearSelectionIndicator()
+    }
+    
+    static func makeSpriteContainer(copyFrom: AFAgent2D, position: CGPoint) -> (SKNode, SKSpriteNode) {
+        let texture = SKTexture(imageNamed: "Herman")
+        let cgImage = texture.cgImage()
+        let nsImage = NSImage(cgImage: cgImage, size: NSSize(width: 50, height: 50))
+        
+        return makeSpriteContainer(image: nsImage, position: position)
     }
     
     static func makeSpriteContainer(image: NSImage, position: CGPoint, _ name: String? = nil) -> (SKNode, SKSpriteNode) {
@@ -168,6 +214,8 @@ class AFAgent2D: GKAgent2D, AFScenoid {
     }
     
     override func update(deltaTime seconds: TimeInterval) {
+        guard isPlaying else { return }
+
         super.update(deltaTime: seconds)
         spriteContainer.position = CGPoint(x: Double(position.x), y: Double(position.y))
         spriteContainer.zRotation = CGFloat(Double(rotation) - Double.pi / 2.0)
@@ -255,13 +303,17 @@ extension AFAgent2D {
 
 // MARK: Basic agent attributes
 
+
 extension AFAgent2D: AgentAttributesDelegate {
     func agent(_ controller: AgentAttributesController, newValue value: Double, ofAttribute: AgentAttributesController.Attribute) {
+        // This is where we come when the slider is moved around
         let v = Float(value)
         switch ofAttribute {
-        case .mass: mass = v; break
-        case .maxAcceleration: maxAcceleration = v; break
-        case .maxSpeed: maxSpeed = v; break
+        case .mass:            mass = v
+        case .maxAcceleration: maxAcceleration = v
+        case .maxSpeed:        maxSpeed = v
+        case .scale:           scale = v
+
         case .radius:
             radius = v
 
@@ -270,7 +322,6 @@ extension AFAgent2D: AgentAttributesDelegate {
             radiusIndicator = AFAgent2D.makeRing(radius: radius, isForSelector: false, primary: false)
             spriteContainer.addChild(radiusIndicator!)
             break
-        case .scale: scale = v; break
         }
     }
 }

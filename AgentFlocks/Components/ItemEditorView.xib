@@ -58,6 +58,17 @@ Gw
                         <action selector="cancelButtonPressed:" target="-2" id="jvB-U0-i6N"/>
                     </connections>
                 </button>
+                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PYH-XN-xx1">
+                    <rect key="frame" x="165" y="9" width="48" height="19"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="check" title="Fwd" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="tbd-vt-TtJ">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="forwardCheckClicked:" target="-2" id="AVu-RD-3Q5"/>
+                    </connections>
+                </button>
             </subviews>
             <constraints>
                 <constraint firstItem="8J2-wH-fB3" firstAttribute="centerY" secondItem="sRA-ed-hA2" secondAttribute="centerY" id="9pQ-L3-yil"/>

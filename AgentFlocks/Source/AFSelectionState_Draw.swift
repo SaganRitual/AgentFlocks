@@ -163,6 +163,22 @@ class AFSelectionState_Draw: AFSelectionState {
 	}
 	
 	func rightMouseUp(with event: NSEvent) {
+        currentPosition = event.location(in: gameScene)
+        upNodeIndex = getTouchedNodeIndex()
+        downNodeIndex = nil
+        mouseState = .rightUp
+
+        let contextMenu = AppDelegate.me!.contextMenu!
+        let titles = AppDelegate.me!.contextMenuTitles
+        
+        contextMenu.removeAllItems()
+        contextMenu.addItem(withTitle: titles[.PlaceAgents]!, action: #selector(AppDelegate.contextMenuClicked(_:)), keyEquivalent: "")
+
+        contextMenu.autoenablesItems = false
+        
+        let m = contextMenu.item(at: 0)!; m.isEnabled = true
+
+        (NSApp.delegate as? AppDelegate)?.showContextMenu(at: event.locationInWindow)
 	}
 	
     func deselectAll() {

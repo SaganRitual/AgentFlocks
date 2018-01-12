@@ -55,7 +55,6 @@ class AFVertex: AFScenoid {
     }
     
     deinit {
-        print("deinit")
         sprite.removeFromParent()
     }
     

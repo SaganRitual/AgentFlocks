@@ -72,6 +72,14 @@ class AFPath {
         self.obstacle = obstacle
     }
     
+    init(copyFrom: AFPath) {
+        locked = false
+        name = NSUUID().uuidString
+        nodes_new = copyFrom.nodes_new
+        obstacle = makeObstacle()
+        refresh()
+    }
+    
     init(prototype: AFPath_Script) {
         name = prototype.name
         radius = prototype.radius

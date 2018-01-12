@@ -9,7 +9,8 @@
 import Cocoa
 
 protocol AgentGoalsDelegate {
-    func agentGoalsPlayClicked(_ agentGoalsController: AgentGoalsController)
+    func agentGoalsPlayClicked(_ agentGoalsController: AgentGoalsController, actionPlay: Bool)
+    func agentGoalsDeleteItem(_ agentGoalsController: AgentGoalsController)
     func agentGoals(_ agentGoalsController: AgentGoalsController, newBehaviorShowForRect rect: NSRect)
     func agentGoals(_ agentGoalsController: AgentGoalsController, newGoalShowForRect rect: NSRect, goalType type:AgentGoalsController.GoalType)
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemClicked item: Any, inRect rect: NSRect)
@@ -44,11 +45,24 @@ class AgentGoalsController: NSViewController {
 	
 	@IBOutlet weak var outlineView: NSOutlineView!
 	@IBOutlet weak var addButton: NSButton!
-	@IBOutlet private weak var playButton: NSButton!
+	@IBOutlet weak var playButton: NSButton!
+    
+    var playImage: NSImage?
+    var pauseImage: NSImage?
 	
 	@IBOutlet var addContextMenu: NSMenu!
 	
 	// MARK: - Initialization
+    
+    override func keyUp(with event: NSEvent) {
+        if event.keyCode == AFKeyCodes.delete.rawValue {
+            delegate?.agentGoalsDeleteItem(self)
+        }
+    }
+    
+    override func keyDown(with event: NSEvent) {
+        print("keydown")
+    }
 	
 	init() {
 		super.init(nibName: NSNib.Name(rawValue: "AgentGoalsView"), bundle: nil)
@@ -63,7 +77,9 @@ class AgentGoalsController: NSViewController {
         
         AgentGoalsController.me = self
 		
-		playButton.image = NSImage(named: NSImage.Name(rawValue: "Play"))
+        playImage = NSImage(named: NSImage.Name(rawValue: "Play"))
+        pauseImage = NSImage(named: NSImage.Name(rawValue: "Pause"))
+		playButton.image = pauseImage
 		
 		outlineView.target = self
         outlineView.action = #selector(onItemClicked)
@@ -117,7 +133,12 @@ class AgentGoalsController: NSViewController {
 	}
 	
 	@IBAction func playButtonPressed(_ sender: NSButton) {
-		delegate?.agentGoalsPlayClicked(self)
+        var actionPlay = true
+        
+        if playButton.image == playImage { actionPlay = true; playButton.image = pauseImage }
+        else { actionPlay = false; playButton.image = playImage }
+
+        delegate?.agentGoalsPlayClicked(self, actionPlay: actionPlay)
 	}
 	
 	@IBAction func addBehaviorItemSelected(_ sender: NSMenuItem) {
@@ -188,7 +209,10 @@ extension AgentGoalsController: NSOutlineViewDataSource {
 		}
 		else if (tableColumn?.title ?? "") == "Weight" {
 			if let cellView = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "GoalWeightCellView"), owner: self) as? NSTableCellView {
-				cellView.textField?.stringValue = String(dataSource?.agentGoals(self, weightOfItem: item) ?? 0.0)
+        let w = (dataSource?.agentGoals(self, weightOfItem: item) ?? 0)
+        
+        let formatString = (w > pow(10, 4)) ? "%.f" : (w > pow(10, 2) ? "%.1f" : "%.2f")
+        cellView.textField?.stringValue = String(format: formatString, "", w)
 				
 				if let parent = outlineView.parent(forItem: item) as? AFBehavior,
 					let enabled = dataSource?.agentGoals(self, isItemEnabled: parent)

@@ -41,6 +41,12 @@ class AFEntity: GKEntity {
         addComponent(agent)
     }
     
+    init(scene: GameScene, copyFrom: AFEntity, position: CGPoint) {
+        agent = AFAgent2D(scene: scene, copyFrom: copyFrom.agent, position: position)
+        super.init()
+        addComponent(agent)
+    }
+    
     init(prototype: AFEntity_Script) {
         agent = AFAgent2D(prototype: prototype.agent)
         
@@ -91,14 +97,18 @@ extension AFEntity: AgentGoalsDataSource {
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, child index: Int, ofItem item: Any?) -> Any {
-        if let motivator = item as? GKBehavior {
-            // Note: composite is also a behavior, so we'll come here for either case
+        if let motivator = item as? AFBehavior {
+            // Note: composite is also a behavior, so this works for both
             return motivator[index]
         } else {
+            // I don't understand why we're called here sometimes with item == nil.
+            // The best I can think to do is to grab the behavior at [index] in
+            // the selected agent's composite. Look into this, find out why we
+            // get a nil.
             let selected = GameScene.me!.getSelectedIndexes()
             if selected.count > 0 {
                 let entity = GameScene.me!.entities[selected.first!]
-                return (entity.agent.behavior as! GKCompositeBehavior)[index]
+                return (entity.agent.behavior as! AFCompositeBehavior)[index]
             }
         }
         

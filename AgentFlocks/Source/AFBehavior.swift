@@ -64,9 +64,24 @@ class AFBehavior: GKBehavior {
         }
     }
     
+    init(agent: AFAgent2D, copyFrom: AFBehavior) {
+        self.agent = agent
+        self.weight = copyFrom.weight
+        
+        super.init()
+        
+        print("behavior, \(copyFrom.goalCount) goals")
+        for i in 0 ..< copyFrom.goalCount {
+            let hisAFGoal = copyFrom.getChild(at: i)
+            let myAFGoal = AFGoal.makeGoal(copyFrom: hisAFGoal, weight: hisAFGoal.weight)
+            
+            self.setWeightage(myAFGoal.weight, for: myAFGoal)
+        }
+    }
+    
     init(agent: AFAgent2D) {
         self.agent = agent
-        weight = 142
+        weight = 1
     }
     
     func addGoal(_ goal: AFGoal) {
@@ -116,7 +131,7 @@ class AFBehavior: GKBehavior {
     }
     
     func toString() -> String {
-        return String(format: "Behavior: %.0f", weight)
+        return String(format: "Behavior", weight)
     }
     
     func weight(for goal: AFGoal) -> Float {

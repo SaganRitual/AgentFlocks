@@ -1,12 +1,16 @@
 - Need a "use as defaults" button on the agent attributes view
 - Need an "apply defaults" button there too
-- Need a multi-select mechanism
+- Put "register open path" in a context menu
+- Save/load defaults
+- Make default values write-only fields
+- Put "draw" and "place" in a context menu
+- Add "-" to agent goals view
+
 - Shared motivators: change a setting, it affects everyone using that motivator
 - Private motivators: you have your own copy
 - Motivators library; select an item, everyone using it lights up
 - Enable/disable items in "add" menu of goals outline view, depending on what's selected
 - Remember eventually that composite behaviors can also have goals on them
-- Cloneable everything
 - Zoom with pinch gesture
 - Paths library with scrollable list view
 - Show/hide radius
@@ -14,5 +18,7 @@
 - Path & obstacle drawing & editing need a lot of work
 - Unique names & lookup thing
 - Gray out child goals in outline view when parent behavior is disabled
-- Implement preview
-- Implement forward/backward on .toFollowPath
+- Allow assigning same goal to multiple agents
+- Highlight target objects/agents of align/cohere/seek/etc
+- Delete agent
+- Cloneable everything

@@ -44,6 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var editedObstacleIndex:Int?
     var agentImageIndex = 0
     var stopTime: TimeInterval = 0
+    var followPathFoward = true
 
 	private var activePopover:NSPopover?
     
@@ -215,7 +216,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	func placeAgentFrames(agentIndex: Int) {
         let agent = GameScene.me!.entities[agentIndex].agent
         let ac = AppDelegate.agentEditorController.attributesController
-        
+        let gc = AppDelegate.agentEditorController.goalsController
+
+        // Play/pause button image
+        gc.playButton.image = agent.isPlaying ? gc.pauseImage : gc.playImage
+
+        // This is where we finally read back out the actual
+        // values from the GKAgent and store them in the attributes controller
         ac.mass = Double(agent.mass)
         ac.maxAcceleration = Double(agent.maxAcceleration)
         ac.maxSpeed = Double(agent.maxSpeed)
@@ -346,6 +353,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             } catch { print(error) }
         } catch { print(error) }
     }
+    
+    enum ContextMenuItems { case CloneAgent, DrawPaths, PlaceAgents, RegisterOpenPath }
+    let contextMenuTitles: [ContextMenuItems : String] = [
+        ContextMenuItems.CloneAgent: "Clone agent",
+        ContextMenuItems.DrawPaths: "Draw paths",
+        ContextMenuItems.PlaceAgents: "Place agents",
+        ContextMenuItems.RegisterOpenPath: "Register open path"
+    ]
 	
 	func showContextMenu(at location: NSPoint) {
 		contextMenu.popUp(positioning: nil, at: location, in: sceneView)
@@ -423,7 +438,32 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	// MARK: - Context Menu callbacks
 	
 	@IBAction func contextMenuClicked(_ sender: NSMenuItem) {
-		NSLog("Item selected: \(sender.title)")
+        switch sender.title {
+        case contextMenuTitles[.PlaceAgents]!:
+            topBarController.radioButtonPlace.state = NSControl.StateValue.on
+            topBarController.radioButtonAgent.state = NSControl.StateValue.on
+            topBarController.radioButtonAgent.isEnabled = true
+            GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
+            
+        case contextMenuTitles[.DrawPaths]!:
+            topBarController.radioButtonDraw.state = NSControl.StateValue.on
+            topBarController.radioButtonPath.state = NSControl.StateValue.on
+            topBarController.radioButtonAgent.isEnabled = false
+            GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegateDraw
+
+        case contextMenuTitles[.CloneAgent]!:
+            let selector = GameScene.me!.selectionDelegatePrimary!
+            let originalEntity = GameScene.me!.entities[selector.upNodeIndex!]
+            
+            let currentPosition = selector.currentPosition
+            let newEntity = AFEntity(scene: GameScene.me!, copyFrom: originalEntity, position: currentPosition!)
+            _ = AppDelegate.me!.sceneController.addNode(entity: newEntity)
+
+        case contextMenuTitles[.RegisterOpenPath]!: break
+            
+        default:
+            fatalError()
+        }
 	}
 	
 }
@@ -485,8 +525,34 @@ extension AppDelegate: TopBarDelegate {
 
 extension AppDelegate: AgentGoalsDelegate {
 
-    func agentGoalsPlayClicked(_ agentGoalsController: AgentGoalsController) {
-        print("We're not doing anything with the play button on the agent goals controller")
+    func agentGoalsPlayClicked(_ agentGoalsController: AgentGoalsController, actionPlay: Bool) {
+        let index = GameScene.me!.getPrimarySelectionIndex()!
+        let agent = GameScene.me!.entities[index].agent
+        
+        agent.isPlaying = actionPlay
+    }
+    
+    func agentGoalsDeleteItem(_ agentGoalsController: AgentGoalsController) {
+        let index = GameScene.me!.getPrimarySelectionIndex()!
+        let agent = GameScene.me!.entities[index].agent
+        let composite = agent.behavior as! AFCompositeBehavior
+        
+        if let outlineView = agentGoalsController.outlineView {
+            let row = outlineView.selectedRow
+            let protoItem = outlineView.item(atRow: row)
+            var reloadOutline = false
+
+            if let hotBehavior = protoItem as? AFBehavior {
+                reloadOutline = true
+                composite.remove(hotBehavior)
+            } else if let hotGoal = protoItem as? GKGoal {
+                let hotBehavior = composite.findParent(ofGoal: hotGoal)!
+                reloadOutline = true
+                hotBehavior.remove(hotGoal)
+            }
+            
+            if reloadOutline { outlineView.reloadData() }
+        }
     }
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemClicked item: Any, inRect rect: NSRect) {
@@ -659,7 +725,7 @@ extension AppDelegate: AgentGoalsDelegate {
 extension AppDelegate: ItemEditorDelegate {
     
     func retransmitGoal(controller: ItemEditorController, afGoal: AFGoal) {
-        let newGoal = AFGoal.makeGoal(copyFrom: afGoal)
+        let newGoal = AFGoal.makeGoal(copyFrom: afGoal, weight: afGoal.weight)
 
         let angle = controller.value(ofSlider: "Angle")
         let distance = controller.value(ofSlider: "Distance")
@@ -819,11 +885,10 @@ extension AppDelegate: ItemEditorDelegate {
                 case .toFollow:
                     let pathIndex = GameScene.me!.pathForNextPathGoal
                     let pathname = GameScene.me!.pathnames[pathIndex]
-                    let afPath = GameScene.me!.paths[pathname]!
-                    goal = AFGoal(toFollow: afPath.gkPath!, time: Float(time!), forward: true, weight: weight)
+                    goal = AFGoal(toFollow: pathname, time: Float(time!), forward: followPathFoward, weight: weight)
                     
                     goal!.pathname = pathname
-                    
+
                 case .toInterceptAgent:
                     let selectedIndexes = GameScene.me!.getSelectedIndexes()
                     guard selectedIndexes.count == 2 else { return }
@@ -855,8 +920,7 @@ extension AppDelegate: ItemEditorDelegate {
                 case .toStayOn:
                     let pathIndex = GameScene.me!.pathForNextPathGoal
                     let pathname = GameScene.me!.pathnames[pathIndex]
-                    let afPath = GameScene.me!.paths[pathname]!
-                    goal = AFGoal(toStayOn: afPath.gkPath!, time: Float(time!), weight: weight)
+                    goal = AFGoal(toStayOn: pathname, time: Float(time!), weight: weight)
                     
                     goal!.pathname = pathname
 
