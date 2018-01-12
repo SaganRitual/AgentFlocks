@@ -78,7 +78,7 @@ kind of placeholder you could put there?
 
 Also, I've just realized that the "verb" radio button list set needs an "off" setting. I didn't draw that in the diagrams.
 
-Control Panel
+Control Panel [DONE]
 -------------
 
 There will be checkboxes here, for showing and hiding the "paths library"-style lists. Also, if

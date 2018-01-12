@@ -504,7 +504,11 @@ extension AppDelegate: TopBarDelegate {
             agentImageIndex = index
         }
     }
-
+	
+	func topBar(_ controller: TopBarController, library index: Int, stateChanged enabled: Bool) {
+		NSLog("Library #\(index) state changed to: \(enabled ? "ON" : "OFF")")
+	}
+	
     func topBar(_ controller: TopBarController, statusChangedTo newStatus: TopBarController.Status) {
         switch newStatus {
         case .Running:

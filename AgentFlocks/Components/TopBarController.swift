@@ -12,6 +12,7 @@ protocol TopBarDelegate {
 	func topBar(_ controller: TopBarController, actionChangedTo action: TopBarController.Action, for object: TopBarController.Object)
 	func topBar(_ controller: TopBarController, obstacleSelected index:Int)
 	func topBar(_ controller: TopBarController, agentSelected index:Int)
+	func topBar(_ controller: TopBarController, library index:Int, stateChanged enabled:Bool)
 	func topBar(_ controller: TopBarController, statusChangedTo newStatus: TopBarController.Status)
 	func topBar(_ controller: TopBarController, speedChangedTo newSpeed:Double)
 }
@@ -219,6 +220,10 @@ class TopBarController: NSViewController {
         }
     }
 	
+	@IBAction func libraryCheckButtonChecked(_ sender: NSButton) {
+		delegate?.topBar(self, library: sender.tag, stateChanged: sender.state == .on)
+	}
+
 	@IBAction private func playClicked(_ sender: NSButton) {
         GameScene.me!.isPaused = !GameScene.me!.isPaused
 		self.play = !self.play
