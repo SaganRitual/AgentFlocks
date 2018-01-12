@@ -1,8 +1,9 @@
 DONE:
 	1. I need a context menu. I think I know how to construct the menu items programmatically..
 
-2. In the agent goals outline view, when I disable a behavior with the checkbox,
-I need to gray-out all of its children such that they can't be edited by the user.
+DONE:
+	2. In the agent goals outline view, when I disable a behavior with the checkbox,
+	I need to gray-out all of its children such that they can't be edited by the user.
 
 DONE:
 	3. I'd like for keyboard input to be passed to my SKScene by default. As it is now,
