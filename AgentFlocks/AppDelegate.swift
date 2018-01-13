@@ -354,13 +354,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 //        } catch { print(error) }
     }
     
-    enum ContextMenuItems { case AddPathToLibrary, CloneAgent, DrawPaths, PlaceAgents, RegisterOpenPath }
+    enum ContextMenuItems { case AddPathToLibrary, CloneAgent, DrawPaths, PlaceAgents, SetObstacleCloneStamp, StampObstacle }
     let contextMenuTitles: [ContextMenuItems : String] = [
         ContextMenuItems.AddPathToLibrary: "Add path to library",
         ContextMenuItems.CloneAgent: "Clone agent",
         ContextMenuItems.DrawPaths: "Draw paths",
         ContextMenuItems.PlaceAgents: "Place agents",
-        ContextMenuItems.RegisterOpenPath: "Register open path"
+        ContextMenuItems.SetObstacleCloneStamp: "Set obstacle clone stamp",
+        ContextMenuItems.StampObstacle: "Stamp obstacle"
     ]
 	
 	func showContextMenu(at location: NSPoint) {
@@ -440,22 +441,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	
 	@IBAction func contextMenuClicked(_ sender: NSMenuItem) {
         switch sender.title {
-        case contextMenuTitles[.AddPathToLibrary]!:
+            // Using a switch on a map of strings is problematic. The
+            // compiler doesn't catch things like non-exhaustive checking,
+            // and perhaps more importantly, it doesn't catch duplicate cases.
+            // Fix this
+        case contextMenuTitles[ContextMenuItems.AddPathToLibrary]!:
            GameScene.me!.selectionDelegateDraw.finalizePath(close: true)
             
-        case contextMenuTitles[.PlaceAgents]!:
-            topBarController.radioButtonPlace.state = NSControl.StateValue.on
-            topBarController.radioButtonAgent.state = NSControl.StateValue.on
-            topBarController.radioButtonAgent.isEnabled = true
-            GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
-            
-        case contextMenuTitles[.DrawPaths]!:
+        case contextMenuTitles[ContextMenuItems.DrawPaths]!:
             topBarController.radioButtonDraw.state = NSControl.StateValue.on
             topBarController.radioButtonPath.state = NSControl.StateValue.on
             topBarController.radioButtonAgent.isEnabled = false
             GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegateDraw
 
-        case contextMenuTitles[.CloneAgent]!:
+        case contextMenuTitles[ContextMenuItems.CloneAgent]!:
             let selector = GameScene.me!.selectionDelegatePrimary!
             let originalEntity = GameScene.me!.entities[selector.upNodeName!]
             
@@ -463,6 +462,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let newEntity = AFEntity(scene: GameScene.me!, copyFrom: originalEntity, position: currentPosition!)
             _ = AppDelegate.me!.sceneController.addNode(entity: newEntity)
             
+        case contextMenuTitles[ContextMenuItems.PlaceAgents]!:
+            topBarController.radioButtonPlace.state = NSControl.StateValue.on
+            topBarController.radioButtonAgent.state = NSControl.StateValue.on
+            topBarController.radioButtonAgent.isEnabled = true
+            GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
+            
+        case contextMenuTitles[ContextMenuItems.SetObstacleCloneStamp]!:
+            GameScene.me!.selectionDelegateDraw.setObstacleCloneStamp()
+            
+        case contextMenuTitles[ContextMenuItems.StampObstacle]!:
+            let selector = GameScene.me!.selectionDelegateDraw!
+            let currentPosition = selector.currentPosition
+            GameScene.me!.selectionDelegateDraw.stampObstacle(at: currentPosition!)
+
         default:
             fatalError()
         }

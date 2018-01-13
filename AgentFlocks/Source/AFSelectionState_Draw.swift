@@ -32,14 +32,15 @@ extension CGPoint {
 }
 
 class AFSelectionState_Draw: AFSelectionState {
+    var afPath: AFPath!
     var currentPosition: CGPoint?
     var downNodeName: String?
     unowned let gameScene: GameScene
     var mouseState = AFSelectionState_Primary.MouseStates.up
     var nodeToMouseOffset = CGPoint.zero
-    var afPath: AFPath!
     var primarySelectionName: String?
     var namesOfSelectedScenoids = [String]()
+    var obstacleCloneStamp: String?
     var selectedNames = Set<String>()
     var touchedNodes = [SKNode]()
     var upNodeName: String?
@@ -216,7 +217,10 @@ class AFSelectionState_Draw: AFSelectionState {
             let m = contextMenu.item(at: 0)!; m.isEnabled = (afPath.graphNodes.count > 1)
         } else {
             contextMenu.addItem(withTitle: titles[.PlaceAgents]!, action: #selector(AppDelegate.contextMenuClicked(_:)), keyEquivalent: "")
-            let m = contextMenu.item(at: 0)!; m.isEnabled = true
+            contextMenu.addItem(withTitle: titles[.SetObstacleCloneStamp]!, action: #selector(AppDelegate.contextMenuClicked(_:)), keyEquivalent: "")
+            contextMenu.addItem(withTitle: titles[.StampObstacle]!, action: #selector(AppDelegate.contextMenuClicked(_:)), keyEquivalent: "")
+            
+            contextMenu.item(at: 2)!.isEnabled = (self.obstacleCloneStamp != nil)
         }
 
         (NSApp.delegate as? AppDelegate)?.showContextMenu(at: event.locationInWindow)
@@ -231,6 +235,17 @@ class AFSelectionState_Draw: AFSelectionState {
 
     func newAgent(_ name: String) {}
     func toggleMultiSelectMode() {}
+    
+    func setObstacleCloneStamp() {
+        obstacleCloneStamp = afPath.name
+    }
+    
+    func stampObstacle(at point: CGPoint) {
+        let offset = point - CGPoint(afPath.graphNodes[0].position)
+        let newPath = AFPath.init(copyFrom: afPath, offset: offset)
+        newPath.stampObstacle()
+        GameScene.me!.obstacles[newPath.name] = newPath
+    }
     
     func trackMouse(name: String, atPoint: CGPoint) {
         let node = afPath.graphNodes[name]

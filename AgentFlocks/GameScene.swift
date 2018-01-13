@@ -38,6 +38,7 @@ class GameScene: SKScene, SKViewDelegate {
     var inputMode = AFSelectionState_Primary.InputMode.primary
     var pathForNextPathGoal = 0
     var paths = AFOrderedMap<String, AFPath>()
+    var obstacles = [String : AFPath]()
 
     var lastUpdateTime : TimeInterval = 0
     private var selectionDelegate_: AFSelectionState!

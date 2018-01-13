@@ -40,12 +40,7 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
     
     var name: String { return sprite.name! }
     override var position: vector_float2 {
-        set {
-            super.position = newValue;
-            sprite.position = CGPoint(newValue)
-            
-        }
-
+        set { super.position = newValue; sprite.position = CGPoint(newValue) }
         get { return vector_float2(Float(sprite.position.x), Float(sprite.position.y)) }
     }
 

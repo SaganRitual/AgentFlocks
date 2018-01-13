@@ -68,9 +68,17 @@ class AFPath: Equatable {
         self.gkObstacle = obstacle
     }
     
-    init(copyFrom: AFPath) {
+    init(copyFrom: AFPath, offset: CGPoint? = nil) {
         name = NSUUID().uuidString
         graphNodes = copyFrom.graphNodes
+        
+        if let offset = offset {
+            graphNodes.forEach { node in
+                let p = CGPoint(node.position) + offset
+                node.position = p.as_vector_float2()
+            }
+        }
+        
         refresh()
     }
     
@@ -196,6 +204,10 @@ class AFPath: Equatable {
 
         gkPath = GKPath(points: nodesArray, radius: 1, cyclical: true)
         
+        // If we have an obstacle, we need to blow it away and
+        // replace it with one that reflects the latest path
+        if gkObstacle != nil { _ = asObstacle() }
+        
         var startPoint: CGPoint!
         let visualPath = CGMutablePath()
         for dot in visualDotsArray {
@@ -210,6 +222,8 @@ class AFPath: Equatable {
         
         visualPathSprite = SKShapeNode(path: visualPath)
         containerNode!.addChild(visualPathSprite!)
+        
+        if gkObstacle != nil { visualPathSprite!.fillColor = .gray }
 
         if let c = containerNode {
             GameScene.me!.addChild(c)
@@ -232,5 +246,17 @@ class AFPath: Equatable {
         visualPathSprite?.strokeColor = (show ? .white : NSColor(calibratedWhite: 1, alpha: 0.5))
         graphNodes.forEach{ $0.showNode(show) }
     }
+    
+    func stampObstacle() {
+        _ = self.asObstacle()
+        refresh()
+    }
 }
 
+extension CGPoint {
+    func as_vector_float2() -> vector_float2 { return [Float(x), Float(y)] }
+    
+    static func +=(lhs : inout CGPoint, rhs : CGPoint) { lhs.x += rhs.x; lhs.y += rhs.y }
+    static func +(lhs : CGPoint, rhs : CGPoint) -> CGPoint { return CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y) }
+    static func -(lhs : CGPoint, rhs : CGPoint) -> CGPoint { return CGPoint(x: lhs.x - rhs.x, y: lhs.y - rhs.y) }
+}
