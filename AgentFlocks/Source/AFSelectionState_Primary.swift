@@ -29,7 +29,9 @@ protocol AFScenoid {
 }
 
 protocol AFSelectionState {
+    func activate()
     func deselectAll()
+    func deactivate()
     func getPrimarySelectionName() -> String?
     func getSelectedNames() -> Set<String>
     func getSelectedScenoids() -> [AFScenoid]
@@ -63,6 +65,14 @@ class AFSelectionState_Primary: AFSelectionState {
 
     enum InputMode { case primary, drawPath }
     enum MouseStates { case down, dragging, rightDown, rightUp, up }
+    
+    func activate() {
+        
+    }
+    
+    func deactivate() {
+        
+    }
     
     func deselect(_ name: String) {
         gameScene.entities[name].agent.deselect()
@@ -225,8 +235,6 @@ class AFSelectionState_Primary: AFSelectionState {
                 if mouseState == .down {
                     // cmd+click on a node
                     toggleSelection(upNodeName!)
-                } else {
-                    print("drag")
                 }
             } else {
                 if mouseState == .down {    // That is, we're coming out of down as opposed to drag

@@ -40,7 +40,15 @@ class GameScene: SKScene, SKViewDelegate {
     var paths = AFOrderedMap<String, AFPath>()
 
     var lastUpdateTime : TimeInterval = 0
-    var selectionDelegate: AFSelectionState!
+    private var selectionDelegate_: AFSelectionState!
+    var selectionDelegate: AFSelectionState! {
+        get { return selectionDelegate_ }
+        set {
+            selectionDelegate_?.deactivate()
+            selectionDelegate_ = newValue
+            selectionDelegate_.activate()
+        }
+    }
     var selectionDelegateDraw: AFSelectionState_Draw!
     var selectionDelegatePrimary: AFSelectionState_Primary!
 

@@ -53,11 +53,13 @@ class AFGraphNode2D_Script: Codable {
 
 class AFPath: Equatable {
     var containerNode: SKNode?
+    var finalized = false
     var gkPath: GKPath!
     let name: String
     var graphNodes: AFOrderedMap<String, AFGraphNode2D>
     var gkObstacle: GKPolygonObstacle!
     var radius: Float = 5.0
+    var visualPathSprite: SKShapeNode?
     
     init(obstacle: GKPolygonObstacle? = nil) {
         name = NSUUID().uuidString
@@ -84,6 +86,11 @@ class AFPath: Equatable {
 //        }
         
         refresh()
+    }
+    
+    deinit {
+        visualPathSprite?.removeFromParent()
+        containerNode?.removeFromParent()
     }
 
     static func ==(lhs: AFPath, rhs: AFPath) -> Bool {
@@ -135,11 +142,17 @@ class AFPath: Equatable {
     }
     
     func deselectAll() {
-        for node in graphNodes {
-            node.deselect()
-        }
+        graphNodes.forEach{ $0.deselect() }
     }
     
+    func moveNode(node: String, to point: CGPoint) {
+        let x = Float(point.x)
+        let y = Float(point.y)
+        graphNodes[node].position = [x, y]
+
+        refresh()
+    }
+
     func refresh(final: Bool = false) {
         if let c = containerNode {
             c.removeFromParent()    // Entirely remove the old one
@@ -163,12 +176,22 @@ class AFPath: Equatable {
             visualDotsArray.append(cgPoint)
         }
         
-        if final {  // To draw from the last point back to the first
+        if self.finalized {
+            // If we've already closed the path, we need to keep
+            // the last (dummy) point in sync with the first, so the lines
+            // will draw properly
+            let last = visualDotsArray.count - 1
+            visualDotsArray[last] = visualDotsArray[0]
+        }
+        
+        if final && !self.finalized {  // To draw from the last point back to the first
             nodesArray.append(nodesArray[0])
             visualDotsArray.append(visualDotsArray[0])
             
-            let closingNode = AFGraphNode2D(point: visualDotsArray[0])
+            let closingNode = AFGraphNode2D(point: visualDotsArray[0], drawable: false)
             graphNodes.append(key: closingNode.name, value: closingNode)
+            
+            self.finalized = true
         }
 
         gkPath = GKPath(points: nodesArray, radius: 1, cyclical: true)
@@ -185,8 +208,8 @@ class AFPath: Equatable {
             }
         }
         
-        let sprite = SKShapeNode(path: visualPath)
-        containerNode!.addChild(sprite)
+        visualPathSprite = SKShapeNode(path: visualPath)
+        containerNode!.addChild(visualPathSprite!)
 
         if let c = containerNode {
             GameScene.me!.addChild(c)
@@ -197,8 +220,17 @@ class AFPath: Equatable {
         graphNodes.remove(node.name)
     }
     
+    func remove(node: String) {
+        graphNodes.remove(node)
+    }
+    
     func select(_ name: String) {
         graphNodes[name].select(primary: true)
+    }
+    
+    func showNodes(_ show: Bool = false) {
+        visualPathSprite?.strokeColor = (show ? .white : NSColor(calibratedWhite: 1, alpha: 0.5))
+        graphNodes.forEach{ $0.showNode(show) }
     }
 }
 

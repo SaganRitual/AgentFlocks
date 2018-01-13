@@ -37,7 +37,7 @@ class AFSelectionState_Draw: AFSelectionState {
     unowned let gameScene: GameScene
     var mouseState = AFSelectionState_Primary.MouseStates.up
     var nodeToMouseOffset = CGPoint.zero
-    var afPath = AFPath()
+    var afPath: AFPath!
     var primarySelectionName: String?
     var namesOfSelectedScenoids = [String]()
     var selectedNames = Set<String>()
@@ -47,14 +47,37 @@ class AFSelectionState_Draw: AFSelectionState {
 
     init(gameScene: GameScene) {
         self.gameScene = gameScene
+        afPath = AFPath()
     }
     
+    func activate() { GameScene.me!.paths.forEach{ $0.showNodes(true) } }
+    
+    func deactivate() { GameScene.me!.paths.forEach{ $0.showNodes(false) } }
+    
+    func deselectAll() {
+        afPath?.deselectAll()
+        namesOfSelectedScenoids.removeAll()
+    }
+
     func finalizePath(close: Bool) {
         afPath.refresh(final: close) // Auto-add the closing line segment
         gameScene.paths.append(key: afPath.name, value: afPath)
+    }
+    
+    func getPathThatOwnsTouchedNode() -> (AFPath, String)? {
+        touchedNodes = gameScene.nodes(at: currentPosition!)
         
-        // Start a new path in for next round of drawing
-        afPath = AFPath()
+        for skNode in touchedNodes.reversed() {
+            if let name = skNode.name {
+                for path in gameScene.paths {
+                    if path.graphNodes.getIndexOf(name) != nil {
+                        return (path, name)
+                    }
+                }
+            }
+        }
+        
+        return nil
     }
     
     func getPrimarySelectionName() -> String? { return nil }
@@ -65,18 +88,22 @@ class AFSelectionState_Draw: AFSelectionState {
     }
     
     func getTouchedNode() -> AFGraphNode2D? {
+        guard let afPath = self.afPath else { return nil }
+
+        var touchedNode: AFGraphNode2D?
+
         touchedNodes = gameScene.nodes(at: currentPosition!)
-        
-        // Find the last descendant; I think that will be the top one
-        for i in stride(from: afPath.graphNodes.count - 1, through: 0, by: -1) {
-            let graphNode = afPath.graphNodes[i]
-            
-            if touchedNodes.contains(graphNode.sprite) {
-                return graphNode
+
+        for skNode in touchedNodes.reversed() {
+            if let name = skNode.name {
+                if let ix = afPath.graphNodes.getIndexOf(name) {
+                    touchedNode = afPath.graphNodes[ix]
+                    break
+                }
             }
         }
         
-        return nil
+        return touchedNode
     }
     
     func getTouchedNodeName() -> String? {
@@ -95,21 +122,8 @@ class AFSelectionState_Draw: AFSelectionState {
         if event.keyCode == AFKeyCodes.escape.rawValue {
             deselectAll()
         } else if event.keyCode == AFKeyCodes.delete.rawValue {
-            let newNodes = AFOrderedMap<String, AFGraphNode2D>()
-            
-            for graphNode in afPath.graphNodes {
-                let newNode = AFGraphNode2D(float2Point: graphNode.position)
-                if !namesOfSelectedScenoids.contains(graphNode.name) {
-                    newNodes.append(key: newNode.name, value: newNode)
-                }
-            }
+            namesOfSelectedScenoids.forEach { afPath.remove(node: $0) }
 
-            // If I understand the way Swift works, when we assign this
-            // new array, the old one will be discarded, and all the elements
-            // in that array that don't have references in our new array will
-            // be destructed. I'm counting on the AFVertex destructor to take
-            // care of all the business.
-            afPath.graphNodes = newNodes
             afPath.refresh()
         }
     }
@@ -129,7 +143,12 @@ class AFSelectionState_Draw: AFSelectionState {
     }
     
     func mouseDragged(with event: NSEvent) {
+        guard let down = downNodeName else { return }
+
+        mouseState = .dragging
         currentPosition = event.location(in: gameScene)
+        trackMouse(name: down, atPoint: currentPosition!)
+        afPath.moveNode(node: down, to: currentPosition!)
     }
 
     func mouseUp(with event: NSEvent) {
@@ -137,19 +156,36 @@ class AFSelectionState_Draw: AFSelectionState {
         upNodeName = getTouchedNodeName()
         
         if let up = upNodeName {
-            deselectAll()
-            
-            select(up, primary: true)
-
-            if up == afPath.graphNodes[0].name && afPath.graphNodes.count > 1 {
-                finalizePath(close: true)
+            if mouseState == .down {    // That is, we just clicked the node
+                deselectAll()
+                
+                select(up, primary: true)
+                
+                if !afPath.finalized && up == afPath.graphNodes[0].name && afPath.graphNodes.count > 1 {
+                    finalizePath(close: true)
+                }
+            } else {                    // That is, we just finished dragging the node
+                trackMouse(name: up, atPoint: currentPosition!)
+                afPath.moveNode(node: up, to: currentPosition!)
             }
         } else {
-            // Clicked in the black; add a node
-            deselectAll()
-            
-            let newNode = afPath.addGraphNode(at: currentPosition!)
-            select(newNode.name, primary: true)
+            if let (path, nodename) = getPathThatOwnsTouchedNode() {
+                // Click on a path that isn't selected; select that path
+                deselectAll()
+
+                afPath = path
+                select(nodename, primary: true)
+            } else {
+                // Clicked in the black; add a node
+                deselectAll()
+                
+                print((afPath == nil),(afPath.finalized))
+                let startNewPath = (afPath == nil) || (afPath.finalized)
+                if startNewPath { afPath = AFPath() }
+
+                let newNode = afPath.addGraphNode(at: currentPosition!)
+                select(newNode.name, primary: true)
+            }
         }
         
         downNodeName = nil
@@ -169,24 +205,37 @@ class AFSelectionState_Draw: AFSelectionState {
         let titles = AppDelegate.me!.contextMenuTitles
         
         contextMenu.removeAllItems()
-        contextMenu.addItem(withTitle: titles[.PlaceAgents]!, action: #selector(AppDelegate.contextMenuClicked(_:)), keyEquivalent: "")
-
         contextMenu.autoenablesItems = false
         
-        let m = contextMenu.item(at: 0)!; m.isEnabled = true
+        let okToLeaveDrawMode = (afPath == nil) || afPath.finalized
+        let aNodeWasClicked = (upNodeName != nil)
+        let nodeClickYeahButFinalizedPath = afPath.finalized
+        
+        if (aNodeWasClicked && !nodeClickYeahButFinalizedPath) || !okToLeaveDrawMode {
+            contextMenu.addItem(withTitle: titles[.AddPathToLibrary]!, action: #selector(AppDelegate.contextMenuClicked(_:)), keyEquivalent: "")
+            let m = contextMenu.item(at: 0)!; m.isEnabled = (afPath.graphNodes.count > 1)
+        } else {
+            contextMenu.addItem(withTitle: titles[.PlaceAgents]!, action: #selector(AppDelegate.contextMenuClicked(_:)), keyEquivalent: "")
+            let m = contextMenu.item(at: 0)!; m.isEnabled = true
+        }
 
         (NSApp.delegate as? AppDelegate)?.showContextMenu(at: event.locationInWindow)
 	}
-	
-    func deselectAll() {
-        afPath.deselectAll()
-    }
 
     func select(_ name: String, primary: Bool) {
+        if primary { primarySelectionName = name }
 
+        namesOfSelectedScenoids.append(name)
         afPath.select(name)
     }
 
     func newAgent(_ name: String) {}
     func toggleMultiSelectMode() {}
+    
+    func trackMouse(name: String, atPoint: CGPoint) {
+        let node = afPath.graphNodes[name]
+        node.position = vector_float2(Float(atPoint.x), Float(atPoint.y))
+        node.position.x += Float(nodeToMouseOffset.x)
+        node.position.y += Float(nodeToMouseOffset.y)
+    }
 }

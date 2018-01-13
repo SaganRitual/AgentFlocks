@@ -354,8 +354,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 //        } catch { print(error) }
     }
     
-    enum ContextMenuItems { case CloneAgent, DrawPaths, PlaceAgents, RegisterOpenPath }
+    enum ContextMenuItems { case AddPathToLibrary, CloneAgent, DrawPaths, PlaceAgents, RegisterOpenPath }
     let contextMenuTitles: [ContextMenuItems : String] = [
+        ContextMenuItems.AddPathToLibrary: "Add path to library",
         ContextMenuItems.CloneAgent: "Clone agent",
         ContextMenuItems.DrawPaths: "Draw paths",
         ContextMenuItems.PlaceAgents: "Place agents",
@@ -439,6 +440,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	
 	@IBAction func contextMenuClicked(_ sender: NSMenuItem) {
         switch sender.title {
+        case contextMenuTitles[.AddPathToLibrary]!:
+           GameScene.me!.selectionDelegateDraw.finalizePath(close: true)
+            
         case contextMenuTitles[.PlaceAgents]!:
             topBarController.radioButtonPlace.state = NSControl.StateValue.on
             topBarController.radioButtonAgent.state = NSControl.StateValue.on
@@ -458,8 +462,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let currentPosition = selector.currentPosition
             let newEntity = AFEntity(scene: GameScene.me!, copyFrom: originalEntity, position: currentPosition!)
             _ = AppDelegate.me!.sceneController.addNode(entity: newEntity)
-
-        case contextMenuTitles[.RegisterOpenPath]!: break
             
         default:
             fatalError()

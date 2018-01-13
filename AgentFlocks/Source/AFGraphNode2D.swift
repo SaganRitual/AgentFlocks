@@ -31,28 +31,43 @@ extension CGPoint {
 }
 
 class AFGraphNode2D: GKGraphNode2D, AFScenoid {
+    let drawable: Bool
     let radius: CGFloat = 5
-    let selectionIndicator: SKNode!
+    var selected = false
+    let selectionIndicator: SKNode
     let selectionIndicatorRadius: CGFloat = 10
-    let sprite: SKShapeNode!
+    let sprite: SKShapeNode
     
     var name: String { return sprite.name! }
     override var position: vector_float2 {
-        set { super.position = newValue; sprite.position = CGPoint(newValue) }
+        set {
+            super.position = newValue;
+            sprite.position = CGPoint(newValue)
+            
+        }
+
         get { return vector_float2(Float(sprite.position.x), Float(sprite.position.y)) }
     }
 
-    init(float2Point: vector_float2) {
+    init(float2Point: vector_float2, drawable: Bool = true) {
         let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: radius, position: CGPoint(float2Point), selectionIndicatorRadius: selectionIndicatorRadius)
         sprite = ss
         selectionIndicator = se
+        
+        if drawable { GameScene.me!.addChild(sprite) }
+
+        self.drawable = drawable
         super.init(point: float2Point)
     }
     
-    init(point: CGPoint) {
+    init(point: CGPoint, drawable: Bool = true) {
         let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: radius, position: point, selectionIndicatorRadius: selectionIndicatorRadius)
         sprite = ss
         selectionIndicator = se
+        
+        if drawable { GameScene.me!.addChild(sprite) }
+
+        self.drawable = drawable
         super.init(point: vector_float2(Float(point.x), Float(point.y)))
     }
     
@@ -65,12 +80,13 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
     }
     
     deinit {
-        sprite.removeFromParent()
-        selectionIndicator.removeFromParent()
+        showNode(false)
+        print("deinit")
     }
     
     func deselect() {
-        selectionIndicator?.removeFromParent()
+        selected = false
+        selectionIndicator.removeFromParent()
     }
 
     static func makeMarkerSprite(radius: CGFloat, position: CGPoint, selectionIndicatorRadius: CGFloat) -> (SKShapeNode, SKNode) {
@@ -81,13 +97,24 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
         
         let selectionIndicator = AFAgent2D.makeRing(radius: Float(selectionIndicatorRadius), isForSelector: true, primary: true)
         
-        GameScene.me!.addChild(sprite)
-        
         return (sprite, selectionIndicator)
     }
     
     func select(primary: Bool) {
+        selected = true
         sprite.addChild(selectionIndicator)
+    }
+    
+    func showNode(_ show: Bool = true) {
+        guard drawable else { return }
+
+        if show {
+            GameScene.me!.addChild(sprite)
+            sprite.fillColor = (self.selected ? .yellow : .white)
+        } else {
+            sprite.removeFromParent()
+            selectionIndicator.removeFromParent()
+        }
     }
 }
 
