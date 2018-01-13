@@ -75,6 +75,10 @@ class AFSelectionState_Draw: AFSelectionState {
                         return (path, name)
                     }
                 }
+                
+                if let obstacle = gameScene.obstacles[name] {
+                    return (obstacle, name)
+                }
             }
         }
         
@@ -132,6 +136,7 @@ class AFSelectionState_Draw: AFSelectionState {
     func mouseDown(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
         downNodeName = getTouchedNodeName()
+        
         upNodeName = nil
         
         mouseState = .down
@@ -140,6 +145,14 @@ class AFSelectionState_Draw: AFSelectionState {
             let p = CGPoint(afPath.graphNodes[down].position)
             nodeToMouseOffset.x = p.x - currentPosition!.x
             nodeToMouseOffset.y = p.y - currentPosition!.y
+        } else if let (path, name) = getPathThatOwnsTouchedNode() {
+            let p = path.containerNode!.position
+            nodeToMouseOffset.x = p.x - currentPosition!.x
+            nodeToMouseOffset.y = p.y - currentPosition!.y
+
+            // Name of the path, rather than the name of one of its nodes
+            downNodeName = name
+            afPath = path
         }
     }
     
@@ -149,7 +162,6 @@ class AFSelectionState_Draw: AFSelectionState {
         mouseState = .dragging
         currentPosition = event.location(in: gameScene)
         trackMouse(name: down, atPoint: currentPosition!)
-        afPath.moveNode(node: down, to: currentPosition!)
     }
 
     func mouseUp(with event: NSEvent) {
@@ -167,20 +179,22 @@ class AFSelectionState_Draw: AFSelectionState {
                 }
             } else {                    // That is, we just finished dragging the node
                 trackMouse(name: up, atPoint: currentPosition!)
-                afPath.moveNode(node: up, to: currentPosition!)
+                
+                if afPath.name != up {
+                    afPath.moveNode(node: up, to: currentPosition!)
+                }
             }
         } else {
-            if let (path, nodename) = getPathThatOwnsTouchedNode() {
+            if let (path, pathname) = getPathThatOwnsTouchedNode() {
                 // Click on a path that isn't selected; select that path
                 deselectAll()
 
                 afPath = path
-                select(nodename, primary: true)
+                select(pathname, primary: true)
             } else {
                 // Clicked in the black; add a node
                 deselectAll()
                 
-                print((afPath == nil),(afPath.finalized))
                 let startNewPath = (afPath == nil) || (afPath.finalized)
                 if startNewPath { afPath = AFPath() }
 
@@ -216,20 +230,21 @@ class AFSelectionState_Draw: AFSelectionState {
             contextMenu.addItem(withTitle: titles[.AddPathToLibrary]!, action: #selector(AppDelegate.contextMenuClicked(_:)), keyEquivalent: "")
             let m = contextMenu.item(at: 0)!; m.isEnabled = (afPath.graphNodes.count > 1)
         } else {
-            contextMenu.addItem(withTitle: titles[.PlaceAgents]!, action: #selector(AppDelegate.contextMenuClicked(_:)), keyEquivalent: "")
-            contextMenu.addItem(withTitle: titles[.SetObstacleCloneStamp]!, action: #selector(AppDelegate.contextMenuClicked(_:)), keyEquivalent: "")
-            contextMenu.addItem(withTitle: titles[.StampObstacle]!, action: #selector(AppDelegate.contextMenuClicked(_:)), keyEquivalent: "")
+            [.PlaceAgents, .SetObstacleCloneStamp, .StampObstacle].forEach() {
+                contextMenu.addItem(withTitle: titles[$0]!, action: #selector(AppDelegate.contextMenuClicked(_:)), keyEquivalent: "")
+            }
             
             contextMenu.item(at: 2)!.isEnabled = (self.obstacleCloneStamp != nil)
         }
 
         (NSApp.delegate as? AppDelegate)?.showContextMenu(at: event.locationInWindow)
 	}
-
+    
     func select(_ name: String, primary: Bool) {
         if primary { primarySelectionName = name }
-
+        
         namesOfSelectedScenoids.append(name)
+        
         afPath.select(name)
     }
 
@@ -241,16 +256,22 @@ class AFSelectionState_Draw: AFSelectionState {
     }
     
     func stampObstacle(at point: CGPoint) {
+        deselectAll()
         let offset = point - CGPoint(afPath.graphNodes[0].position)
         let newPath = AFPath.init(copyFrom: afPath, offset: offset)
         newPath.stampObstacle()
         GameScene.me!.obstacles[newPath.name] = newPath
+        select(newPath.name, primary: true)
     }
     
     func trackMouse(name: String, atPoint: CGPoint) {
-        let node = afPath.graphNodes[name]
-        node.position = vector_float2(Float(atPoint.x), Float(atPoint.y))
-        node.position.x += Float(nodeToMouseOffset.x)
-        node.position.y += Float(nodeToMouseOffset.y)
+        if let ix = afPath.graphNodes.getIndexOf(name) {
+            let node = afPath.graphNodes[ix]
+            node.position = vector_float2(Float(atPoint.x), Float(atPoint.y))
+            node.position.x += Float(nodeToMouseOffset.x)
+            node.position.y += Float(nodeToMouseOffset.y)
+        } else {
+            afPath.containerNode!.position = atPoint + nodeToMouseOffset
+        }
     }
 }

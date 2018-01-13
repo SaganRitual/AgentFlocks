@@ -70,7 +70,12 @@ class AFPath: Equatable {
     
     init(copyFrom: AFPath, offset: CGPoint? = nil) {
         name = NSUUID().uuidString
-        graphNodes = copyFrom.graphNodes
+        graphNodes = AFOrderedMap<String, AFGraphNode2D>()
+
+        copyFrom.graphNodes.forEach { graphNode in
+            let newNode = AFGraphNode2D(copyFrom: graphNode, drawable: false)
+            graphNodes.append(key: newNode.name, value: newNode)
+        }
         
         if let offset = offset {
             graphNodes.forEach { node in
@@ -145,12 +150,17 @@ class AFPath: Equatable {
         return gkPath
     }
 
-    func deselect(_ ix: Int) {
-        graphNodes[ix].deselect()
+    func deselect(_ ix: Int? = nil) {
+        if let ix = ix {
+            graphNodes[ix].deselect()
+        } else {
+            visualPathSprite?.strokeColor = .white
+        }
     }
     
     func deselectAll() {
         graphNodes.forEach{ $0.deselect() }
+        GameScene.me!.obstacles.forEach{ $1.deselect() }
     }
     
     func moveNode(node: String, to point: CGPoint) {
@@ -221,6 +231,7 @@ class AFPath: Equatable {
         }
         
         visualPathSprite = SKShapeNode(path: visualPath)
+        visualPathSprite!.name = name
         containerNode!.addChild(visualPathSprite!)
         
         if gkObstacle != nil { visualPathSprite!.fillColor = .gray }
@@ -239,17 +250,23 @@ class AFPath: Equatable {
     }
     
     func select(_ name: String) {
-        graphNodes[name].select(primary: true)
+        if let ix = graphNodes.getIndexOf(name) {
+            graphNodes[ix].select(primary: true)
+        } else {
+            GameScene.me!.obstacles[name]!.visualPathSprite?.strokeColor = .green
+        }
     }
     
     func showNodes(_ show: Bool = false) {
         visualPathSprite?.strokeColor = (show ? .white : NSColor(calibratedWhite: 1, alpha: 0.5))
-        graphNodes.forEach{ $0.showNode(show) }
+        
+        let reallyShow = (gkObstacle == nil) ? show : false
+        graphNodes.forEach{ $0.showNode(reallyShow) }
     }
     
     func stampObstacle() {
         _ = self.asObstacle()
-        refresh()
+        refresh(final: true)
     }
 }
 

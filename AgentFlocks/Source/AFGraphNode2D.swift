@@ -43,6 +43,17 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
         set { super.position = newValue; sprite.position = CGPoint(newValue) }
         get { return vector_float2(Float(sprite.position.x), Float(sprite.position.y)) }
     }
+    
+    init(copyFrom: AFGraphNode2D, drawable: Bool = true) {
+        let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: radius, position: CGPoint(copyFrom.position), selectionIndicatorRadius: selectionIndicatorRadius)
+        sprite = ss
+        selectionIndicator = se
+        
+        if drawable { GameScene.me!.addChild(sprite) }
+        
+        self.drawable = drawable
+        super.init(point: copyFrom.position)
+    }
 
     init(float2Point: vector_float2, drawable: Bool = true) {
         let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: radius, position: CGPoint(float2Point), selectionIndicatorRadius: selectionIndicatorRadius)
