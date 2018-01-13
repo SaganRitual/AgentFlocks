@@ -272,23 +272,23 @@ extension TopBarController: NSPopoverDelegate {
 
 extension TopBarController: ImagesListDelegate {
 	
-	func imagesList(_ controller: ImagesListController, imageIndex: Int) {
+	func imagesList(_ controller: ImagesListController, imageSelected index: Int) {
 		if let popover = activePopover {
 			popover.close()
 		}
 		if controller.listTitle.compare("Agents") == .orderedSame {
-			if imageIndex < self.agentImages.count {
-				self.activeAgentImage = self.agentImages[imageIndex]
+			if index < self.agentImages.count {
+				self.activeAgentImage = self.agentImages[index]
 			}
 			self.imageView.image = self.activeAgentImage
-			delegate?.topBar(self, agentSelected: imageIndex)
+			delegate?.topBar(self, agentSelected: index)
 		}
 		else if controller.listTitle.compare("Obstacles") == .orderedSame {
-			if imageIndex < self.obstacleImages.count {
-				self.activeObstacleImage = self.obstacleImages[imageIndex]
+			if index < self.obstacleImages.count {
+				self.activeObstacleImage = self.obstacleImages[index]
 			}
 			self.imageView.image = self.activeObstacleImage
-			delegate?.topBar(self, obstacleSelected: imageIndex)
+			delegate?.topBar(self, obstacleSelected: index)
 		}
 	}
 	

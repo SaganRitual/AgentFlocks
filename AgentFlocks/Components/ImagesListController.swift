@@ -8,15 +8,30 @@
 
 import Cocoa
 
-protocol ImagesListDelegate {
-	func imagesList(_ controller: ImagesListController, imageIndex: Int)
+@objc protocol ImagesListDelegate {
+	func imagesList(_ controller: ImagesListController, imageSelected index: Int)
+	@objc optional func imagesList(_ controller: ImagesListController, imageDoubleClicked index: Int)
+	@objc optional func imagesList(_ controller: ImagesListController, imageIndex index: Int, wasEnabled: Bool)
 }
 
 class ImagesListController: NSViewController {
 	
+	enum ListType {
+		case common
+		case checkbox
+	}
+	
 	// MARK: - Attributes (public)
 	
 	var delegate:ImagesListDelegate?
+	
+	var type = ListType.common {
+		didSet {
+			if let tableView = self.tableView {
+				tableView.reloadData()
+			}
+		}
+	}
 	
 	var imageData = [NSImage]() {
 		didSet {
@@ -31,6 +46,9 @@ class ImagesListController: NSViewController {
 			if let label = titleLabel {
 				label.stringValue = listTitle
 			}
+			if let constraint = topMarginConstraint {
+				constraint.priority = listTitle.isEmpty ? .required : .defaultHigh
+			}
 		}
 	}
 	
@@ -38,6 +56,7 @@ class ImagesListController: NSViewController {
 	
 	@IBOutlet private weak var tableView: NSTableView!
 	@IBOutlet private weak var titleLabel: NSTextField!
+	@IBOutlet weak var topMarginConstraint: NSLayoutConstraint!
 	
 	// MARK: - Initialization
 	
@@ -53,16 +72,30 @@ class ImagesListController: NSViewController {
         super.viewDidLoad()
 		titleLabel.stringValue = listTitle
 		tableView.action = #selector(onItemClicked)
+		topMarginConstraint.priority = listTitle.isEmpty ? .required : .defaultHigh
     }
 	
-	@objc private func onItemClicked() {
-		delegate?.imagesList(self, imageIndex: self.tableView.clickedRow)
-	}
 	
 	override func keyUp(with event: NSEvent) {
 		super.keyUp(with: event)
 		if event.keyCode == AFKeyCodes.enter.rawValue {
-			delegate?.imagesList(self, imageIndex: self.tableView.selectedRow)
+			delegate?.imagesList(self, imageSelected: self.tableView.selectedRow)
+		}
+	}
+	
+	// MARK: - Actions and methods (private)
+	
+	@objc private func onItemClicked() {
+		delegate?.imagesList(self, imageSelected: self.tableView.clickedRow)
+	}
+
+	@objc private func onItemDoubleClicked() {
+		delegate?.imagesList?(self, imageDoubleClicked: self.tableView.clickedRow)
+	}
+	
+	@objc private func onItemChecked(_ sender: Any) {
+		if let checkButton = sender as? NSButton {
+			delegate?.imagesList?(self, imageIndex: checkButton.tag, wasEnabled: checkButton.state == .on)
 		}
 	}
 	
@@ -78,9 +111,20 @@ extension ImagesListController: NSTableViewDataSource {
 	
 	func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
 		
-		if let cellView = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "ImageCellView"), owner: nil) as? NSTableCellView {
-			cellView.imageView?.image = imageData[row]
-			return cellView
+		if type == .checkbox {
+			if let cellView = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "ImageCheckCellView"), owner: nil) as? ImagesListCheckCellView {
+				cellView.imageView?.image = imageData[row]
+				cellView.checkButton.state = .off
+				cellView.checkButton.tag = row
+				cellView.checkButton.action = #selector(onItemChecked(_:))
+				return cellView
+			}
+		}
+		else {
+			if let cellView = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "ImageCellView"), owner: nil) as? NSTableCellView {
+				cellView.imageView?.image = imageData[row]
+				return cellView
+			}
 		}
 		
 		return nil
@@ -91,5 +135,13 @@ extension ImagesListController: NSTableViewDataSource {
 // MARK: -
 
 extension ImagesListController: NSTableViewDelegate {
+	
+}
+
+// MARK: - Custom components used in Images list
+
+class ImagesListCheckCellView: NSTableCellView {
+	
+	@IBOutlet weak var checkButton: NSButton!
 	
 }
