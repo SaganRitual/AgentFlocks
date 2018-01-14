@@ -193,6 +193,7 @@ extension AgentGoalsController: NSOutlineViewDataSource {
 				cellView.textField?.stringValue = dataSource?.agentGoals(self, labelOfItem: item) ?? ""
 				cellView.checkButton.target = self
 				cellView.checkButton.action = #selector(onItemChecked(_:))
+				cellView.checkButton.target = self
 				cellView.checkButton.item = item
 				if let enabled = dataSource?.agentGoals(self, isItemEnabled: item) {
 					cellView.checkButton.state = enabled ? .on : .off
