@@ -35,23 +35,12 @@ class GameScene: SKScene, SKViewDelegate {
     static var me: GameScene?
 
     var entities = AFOrderedMap<String, AFEntity>()
-    var inputMode = AFSelectionState_Primary.InputMode.primary
+    var inputState: AFInputState!
     var pathForNextPathGoal = 0
     var paths = AFOrderedMap<String, AFPath>()
     var obstacles = [String : AFPath]()
 
     var lastUpdateTime : TimeInterval = 0
-    private var selectionDelegate_: AFSelectionState!
-    var selectionDelegate: AFSelectionState! {
-        get { return selectionDelegate_ }
-        set {
-            selectionDelegate_?.deactivate()
-            selectionDelegate_ = newValue
-            selectionDelegate_.activate()
-        }
-    }
-    var selectionDelegateDraw: AFSelectionState_Draw!
-    var selectionDelegatePrimary: AFSelectionState_Primary!
 
     override func didMove(to view: SKView) {
         GameScene.me = self
@@ -61,9 +50,7 @@ class GameScene: SKScene, SKViewDelegate {
         self.lastUpdateTime = 0
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         
-        selectionDelegatePrimary = AFSelectionState_Primary(gameScene: self)
-        selectionDelegateDraw = AFSelectionState_Draw(gameScene: self)
-        selectionDelegate = selectionDelegatePrimary
+        inputState = AFInputState(gameScene: self)
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -87,16 +74,15 @@ class GameScene: SKScene, SKViewDelegate {
 }
 
 extension GameScene {
-    func getSelectedAgents() -> [AFScenoid] { return selectionDelegate.getSelectedScenoids() }
-    func getSelectedNames() -> Set<String> { return selectionDelegate.getSelectedNames() }
-    func getPrimarySelectionName() -> String? { return selectionDelegate.getPrimarySelectionName() }
-    override func keyDown(with event: NSEvent) { selectionDelegate.keyDown(with: event) }
-    override func keyUp(with event: NSEvent) { selectionDelegate.keyUp(with: event) }
-    override func mouseDown(with event: NSEvent) { selectionDelegate.mouseDown(with: event) }
-    override func mouseDragged(with event: NSEvent) { selectionDelegate.mouseDragged(with: event) }
-    override func mouseUp(with event: NSEvent) { selectionDelegate.mouseUp(with: event) }
-	override func rightMouseUp(with event: NSEvent) { selectionDelegate.rightMouseUp(with: event) }
-	override func rightMouseDown(with event: NSEvent) { selectionDelegate.rightMouseDown(with: event) }
-    func newAgent(_ name: String) { selectionDelegate.newAgent(name) }
+    func getSelectedNames() -> Set<String> { return inputState.getSelectedNames() }
+    func getPrimarySelectionName() -> String? { return inputState.getPrimarySelectionName() }
+
+    override func keyDown(with event: NSEvent) { inputState.keyDown(with: event) }
+    override func keyUp(with event: NSEvent) { inputState.keyUp(with: event) }
+    override func mouseDown(with event: NSEvent) { inputState.mouseDown(with: event) }
+    override func mouseDragged(with event: NSEvent) { inputState.mouseDragged(with: event) }
+    override func mouseUp(with event: NSEvent) { inputState.mouseUp(with: event) }
+    override func rightMouseUp(with event: NSEvent) { inputState.rightMouseUp(with: event) }
+	override func rightMouseDown(with event: NSEvent) { inputState.rightMouseDown(with: event) }
 }
 

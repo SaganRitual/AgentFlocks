@@ -33,6 +33,10 @@ class AFOrderedMap<KeyType: Hashable, ValueType: Equatable> {
         map[key] = value
     }
     
+    func contains(_ name: KeyType) -> Bool {
+        return keys.contains(name)
+    }
+    
     func getIndexOf(_ key: KeyType) -> Int? {
         return keys.index(of: key)
     }
@@ -69,6 +73,12 @@ class AFOrderedMap<KeyType: Hashable, ValueType: Equatable> {
         let ix = keys.index(of: name)!
         keys.remove(at: ix)
         map.removeValue(forKey: name)
+    }
+    
+    func reversed() -> [ValueType] {
+        var result = [ValueType]()
+        keys.reversed().forEach { result.append(map[$0]!) }
+        return result
     }
     
     subscript(_ ix: Int) -> ValueType { return getValue(at: ix) }

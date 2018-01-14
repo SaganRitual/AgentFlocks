@@ -353,16 +353,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 //            } catch { print(error) }
 //        } catch { print(error) }
     }
-    
-    enum ContextMenuItems { case AddPathToLibrary, CloneAgent, DrawPaths, PlaceAgents, SetObstacleCloneStamp, StampObstacle }
-    let contextMenuTitles: [ContextMenuItems : String] = [
-        ContextMenuItems.AddPathToLibrary: "Add path to library",
-        ContextMenuItems.CloneAgent: "Clone agent",
-        ContextMenuItems.DrawPaths: "Draw paths",
-        ContextMenuItems.PlaceAgents: "Place agents",
-        ContextMenuItems.SetObstacleCloneStamp: "Set obstacle clone stamp",
-        ContextMenuItems.StampObstacle: "Stamp obstacle"
-    ]
 	
 	func showContextMenu(at location: NSPoint) {
 		contextMenu.popUp(positioning: nil, at: location, in: sceneView)
@@ -430,7 +420,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		NSLog("Menu: File->Revert to Saved")
 	}
     @IBAction func menuTempMenuRegisterPathClicked(_ sender: NSMenuItem) {
-        GameScene.me!.selectionDelegateDraw.finalizePath(close: false)
+        GameScene.me!.inputState.finalizePath(close: false)
     }
 	
     @IBAction func menuTempMenuSelectPathClicked(_ sender: NSMenuItem) {
@@ -440,41 +430,36 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	// MARK: - Context Menu callbacks
 	
 	@IBAction func contextMenuClicked(_ sender: NSMenuItem) {
-        switch sender.title {
-            // Using a switch on a map of strings is problematic. The
-            // compiler doesn't catch things like non-exhaustive checking,
-            // and perhaps more importantly, it doesn't catch duplicate cases.
-            // Fix this
-        case contextMenuTitles[ContextMenuItems.AddPathToLibrary]!:
-           GameScene.me!.selectionDelegateDraw.finalizePath(close: true)
+        switch sender.tag {
+        case AFContextMenu.ItemTypes.AddPathToLibrary.rawValue:
+           GameScene.me!.inputState.finalizePath(close: true)
             
-        case contextMenuTitles[ContextMenuItems.DrawPaths]!:
+        case AFContextMenu.ItemTypes.Draw.rawValue:
             topBarController.radioButtonDraw.state = NSControl.StateValue.on
             topBarController.radioButtonPath.state = NSControl.StateValue.on
             topBarController.radioButtonAgent.isEnabled = false
-            GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegateDraw
+            GameScene.me!.inputState.enter(AFInputState.ModeDraw.self)
 
-        case contextMenuTitles[ContextMenuItems.CloneAgent]!:
-            let selector = GameScene.me!.selectionDelegatePrimary!
-            let originalEntity = GameScene.me!.entities[selector.upNodeName!]
+        case AFContextMenu.ItemTypes.CloneAgent.rawValue:
+            let input = GameScene.me!.inputState!
+            let originalEntity = GameScene.me!.entities[input.upNodeName!]
             
-            let currentPosition = selector.currentPosition
-            let newEntity = AFEntity(scene: GameScene.me!, copyFrom: originalEntity, position: currentPosition!)
+            let currentPosition = input.currentPosition
+            let newEntity = AFEntity(scene: GameScene.me!, copyFrom: originalEntity, position: currentPosition)
             _ = AppDelegate.me!.sceneController.addNode(entity: newEntity)
             
-        case contextMenuTitles[ContextMenuItems.PlaceAgents]!:
+        case AFContextMenu.ItemTypes.Place.rawValue:
             topBarController.radioButtonPlace.state = NSControl.StateValue.on
             topBarController.radioButtonAgent.state = NSControl.StateValue.on
             topBarController.radioButtonAgent.isEnabled = true
-            GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
+            GameScene.me!.inputState.enter(AFInputState.ModePlace.self)
             
-        case contextMenuTitles[ContextMenuItems.SetObstacleCloneStamp]!:
-            GameScene.me!.selectionDelegateDraw.setObstacleCloneStamp()
+        case AFContextMenu.ItemTypes.SetObstacleCloneStamp.rawValue:
+            GameScene.me!.inputState.setObstacleCloneStamp()
             
-        case contextMenuTitles[ContextMenuItems.StampObstacle]!:
-            let selector = GameScene.me!.selectionDelegateDraw!
-            let currentPosition = selector.currentPosition
-            GameScene.me!.selectionDelegateDraw.stampObstacle(at: currentPosition!)
+        case AFContextMenu.ItemTypes.StampObstacle.rawValue:
+            let currentPosition = GameScene.me!.inputState.currentPosition
+            GameScene.me!.inputState.stampObstacle(at: currentPosition)
 
         default:
             fatalError()
@@ -488,13 +473,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 extension AppDelegate: TopBarDelegate {
     
 	func topBar(_ controller: TopBarController, actionChangedTo action: TopBarController.Action, for object: TopBarController.Object) {
-        GameScene.me!.selectionDelegate.deselectAll()
-        
         switch action {
         case .Place:
-            GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegatePrimary
+            GameScene.me!.inputState.enter(AFInputState.ModePlace.self)
         case .Draw:
-            GameScene.me!.selectionDelegate = GameScene.me!.selectionDelegateDraw
+            GameScene.me!.inputState.enter(AFInputState.ModeDraw.self)
         case .Edit: break
         }
 	}
@@ -502,22 +485,22 @@ extension AppDelegate: TopBarDelegate {
     func topBar(_ controller: TopBarController, obstacleSelected index: Int) {
         if 0..<obstacles.count ~= index {
             NSLog("Obstacle selected")
-            
-            GameScene.me!.selectionDelegate.deselectAll()
-
-
-            editedObstacleIndex = index
-            self.removeAgentFrames()
+//
+//            GameScene.me!.selectionDelegate.deselectAll()
+//
+//
+//            editedObstacleIndex = index
+//            self.removeAgentFrames()
         }
     }
     
     func topBar(_ controller: TopBarController, agentSelected index: Int) {
-        if 0..<agents.count ~= index {
-            NSLog("Agent selected")
-            
-            GameScene.me!.selectionDelegate.deselectAll()
-            agentImageIndex = index
-        }
+//        if 0..<agents.count ~= index {
+//            NSLog("Agent selected")
+//            
+//            GameScene.me!.selectionDelegate.deselectAll()
+//            agentImageIndex = index
+//        }
     }
 	
 	func topBar(_ controller: TopBarController, library index: Int, stateChanged enabled: Bool) {
@@ -822,12 +805,8 @@ extension AppDelegate: ItemEditorDelegate {
             // Add new goal or behavior
             if let type = controller.newItemType {
                 var goal: AFGoal?
-                var group = GameScene.me!.getSelectedAgents()
-                
-                var names = [String]()
-                for agent in group {
-                    names.append((agent as! AFAgent2D).name)
-                }
+                var group = GameScene.me!.getSelectedNames()
+                let names = Array(group)
 
                 switch type {
                 case .toAlignWith:
@@ -838,8 +817,8 @@ extension AppDelegate: ItemEditorDelegate {
 
                     // Secondary selections align with primary and with each other.
                     // Primary doesn't do anything.
-                    for agent in group {
-                        let afAgent = agent as! AFAgent2D
+                    for agentName in group {
+                        let afAgent = GameScene.me!.entities[agentName].agent
                         
                         if afAgent.name != primarySelected.name {
                             afAgent.addGoal(goal!)
@@ -858,18 +837,10 @@ extension AppDelegate: ItemEditorDelegate {
                     let primarySelection = GameScene.me!.getPrimarySelectionName()!
                     let primarySelected = GameScene.me!.entities[primarySelection] as AFEntity
                     
-                    var agentNames = [String]()
-                    for gkAgent in group {
-                        let afAgent = gkAgent as! AFAgent2D
-                        agentNames.append(afAgent.name)
-                    }
+                    let agentNames = Array(group)
                     
-                    for (i, _) in group.enumerated() {
-                        let agent = group[i] as! AFAgent2D
-                        if agent.name == primarySelected.agent.name {
-                            group.remove(at: i)
-                            break;
-                        }
+                    if let ix = group.index(of: primarySelected.agent.name) {
+                        group.remove(at: ix)
                     }
                     
                     goal = AFGoal(toAvoidAgents: agentNames, time: time!, weight: weight)
@@ -879,8 +850,8 @@ extension AppDelegate: ItemEditorDelegate {
                     
                 case .toCohereWith:
                     goal = AFGoal(toCohereWith: names, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
-                    for agent in group {
-                        (agent as! AFAgent2D).addGoal(goal!)
+                    for agentName in group {
+                        GameScene.me!.entities[agentName].agent.addGoal(goal!)
                     }
                     
                     goal = nil
@@ -922,8 +893,8 @@ extension AppDelegate: ItemEditorDelegate {
 
                 case .toSeparateFrom:
                     goal = AFGoal(toSeparateFrom: names, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
-                    for agent in group {
-                        (agent as! AFAgent2D).addGoal(goal!)
+                    for agentName in group {
+                        GameScene.me!.entities[agentName].agent.addGoal(goal!)
                     }
                     
                     goal = nil

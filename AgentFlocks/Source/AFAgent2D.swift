@@ -8,6 +8,10 @@
 
 import GameplayKit
 
+protocol AFScenoid {
+    func select(primary: Bool)
+}
+
 class AFAgent2D_Script: Codable {
     let motivator: AFCompositeBehavior_Script!
     let imageFile: String
@@ -172,11 +176,7 @@ class AFAgent2D: GKAgent2D, AFScenoid {
     
     static func makeSpriteContainer(image: NSImage, position: CGPoint, _ name: String? = nil) -> (SKNode, SKSpriteNode) {
         let node = SKNode()
-        node.position = position
-
-        let ss = GameScene.me!.selectionDelegate! as! AFSelectionState_Primary
-        node.position.x += ss.nodeToMouseOffset.x
-        node.position.y += ss.nodeToMouseOffset.y
+        node.position = position + GameScene.me!.inputState!.nodeToMouseOffset
 
         var texture: SKTexture!
         

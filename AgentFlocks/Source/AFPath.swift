@@ -72,15 +72,15 @@ class AFPath: Equatable {
         name = NSUUID().uuidString
         graphNodes = AFOrderedMap<String, AFGraphNode2D>()
 
-        copyFrom.graphNodes.forEach { graphNode in
-            let newNode = AFGraphNode2D(copyFrom: graphNode, drawable: false)
+        copyFrom.graphNodes.forEach {
+            let newNode = AFGraphNode2D(copyFrom: $0, drawable: false)
             graphNodes.append(key: newNode.name, value: newNode)
         }
         
         if let offset = offset {
-            graphNodes.forEach { node in
-                let p = CGPoint(node.position) + offset
-                node.position = p.as_vector_float2()
+            graphNodes.forEach { 
+                let p = CGPoint($0.position) + offset
+                $0.position = p.as_vector_float2()
             }
         }
         
@@ -234,6 +234,7 @@ class AFPath: Equatable {
         visualPathSprite!.name = name
         containerNode!.addChild(visualPathSprite!)
         
+        if !finalized { visualPathSprite!.strokeColor = .red }
         if gkObstacle != nil { visualPathSprite!.fillColor = .gray }
 
         if let c = containerNode {
