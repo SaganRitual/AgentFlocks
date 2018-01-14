@@ -93,7 +93,7 @@ Play/pause/slider [DONE]
 
 This needs only the new slider to replace the old one.
 
-Paths Library
+Paths Library [DONE]
 -------------
 
 This is a special one. I need six of these things, that I can instantiate separately and connect to six

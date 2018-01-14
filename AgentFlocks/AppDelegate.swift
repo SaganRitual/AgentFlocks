@@ -16,6 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	@IBOutlet weak var window: NSWindow!
 	@IBOutlet weak var topbarView: NSView!
 	@IBOutlet weak var settingsView: CursorView!
+	@IBOutlet weak var libraryStackView: NSStackView!
 	@IBOutlet weak var sceneView: CursorView!
 	
 	@IBOutlet weak var contextMenu: NSMenu!
@@ -29,7 +30,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	static let agentEditorController = AgentEditorController()
     static var me: AppDelegate!
 	let leftBarWidth:CGFloat = 300.0
-	
+	let rightBarWidth:CGFloat = 300.0
+
 	let sceneController = SceneController()
 	
 	// Data
@@ -47,6 +49,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var followPathFoward = true
 
 	private var activePopover:NSPopover?
+	private var libraryControllers = [Int:ImagesListController]()
     
     var parentOfNewMotivator: AFBehavior?
     
@@ -506,7 +509,47 @@ extension AppDelegate: TopBarDelegate {
     }
 	
 	func topBar(_ controller: TopBarController, library index: Int, stateChanged enabled: Bool) {
-		NSLog("Library #\(index) state changed to: \(enabled ? "ON" : "OFF")")
+		if enabled {
+			// library checkbox enabled
+			let controller = libraryControllers[index] ?? ImagesListController(withBorder: .noBorder,
+																			   andInsets: NSEdgeInsets(top: 0.0, left: 8.0, bottom: 8.0, right: 8.0))
+			controller.type = .checkbox
+			controller.delegate = self
+			
+			// TODO: This needs to be changed
+			//       Agent images used only for demonstration
+			var agentImages = [NSImage]()
+			for agent in agents {
+				agentImages.append(agent.image)
+			}
+			controller.imageData = agentImages
+			
+			// Add view to stack container
+			libraryControllers[index] = controller
+			libraryStackView.addView(controller.view, in: .top)
+			
+			NSLayoutConstraint(item: controller.view,
+							   attribute: .width,
+							   relatedBy: .equal,
+							   toItem: nil,
+							   attribute: .notAnAttribute,
+							   multiplier: 1.0,
+							   constant: rightBarWidth).isActive = true
+			NSLayoutConstraint(item: controller.view,
+							   attribute: .height,
+							   relatedBy: .equal,
+							   toItem: nil,
+							   attribute: .notAnAttribute,
+							   multiplier: 1.0,
+							   constant: rightBarWidth).isActive = true
+		}
+		else {
+			// library checkbox disabled
+			if let controller = libraryControllers[index] {
+				controller.view.removeFromSuperview()
+				libraryControllers.removeValue(forKey: index)
+			}
+		}
 	}
 	
     func topBar(_ controller: TopBarController, statusChangedTo newStatus: TopBarController.Status) {
@@ -969,3 +1012,26 @@ extension AppDelegate: NSPopoverDelegate {
 	
 }
 
+// MARK: - ImagesListDelegate
+
+extension AppDelegate: ImagesListDelegate {
+	
+	func imagesList(_ controller: ImagesListController, imageSelected index: Int) {
+		let controllerIndexArray = libraryControllers.filter { (key, value) -> Bool in
+			return value == controller
+		}.keys
+		if let controllerIndex = controllerIndexArray.first {
+			NSLog("Library #\(controllerIndex): Image #\(index) selected")
+		}
+	}
+	
+	func imagesList(_ controller: ImagesListController, imageIndex index: Int, wasEnabled enabled: Bool) {
+		let controllerIndexArray = libraryControllers.filter { (key, value) -> Bool in
+			return value == controller
+			}.keys
+		if let controllerIndex = controllerIndexArray.first {
+			NSLog("Library #\(controllerIndex): Image #\(index) \(enabled ? "enabled" : "disabled")")
+		}
+	}
+
+}

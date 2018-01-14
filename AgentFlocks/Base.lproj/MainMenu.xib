@@ -5,6 +5,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
         <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+        <capability name="stacking Non-gravity area distributions on NSStackView" minToolsVersion="7.0" minSystemVersion="10.11"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -17,6 +18,7 @@
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="AgentFlocks" customModuleProvider="target">
             <connections>
                 <outlet property="contextMenu" destination="pP6-ss-y8B" id="6rc-yN-8X2"/>
+                <outlet property="libraryStackView" destination="gdq-L9-YB5" id="iZM-E0-plM"/>
                 <outlet property="sceneView" destination="FLd-ij-v2r" id="Fpt-hb-tz3"/>
                 <outlet property="settingsView" destination="7sx-CT-6PU" id="vbP-Cc-lqf"/>
                 <outlet property="topbarView" destination="IG8-9D-K7M" id="41i-r5-G4b"/>
@@ -529,11 +531,52 @@
                             <constraint firstAttribute="width" constant="120" placeholder="YES" id="gx2-eH-fX3"/>
                         </constraints>
                     </customView>
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="GQo-oS-LwI" userLabel="Library View" customClass="CursorView" customModule="AgentFlocks" customModuleProvider="target">
+                        <rect key="frame" x="360" y="0.0" width="120" height="300"/>
+                        <subviews>
+                            <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ef8-U5-bqo" userLabel="Scroll View">
+                                <rect key="frame" x="0.0" y="0.0" width="120" height="300"/>
+                                <clipView key="contentView" id="aOV-fC-CwY" customClass="FlippedClipView" customModule="AgentFlocks" customModuleProvider="target">
+                                    <rect key="frame" x="0.0" y="0.0" width="120" height="300"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <stackView distribution="fill" orientation="vertical" alignment="trailing" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gdq-L9-YB5">
+                                            <rect key="frame" x="0.0" y="300" width="120" height="0.0"/>
+                                        </stackView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="gdq-L9-YB5" firstAttribute="leading" secondItem="aOV-fC-CwY" secondAttribute="leading" id="J47-Bv-xF9"/>
+                                        <constraint firstItem="gdq-L9-YB5" firstAttribute="top" secondItem="aOV-fC-CwY" secondAttribute="top" id="Rcw-E2-1RN"/>
+                                        <constraint firstAttribute="trailing" secondItem="gdq-L9-YB5" secondAttribute="trailing" id="btt-gC-9aV"/>
+                                    </constraints>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </clipView>
+                                <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="2aD-CH-Ncg">
+                                    <rect key="frame" x="0.0" y="284" width="120" height="16"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                                <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="Uzy-5V-k23">
+                                    <rect key="frame" x="104" y="0.0" width="16" height="300"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </scroller>
+                            </scrollView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="Ef8-U5-bqo" secondAttribute="trailing" id="3Gq-Pg-GZR"/>
+                            <constraint firstItem="Ef8-U5-bqo" firstAttribute="leading" secondItem="GQo-oS-LwI" secondAttribute="leading" id="AUm-cV-UAj"/>
+                            <constraint firstAttribute="width" constant="120" placeholder="YES" id="FHs-VA-5Cu"/>
+                            <constraint firstItem="Ef8-U5-bqo" firstAttribute="top" secondItem="GQo-oS-LwI" secondAttribute="top" id="Y4C-kL-aqu"/>
+                            <constraint firstAttribute="bottom" secondItem="Ef8-U5-bqo" secondAttribute="bottom" id="nmI-jw-ZcW"/>
+                        </constraints>
+                    </customView>
                 </subviews>
                 <constraints>
                     <constraint firstItem="FLd-ij-v2r" firstAttribute="top" secondItem="IG8-9D-K7M" secondAttribute="bottom" id="1Cx-3P-SH1"/>
                     <constraint firstAttribute="bottom" secondItem="FLd-ij-v2r" secondAttribute="bottom" id="6DT-ej-Gcg"/>
+                    <constraint firstAttribute="trailing" secondItem="GQo-oS-LwI" secondAttribute="trailing" id="9Io-ai-3Ao"/>
+                    <constraint firstAttribute="bottom" secondItem="GQo-oS-LwI" secondAttribute="bottom" id="9PG-YT-ciY"/>
                     <constraint firstAttribute="bottom" secondItem="7sx-CT-6PU" secondAttribute="bottom" id="9t8-1B-CPT"/>
+                    <constraint firstItem="GQo-oS-LwI" firstAttribute="top" secondItem="IG8-9D-K7M" secondAttribute="bottom" id="KcS-nN-l76"/>
                     <constraint firstAttribute="trailing" secondItem="IG8-9D-K7M" secondAttribute="trailing" id="VcA-1p-JAR"/>
                     <constraint firstItem="7sx-CT-6PU" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="WLr-c4-0L1"/>
                     <constraint firstItem="IG8-9D-K7M" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" id="gbG-OM-uuL"/>
