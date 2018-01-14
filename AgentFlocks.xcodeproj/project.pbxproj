@@ -56,6 +56,7 @@
 		7493863B200145C700BAAF8E /* ActiveImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7493863A200145C700BAAF8E /* ActiveImageView.swift */; };
 		7493863D20052B3900BAAF8E /* CursorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7493863C20052B3900BAAF8E /* CursorView.swift */; };
 		749386412007C9F700BAAF8E /* WindowContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 749386402007C9F700BAAF8E /* WindowContentView.swift */; };
+		74938643200AAAA000BAAF8E /* FlippedClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74938642200AAAA000BAAF8E /* FlippedClipView.swift */; };
 		74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74ECDF601F9913260096468F /* AgentAttributesController.swift */; };
 		74ECDF631F9913260096468F /* AgentAttributesView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 74ECDF611F9913260096468F /* AgentAttributesView.xib */; };
 		74ECDF661F9B132C0096468F /* AgentGoalsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74ECDF641F9B132C0096468F /* AgentGoalsController.swift */; };
@@ -140,6 +141,7 @@
 		7493863A200145C700BAAF8E /* ActiveImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveImageView.swift; sourceTree = "<group>"; };
 		7493863C20052B3900BAAF8E /* CursorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CursorView.swift; sourceTree = "<group>"; };
 		749386402007C9F700BAAF8E /* WindowContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowContentView.swift; sourceTree = "<group>"; };
+		74938642200AAAA000BAAF8E /* FlippedClipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlippedClipView.swift; sourceTree = "<group>"; };
 		74ECDF601F9913260096468F /* AgentAttributesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentAttributesController.swift; sourceTree = "<group>"; };
 		74ECDF611F9913260096468F /* AgentAttributesView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AgentAttributesView.xib; sourceTree = "<group>"; };
 		74ECDF641F9B132C0096468F /* AgentGoalsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentGoalsController.swift; sourceTree = "<group>"; };
@@ -243,6 +245,7 @@
 				7493863A200145C700BAAF8E /* ActiveImageView.swift */,
 				7493863C20052B3900BAAF8E /* CursorView.swift */,
 				749386402007C9F700BAAF8E /* WindowContentView.swift */,
+				74938642200AAAA000BAAF8E /* FlippedClipView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -466,6 +469,7 @@
 				7493863D20052B3900BAAF8E /* CursorView.swift in Sources */,
 				D472A3711FFFD6860030ACA8 /* LogSliderController.swift in Sources */,
 				D4C7EAE11FFD06EE0008FBCD /* AFGoal.swift in Sources */,
+				74938643200AAAA000BAAF8E /* FlippedClipView.swift in Sources */,
 				749386381FFFECC300BAAF8E /* PreferencesController.swift in Sources */,
 				D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */,
 				744D8F341F91E53A00D4B048 /* TopBarController.swift in Sources */,
