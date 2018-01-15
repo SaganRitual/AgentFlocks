@@ -30,6 +30,22 @@ extension CGPoint {
     }
 }
 
+class AFGraphNode2D_Script: Codable, Equatable {
+    let drawable: Bool
+    let name: String
+    let position: CGPoint
+
+    init(afGraphNode: AFGraphNode2D) {
+        drawable = afGraphNode.drawable
+        name = afGraphNode.name
+        position = CGPoint(afGraphNode.position)
+    }
+
+    static func ==(lhs: AFGraphNode2D_Script, rhs: AFGraphNode2D_Script) -> Bool {
+        return lhs.name == rhs.name
+    }
+}
+
 class AFGraphNode2D: GKGraphNode2D, AFScenoid {
     let drawable: Bool
     let radius: CGFloat = 5
@@ -77,9 +93,16 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
         super.init(point: vector_float2(Float(point.x), Float(point.y)))
     }
     
-//    init(prototype: AFGraphNode2D_Script) {
-//        super.init(point: vector_float2(Float(prototype.position.x), Float(prototype.position.y)))
-//    }
+    init(prototype: AFGraphNode2D_Script) {
+        let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: CGFloat(radius), position: prototype.position, selectionIndicatorRadius: selectionIndicatorRadius)
+        sprite = ss
+        selectionIndicator = se
+        
+        if prototype.drawable { GameScene.me!.addChild(sprite) }
+
+        self.drawable = prototype.drawable
+        super.init(point: vector_float2(Float(prototype.position.x), Float(prototype.position.y)))
+    }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

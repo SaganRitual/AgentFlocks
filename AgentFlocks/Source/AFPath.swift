@@ -24,30 +24,44 @@
 
 import GameplayKit
 
-class AFPath_Script: Codable {
+class AFObstacle_Script: Codable, Equatable {
     var name: String
-//    var graphNodes: AFOrderedMap<String, AFGraphNode2D>
-    var radius: Float = 0.0
+    
+    init(afPath: AFPath) {
+        self.name = afPath.name
+    }
+
+    static func ==(lhs: AFObstacle_Script, rhs: AFObstacle_Script) -> Bool {
+        return lhs.name == rhs.name
+    }
+}
+
+class AFObstacle {
+    var name: String
+    
+    init(prototype: AFObstacle_Script) {
+        self.name = prototype.name
+    }
+}
+
+class AFPath_Script: Codable, Equatable {
+    var name: String
+    var graphNodes: AFOrderedMap_Script<String, AFGraphNode2D_Script>
+    var radius: Float
 
     init(afPath: AFPath) {
         name = afPath.name
         radius = afPath.radius
-//        graphNodes = AFOrderedMap<String, AFGraphNode2D>()
+        graphNodes = AFOrderedMap_Script<String, AFGraphNode2D_Script>()
         
-//        for (_, graphNode) in afPath.graphNodesByName {
-//            let newNode = AFGraphNode2D_Script(gkGraphNode: graphNode)
-//            
-//            graphNodeNames.append(newNode.name)
-//            graphNodesByName[newNode.name] = newNode
-//        }
+        for afGraphNode in afPath.graphNodes {
+            let newNode = AFGraphNode2D_Script(afGraphNode: afGraphNode)
+            graphNodes.append(key: newNode.name, value: newNode)
+        }
     }
-}
 
-class AFGraphNode2D_Script: Codable {
-    let position: CGPoint
-    
-    init(gkGraphNode: GKGraphNode2D) {
-        position = CGPoint(x: CGFloat(gkGraphNode.position.x), y: CGFloat(gkGraphNode.position.y))
+    static func ==(lhs: AFPath_Script, rhs: AFPath_Script) -> Bool {
+        return lhs.name == rhs.name
     }
 }
 
@@ -84,7 +98,7 @@ class AFPath: Equatable {
             }
         }
         
-        refresh()
+        refresh(final: true)
     }
     
     init(prototype: AFPath_Script) {
@@ -93,11 +107,13 @@ class AFPath: Equatable {
 
         graphNodes = AFOrderedMap<String, AFGraphNode2D>()
 
-//        for node in prototype.graphNodesByName {
-//            let afGraphNode = AFGraphNode2D(prototype: node)
-//            graphNodes[afGraphNode.name] = afGraphNode
-//        }
+        for protoNode in prototype.graphNodes {
+            let afGraphNode = AFGraphNode2D(prototype: protoNode)
+            graphNodes.append(key: afGraphNode.name, value: afGraphNode)
+        }
         
+        // Force the new path to rebuild its internal stuff
+        finalized = false
         refresh()
     }
     

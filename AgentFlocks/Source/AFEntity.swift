@@ -8,21 +8,17 @@
 
 import GameplayKit
 
-class AFEntities: Codable {
-    let entities = [AFEntity_Script]()
-}
-
-class AFPaths: Codable {
-    let paths = [AFPath_Script]()
-}
-
-class AFEntity_Script: Codable {
+class AFEntity_Script: Codable, Equatable {
     let agent: AFAgent2D_Script
     let name: String
     
     init(entity: AFEntity) {
         agent = AFAgent2D_Script(agent: entity.agent)
         name = entity.name
+    }
+
+    static func ==(lhs: AFEntity_Script, rhs: AFEntity_Script) -> Bool {
+        return lhs.name == rhs.name
     }
 }
 

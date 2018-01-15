@@ -166,16 +166,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
 		return true
 	}
-    
-    class jsonOut: Encodable {
-        let entities: [AFEntity_Script]
-        let paths: [AFPath_Script]
-        
-        init(entities: [AFEntity_Script], paths: [AFPath_Script]) {
-            self.entities = entities
-            self.paths = paths
-        }
-    }
 	
 	func loadAgents() -> [AgentType] {
 		

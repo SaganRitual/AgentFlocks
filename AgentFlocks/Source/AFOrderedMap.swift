@@ -22,6 +22,38 @@
 // IN THE SOFTWARE.
 //
 
+struct AFOrderedMap_Script<KeyType: Hashable & Codable, ValueType: Equatable & Codable>: Codable {
+    var keys = [KeyType]()
+    var map = [KeyType : ValueType]()
+
+    mutating func append(key: KeyType, value: ValueType) {
+        if keys.contains(key) { fatalError() }
+        
+        keys.append(key)
+        map[key] = value
+    }
+}
+
+extension AFOrderedMap_Script: Sequence {
+    func makeIterator() -> AFOrderedMap_Script.Iterator {
+        return AFOrderedMap_Script.Iterator(orderedMap: self, current: 0)
+    }
+    
+    struct Iterator: IteratorProtocol {
+        let orderedMap: AFOrderedMap_Script<KeyType, ValueType>
+        var current = 0
+        
+        mutating func next() -> ValueType? {
+            guard current < orderedMap.keys.count else { return nil }
+            
+            defer { current += 1 }
+            let key = orderedMap.keys[current]
+            let value = orderedMap.map[key]!
+            return orderedMap.keys.count > current ? value : nil
+        }
+    }
+}
+
 struct AFOrderedMap<KeyType: Hashable, ValueType: Equatable> {
     var keys = [KeyType]()
     var map = [KeyType : ValueType]()

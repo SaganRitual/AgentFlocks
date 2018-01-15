@@ -53,10 +53,60 @@ extension EditModeRelay {
     func trackMouse(nodeName: String, atPoint: CGPoint) {}
 }
 
+class AFData_Script: Codable {
+    var entities: AFOrderedMap_Script<String, AFEntity_Script>
+    var paths: AFOrderedMap_Script<String, AFPath_Script>
+    var obstacles: [String : AFPath_Script]
+    
+    init(_ data: AFData) {
+        entities = AFOrderedMap_Script<String, AFEntity_Script>()
+        paths = AFOrderedMap_Script<String, AFPath_Script>()
+        obstacles = [:]
+
+        data.entities.forEach {
+            let entity = AFEntity_Script(entity: $0)
+            entities.append(key: entity.name, value: entity)
+        }
+        
+        data.paths.forEach {
+            let path = AFPath_Script(afPath: $0)
+            paths.append(key: path.name, value: path)
+        }
+        
+        for (key, value) in data.obstacles {
+            obstacles[key] = AFPath_Script(afPath: value)
+        }
+    }
+}
+
 class AFData {
     var entities = AFOrderedMap<String, AFEntity>()
     var paths = AFOrderedMap<String, AFPath>()
     var obstacles = [String : AFPath]()
+    
+    init() {
+        
+    }
+    
+    init(prototype: AFData_Script) {
+        // Order matters here. Obstacles and paths need to be in place
+        // before the entities, because the entities have goals that
+        // depend on fully formed obstacles & paths.
+        prototype.paths.forEach {
+            let path = AFPath(prototype: $0)
+            paths.append(key: path.name, value: path)
+        }
+        
+        prototype.obstacles.forEach {
+            let obstacle = AFPath(prototype: $0.value)
+            obstacles[$0.key] = obstacle
+        }
+
+        prototype.entities.forEach {
+            let entity = AFEntity(prototype: $0)
+            entities.append(key: entity.name, value: entity)
+        }
+    }
     
     func createEntity(scene: GameScene, copyFrom: AFEntity, position: CGPoint) -> AFEntity {
         let entity = AFEntity(scene: scene, copyFrom: copyFrom, position: position)
