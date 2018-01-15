@@ -190,6 +190,7 @@ class AFPath: Equatable {
         guard graphNodes.count > 1 else { return }
 
         containerNode = SKNode()
+        containerNode!.name = self.name
 
         var nodesArray = [float2]()
         var visualDotsArray = [CGPoint]()

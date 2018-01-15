@@ -298,7 +298,12 @@ extension AFInputState {
                 // not in the currently active path; if it is, set
                 // that node's parent path active. Not the same as selecting it!
                 if let (path, name) = psm.getPathThatOwnsTouchedNode() {
-                    let p = CGPoint(path.graphNodes[down].position)
+                    var p = CGPoint()
+                    if path.name == name {
+                        p = path.containerNode!.position
+                    } else {
+                        p = CGPoint(path.graphNodes[down].position)
+                    }
                     psm.setNodeToMouseOffset(anchor: p)
                     
                     // Name of the path, rather than the name of one of its nodes
@@ -322,10 +327,6 @@ extension AFInputState {
                     }
                 } else {                    // That is, we just finished dragging the node
                     trackMouse(nodeName: up, atPoint: psm.currentPosition)
-                    
-//                    if afPath.name != up {
-//                        afPath.moveNode(node: up, to: psm.currentPosition)
-//                    }
                 }
             } else {
                 if let (path, pathname) = psm.getPathThatOwnsTouchedNode() {
@@ -338,24 +339,29 @@ extension AFInputState {
                     // Clicked in the black; add a node
                     deselectAll()
 
-                    let startNewPath = (activePath == nil) || (activePath.finalized)
-                    if startNewPath {
-                        activePath = AFPath()
+                    if event.modifierFlags.contains(.control) {
+                        // Stamp an obstacle, if there's something stampable
+                        stampObstacle(at: psm.currentPosition)
+                    } else {
+                        let startNewPath = (activePath == nil) || (activePath.finalized)
+                        if startNewPath {
+                            activePath = AFPath()
+                            
+                            // With a new path started, no other options are available
+                            // until the path is finalized. However, the "add path" option
+                            // is disabled until there are at least two nodes in the path.
+                            AFContextMenu.reset()
+                            AFContextMenu.includeInDisplay(.AddPathToLibrary, true, enable: false)
+                        }
                         
-                        // With a new path started, no other options are available
-                        // until the path is finalized. However, the "add path" option
-                        // is disabled until there are at least two nodes in the path.
-                        AFContextMenu.reset()
-                        AFContextMenu.includeInDisplay(.AddPathToLibrary, true, enable: false)
-                    }
-                    
-                    let newNode = activePath.addGraphNode(at: psm.currentPosition)
-                    select(newNode.name, primary: true)
-                    
-                    // With two or more nodes, we now have a path that can be
-                    // added to the library
-                    if activePath.graphNodes.count > 1 {
-                        AFContextMenu.enableInDisplay(.AddPathToLibrary)
+                        let newNode = activePath.addGraphNode(at: psm.currentPosition)
+                        select(newNode.name, primary: true)
+                        
+                        // With two or more nodes, we now have a path that can be
+                        // added to the library
+                        if activePath.graphNodes.count > 1 {
+                            AFContextMenu.enableInDisplay(.AddPathToLibrary)
+                        }
                     }
                 }
             }
