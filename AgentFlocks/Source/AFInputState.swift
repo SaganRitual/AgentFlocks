@@ -23,8 +23,15 @@
 //
 
 import GameplayKit
+/*
+ func toggleSelection(_ name: String) {
+ if selectedNames.contains(name) { getInputRelay()?.deselect(name) }
+ else { getInputRelay()?.select(name, primary: primarySelectionName == nil) }
+ }
+ */
 
 protocol EditModeRelay {
+    func deselect(_ name: String)
     func getParentStateMachine() -> AFInputState
     func getPosition(ofNode name: String) -> CGPoint
     func getTouchedNode(touchedNodes: [SKNode]) -> SKNode?
@@ -35,6 +42,7 @@ protocol EditModeRelay {
     func mouseUp(with event: NSEvent)
     func rightMouseDown(with event: NSEvent)
     func rightMouseUp(with event: NSEvent)
+    func select(_ name: String, primary: Bool)
     func trackMouse(nodeName: String, atPoint: CGPoint)
 }
 
@@ -65,7 +73,7 @@ class AFInputState: GKStateMachine {
     var currentPosition = CGPoint.zero
     var downNodeName: String?
     var nodeToMouseOffset = CGPoint.zero
-    var primarySelectionName: String?
+    var primarySelection: String?
     unowned let gameScene: GameScene
     var mouseState = MouseStates.up
     var selectedNames = Set<String>()
@@ -82,6 +90,22 @@ class AFInputState: GKStateMachine {
         enter(ModePlace.self)
     }
     
+    func deselect(_ name: String) {
+        selectedNames.remove(name)
+        if primarySelection == name || selectedNames.count == 0 {
+            deselect_()
+        }
+    }
+    
+    func deselectAll() {
+        selectedNames.removeAll()
+        deselect_()
+    }
+    
+    func deselect_() {
+        AFContextMenu.includeInDisplay(.SetObstacleCloneStamp, false)
+    }
+
     func finalizePath(close: Bool) {
         if let cs = currentState as? ModeDraw {
             cs.finalizePath(close: close)
@@ -120,7 +144,7 @@ class AFInputState: GKStateMachine {
     }
     
     func getPrimarySelectionName() -> String? {
-        return primarySelectionName
+        return primarySelection
     }
 
     func getSelectedNames() -> Set<String> {
@@ -204,6 +228,11 @@ class AFInputState: GKStateMachine {
         downNodeName = nil
         mouseState = .rightUp
     }
+
+    func select(_ name: String, primary: Bool) {
+        selectedNames.insert(name)
+        if primary { primarySelection = name }
+    }
     
     func setNodeToMouseOffset(anchor: CGPoint) {
         nodeToMouseOffset.x = anchor.x - currentPosition.x
@@ -212,23 +241,28 @@ class AFInputState: GKStateMachine {
 
     func setObstacleCloneStamp() { (currentState! as! ModeDraw).setObstacleCloneStamp() }
     func stampObstacle(at point: CGPoint) { (currentState! as! ModeDraw).stampObstacle(at: point) }
+    
+    func toggleSelection(_ name: String) {
+        if selectedNames.contains(name) { getInputRelay()?.deselect(name) }
+        else { getInputRelay()?.select(name, primary: primarySelection == nil) }
+    }
 }
 
 extension AFInputState {
 
     class ModeDraw: GKState, EditModeRelay {
         var activePath: AFPath!
-        var namesOfSelectedScenoids = [String]()
         var obstacleCloneStamp: String?
         var selectedPath: AFPath!
 
+        func deselect(_ name: String) {
+            GameScene.me!.obstacles[name]!.deselect()
+            getParentStateMachine().deselect(name)
+        }
+
         func deselectAll() {
             activePath?.deselectAll()
-            namesOfSelectedScenoids.removeAll()
-            
-            selectedPath = nil
-
-            AFContextMenu.includeInDisplay(.SetObstacleCloneStamp, false)
+            getParentStateMachine().deselectAll()
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -284,7 +318,7 @@ extension AFInputState {
             if event.keyCode == AFKeyCodes.escape.rawValue {
                 deselectAll()
             } else if event.keyCode == AFKeyCodes.delete.rawValue {
-                namesOfSelectedScenoids.forEach { activePath.remove(node: $0) }
+                getParentStateMachine().selectedNames.forEach { activePath.remove(node: $0) }
                 
                 activePath.refresh()
             }
@@ -317,16 +351,22 @@ extension AFInputState {
             let psm = getParentStateMachine()
 
             if let up = psm.upNodeName {
-                if psm.mouseState == .down {    // That is, we just clicked the node
-                    deselectAll()
-                    
-                    select(up, primary: true)
-                    
-                    if !activePath.finalized && up == activePath.graphNodes[0].name && activePath.graphNodes.count > 1 {
-                        psm.finalizePath(close: true)
+                if event.modifierFlags.contains(.command) {
+                    if psm.mouseState == .down { // cmd+click on a node
+                        psm.toggleSelection(up)
                     }
-                } else {                    // That is, we just finished dragging the node
-                    trackMouse(nodeName: up, atPoint: psm.currentPosition)
+                } else {
+                    if psm.mouseState == .down {    // That is, we just clicked the node
+                        deselectAll()
+                        
+                        select(up, primary: true)
+                        
+                        if !activePath.finalized && up == activePath.graphNodes[0].name && activePath.graphNodes.count > 1 {
+                            psm.finalizePath(close: true)
+                        }
+                    } else {                    // That is, we just finished dragging the node
+                        trackMouse(nodeName: up, atPoint: psm.currentPosition)
+                    }
                 }
             } else {
                 if let (path, pathname) = psm.getPathThatOwnsTouchedNode() {
@@ -372,9 +412,7 @@ extension AFInputState {
         }
 
         func select(_ name: String, primary: Bool) {
-            if primary { getParentStateMachine().primarySelectionName = name }
-            
-            namesOfSelectedScenoids.append(name)
+            getParentStateMachine().select(name, primary: primary)
             
             activePath.select(name)
             selectedPath = activePath
@@ -402,7 +440,7 @@ extension AFInputState {
             getParentStateMachine().gameScene.obstacles[newPath.name] = newPath
             select(newPath.name, primary: true)
         }
-
+        
         func trackMouse(nodeName: String, atPoint: CGPoint) {
             let offset = getParentStateMachine().nodeToMouseOffset
             
@@ -431,13 +469,13 @@ extension AFInputState {
             
             // We just now deselected the primary. If there's anyone
             // else selected, they need to be made the primary.
-            if psm.primarySelectionName == name {
+            if psm.primarySelection == name {
                 if psm.selectedNames.count > 0 {
                     let selectNew = psm.selectedNames.first!
                     select(selectNew, primary: true)
                     AppDelegate.me!.placeAgentFrames(agentName: selectNew)
                 } else {
-                    psm.primarySelectionName = nil
+                    psm.primarySelection = nil
                     AppDelegate.me!.removeAgentFrames()
                 }
             }
@@ -451,7 +489,7 @@ extension AFInputState {
             psm.gameScene.entities.forEach{ $0.agent.deselect() }
             
             psm.selectedNames.removeAll()
-            psm.primarySelectionName = nil
+            psm.primarySelection = nil
 
             // Turn off the agent attributes and goals edit views
             AppDelegate.me!.removeAgentFrames()
@@ -521,11 +559,11 @@ extension AFInputState {
             } else {
                 if event.modifierFlags.contains(.command) {
                     if psm.mouseState == .down { // cmd+click on a node
-                        toggleSelection(psm.upNodeName!)
+                        psm.toggleSelection(psm.upNodeName!)
                     }
                 } else {
                     if psm.mouseState == .down {    // That is, we're coming out of down as opposed to drag
-                        let setSelection = (psm.primarySelectionName != psm.upNodeName!)
+                        let setSelection = (psm.primarySelection != psm.upNodeName!)
                         
                         deselectAll()
                         
@@ -557,18 +595,11 @@ extension AFInputState {
                 AppDelegate.agentEditorController.goalsController.dataSource = psm.gameScene.entities[name]
                 AppDelegate.agentEditorController.attributesController.delegate = psm.gameScene.entities[name].agent
                 
-                psm.primarySelectionName = name
+                psm.primarySelection = name
                 AppDelegate.me!.placeAgentFrames(agentName: name)
             }
             
             AFContextMenu.includeInDisplay(.CloneAgent, true, enable: true)
-        }
-        
-        func toggleSelection(_ name: String) {
-            let psm = getParentStateMachine()
-
-            if psm.selectedNames.contains(name) { deselect(name) }
-            else { select(name, primary: psm.primarySelectionName == nil) }
         }
         
         func trackMouse(nodeName: String, atPoint: CGPoint) {
