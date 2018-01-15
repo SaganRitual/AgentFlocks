@@ -897,10 +897,7 @@ extension AppDelegate: ItemEditorDelegate {
                     goal = nil
                     
                 case .toAvoidObstacles:
-                    let pathIndex = GameScene.me!.pathForNextPathGoal
-                    let afPath = GameScene.me!.paths[pathIndex]
-                    
-                    goal = AFGoal(toAvoidObstacles: [afPath.name], time: time!, weight: weight)
+                    goal = AFGoal(toAvoidObstacles: Array(GameScene.me!.obstacles.keys), time: time!, weight: weight)
                     
                 case .toAvoidAgents:
                     let primarySelection = GameScene.me!.getPrimarySelectionName()!

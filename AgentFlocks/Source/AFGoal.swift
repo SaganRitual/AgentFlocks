@@ -114,15 +114,14 @@ class AFGoal {
             gkGoal = GKGoal(toAvoid: gkAgents, maxPredictionTime: TimeInterval(time))
             
         case .toAvoidObstacles:
-            if let p = pathname, p != "" {
-                let afPath = GameScene.me!.paths[p]
-                let obstacle = afPath.asObstacle()!
-
-                gkGoal = GKGoal(toAvoid: [obstacle], maxPredictionTime: TimeInterval(time))
-            } else {
-                fatalError()
+            var obstacles = [GKPolygonObstacle]()
+//            GameScene.me!.obstacles.forEach { obstacles.append($1.asObstacle()!) }
+            for (_, afPath) in GameScene.me!.obstacles {
+                let ob = afPath.asObstacle()
+                obstacles.append(ob!)
             }
-        
+            
+            gkGoal = GKGoal(toAvoid: obstacles, maxPredictionTime: TimeInterval(time))
 
         case .toCohereWith:
             var gkAgents = [GKAgent]()
@@ -252,11 +251,22 @@ class AFGoal {
         self.name = NSUUID().uuidString
         self.time = Float(time)
         self.weight = weight
+        self.obstacleNames = names
         
         var obstacles = [GKPolygonObstacle]()
         for name in names {
-            let path = GameScene.me!.paths[name]
-            obstacles.append(path.asObstacle()!)
+            let obstacle = GameScene.me!.obstacles[name]!
+            obstacles.append(obstacle.asObstacle()!)
+
+            let gkPath = obstacle.asPath()
+            let cgPath = CGMutablePath()
+            cgPath.move(to: CGPoint(gkPath!.float2(at: 0)))
+            for i in 1 ..< gkPath!.numPoints - 1 {
+                cgPath.addLine(to: CGPoint(gkPath!.float2(at: i)))
+            }
+            let s = SKShapeNode(path: cgPath)
+            s.fillColor = .red
+            GameScene.me!.addChild(s)
         }
         
         gkGoal = GKGoal(toAvoid: obstacles, maxPredictionTime: time)
@@ -433,7 +443,7 @@ extension AFGoal {
         case .toWander:           return makeGoal(copyFrom.goalType, speed: copyFrom.speed, weight: weight)
 
         case .toAvoidAgents:      return makeGoal(copyFrom.goalType, agents: copyFrom.agentNames, time: copyFrom.time, weight: weight)
-        case .toAvoidObstacles:   return makeGoal(copyFrom.goalType, obstacles: copyFrom.obstacleNames, time: copyFrom.time, weight: weight)
+        case .toAvoidObstacles:   return makeGoal(copyFrom.goalType, obstacleNames: copyFrom.obstacleNames, time: copyFrom.time, weight: weight)
         case .toInterceptAgent:   return makeGoal(copyFrom.goalType, agents: copyFrom.agentNames, time: copyFrom.time, weight: weight)
 
         case .toAlignWith:        fallthrough
@@ -465,9 +475,9 @@ extension AFGoal {
         }
     }
     
-    static func makeGoal(_ type: AFGoalType, obstacles: [String], time: Float, weight: Float) -> AFGoal {
+    static func makeGoal(_ type: AFGoalType, obstacleNames: [String], time: Float, weight: Float) -> AFGoal {
         switch type {
-        case .toAvoidObstacles: return AFGoal(toAvoidObstacles: obstacles, time: TimeInterval(time), weight: weight)
+        case .toAvoidObstacles: return AFGoal(toAvoidObstacles: obstacleNames, time: TimeInterval(time), weight: weight)
             
         default: fatalError()
         }

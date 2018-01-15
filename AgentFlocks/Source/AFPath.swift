@@ -121,7 +121,7 @@ class AFPath: Equatable {
     func asObstacle() -> GKPolygonObstacle? {
         guard graphNodes.count > 1 else { return nil }
 
-        if gkObstacle == nil {
+        if gkObstacle == nil || gkObstacle != nil {
             var floats = [float2]()
             
             for node in graphNodes {
@@ -129,6 +129,9 @@ class AFPath: Equatable {
             }
             
             gkObstacle = GKPolygonObstacle(points: floats)
+            
+            let obs = SKNode.obstacles(fromNodeBounds: [visualPathSprite!])
+            gkObstacle = obs[0]
         }
         
         return gkObstacle

@@ -123,7 +123,7 @@ class AFBehavior: GKBehavior {
     
     func setWeightage(_ weight: Float, for afGoal: AFGoal) {
         super.setWeight(weight, for: afGoal.gkGoal)
-        
+
         // AFBehavior has to track goals, because there's no way to read
         // them back out of the GKBehavior structures
         goalsMap[afGoal.gkGoal] = afGoal
