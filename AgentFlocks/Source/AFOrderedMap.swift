@@ -22,13 +22,15 @@
 // IN THE SOFTWARE.
 //
 
-class AFOrderedMap<KeyType: Hashable, ValueType: Equatable> {
+struct AFOrderedMap<KeyType: Hashable, ValueType: Equatable> {
     var keys = [KeyType]()
     var map = [KeyType : ValueType]()
     
     var count: Int { return keys.count }
 
-    func append(key: KeyType, value: ValueType) {
+    mutating func append(key: KeyType, value: ValueType) {
+        if keys.contains(key) { fatalError() }
+
         keys.append(key)
         map[key] = value
     }
@@ -63,13 +65,13 @@ class AFOrderedMap<KeyType: Hashable, ValueType: Equatable> {
         return map[key]!
     }
     
-    func remove(at index: Int) {
+    mutating func remove(at index: Int) {
         let key = keys[index]
         keys.remove(at: index)
         map.removeValue(forKey: key)
     }
     
-    func remove(_ name: KeyType) {
+    mutating func remove(_ name: KeyType) {
         let ix = keys.index(of: name)!
         keys.remove(at: ix)
         map.removeValue(forKey: name)

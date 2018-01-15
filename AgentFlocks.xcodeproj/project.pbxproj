@@ -85,6 +85,7 @@
 		D4C7EADF1FFD04730008FBCD /* AFBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */; };
 		D4C7EAE11FFD06EE0008FBCD /* AFGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */; };
 		D4C7EAE31FFD93C00008FBCD /* Agent07.png in Resources */ = {isa = PBXBuildFile; fileRef = D4C7EAE21FFD93C00008FBCD /* Agent07.png */; };
+		D4C942D9200C39CD00A85BCB /* AFBrowserDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C942D8200C39CD00A85BCB /* AFBrowserDelegate.swift */; };
 		D4F779E320087057005179BA /* AFGraphNode2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F779E220087057005179BA /* AFGraphNode2D.swift */; };
 /* End PBXBuildFile section */
 
@@ -169,6 +170,7 @@
 		D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFBehavior.swift; sourceTree = "<group>"; };
 		D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFGoal.swift; sourceTree = "<group>"; };
 		D4C7EAE21FFD93C00008FBCD /* Agent07.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent07.png; sourceTree = "<group>"; };
+		D4C942D8200C39CD00A85BCB /* AFBrowserDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFBrowserDelegate.swift; sourceTree = "<group>"; };
 		D4F779E220087057005179BA /* AFGraphNode2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFGraphNode2D.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -314,6 +316,7 @@
 			children = (
 				D44256261FE804F000FC454B /* AFAgent2D.swift */,
 				D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */,
+				D4C942D8200C39CD00A85BCB /* AFBrowserDelegate.swift */,
 				D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */,
 				D43A7604200B23330048796D /* AFContextMenu.swift */,
 				D44256241FE8048100FC454B /* AFEntity.swift */,
@@ -471,6 +474,7 @@
 				D4C7EAE11FFD06EE0008FBCD /* AFGoal.swift in Sources */,
 				74938643200AAAA000BAAF8E /* FlippedClipView.swift in Sources */,
 				749386381FFFECC300BAAF8E /* PreferencesController.swift in Sources */,
+				D4C942D9200C39CD00A85BCB /* AFBrowserDelegate.swift in Sources */,
 				D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */,
 				744D8F341F91E53A00D4B048 /* TopBarController.swift in Sources */,
 				D4506DD51FFE65B50077A42A /* AFPath.swift in Sources */,

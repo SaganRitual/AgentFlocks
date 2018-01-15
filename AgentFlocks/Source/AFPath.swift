@@ -163,6 +163,14 @@ class AFPath: Equatable {
         GameScene.me!.obstacles.forEach{ $1.deselect() }
     }
     
+    func getImageData(size: CGSize) -> NSImage {
+        let texture = GameScene.me!.view!.texture(from: visualPathSprite!)!
+        let cgImage = texture.cgImage()
+        let nsImage = NSImage(cgImage: cgImage, size: size)
+        
+        return nsImage
+    }
+    
     func moveNode(node: String, to point: CGPoint) {
         let x = Float(point.x)
         let y = Float(point.y)

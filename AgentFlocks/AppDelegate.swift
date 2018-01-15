@@ -514,14 +514,40 @@ extension AppDelegate: TopBarDelegate {
 			controller.type = .checkbox
 			controller.delegate = self
 			
-			// TODO: This needs to be changed
-			//       Agent images used only for demonstration
-			var agentImages = [NSImage]()
-			for agent in agents {
-				agentImages.append(agent.image)
-			}
-			controller.imageData = agentImages
-			
+            switch AFBrowserType(rawValue: index)! {
+            case .SpriteImages:
+                var agentImages = [NSImage]()
+                for agent in agents {
+                    agentImages.append(agent.image)
+                }
+                controller.imageData = agentImages
+
+            case .Agents:
+                var agentImages = [NSImage]()
+
+                for entity in GameScene.me!.entities {
+                    let sprite = entity.agent.sprite
+                    let cgImage = sprite.texture!.cgImage()
+                    let nsImage = NSImage(cgImage: cgImage, size: sprite.size)
+                    agentImages.append(nsImage)
+                }
+                
+                controller.imageData = agentImages
+
+            case .Paths:
+                var pathImages = [NSImage]()
+                GameScene.me!.paths.forEach {
+                    let s = CGSize(width: 50, height: 50)
+                    pathImages.append($0.getImageData(size: s))
+                }
+                controller.imageData = pathImages
+
+            case .LinkedGoals: fallthrough
+                
+            default:
+                fatalError()
+            }
+
 			// Add view to stack container
 			libraryControllers[index] = controller
 			libraryStackView.addView(controller.view, in: .top)
@@ -1006,8 +1032,9 @@ extension AppDelegate: ImagesListDelegate {
 		let controllerIndexArray = libraryControllers.filter { (key, value) -> Bool in
 			return value == controller
 		}.keys
+        
 		if let controllerIndex = controllerIndexArray.first {
-			NSLog("Library #\(controllerIndex): Image #\(index) selected")
+            AFCore.browserDelegate.imageSelected(controllerIndex: controllerIndex, imageIndex: index)
 		}
 	}
 	
@@ -1016,7 +1043,7 @@ extension AppDelegate: ImagesListDelegate {
 			return value == controller
 			}.keys
 		if let controllerIndex = controllerIndexArray.first {
-			NSLog("Library #\(controllerIndex): Image #\(index) \(enabled ? "enabled" : "disabled")")
+            AFCore.browserDelegate.imageEnabled(controllerIndex: controllerIndex, imageIndex: index, enabled: enabled)
 		}
 	}
 

@@ -51,6 +51,16 @@ extension EditModeRelay {
     func trackMouse(nodeName: String, atPoint: CGPoint) {}
 }
 
+class AFCore {
+    static var browserDelegate: AFBrowserDelegate!
+    static var inputState: AFInputState!
+    
+    static func makeCore(gameScene: GameScene) {
+        inputState = AFInputState(gameScene: gameScene)
+        browserDelegate = AFBrowserDelegate(inputState)
+    }
+}
+
 class AFInputState: GKStateMachine {
     var currentPosition = CGPoint.zero
     var downNodeName: String?
@@ -244,7 +254,7 @@ extension AFInputState {
 
         func getTouchedNode(touchedNodes: [SKNode]) -> SKNode? {
             let psm = getParentStateMachine()
-            let paths = psm.gameScene.paths
+            var paths = psm.gameScene.paths
             
             // Add the current path to the lookup, in case it's not
             // already registered with the gameScene
@@ -494,7 +504,7 @@ extension AFInputState {
                     newEntity = AFEntity(scene: psm.gameScene, copyFrom: originalEntity, position: psm.currentPosition)
                     _ = AppDelegate.me!.sceneController.addNode(entity: newEntity)
                 } else {
-                    let imageIndex = AppDelegate.me!.agentImageIndex
+                    let imageIndex = AFCore.browserDelegate.agentImageIndex
                     let image = AppDelegate.me!.agents[imageIndex].image
                     newEntity = AppDelegate.me!.sceneController.addNode(image: image, at: psm.currentPosition)
                 }
@@ -523,6 +533,12 @@ extension AFInputState {
         
         func rightMouseUp(with event: NSEvent) {
             AFContextMenu.show(at: event.locationInWindow)
+        }
+        
+        func select(_ index: Int, primary: Bool) {
+            let psm = getParentStateMachine()
+            let entity = psm.gameScene.entities[index]
+            select(entity.name, primary: primary)
         }
         
         func select(_ name: String, primary: Bool) {

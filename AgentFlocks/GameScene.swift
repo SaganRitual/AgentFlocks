@@ -50,7 +50,8 @@ class GameScene: SKScene, SKViewDelegate {
         self.lastUpdateTime = 0
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         
-        inputState = AFInputState(gameScene: self)
+        AFCore.makeCore(gameScene: self)
+        inputState = AFCore.inputState
     }
     
     override func update(_ currentTime: TimeInterval) {
