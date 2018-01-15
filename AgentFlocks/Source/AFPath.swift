@@ -163,7 +163,7 @@ class AFPath: Equatable {
     
     func deselectAll() {
         graphNodes.forEach{ $0.deselect() }
-        GameScene.me!.obstacles.forEach{ $1.deselect() }
+        AFCore.data.obstacles.forEach{ $1.deselect() }
     }
     
     func getImageData(size: CGSize) -> NSImage {
@@ -266,7 +266,7 @@ class AFPath: Equatable {
         if let ix = graphNodes.getIndexOf(name) {
             graphNodes[ix].select(primary: true)
         } else {
-            GameScene.me!.obstacles[name]!.visualPathSprite?.strokeColor = .green
+            AFCore.data.obstacles[name]!.visualPathSprite?.strokeColor = .green
         }
     }
     

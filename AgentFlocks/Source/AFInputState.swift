@@ -23,12 +23,6 @@
 //
 
 import GameplayKit
-/*
- func toggleSelection(_ name: String) {
- if selectedNames.contains(name) { getInputRelay()?.deselect(name) }
- else { getInputRelay()?.select(name, primary: primarySelectionName == nil) }
- }
- */
 
 protocol EditModeRelay {
     func deselect(_ name: String)
@@ -59,18 +53,40 @@ extension EditModeRelay {
     func trackMouse(nodeName: String, atPoint: CGPoint) {}
 }
 
+class AFData {
+    var entities = AFOrderedMap<String, AFEntity>()
+    var paths = AFOrderedMap<String, AFPath>()
+    var obstacles = [String : AFPath]()
+    
+    func createEntity(scene: GameScene, copyFrom: AFEntity, position: CGPoint) -> AFEntity {
+        let entity = AFEntity(scene: scene, copyFrom: copyFrom, position: position)
+        entities.append(key: entity.name, value: entity)
+        return entity
+    }
+    
+    func createEntity(scene: GameScene, image: NSImage, position: CGPoint) -> AFEntity {
+        let entity = AFEntity(scene: scene, image: image, position: position)
+        entities.append(key: entity.name, value: entity)
+        return entity
+    }
+}
+
 class AFCore {
     static var browserDelegate: AFBrowserDelegate!
+    static var data = AFData()
     static var inputState: AFInputState!
+    static var menuBarDelegate: AFMenuBarDelegate!
     
     static func makeCore(gameScene: GameScene) {
-        inputState = AFInputState(gameScene: gameScene)
+        inputState = AFInputState(data: data, gameScene: gameScene)
         browserDelegate = AFBrowserDelegate(inputState)
+        menuBarDelegate = AFMenuBarDelegate(data)
     }
 }
 
 class AFInputState: GKStateMachine {
     var currentPosition = CGPoint.zero
+    let data: AFData
     var downNodeName: String?
     var nodeToMouseOffset = CGPoint.zero
     var primarySelection: String?
@@ -82,7 +98,8 @@ class AFInputState: GKStateMachine {
     
     enum MouseStates { case down, dragging, rightDown, rightUp, up }
 
-    init(gameScene: GameScene) {
+    init(data: AFData, gameScene: GameScene) {
+        self.data = data
         self.gameScene = gameScene
         
         super.init(states: [ ModeDraw(), ModePlace() ])
@@ -128,13 +145,13 @@ class AFInputState: GKStateMachine {
         
         for skNode in touchedNodes.reversed() {
             if let name = skNode.name {
-                for path in gameScene.paths {
+                for path in data.paths {
                     if path.graphNodes.getIndexOf(name) != nil {
                         return (path, name)
                     }
                 }
                 
-                if let obstacle = gameScene.obstacles[name] {
+                if let obstacle = data.obstacles[name] {
                     return (obstacle, name)
                 }
             }
@@ -256,7 +273,7 @@ extension AFInputState {
         var selectedPath: AFPath!
 
         func deselect(_ name: String) {
-            GameScene.me!.obstacles[name]!.deselect()
+            AFCore.data.obstacles[name]!.deselect()
             getParentStateMachine().deselect(name)
         }
 
@@ -273,7 +290,7 @@ extension AFInputState {
 
         func finalizePath(close: Bool) {
             activePath.refresh(final: close) // Auto-add the closing line segment
-            getParentStateMachine().gameScene.paths.append(key: activePath.name, value: activePath)
+            getParentStateMachine().data.paths.append(key: activePath.name, value: activePath)
             
             AFContextMenu.includeInDisplay(.SetObstacleCloneStamp, true, enable: true)
         }
@@ -288,7 +305,7 @@ extension AFInputState {
 
         func getTouchedNode(touchedNodes: [SKNode]) -> SKNode? {
             let psm = getParentStateMachine()
-            var paths = psm.gameScene.paths
+            var paths = psm.data.paths
             
             // Add the current path to the lookup, in case it's not
             // already registered with the gameScene
@@ -305,7 +322,7 @@ extension AFInputState {
                 }
             }
 
-            for (_, afPath) in psm.gameScene.obstacles {
+            for (_, afPath) in psm.data.obstacles {
                 if touchedNodes.contains(afPath.containerNode!) {
                     return afPath.containerNode!
                 }
@@ -437,7 +454,7 @@ extension AFInputState {
             let offset = point - CGPoint(activePath.graphNodes[0].position)
             let newPath = AFPath.init(copyFrom: activePath, offset: offset)
             newPath.stampObstacle()
-            getParentStateMachine().gameScene.obstacles[newPath.name] = newPath
+            getParentStateMachine().data.obstacles[newPath.name] = newPath
             select(newPath.name, primary: true)
         }
         
@@ -464,7 +481,7 @@ extension AFInputState {
         func deselect(_ name: String) {
             let psm = getParentStateMachine()
 
-            psm.gameScene.entities[name].agent.deselect()
+            psm.data.entities[name].agent.deselect()
             psm.selectedNames.remove(name)
             
             // We just now deselected the primary. If there's anyone
@@ -486,7 +503,7 @@ extension AFInputState {
         func deselectAll() {
             let psm = getParentStateMachine()
             
-            psm.gameScene.entities.forEach{ $0.agent.deselect() }
+            psm.data.entities.forEach{ $0.agent.deselect() }
             
             psm.selectedNames.removeAll()
             psm.primarySelection = nil
@@ -507,14 +524,14 @@ extension AFInputState {
         }
         
         func getPosition(ofNode name: String) -> CGPoint {
-            return getParentStateMachine().gameScene.entities[name].agent.spriteContainer.position
+            return getParentStateMachine().data.entities[name].agent.spriteContainer.position
         }
 
         func getTouchedNode(touchedNodes: [SKNode]) -> SKNode? {
             let psm = getParentStateMachine()
             
             // Find the last descendant; I think that will be the top one
-            for entity in psm.gameScene.entities.reversed() {
+            for entity in psm.data.entities.reversed() {
                 if touchedNodes.contains(entity.agent.sprite) {
                     return entity.agent.sprite
                 }
@@ -540,17 +557,16 @@ extension AFInputState {
                 
                 if event.modifierFlags.contains(.control) {
                     // ctrl-click gives a clone of the last guy, goals and all
-                    guard psm.gameScene.entities.count > 0 else { return }
+                    guard psm.data.entities.count > 0 else { return }
                     
-                    let originalIx = psm.gameScene.entities.count - 1
-                    let originalEntity = psm.gameScene.entities[originalIx]
+                    let originalIx = psm.data.entities.count - 1
+                    let originalEntity = psm.data.entities[originalIx]
                     
-                    newEntity = AFEntity(scene: psm.gameScene, copyFrom: originalEntity, position: psm.currentPosition)
-                    _ = AppDelegate.me!.sceneController.addNode(entity: newEntity)
+                    newEntity = psm.data.createEntity(scene: psm.gameScene, copyFrom: originalEntity, position: psm.currentPosition)
                 } else {
                     let imageIndex = AFCore.browserDelegate.agentImageIndex
                     let image = AppDelegate.me!.agents[imageIndex].image
-                    newEntity = AppDelegate.me!.sceneController.addNode(image: image, at: psm.currentPosition)
+                    newEntity = psm.data.createEntity(scene: psm.gameScene, image: image, position: psm.currentPosition)
                 }
                 
                 select(newEntity.name, primary: true)
@@ -581,7 +597,7 @@ extension AFInputState {
         
         func select(_ index: Int, primary: Bool) {
             let psm = getParentStateMachine()
-            let entity = psm.gameScene.entities[index]
+            let entity = psm.data.entities[index]
             select(entity.name, primary: primary)
         }
         
@@ -589,11 +605,13 @@ extension AFInputState {
             let psm = getParentStateMachine()
 
             psm.selectedNames.insert(name)
-            psm.gameScene.entities[name].agent.select(primary: primary)
+
+            let entity = psm.data.entities[name]
+            entity.agent.select(primary: primary)
             
             if primary {
-                AppDelegate.agentEditorController.goalsController.dataSource = psm.gameScene.entities[name]
-                AppDelegate.agentEditorController.attributesController.delegate = psm.gameScene.entities[name].agent
+                AppDelegate.agentEditorController.goalsController.dataSource = entity
+                AppDelegate.agentEditorController.attributesController.delegate = entity.agent
                 
                 psm.primarySelection = name
                 AppDelegate.me!.placeAgentFrames(agentName: name)
@@ -605,7 +623,7 @@ extension AFInputState {
         func trackMouse(nodeName: String, atPoint: CGPoint) {
             let psm = getParentStateMachine()
             let offset = psm.nodeToMouseOffset
-            let agent = psm.gameScene.entities[nodeName].agent
+            let agent = psm.data.entities[nodeName].agent
             
             agent.position = vector_float2(Float(atPoint.x), Float(atPoint.y))
             agent.position.x += Float(offset.x)

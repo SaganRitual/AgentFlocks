@@ -34,11 +34,8 @@ enum AFKeyCodes: UInt {
 class GameScene: SKScene, SKViewDelegate {
     static var me: GameScene?
 
-    var entities = AFOrderedMap<String, AFEntity>()
     var inputState: AFInputState!
     var pathForNextPathGoal = 0
-    var paths = AFOrderedMap<String, AFPath>()
-    var obstacles = [String : AFPath]()
 
     var lastUpdateTime : TimeInterval = 0
 
@@ -66,7 +63,7 @@ class GameScene: SKScene, SKViewDelegate {
         let dt = currentTime - self.lastUpdateTime
         
         // Update entities
-        for entity in entities {
+        for entity in AFCore.data.entities {
             entity.update(deltaTime: dt)
         }
         

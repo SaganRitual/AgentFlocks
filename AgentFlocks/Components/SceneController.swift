@@ -56,18 +56,4 @@ class SceneController: NSViewController {
 	override func viewDidLayout() {
 		sceneNode.size = view.frame.size
 	}
-    
-    
-    // MARK: - Public methods
-    
-    func addNode(entity: AFEntity) -> AFEntity {
-        sceneNode.entities.append(key: entity.name, value: entity)
-        return entity
-    }
-    
-    func addNode(image: NSImage, at position: CGPoint) -> AFEntity {
-        let entity = AFEntity(scene: sceneNode, image: image, position: position)
-        return addNode(entity: entity)
-    }
-
 }

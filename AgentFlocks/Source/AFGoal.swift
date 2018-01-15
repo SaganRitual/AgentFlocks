@@ -94,7 +94,7 @@ class AFGoal {
         case .toAlignWith:
             var gkAgents = [GKAgent]()
             for aligneeName in agentNames {
-                for entity in GameScene.me!.entities {
+                for entity in AFCore.data.entities {
                     if entity.name == aligneeName {
                         gkAgents.append(entity.agent)
                     }
@@ -105,7 +105,7 @@ class AFGoal {
         case .toAvoidAgents:
             var gkAgents = [GKAgent]()
             for avoideeName in agentNames {
-                for entity in GameScene.me!.entities {
+                for entity in AFCore.data.entities {
                     if entity.name == avoideeName {
                         gkAgents.append(entity.agent)
                     }
@@ -115,18 +115,14 @@ class AFGoal {
             
         case .toAvoidObstacles:
             var obstacles = [GKPolygonObstacle]()
-//            GameScene.me!.obstacles.forEach { obstacles.append($1.asObstacle()!) }
-            for (_, afPath) in GameScene.me!.obstacles {
-                let ob = afPath.asObstacle()
-                obstacles.append(ob!)
-            }
+            AFCore.data.obstacles.forEach { obstacles.append($1.asObstacle()!) }
             
             gkGoal = GKGoal(toAvoid: obstacles, maxPredictionTime: TimeInterval(time))
 
         case .toCohereWith:
             var gkAgents = [GKAgent]()
             for coheree in agentNames {
-                for entity in GameScene.me!.entities {
+                for entity in AFCore.data.entities {
                     if entity.name == coheree {
                         gkAgents.append(entity.agent)
                     }
@@ -137,7 +133,7 @@ class AFGoal {
 
         case .toFleeAgent:
             for agentName in agentNames {
-                for entity in GameScene.me!.entities {
+                for entity in AFCore.data.entities {
                     if entity.name == agentName {
                         gkGoal = GKGoal(toFleeAgent: entity.agent)
                         break
@@ -146,12 +142,12 @@ class AFGoal {
             }
 
         case .toFollow:
-            let afPath = GameScene.me!.paths[pathname!]
+            let afPath = AFCore.data.paths[pathname!]
             gkGoal = GKGoal(toFollow: afPath.gkPath, maxPredictionTime: TimeInterval(time), forward: forward)
 
         case .toInterceptAgent:
             for agentName in agentNames {
-                for entity in GameScene.me!.entities {
+                for entity in AFCore.data.entities {
                     if entity.name == agentName {
                         gkGoal = GKGoal(toInterceptAgent: entity.agent, maxPredictionTime: TimeInterval(time))
                         break
@@ -164,7 +160,7 @@ class AFGoal {
             
         case .toSeekAgent:
             for agentName in agentNames {
-                for entity in GameScene.me!.entities {
+                for entity in AFCore.data.entities {
                     if entity.name == agentName {
                         gkGoal = GKGoal(toSeekAgent: entity.agent)
                         break
@@ -175,7 +171,7 @@ class AFGoal {
         case .toSeparateFrom:
             var gkAgents = [GKAgent]()
             for separatees in agentNames {
-                for entity in GameScene.me!.entities {
+                for entity in AFCore.data.entities {
                     if entity.name == separatees {
                         gkAgents.append(entity.agent)
                     }
@@ -185,7 +181,7 @@ class AFGoal {
             gkGoal = GKGoal(toSeparateFrom: gkAgents, maxDistance: distance, maxAngle: angle)
             
         case .toStayOn:
-            let afPath = GameScene.me!.paths[pathname!]
+            let afPath = AFCore.data.paths[pathname!]
             gkGoal = GKGoal(toStayOn: afPath.gkPath, maxPredictionTime: TimeInterval(time))
             
         case .toWander:
@@ -210,7 +206,7 @@ class AFGoal {
         goalType = .toAlignWith
         
         var gkAgents = [GKAgent]()
-        for entity in GameScene.me!.entities {
+        for entity in AFCore.data.entities {
             if agentNames.contains(entity.name) {
                 gkAgents.append(entity.agent)
             }
@@ -230,7 +226,7 @@ class AFGoal {
         goalType = .toAvoidAgents
         
         var gkAgents = [GKAgent]()
-        for entity in GameScene.me!.entities {
+        for entity in AFCore.data.entities {
             if agentNames.contains(entity.name) {
                 gkAgents.append(entity.agent)
             }
@@ -255,7 +251,7 @@ class AFGoal {
         
         var obstacles = [GKPolygonObstacle]()
         for name in names {
-            let obstacle = GameScene.me!.obstacles[name]!
+            let obstacle = AFCore.data.obstacles[name]!
             obstacles.append(obstacle.asObstacle()!)
 
             let gkPath = obstacle.asPath()
@@ -276,7 +272,7 @@ class AFGoal {
         goalType = .toCohereWith
         
         var gkAgents = [GKAgent]()
-        for entity in GameScene.me!.entities {
+        for entity in AFCore.data.entities {
             if agentNames.contains(entity.name) {
                 gkAgents.append(entity.agent)
             }
@@ -296,7 +292,7 @@ class AFGoal {
         goalType = .toFleeAgent
         
         var gkAgents = [GKAgent]()
-        for entity in GameScene.me!.entities {
+        for entity in AFCore.data.entities {
             if agentName == entity.name {
                 gkAgents.append(entity.agent)
             }
@@ -319,7 +315,7 @@ class AFGoal {
         self.time = t
         self.weight = weight
         
-        let afPath = AFPath(copyFrom: GameScene.me!.paths[pathname])
+        let afPath = AFPath(copyFrom: AFCore.data.paths[pathname])
         gkGoal = GKGoal(toFollow: afPath.asPath()!, maxPredictionTime: TimeInterval(t), forward: forward)
     }
     
@@ -327,7 +323,7 @@ class AFGoal {
         goalType = .toInterceptAgent
         
         var gkAgents = [GKAgent]()
-        for entity in GameScene.me!.entities {
+        for entity in AFCore.data.entities {
             if agentName == entity.name {
                 gkAgents.append(entity.agent)
             }
@@ -356,7 +352,7 @@ class AFGoal {
         goalType = .toSeekAgent
         
         var gkAgents = [GKAgent]()
-        for entity in GameScene.me!.entities {
+        for entity in AFCore.data.entities {
             if agentName == entity.name {
                 gkAgents.append(entity.agent)
             }
@@ -374,7 +370,7 @@ class AFGoal {
         goalType = .toSeparateFrom
         
         var gkAgents = [GKAgent]()
-        for entity in GameScene.me!.entities {
+        for entity in AFCore.data.entities {
             if agentNames.contains(entity.name) {
                 gkAgents.append(entity.agent)
             }
@@ -398,7 +394,7 @@ class AFGoal {
         self.time = t
         self.weight = weight
         
-        let afPath = AFPath(copyFrom: GameScene.me!.paths[pathname])
+        let afPath = AFPath(copyFrom: AFCore.data.paths[pathname])
         gkGoal = GKGoal(toStayOn: afPath.gkPath, maxPredictionTime: TimeInterval(t))
     }
 

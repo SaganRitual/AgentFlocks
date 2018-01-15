@@ -211,7 +211,7 @@ class TopBarController: NSViewController {
 	}
 	
     @IBAction func recallAgents(_ sender: NSButton) {
-        for entity in GameScene.me!.entities {
+        for entity in AFCore.data.entities {
             let spriteContainer = entity.agent.spriteContainer
             
             entity.agent.position.x = 0

@@ -86,6 +86,7 @@
 		D4C7EAE11FFD06EE0008FBCD /* AFGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */; };
 		D4C7EAE31FFD93C00008FBCD /* Agent07.png in Resources */ = {isa = PBXBuildFile; fileRef = D4C7EAE21FFD93C00008FBCD /* Agent07.png */; };
 		D4C942D9200C39CD00A85BCB /* AFBrowserDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C942D8200C39CD00A85BCB /* AFBrowserDelegate.swift */; };
+		D4D1655B200CA2B60065728D /* AFMenuBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D1655A200CA2B60065728D /* AFMenuBarDelegate.swift */; };
 		D4F779E320087057005179BA /* AFGraphNode2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F779E220087057005179BA /* AFGraphNode2D.swift */; };
 /* End PBXBuildFile section */
 
@@ -171,6 +172,7 @@
 		D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFGoal.swift; sourceTree = "<group>"; };
 		D4C7EAE21FFD93C00008FBCD /* Agent07.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent07.png; sourceTree = "<group>"; };
 		D4C942D8200C39CD00A85BCB /* AFBrowserDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFBrowserDelegate.swift; sourceTree = "<group>"; };
+		D4D1655A200CA2B60065728D /* AFMenuBarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFMenuBarDelegate.swift; sourceTree = "<group>"; };
 		D4F779E220087057005179BA /* AFGraphNode2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFGraphNode2D.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -323,6 +325,7 @@
 				D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */,
 				D4F779E220087057005179BA /* AFGraphNode2D.swift */,
 				D43A7600200AEA390048796D /* AFInputState.swift */,
+				D4D1655A200CA2B60065728D /* AFMenuBarDelegate.swift */,
 				D4422621200795070013A6E5 /* AFOrderedMap.swift */,
 				D4506DD41FFE65B50077A42A /* AFPath.swift */,
 			);
@@ -465,6 +468,7 @@
 				D4F779E320087057005179BA /* AFGraphNode2D.swift in Sources */,
 				7493863B200145C700BAAF8E /* ActiveImageView.swift in Sources */,
 				74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */,
+				D4D1655B200CA2B60065728D /* AFMenuBarDelegate.swift in Sources */,
 				D44256271FE804F000FC454B /* AFAgent2D.swift in Sources */,
 				D43A7605200B23330048796D /* AFContextMenu.swift in Sources */,
 				D4422622200795070013A6E5 /* AFOrderedMap.swift in Sources */,
