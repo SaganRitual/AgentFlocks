@@ -43,8 +43,8 @@ class AFEntity: GKEntity {
         addComponent(agent)
     }
     
-    init(prototype: AFEntity_Script) {
-        agent = AFAgent2D(prototype: prototype.agent)
+    init(scene: GameScene, prototype: AFEntity_Script) {
+        agent = AFAgent2D(scene: scene, prototype: prototype.agent)
         
         super.init()
         
@@ -56,19 +56,6 @@ class AFEntity: GKEntity {
     }
 }
 
-extension AFEntity {
-    static func makeEntities(from entities_: [AFEntity_Script]) -> [AFEntity] {
-        var result = [AFEntity]()
-        
-        for entity_ in entities_ {
-            let entity = AFEntity(prototype: entity_)
-            result.append(entity)
-        }
-        
-        return result
-    }
-}
-
 extension AFEntity: AgentGoalsDataSource {
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, numberOfChildrenOfItem item: Any?) -> Int {
@@ -77,7 +64,7 @@ extension AFEntity: AgentGoalsDataSource {
         } else if let b = item as? AFBehavior {
             return b.goalCount
         } else {
-            let selected = GameScene.me!.getSelectedNames()
+            let selected = AFCore.inputState.getSelectedNames()
             
             if selected.count > 0 {
                 let entity = AFCore.data.entities[selected.first!]
@@ -101,7 +88,7 @@ extension AFEntity: AgentGoalsDataSource {
             // The best I can think to do is to grab the behavior at [index] in
             // the selected agent's composite. Look into this, find out why we
             // get a nil.
-            let selected = GameScene.me!.getSelectedNames()
+            let selected = AFCore.inputState.getSelectedNames()
             if selected.count > 0 {
                 let entity = AFCore.data.entities[selected.first!]
                 return (entity.agent.behavior as! AFCompositeBehavior)[index]

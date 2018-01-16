@@ -68,23 +68,26 @@ class AFPath_Script: Codable, Equatable {
 class AFPath: Equatable {
     var containerNode: SKNode?
     var finalized = false
+    let gameScene: GameScene
     var gkPath: GKPath!
-    let name: String
     var graphNodes: AFOrderedMap<String, AFGraphNode2D>
     var gkObstacle: GKPolygonObstacle!
+    let name: String
     var radius: Float = 5.0
     var visualPathSprite: SKShapeNode?
     
-    init(obstacle: GKPolygonObstacle? = nil) {
-        name = NSUUID().uuidString
+    init(gameScene: GameScene, obstacle: GKPolygonObstacle? = nil) {
+        self.gameScene = gameScene
         graphNodes = AFOrderedMap<String, AFGraphNode2D>()
+        name = NSUUID().uuidString
 
         self.gkObstacle = obstacle
     }
     
-    init(copyFrom: AFPath, offset: CGPoint? = nil) {
-        name = NSUUID().uuidString
+    init(gameScene: GameScene, copyFrom: AFPath, offset: CGPoint? = nil) {
+        self.gameScene = gameScene
         graphNodes = AFOrderedMap<String, AFGraphNode2D>()
+        name = NSUUID().uuidString
 
         copyFrom.graphNodes.forEach {
             let newNode = AFGraphNode2D(copyFrom: $0, drawable: false)
@@ -101,7 +104,8 @@ class AFPath: Equatable {
         refresh(final: true)
     }
     
-    init(prototype: AFPath_Script) {
+    init(gameScene: GameScene, prototype: AFPath_Script) {
+        self.gameScene = gameScene
         name = prototype.name
         radius = prototype.radius
 
@@ -183,7 +187,7 @@ class AFPath: Equatable {
     }
     
     func getImageData(size: CGSize) -> NSImage {
-        let texture = GameScene.me!.view!.texture(from: visualPathSprite!)!
+        let texture = gameScene.view!.texture(from: visualPathSprite!)!
         let cgImage = texture.cgImage()
         let nsImage = NSImage(cgImage: cgImage, size: size)
         
@@ -265,9 +269,7 @@ class AFPath: Equatable {
         if !finalized { visualPathSprite!.strokeColor = .red }
         if gkObstacle != nil { visualPathSprite!.fillColor = .gray }
 
-        if let c = containerNode {
-            GameScene.me!.addChild(c)
-        }
+        if let c = containerNode { gameScene.addChild(c) }
     }
     
     func remove(node: AFGraphNode2D) {

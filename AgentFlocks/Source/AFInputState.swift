@@ -81,43 +81,51 @@ class AFData_Script: Codable {
 
 class AFData {
     var entities = AFOrderedMap<String, AFEntity>()
+    let inputState: AFInputState
     var paths = AFOrderedMap<String, AFPath>()
     var obstacles = [String : AFPath]()
     
-    init() {
-        
+    init(inputState: AFInputState) {
+        self.inputState = inputState
     }
     
-    init(prototype: AFData_Script) {
+    init(inputState: AFInputState, prototype: AFData_Script) {
+        self.inputState = inputState
+        
         // Order matters here. Obstacles and paths need to be in place
         // before the entities, because the entities have goals that
         // depend on fully formed obstacles & paths.
-        prototype.paths.forEach {
-            let path = AFPath(prototype: $0)
-            paths.append(key: path.name, value: path)
-        }
+        prototype.paths.forEach { createPath(prototype: $0) }
         
-        prototype.obstacles.forEach {
-            let obstacle = AFPath(prototype: $0.value)
-            obstacles[$0.key] = obstacle
-        }
+        prototype.obstacles.forEach { createObstacle(name: $0, prototype: $1) }
 
-        prototype.entities.forEach {
-            let entity = AFEntity(prototype: $0)
-            entities.append(key: entity.name, value: entity)
-        }
+        prototype.entities.forEach { createEntity(prototype: $0) }
     }
     
-    func createEntity(scene: GameScene, copyFrom: AFEntity, position: CGPoint) -> AFEntity {
-        let entity = AFEntity(scene: scene, copyFrom: copyFrom, position: position)
+    func createEntity(prototype: AFEntity_Script) {
+        let entity = inputState.makeEntity(prototype: prototype)
+        entities.append(key: entity.name, value: entity)
+    }
+    
+    func createEntity(copyFrom: AFEntity, position: CGPoint) -> AFEntity {
+        let entity = inputState.makeEntity(copyFrom: copyFrom, position: position)
         entities.append(key: entity.name, value: entity)
         return entity
     }
     
-    func createEntity(scene: GameScene, image: NSImage, position: CGPoint) -> AFEntity {
-        let entity = AFEntity(scene: scene, image: image, position: position)
+    func createEntity(image: NSImage, position: CGPoint) -> AFEntity {
+        let entity = inputState.makeEntity(image: image, position: position)
         entities.append(key: entity.name, value: entity)
         return entity
+    }
+    
+    func createObstacle(name: String, prototype: AFPath_Script) {
+        obstacles[name] = inputState.makePath(prototype: prototype)
+    }
+    
+    func createPath(prototype: AFPath_Script) {
+        let path = inputState.makePath(prototype: prototype)
+        paths.append(key: path.name, value: path)
     }
     
     func getAgent(_ name: String) -> AFAgent2D {
@@ -130,14 +138,17 @@ class AFCore {
     static var agentGoalsDelegate: AFAgentGoalsDelegate!
     static var browserDelegate: AFBrowserDelegate!
     static var contextMenuDelegate: AFContextMenuDelegate!
-    static var data = AFData()
+    static var data: AFData!
     static var inputState: AFInputState!
     static var itemEditorDelegate: AFItemEditorDelegate!
     static var menuBarDelegate: AFMenuBarDelegate!
     static var topBarDelegate: AFTopBarDelegate!
     
     static func makeCore(gameScene: GameScene) {
-        inputState = AFInputState(data: data, gameScene: gameScene)
+        inputState = AFInputState(gameScene: gameScene, ui: AppDelegate.me!)
+        
+        data = AFData(inputState: inputState)
+        inputState.data = self.data
 
         agentGoalsDelegate = AFAgentGoalsDelegate(data: data, inputState: inputState)
         browserDelegate = AFBrowserDelegate(inputState)
@@ -157,7 +168,7 @@ class AFCore {
 
 class AFInputState: GKStateMachine {
     var currentPosition = CGPoint.zero
-    let data: AFData
+    var data: AFData!
     var downNodeName: String?
     var nodeToMouseOffset = CGPoint.zero
     var parentOfNewMotivator: AFBehavior?
@@ -167,13 +178,14 @@ class AFInputState: GKStateMachine {
     var mouseState = MouseStates.up
     var selectedNames = Set<String>()
     var touchedNodes = [SKNode]()
+    var ui: AppDelegate
     var upNodeName: String?
     
     enum MouseStates { case down, dragging, rightDown, rightUp, up }
 
-    init(data: AFData, gameScene: GameScene) {
-        self.data = data
+    init(gameScene: GameScene, ui: AppDelegate) {
         self.gameScene = gameScene
+        self.ui = ui
         
         super.init(states: [ ModeDraw(), ModePlace() ])
         
@@ -268,6 +280,22 @@ class AFInputState: GKStateMachine {
     func keyUp(with event: NSEvent) {
         getInputRelay()?.keyUp(with: event)
     }
+    
+    func makeEntity(image: NSImage, position: CGPoint) -> AFEntity {
+        return AFEntity(scene: gameScene, image: image, position: position)
+    }
+    
+    func makeEntity(prototype: AFEntity_Script) -> AFEntity {
+        return AFEntity(scene: gameScene, prototype: prototype)
+    }
+    
+    func makeEntity(copyFrom: AFEntity, position: CGPoint) -> AFEntity {
+        return AFEntity(scene: gameScene, copyFrom: copyFrom, position: position)
+    }
+    
+    func makePath(prototype: AFPath_Script) -> AFPath {
+        return AFPath(gameScene: gameScene, prototype: prototype)
+    }
 
     func mouseDown(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
@@ -344,6 +372,16 @@ class AFInputState: GKStateMachine {
     func toggleSelection(_ name: String) {
         if selectedNames.contains(name) { getInputRelay()?.deselect(name) }
         else { getInputRelay()?.select(name, primary: primarySelection == nil) }
+    }
+
+    func updatePrimarySelectionState(agentName: String?) {
+        var agent: AFAgent2D?
+        
+        if let agentName = agentName {
+            agent = data.entities[agentName].agent
+        }
+        
+        ui.changePrimarySelectionState(selectedAgent: agent)
     }
 }
 
@@ -484,7 +522,7 @@ extension AFInputState {
                     } else {
                         let startNewPath = (activePath == nil) || (activePath.finalized)
                         if startNewPath {
-                            activePath = AFPath()
+                            activePath = AFPath(gameScene: psm.gameScene)
                             
                             // With a new path started, no other options are available
                             // until the path is finalized. However, the "add path" option
@@ -534,7 +572,7 @@ extension AFInputState {
         func stampObstacle(at point: CGPoint) {
             deselectAll()
             let offset = point - CGPoint(activePath.graphNodes[0].position)
-            let newPath = AFPath.init(copyFrom: activePath, offset: offset)
+            let newPath = AFPath.init(gameScene: AFCore.inputState.gameScene, copyFrom: activePath, offset: offset)
             newPath.stampObstacle()
             getParentStateMachine().data.obstacles[newPath.name] = newPath
             select(newPath.name, primary: true)
@@ -569,14 +607,16 @@ extension AFInputState {
             // We just now deselected the primary. If there's anyone
             // else selected, they need to be made the primary.
             if psm.primarySelection == name {
+                var selectNew: String?
+                
                 if psm.selectedNames.count > 0 {
-                    let selectNew = psm.selectedNames.first!
-                    select(selectNew, primary: true)
-                    AppDelegate.me!.placeAgentFrames(agentName: selectNew)
+                    selectNew = psm.selectedNames.first!
+                    select(selectNew!, primary: true)
                 } else {
                     psm.primarySelection = nil
-                    AppDelegate.me!.removeAgentFrames()
                 }
+
+                psm.updatePrimarySelectionState(agentName: selectNew)
             }
             
             AFContextMenu.includeInDisplay(.CloneAgent, false)
@@ -587,14 +627,10 @@ extension AFInputState {
             
             psm.data.entities.forEach{ $0.agent.deselect() }
             
+            // Ugliness; this stuff should be in inputState
             psm.selectedNames.removeAll()
             psm.primarySelection = nil
-
-            // Turn off the agent attributes and goals edit views
-            AppDelegate.me!.removeAgentFrames()
-            
-            // Clear out the sliders so they'll recalibrate themselves to the new values
-            AppDelegate.agentEditorController.attributesController.resetSliderControllers()
+            psm.updatePrimarySelectionState(agentName: nil)
             
             AFContextMenu.includeInDisplay(.CloneAgent, false)
         }
@@ -644,16 +680,15 @@ extension AFInputState {
                     let originalIx = psm.data.entities.count - 1
                     let originalEntity = psm.data.entities[originalIx]
                     
-                    newEntity = psm.data.createEntity(scene: psm.gameScene, copyFrom: originalEntity, position: psm.currentPosition)
+                    newEntity = psm.data.createEntity(copyFrom: originalEntity, position: psm.currentPosition)
                 } else {
                     let imageIndex = AFCore.browserDelegate.agentImageIndex
                     let image = AppDelegate.me!.agents[imageIndex].image
-                    newEntity = psm.data.createEntity(scene: psm.gameScene, image: image, position: psm.currentPosition)
+                    newEntity = psm.data.createEntity(image: image, position: psm.currentPosition)
                 }
                 
                 select(newEntity.name, primary: true)
-                
-                AppDelegate.me!.placeAgentFrames(agentName: newEntity.name)
+                psm.updatePrimarySelectionState(agentName: newEntity.name)
             } else {
                 if event.modifierFlags.contains(.command) {
                     if psm.mouseState == .down { // cmd+click on a node
@@ -695,8 +730,8 @@ extension AFInputState {
                 AppDelegate.agentEditorController.goalsController.dataSource = entity
                 AppDelegate.agentEditorController.attributesController.delegate = entity.agent
                 
-                psm.primarySelection = name
-                AppDelegate.me!.placeAgentFrames(agentName: name)
+                psm.primarySelection = name // Ugliness; move this into inputState
+                psm.updatePrimarySelectionState(agentName: name)
             }
             
             AFContextMenu.includeInDisplay(.CloneAgent, true, enable: true)

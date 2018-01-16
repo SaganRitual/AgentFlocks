@@ -225,7 +225,6 @@ class TopBarController: NSViewController {
 	}
 
 	@IBAction private func playClicked(_ sender: NSButton) {
-        GameScene.me!.isPaused = !GameScene.me!.isPaused
 		self.play = !self.play
 		delegate?.topBar(self, statusChangedTo: self.play ? TopBarController.Status.Running : TopBarController.Status.Paused)
 	}

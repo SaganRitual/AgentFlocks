@@ -106,6 +106,31 @@ class AFAgentGoalsDelegate {
         }
     }
     
+    func enableItem(_ item: Any, parent: Any?, on: Bool) -> [Any]? {
+        if let behavior = item as? AFBehavior {
+            let name = inputState.getPrimarySelectionName()!
+            let agent = data.entities[name].agent
+            let composite = agent.behavior as! AFCompositeBehavior
+            
+            composite.enableBehavior(behavior, on: on)
+            
+            var itemsUpdated = [Any]()
+            for gkGoal in behavior.goalsMap.keys {
+                itemsUpdated.append(gkGoal)
+            }
+            
+            return itemsUpdated
+        }
+        else if let gkGoal = item as? GKGoal {
+            let behavior = parent! as! AFBehavior
+            let afGoal = behavior.goalsMap[gkGoal]!
+            
+            behavior.enableGoal(afGoal, on: on)
+        }
+
+        return nil
+    }
+    
     func play(_ yesno: Bool) {
         let name = inputState.getPrimarySelectionName()!
         let agent = data.entities[name].agent

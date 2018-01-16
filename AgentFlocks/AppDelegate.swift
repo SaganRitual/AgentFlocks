@@ -209,21 +209,32 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return foundObstacles
     }
     
-	func placeAgentFrames(agentName: String) {
-        let agent = AFCore.data.entities[agentName].agent
+    func changePrimarySelectionState(selectedAgent: AFAgent2D?) {
+        if let selectedAgent = selectedAgent {
+            placeAgentFrames(selectedAgent: selectedAgent)
+        } else {
+            
+            // Clear out the sliders so they'll recalibrate themselves to the new values
+            AppDelegate.agentEditorController.attributesController.resetSliderControllers()
+
+            removeAgentFrames()
+        }
+    }
+    
+    func placeAgentFrames(selectedAgent: AFAgent2D) {
         let ac = AppDelegate.agentEditorController.attributesController
         let gc = AppDelegate.agentEditorController.goalsController
 
         // Play/pause button image
-        gc.playButton.image = agent.isPlaying ? gc.pauseImage : gc.playImage
+        gc.playButton.image = selectedAgent.isPlaying ? gc.pauseImage : gc.playImage
 
         // This is where we finally read back out the actual
         // values from the GKAgent and store them in the attributes controller
-        ac.mass = Double(agent.mass)
-        ac.maxAcceleration = Double(agent.maxAcceleration)
-        ac.maxSpeed = Double(agent.maxSpeed)
-        ac.radius = Double(agent.radius)
-        ac.scale = Double(agent.scale)
+        ac.mass = Double(selectedAgent.mass)
+        ac.maxAcceleration = Double(selectedAgent.maxAcceleration)
+        ac.maxSpeed = Double(selectedAgent.maxSpeed)
+        ac.radius = Double(selectedAgent.radius)
+        ac.scale = Double(selectedAgent.scale)
         
 		settingsView.addSubview(AppDelegate.agentEditorController.view)
         AppDelegate.agentEditorController.refresh()
@@ -526,26 +537,10 @@ extension AppDelegate: AgentGoalsDelegate {
     }
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, item: Any, setState state: NSControl.StateValue) {
-        if let behavior = item as? AFBehavior {
-            let name = GameScene.me!.getPrimarySelectionName()!
-            let agent = AFCore.data.entities[name].agent
-            let composite = agent.behavior as! AFCompositeBehavior
-            
-            if state == .on {
-                composite.enableBehavior(behavior, on: true)
-            } else {
-                composite.enableBehavior(behavior, on: false)
-            }
-            
-			for gkGoal in behavior.goalsMap.keys {
-				agentGoalsController.outlineView!.reloadItem(gkGoal, reloadChildren: false)
-			}
-        }
-        else if let gkGoal = item as? GKGoal {
-            let behavior = agentGoalsController.outlineView.parent(forItem: item) as! AFBehavior
-            let afGoal = behavior.goalsMap[gkGoal]!
+        let parent = agentGoalsController.outlineView.parent(forItem: item)
 
-            behavior.enableGoal(afGoal, on: state == .on)
+        if let updatedItems = coreAgentGoalsDelegate.enableItem(item, parent: parent, on: state == .on) {
+            updatedItems.forEach { agentGoalsController.outlineView!.reloadItem($0, reloadChildren: false) }
         }
     }
 
@@ -665,10 +660,7 @@ extension AppDelegate: ItemEditorDelegate {
    
     func itemEditorApplyPressed(_ controller: ItemEditorController) {
         coreItemEditorDelegate.refreshMotivators(state: ItemEditorSlidersState(controller))
-        
-        AgentGoalsController.me!.outlineView.reloadData()
-
-        AppDelegate.agentEditorController.refresh()
+        controller.refreshAffectedControllers()
         activePopover?.close()
     }
 	

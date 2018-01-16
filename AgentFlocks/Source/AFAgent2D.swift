@@ -59,7 +59,7 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         }
     }
     
-    init(prototype: AFAgent2D_Script) {
+    init(scene: GameScene, prototype: AFAgent2D_Script) {
         scale = 1
         
         let (cc, ss) = AFAgent2D.makeSpriteContainer(imageFile: prototype.imageFile, position: prototype.position)
@@ -68,7 +68,7 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         
         sprite.name = prototype.name
         
-        GameScene.me!.addChild(spriteContainer)
+        scene.addChild(spriteContainer)
 
         originalSize = sprite.size
 
@@ -176,7 +176,7 @@ class AFAgent2D: GKAgent2D, AFScenoid {
     
     static func makeSpriteContainer(image: NSImage, position: CGPoint, _ name: String? = nil) -> (SKNode, SKSpriteNode) {
         let node = SKNode()
-        node.position = position + GameScene.me!.inputState!.nodeToMouseOffset
+        node.position = position + AFCore.inputState.nodeToMouseOffset
 
         var texture: SKTexture!
         
@@ -323,6 +323,11 @@ extension AFAgent2D: AgentAttributesDelegate {
             spriteContainer.addChild(radiusIndicator!)
             break
         }
+    }
+    
+    func getPrimarySelectedAgent() -> AFAgent2D {
+        let name = AFCore.inputState.getPrimarySelectionName()!
+        return AFCore.data.entities[name].agent
     }
 }
 

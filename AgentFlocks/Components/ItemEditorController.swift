@@ -34,6 +34,8 @@ class ItemEditorController: NSViewController {
 	@IBOutlet private weak var sliderStackView: NSStackView!
 	private var orderedSliderNames = [String]()
 	private var sliders = [String:LogSliderController]()
+    private var agentGoalsController: AgentGoalsController!
+    private var agentEditorController: AgentEditorController!
 	
 	// MARK: - Initialization
 	
@@ -71,9 +73,17 @@ class ItemEditorController: NSViewController {
                 sliderController.parentItemEditorController = self
 			}
 		}
+        
+        agentGoalsController = AgentGoalsController.me!
+        agentEditorController = AppDelegate.agentEditorController
     }
 	
 	// MARK: - Public methods
+    func refreshAffectedControllers() {
+        agentGoalsController.outlineView.reloadData()
+        agentEditorController.refresh()
+    }
+
     func valueChanged(sliderName: String) -> Bool {
         if let sliderController = sliders[sliderName.lowercased()] {
             return sliderController.valueChanged

@@ -35,6 +35,7 @@ class AFGoal_Script: Codable {
     var forward = true
     let goalType: AFGoalType
     let name: String
+    var obstacleNames = [String]()
     let pathname: String
     var weight: Float
     
@@ -44,17 +45,20 @@ class AFGoal_Script: Codable {
     var time: Float = 0
     
     init(goal: AFGoal) {
+        name = goal.name
+
         agentNames = goal.agentNames
         enabled = goal.enabled
         forward = goal.forward
         goalType = goal.goalType
+        obstacleNames = goal.obstacleNames
         pathname = goal.pathname ?? ""
         weight = goal.weight
+        
         angle = goal.angle
         distance = goal.distance
         speed = goal.speed
         time = goal.time
-        name = goal.name
     }
 }
 
@@ -115,7 +119,8 @@ class AFGoal {
             
         case .toAvoidObstacles:
             var obstacles = [GKPolygonObstacle]()
-            AFCore.data.obstacles.forEach { obstacles.append($1.asObstacle()!) }
+
+            AFCore.data!.obstacles.forEach { obstacles.append($1.asObstacle()!) }
             
             gkGoal = GKGoal(toAvoid: obstacles, maxPredictionTime: TimeInterval(time))
 
@@ -253,16 +258,6 @@ class AFGoal {
         for name in names {
             let obstacle = AFCore.data.obstacles[name]!
             obstacles.append(obstacle.asObstacle()!)
-
-            let gkPath = obstacle.asPath()
-            let cgPath = CGMutablePath()
-            cgPath.move(to: CGPoint(gkPath!.float2(at: 0)))
-            for i in 1 ..< gkPath!.numPoints - 1 {
-                cgPath.addLine(to: CGPoint(gkPath!.float2(at: i)))
-            }
-            let s = SKShapeNode(path: cgPath)
-            s.fillColor = .red
-            GameScene.me!.addChild(s)
         }
         
         gkGoal = GKGoal(toAvoid: obstacles, maxPredictionTime: time)
@@ -315,7 +310,7 @@ class AFGoal {
         self.time = t
         self.weight = weight
         
-        let afPath = AFPath(copyFrom: AFCore.data.paths[pathname])
+        let afPath = AFPath(gameScene: AFCore.inputState.gameScene, copyFrom: AFCore.data.paths[pathname])
         gkGoal = GKGoal(toFollow: afPath.asPath()!, maxPredictionTime: TimeInterval(t), forward: forward)
     }
     
@@ -394,7 +389,7 @@ class AFGoal {
         self.time = t
         self.weight = weight
         
-        let afPath = AFPath(copyFrom: AFCore.data.paths[pathname])
+        let afPath = AFPath(gameScene: AFCore.inputState.gameScene, copyFrom: AFCore.data.paths[pathname])
         gkGoal = GKGoal(toStayOn: afPath.gkPath, maxPredictionTime: TimeInterval(t))
     }
 

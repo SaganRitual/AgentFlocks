@@ -160,7 +160,7 @@ class AFItemEditorDelegate {
         }
         
         if goal != nil {
-            inputState.parentOfNewMotivator!.addGoal(goal!)
+            inputState.getParentForNewMotivator().addGoal(goal!)
         }
     }
     

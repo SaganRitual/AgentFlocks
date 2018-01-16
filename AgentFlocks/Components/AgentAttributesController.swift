@@ -10,6 +10,8 @@ import Cocoa
 
 protocol AgentAttributesDelegate {
 	func agent(_ controller: AgentAttributesController, newValue value:Double, ofAttribute:AgentAttributesController.Attribute)
+    
+    func getPrimarySelectedAgent() -> AFAgent2D
 }
 
 class AgentAttributesController: NSViewController {
@@ -33,9 +35,7 @@ class AgentAttributesController: NSViewController {
     }
     
     func reloadAgentAttributes(skip: AgentAttributesController.Attribute) {
-        guard let name = GameScene.me!.getPrimarySelectionName() else { return }
-
-        let agent = AFCore.data.entities[name].agent
+        let agent = delegate!.getPrimarySelectedAgent()
 
         if skip != .mass { mass = Double(agent.mass) }
         if skip != .maxAcceleration { maxAcceleration = Double(agent.maxAcceleration) }

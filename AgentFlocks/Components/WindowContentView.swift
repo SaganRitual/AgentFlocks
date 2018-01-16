@@ -17,11 +17,11 @@ class WindowContentView: NSView {
 	}
 	
 	override func keyDown(with event: NSEvent) {
-		GameScene.me!.keyDown(with: event)
+		AFCore.inputState.keyDown(with: event)
 	}
 	
 	override func keyUp(with event: NSEvent) {
-		GameScene.me!.keyUp(with: event)
+		AFCore.inputState.keyUp(with: event)
 	}
 	
 }

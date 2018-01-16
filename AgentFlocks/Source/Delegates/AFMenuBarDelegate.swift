@@ -25,7 +25,7 @@
 import GameplayKit
 
 class AFMenuBarDelegate {
-    let data: AFData
+    unowned let data: AFData
     unowned let inputState: AFInputState
     
     init(data: AFData, inputState: AFInputState) {
@@ -41,24 +41,23 @@ extension AFMenuBarDelegate {
         do {
             let jsonData = try Data(contentsOf: url)
             let decoder = JSONDecoder()
-            let data_ = try decoder.decode(AFData_Script.self, from: jsonData)
+            let input = try decoder.decode(AFData_Script.self, from: jsonData)
 
-            for i in 0 ..< data_.paths.keys.count {
-                let path_ = data_.paths.keys[i]
-                let path = AFPath(prototype: data_.paths.map[path_]!)
-                AFCore.data.paths.append(key: path.name, value: path)
+            for i in 0 ..< input.paths.keys.count {
+                let path_ = input.paths.keys[i]
+                let path = inputState.makePath(prototype: input.paths.map[path_]!)
+                
+                self.data.paths.append(key: path.name, value: path)
+            }
+            
+            for (key, value) in input.obstacles {
+                let path = inputState.makePath(prototype: value)
+                self.data.obstacles[key] = path
             }
 
-            var selectionSet = false
-            for entity_ in data_.entities {
-                let entity = AFEntity(prototype: entity_)
-                AFCore.data.entities.append(key: entity.name, value: entity)
-
-                if !selectionSet {
-                    AppDelegate.agentEditorController.goalsController.dataSource = entity
-                    AppDelegate.agentEditorController.attributesController.delegate = entity.agent
-                    selectionSet = true
-                }
+            for entity_ in input.entities {
+                let entity = inputState.makeEntity(prototype: entity_)
+                self.data.entities.append(key: entity.name, value: entity)
             }
         } catch { print(error) }
     }

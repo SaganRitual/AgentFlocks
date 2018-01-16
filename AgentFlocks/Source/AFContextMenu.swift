@@ -124,7 +124,7 @@ class AFContextMenuDelegate {
         let originalEntity = AFCore.data.entities[inputState.upNodeName!]
         let currentPosition = inputState.currentPosition
         
-        _ = data.createEntity(scene: inputState.gameScene, copyFrom: originalEntity, position: currentPosition)
+        _ = inputState.makeEntity(copyFrom: originalEntity, position: currentPosition)
     }
     
     func itemAddPathToLibrary() {
