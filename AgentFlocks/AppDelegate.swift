@@ -51,9 +51,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	private var activePopover:NSPopover?
 	private var libraryControllers = [Int:ImagesListController]()
     
-    var parentOfNewMotivator: AFBehavior?
-    
-    var behaviorMap = [GKGoal : AFBehavior]()
+    var coreAgentGoalsDelegate: AFAgentGoalsDelegate!
+    var coreBrowserDelegate: AFBrowserDelegate!
+    var coreContextMenuDelegate: AFContextMenuDelegate!
+    var coreItemEditorDelegate: AFItemEditorDelegate!
+    var coreMenuBarDelegate: AFMenuBarDelegate!
+    var coreTopBarDelegate: AFTopBarDelegate!
 	
 	func applicationWillFinishLaunching(_ notification: Notification) {
 		
@@ -345,11 +348,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		NSLog("Menu: File->Revert to Saved")
 	}
     @IBAction func menuTempMenuRegisterPathClicked(_ sender: NSMenuItem) {
-        GameScene.me!.inputState.finalizePath(close: false)
+        coreMenuBarDelegate.tempRegisterPath()
     }
 	
     @IBAction func menuTempMenuSelectPathClicked(_ sender: NSMenuItem) {
-        GameScene.me!.pathForNextPathGoal = sender.tag
+        coreMenuBarDelegate.tempSelectPath(ix: sender.tag)
     }
 	
 	// MARK: - Context Menu callbacks
@@ -357,33 +360,30 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	@IBAction func contextMenuClicked(_ sender: NSMenuItem) {
         switch sender.tag {
         case AFContextMenu.ItemTypes.AddPathToLibrary.rawValue:
-           GameScene.me!.inputState.finalizePath(close: true)
+            coreContextMenuDelegate.itemAddPathToLibrary()
             
         case AFContextMenu.ItemTypes.Draw.rawValue:
             topBarController.radioButtonDraw.state = NSControl.StateValue.on
             topBarController.radioButtonPath.state = NSControl.StateValue.on
             topBarController.radioButtonAgent.isEnabled = false
-            GameScene.me!.inputState.enter(AFInputState.ModeDraw.self)
+            
+            coreContextMenuDelegate.itemDraw()
 
         case AFContextMenu.ItemTypes.CloneAgent.rawValue:
-            let input = GameScene.me!.inputState!
-            let originalEntity = AFCore.data.entities[input.upNodeName!]
-            let currentPosition = input.currentPosition
-
-            _ = AFCore.data.createEntity(scene: GameScene.me!, copyFrom: originalEntity, position: currentPosition)
+            coreContextMenuDelegate.itemCloneAgent()
             
         case AFContextMenu.ItemTypes.Place.rawValue:
             topBarController.radioButtonPlace.state = NSControl.StateValue.on
             topBarController.radioButtonAgent.state = NSControl.StateValue.on
             topBarController.radioButtonAgent.isEnabled = true
-            GameScene.me!.inputState.enter(AFInputState.ModePlace.self)
+            
+            coreContextMenuDelegate.itemPlace()
             
         case AFContextMenu.ItemTypes.SetObstacleCloneStamp.rawValue:
-            GameScene.me!.inputState.setObstacleCloneStamp()
+            coreContextMenuDelegate.itemSetObstacleCloneStamp()
             
         case AFContextMenu.ItemTypes.StampObstacle.rawValue:
-            let currentPosition = GameScene.me!.inputState.currentPosition
-            GameScene.me!.inputState.stampObstacle(at: currentPosition)
+            coreContextMenuDelegate.itemStampObstacle()
 
         default:
             fatalError()
@@ -399,32 +399,19 @@ extension AppDelegate: TopBarDelegate {
 	func topBar(_ controller: TopBarController, actionChangedTo action: TopBarController.Action, for object: TopBarController.Object) {
         switch action {
         case .Place:
-            GameScene.me!.inputState.enter(AFInputState.ModePlace.self)
+            coreTopBarDelegate.actionPlace()
         case .Draw:
-            GameScene.me!.inputState.enter(AFInputState.ModeDraw.self)
+            coreTopBarDelegate.actionDraw()
         case .Edit: break
         }
 	}
 	
     func topBar(_ controller: TopBarController, obstacleSelected index: Int) {
-        if 0..<obstacles.count ~= index {
-            NSLog("Obstacle selected")
-//
-//            GameScene.me!.selectionDelegate.deselectAll()
-//
-//
-//            editedObstacleIndex = index
-//            self.removeAgentFrames()
-        }
+        // no longer used
     }
     
     func topBar(_ controller: TopBarController, agentSelected index: Int) {
-//        if 0..<agents.count ~= index {
-//            NSLog("Agent selected")
-//            
-//            GameScene.me!.selectionDelegate.deselectAll()
-//            agentImageIndex = index
-//        }
+        // no longer used
     }
 	
 	func topBar(_ controller: TopBarController, library index: Int, stateChanged enabled: Bool) {
@@ -444,24 +431,10 @@ extension AppDelegate: TopBarDelegate {
                 controller.imageData = agentImages
 
             case .Agents:
-                var agentImages = [NSImage]()
-
-                for entity in AFCore.data.entities {
-                    let sprite = entity.agent.sprite
-                    let cgImage = sprite.texture!.cgImage()
-                    let nsImage = NSImage(cgImage: cgImage, size: sprite.size)
-                    agentImages.append(nsImage)
-                }
-                
-                controller.imageData = agentImages
+                controller.imageData = coreTopBarDelegate.getActiveAgentImages()
 
             case .Paths:
-                var pathImages = [NSImage]()
-                AFCore.data.paths.forEach {
-                    let s = CGSize(width: 50, height: 50)
-                    pathImages.append($0.getImageData(size: s))
-                }
-                controller.imageData = pathImages
+                controller.imageData = coreTopBarDelegate.getActivePathImages()
 
             case .LinkedGoals: fallthrough
                 
@@ -499,16 +472,13 @@ extension AppDelegate: TopBarDelegate {
 	
     func topBar(_ controller: TopBarController, statusChangedTo newStatus: TopBarController.Status) {
         switch newStatus {
-        case .Running:
-            NSLog("START")
-            GameScene.me!.lastUpdateTime = 0
-        case .Paused:
-            NSLog("STOP")
+        case .Running: coreTopBarDelegate.play()
+        case .Paused: coreTopBarDelegate.pause()
         }
     }
 
     func topBar(_ controller: TopBarController, speedChangedTo newSpeed: Double) {
-        NSLog("Speed: %f", newSpeed)
+        coreTopBarDelegate.setSpeed(newSpeed)
     }
 	
 }
@@ -518,45 +488,21 @@ extension AppDelegate: TopBarDelegate {
 extension AppDelegate: AgentGoalsDelegate {
 
     func agentGoalsPlayClicked(_ agentGoalsController: AgentGoalsController, actionPlay: Bool) {
-        let name = GameScene.me!.getPrimarySelectionName()!
-        let agent = AFCore.data.entities[name].agent
-        
-        agent.isPlaying = actionPlay
+        coreAgentGoalsDelegate.play(actionPlay)
     }
     
     func agentGoalsDeleteItem(_ agentGoalsController: AgentGoalsController) {
-        let name = GameScene.me!.getPrimarySelectionName()!
-        let agent = AFCore.data.entities[name].agent
-        let composite = agent.behavior as! AFCompositeBehavior
-        
         if let outlineView = agentGoalsController.outlineView {
             let row = outlineView.selectedRow
             let protoItem = outlineView.item(atRow: row)
-            var reloadOutline = false
-
-            if let hotBehavior = protoItem as? AFBehavior {
-                reloadOutline = true
-                composite.remove(hotBehavior)
-            } else if let hotGoal = protoItem as? GKGoal {
-                let hotBehavior = composite.findParent(ofGoal: hotGoal)!
-                reloadOutline = true
-                hotBehavior.remove(hotGoal)
-            }
             
-            if reloadOutline { outlineView.reloadData() }
+            coreAgentGoalsDelegate.deleteItem(protoItem!)
+            outlineView.reloadData()
         }
     }
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemClicked item: Any, inRect rect: NSRect) {
-        if let motivator = item as? AFBehavior {
-            parentOfNewMotivator = motivator
-        } else if let motivator = item as? GKGoal {
-            let name = GameScene.me!.getPrimarySelectionName()!
-            let agent = AFCore.data.entities[name].agent
-            let composite = agent.behavior as! AFCompositeBehavior
-            
-            parentOfNewMotivator = composite.findParent(ofGoal: motivator)
-        }
+        coreAgentGoalsDelegate.itemClicked(item)
     }
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemDoubleClicked item: Any, inRect rect: NSRect) {
@@ -713,206 +659,60 @@ extension AppDelegate: AgentGoalsDelegate {
             
 // MARK: - ItemEditorDelegate
 
-extension AppDelegate: ItemEditorDelegate {
+class ItemEditorSlidersState {
+    typealias SliderState = (value: Double, didChange: Bool)
     
-    func retransmitGoal(controller: ItemEditorController, afGoal: AFGoal) {
-        let newGoal = AFGoal.makeGoal(copyFrom: afGoal, weight: afGoal.weight)
-
-        let angle = controller.value(ofSlider: "Angle")
-        let distance = controller.value(ofSlider: "Distance")
-        let speed = controller.value(ofSlider: "Speed")
-        let time = controller.value(ofSlider: "Time")
-
-        // Everyone has a weight
-        let weight = Float(controller.value(ofSlider: "Weight")!)
-
-        if let angle = angle { newGoal.angle = Float(angle) }
-        if let distance = distance { newGoal.distance = Float(distance) }
-        if let speed = speed { newGoal.speed = Float(speed) }
-        if let time = time { newGoal.time = Float(time) }
-
-        newGoal.weight = weight
-
-        parentOfNewMotivator!.remove(afGoal)
-        parentOfNewMotivator!.setWeightage(weight, for: newGoal)
-        controller.editedAFGoal = newGoal
-
-        AgentGoalsController.me!.outlineView.reloadData()
-    }
+    var angle: SliderState?
+    var distance: SliderState?
+    var forward = true
+    var editedItem: Any?
+    var newItemType: AgentGoalsController.GoalType?
+    var speed: SliderState?
+    var time: SliderState?
     
-    func getParentForNewMotivator() -> AFBehavior {
-        if let p = parentOfNewMotivator { return p }
-        else {
-            let agentName = GameScene.me!.getPrimarySelectionName()!
-            let entity = AFCore.data.entities[agentName]
-            return (entity.agent.behavior! as! GKCompositeBehavior)[0] as! AFBehavior
+    var weight: SliderState
+    
+    init(_ controller: ItemEditorController) {
+        editedItem = controller.editedItem
+        newItemType = controller.newItemType
+        forward = controller.followPathForward
+        
+        if let angle = controller.value(ofSlider: "Angle") {
+            let didChange = controller.valueChanged(sliderName: "Angle")
+            self.angle = (value: angle, didChange: didChange)
         }
+        
+        if let distance = controller.value(ofSlider: "Distance") {
+            let didChange = controller.valueChanged(sliderName: "Distance")
+            self.distance = (value: distance, didChange: didChange)
+        }
+        
+        if let speed = controller.value(ofSlider: "Speed") {
+            let didChange = controller.valueChanged(sliderName: "Speed")
+            self.speed = (value: speed, didChange: didChange)
+        }
+        
+        if let time = controller.value(ofSlider: "Time") {
+            let didChange = controller.valueChanged(sliderName: "Time")
+            self.time = (value: time, didChange: didChange)
+        }
+        
+        let weight = controller.value(ofSlider: "Weight")!
+        let didChange = controller.valueChanged(sliderName: "Weight")
+        self.weight = (value: weight, didChange: didChange)
     }
-	
-	func itemEditorApplyPressed(_ controller: ItemEditorController) {
-        let selectedNames = GameScene.me!.getSelectedNames()
-        guard selectedNames.count > 0 else { return }
+}
 
-        let agentName = GameScene.me!.getPrimarySelectionName()!
-        let entity = AFCore.data.entities[agentName]
-        let parentOfNewMotivator = getParentForNewMotivator()
+extension AppDelegate: ItemEditorDelegate {
+   
+    func itemEditorApplyPressed(_ controller: ItemEditorController) {
+        coreItemEditorDelegate.refreshMotivators(state: ItemEditorSlidersState(controller))
         
-        let angle = controller.value(ofSlider: "Angle")
-        let distance = controller.value(ofSlider: "Distance")
-        let speed = controller.value(ofSlider: "Speed")
-        let time = controller.value(ofSlider: "Time")
-        
-        // Behaviors and goals always have a weight, thus a weight slider
-        let weight = Float(controller.value(ofSlider: "Weight")!)
-        
-        if let behavior = controller.editedItem as? AFBehavior {
-            // Edit existing behavior
-            behavior.weight = weight
-            (entity.agent.behavior! as! AFCompositeBehavior).setWeight(weight, for: behavior)
-        } else if let _ = controller.editedItem as? GKGoal {
-            let afGoal = controller.editedAFGoal!
-
-            // Edit existing goal -- note AFBehavior doesn't give us a way
-            // to update the goal. If we want to assign any new values to
-            // this goal, we just have to throw it away and make a new one.
-            var replacementGoalRequired = false
-            for name in ["Angle", "Distance", "Speed", "Time"] {
-                if controller.valueChanged(sliderName: name) {
-                    replacementGoalRequired = true; break
-                }
-            }
-
-            // However, the weight of the goal is managed by the behavior.
-            // So if all we're updating is the weight, we can just change that
-            // directly in the behavior, without creating a new goal.
-            if replacementGoalRequired {
-                retransmitGoal(controller: controller, afGoal: afGoal)
-            } else {
-                afGoal.weight = weight
-                parentOfNewMotivator.setWeightage(weight, for: afGoal)
-            }
-        } else {
-            // Add new goal or behavior
-            if let type = controller.newItemType {
-                var goal: AFGoal?
-                var group = GameScene.me!.getSelectedNames()
-                let names = Array(group)
-
-                switch type {
-                case .toAlignWith:
-                    let primarySelection = GameScene.me!.getPrimarySelectionName()!
-                    let primarySelected = AFCore.data.entities[primarySelection] as AFEntity
-
-                    goal = AFGoal(toAlignWith: names, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
-
-                    // Secondary selections align with primary and with each other.
-                    // Primary doesn't do anything.
-                    for agentName in group {
-                        let afAgent = AFCore.data.entities[agentName].agent
-                        
-                        if afAgent.name != primarySelected.name {
-                            afAgent.addGoal(goal!)
-                        }
-                    }
-                    
-                    goal = nil
-                    
-                case .toAvoidObstacles:
-                    goal = AFGoal(toAvoidObstacles: Array(AFCore.data.obstacles.keys), time: time!, weight: weight)
-                    
-                case .toAvoidAgents:
-                    let primarySelection = GameScene.me!.getPrimarySelectionName()!
-                    let primarySelected = AFCore.data.entities[primarySelection] as AFEntity
-                    
-                    let agentNames = Array(group)
-                    
-                    if let ix = group.index(of: primarySelected.agent.name) {
-                        group.remove(at: ix)
-                    }
-                    
-                    goal = AFGoal(toAvoidAgents: agentNames, time: time!, weight: weight)
-                    primarySelected.agent.addGoal(goal!)
-                    
-                    goal = nil
-                    
-                case .toCohereWith:
-                    goal = AFGoal(toCohereWith: names, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
-                    for agentName in group {
-                        AFCore.data.entities[agentName].agent.addGoal(goal!)
-                    }
-                    
-                    goal = nil
-                    
-                case .toFleeAgent:
-                    let selectedNames = GameScene.me!.getSelectedNames()
-                    guard selectedNames.count == 2 else { return }
-                    
-                    var si = selectedNames.union(Set<String>())
-                    si.remove(GameScene.me!.getPrimarySelectionName()!)
-                    
-                    let nameOfAgentToFlee = si.first!
-                    goal = AFGoal(toFleeAgent: nameOfAgentToFlee, weight: weight)
-                    
-                case .toFollow:
-                    let pathIndex = GameScene.me!.pathForNextPathGoal
-                    let pathname = AFCore.data.paths[pathIndex].name
-                    goal = AFGoal(toFollow: pathname, time: Float(time!), forward: followPathFoward, weight: weight)
-                    
-                    goal!.pathname = pathname
-
-                case .toInterceptAgent:
-                    let selectedNames = GameScene.me!.getSelectedNames()
-                    guard selectedNames.count == 2 else { return }
-
-                    let namesAsArray = Array(selectedNames)
-                    let secondaryAgentName = namesAsArray[1]
-                    goal = AFGoal(toInterceptAgent: secondaryAgentName, time: time!, weight: weight)
-
-                case .toSeekAgent:
-                    var selectedNames = GameScene.me!.getSelectedNames()
-                    guard selectedNames.count == 2 else { return }
-
-                    let p = selectedNames.remove(GameScene.me!.getPrimarySelectionName()!)
-                    selectedNames.remove(p!)
-                    
-                    let secondaryAgentName = selectedNames.first!
-                    goal = AFGoal(toSeekAgent: secondaryAgentName, weight: weight)
-
-                case .toSeparateFrom:
-                    goal = AFGoal(toSeparateFrom: names, maxDistance: Float(distance!), maxAngle: Float(angle!), weight: weight)
-                    for agentName in group {
-                        AFCore.data.entities[agentName].agent.addGoal(goal!)
-                    }
-                    
-                    goal = nil
-
-                case .toStayOn:
-                    let pathIndex = GameScene.me!.pathForNextPathGoal
-                    let pathname = AFCore.data.paths[pathIndex].name
-                    goal = AFGoal(toStayOn: pathname, time: Float(time!), weight: weight)
-                    
-                    goal!.pathname = pathname
-
-                case .toReachTargetSpeed:
-                    goal = AFGoal(toReachTargetSpeed: Float(speed!), weight: weight)
-                    
-                case .toWander:
-                    goal = AFGoal(toWander: Float(speed!), weight: weight)
-                }
-
-                if goal != nil {
-                    parentOfNewMotivator.addGoal(goal!)
-                }
-            } else {
-                let behavior = AFBehavior(agent: entity.agent)
-                behavior.weight = weight
-                (entity.agent.behavior as! AFCompositeBehavior).setWeight(behavior.weight, for: behavior)
-            }
-		}
+        AgentGoalsController.me!.outlineView.reloadData()
 
         AppDelegate.agentEditorController.refresh()
-		activePopover?.close()
-	}
+        activePopover?.close()
+    }
 	
 	func itemEditorCancelPressed(_ controller: ItemEditorController) {
 		activePopover?.close()
@@ -924,8 +724,17 @@ extension AppDelegate: LogSliderDelegate {
     func logSlider(_ controller: LogSliderController, newValue value: Double) {
         if let itemEditorController = controller.parentItemEditorController {
             if itemEditorController.preview {
-                let afGoal = itemEditorController.editedAFGoal!
-                retransmitGoal(controller: itemEditorController, afGoal: afGoal)
+                let state = ItemEditorSlidersState(itemEditorController)
+                let newSetting = (value: value, didChange: true)
+                switch controller.sliderName {
+                case "Angle": state.angle = newSetting
+                case "Distance": state.distance = newSetting
+                case "Speed": state.speed = newSetting
+                case "Time": state.time = newSetting
+                case "Weight": state.weight = newSetting
+                default: fatalError()
+                }
+                coreItemEditorDelegate.sliderChanged(state: ItemEditorSlidersState(itemEditorController))
             }
         }
     }
@@ -952,7 +761,7 @@ extension AppDelegate: ImagesListDelegate {
 		}.keys
         
 		if let controllerIndex = controllerIndexArray.first {
-            AFCore.browserDelegate.imageSelected(controllerIndex: controllerIndex, imageIndex: index)
+            coreBrowserDelegate.imageSelected(controllerIndex: controllerIndex, imageIndex: index)
 		}
 	}
 	
@@ -961,7 +770,7 @@ extension AppDelegate: ImagesListDelegate {
 			return value == controller
 			}.keys
 		if let controllerIndex = controllerIndexArray.first {
-            AFCore.browserDelegate.imageEnabled(controllerIndex: controllerIndex, imageIndex: index, enabled: enabled)
+            coreBrowserDelegate.imageEnabled(controllerIndex: controllerIndex, imageIndex: index, enabled: enabled)
 		}
 	}
 

@@ -35,13 +35,15 @@ class GameScene: SKScene, SKViewDelegate {
     static var me: GameScene?
 
     var inputState: AFInputState!
-    var pathForNextPathGoal = 0
 
     var lastUpdateTime : TimeInterval = 0
 
     override func didMove(to view: SKView) {
         GameScene.me = self
     }
+    
+    func pause() { isPaused = true }
+    func play() { isPaused = false; lastUpdateTime = 0 }
 
     override func sceneDidLoad() {
         self.lastUpdateTime = 0

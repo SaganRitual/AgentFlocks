@@ -20,12 +20,13 @@ class ItemEditorController: NSViewController {
 	var delegate:ItemEditorDelegate?
 	var editedItem:Any?
     var editedAFGoal:AFGoal?
+    var followPathForward = true
     var newItemType:AgentGoalsController.GoalType?
 	
 	@objc dynamic var preview:Bool = false
 	
     @IBAction func forwardCheckClicked(_ sender: NSButton) {
-        AppDelegate.me!.followPathFoward = (sender.state == .on)
+        followPathForward = (sender.state == .on)
     }
     
 	// MARK: - Attributes (private)

@@ -126,6 +126,7 @@ class AFBehavior: GKBehavior {
 
         // AFBehavior has to track goals, because there's no way to read
         // them back out of the GKBehavior structures
+        afGoal.weight = weight
         goalsMap[afGoal.gkGoal] = afGoal
     }
     

@@ -26,9 +26,17 @@ import GameplayKit
 
 class AFMenuBarDelegate {
     let data: AFData
+    unowned let inputState: AFInputState
     
-    init(_ data: AFData) { self.data = data }
+    init(data: AFData, inputState: AFInputState) {
+        self.data = data
+        self.inputState = inputState
+    }
+}
 
+// MARK: File menu
+
+extension AFMenuBarDelegate {
     func fileOpen(_ url: URL) {
         do {
             let jsonData = try Data(contentsOf: url)
@@ -64,5 +72,17 @@ class AFMenuBarDelegate {
                 try script.write(to: url)
             } catch { print(error) }
         } catch { print(error) }
+    }
+}
+
+// MARK: Temp menu
+
+extension AFMenuBarDelegate {
+    func tempRegisterPath() {
+        inputState.finalizePath(close: false)
+    }
+    
+    func tempSelectPath(ix: Int) {
+        inputState.pathForNextPathGoal = ix
     }
 }

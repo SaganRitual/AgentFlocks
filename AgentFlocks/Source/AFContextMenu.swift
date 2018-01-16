@@ -110,3 +110,40 @@ class AFContextMenu {
         }
     }
 }
+
+class AFContextMenuDelegate {
+    unowned let data: AFData
+    unowned let inputState: AFInputState
+    
+    init(data: AFData, inputState: AFInputState) {
+        self.data = data
+        self.inputState = inputState
+    }
+    
+    func itemCloneAgent() {
+        let originalEntity = AFCore.data.entities[inputState.upNodeName!]
+        let currentPosition = inputState.currentPosition
+        
+        _ = data.createEntity(scene: inputState.gameScene, copyFrom: originalEntity, position: currentPosition)
+    }
+    
+    func itemAddPathToLibrary() {
+        inputState.finalizePath(close: true)
+    }
+    
+    func itemDraw() {
+        inputState.enter(AFInputState.ModeDraw.self)
+    }
+    
+    func itemPlace() {
+        inputState.enter(AFInputState.ModePlace.self)
+    }
+    
+    func itemSetObstacleCloneStamp() {
+        inputState.setObstacleCloneStamp()
+    }
+    
+    func itemStampObstacle() {
+        inputState.stampObstacle()
+    }
+}

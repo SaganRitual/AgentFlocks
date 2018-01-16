@@ -119,18 +119,39 @@ class AFData {
         entities.append(key: entity.name, value: entity)
         return entity
     }
+    
+    func getAgent(_ name: String) -> AFAgent2D {
+        let entity = entities[name]
+        return entity.agent
+    }
 }
 
 class AFCore {
+    static var agentGoalsDelegate: AFAgentGoalsDelegate!
     static var browserDelegate: AFBrowserDelegate!
+    static var contextMenuDelegate: AFContextMenuDelegate!
     static var data = AFData()
     static var inputState: AFInputState!
+    static var itemEditorDelegate: AFItemEditorDelegate!
     static var menuBarDelegate: AFMenuBarDelegate!
+    static var topBarDelegate: AFTopBarDelegate!
     
     static func makeCore(gameScene: GameScene) {
         inputState = AFInputState(data: data, gameScene: gameScene)
+
+        agentGoalsDelegate = AFAgentGoalsDelegate(data: data, inputState: inputState)
         browserDelegate = AFBrowserDelegate(inputState)
-        menuBarDelegate = AFMenuBarDelegate(data)
+        contextMenuDelegate = AFContextMenuDelegate(data: data, inputState: inputState)
+        itemEditorDelegate = AFItemEditorDelegate(data: data, inputState: inputState)
+        menuBarDelegate = AFMenuBarDelegate(data: data, inputState: inputState)
+        topBarDelegate = AFTopBarDelegate(data: data, inputState: inputState)
+
+        AppDelegate.me!.coreAgentGoalsDelegate = agentGoalsDelegate
+        AppDelegate.me!.coreBrowserDelegate = browserDelegate
+        AppDelegate.me!.coreContextMenuDelegate = contextMenuDelegate
+        AppDelegate.me!.coreItemEditorDelegate = itemEditorDelegate
+        AppDelegate.me!.coreMenuBarDelegate = menuBarDelegate
+        AppDelegate.me!.coreTopBarDelegate = topBarDelegate
     }
 }
 
@@ -139,6 +160,8 @@ class AFInputState: GKStateMachine {
     let data: AFData
     var downNodeName: String?
     var nodeToMouseOffset = CGPoint.zero
+    var parentOfNewMotivator: AFBehavior?
+    var pathForNextPathGoal = 0
     var primarySelection: String?
     unowned let gameScene: GameScene
     var mouseState = MouseStates.up
@@ -190,6 +213,15 @@ class AFInputState: GKStateMachine {
         else { return currentState! as? EditModeRelay }
     }
     
+    func getParentForNewMotivator() -> AFBehavior {
+        if let p = parentOfNewMotivator { return p }
+        else {
+            let agentName = getPrimarySelectionName()!
+            let entity = data.entities[agentName]
+            return (entity.agent.behavior! as! GKCompositeBehavior)[0] as! AFBehavior
+        }
+    }
+
     func getPathThatOwnsTouchedNode() -> (AFPath, String)? {
         touchedNodes = gameScene.nodes(at: currentPosition)
         
@@ -307,7 +339,7 @@ class AFInputState: GKStateMachine {
     }
 
     func setObstacleCloneStamp() { (currentState! as! ModeDraw).setObstacleCloneStamp() }
-    func stampObstacle(at point: CGPoint) { (currentState! as! ModeDraw).stampObstacle(at: point) }
+    func stampObstacle() { (currentState! as! ModeDraw).stampObstacle(at: currentPosition) }
     
     func toggleSelection(_ name: String) {
         if selectedNames.contains(name) { getInputRelay()?.deselect(name) }
