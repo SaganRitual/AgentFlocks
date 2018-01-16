@@ -507,64 +507,22 @@ extension AppDelegate: AgentGoalsDelegate {
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemDoubleClicked item: Any, inRect rect: NSRect) {
         guard let mainView = window.contentView else { return }
-        if item is AFBehavior {
-            let behavior = item as! AFBehavior
-            
-            let editorController = ItemEditorController(withAttributes: ["Weight"])
-            editorController.delegate = self
-            editorController.editedItem = item
-
-            editorController.setValue(ofSlider: "Weight", to: Double(behavior.weight))
-            editorController.preview = true
         
-            let itemRect = mainView.convert(rect, from: agentGoalsController.view)
-            self.showPopover(withContentController: editorController, forRect: itemRect, preferredEdge: .minX)
-        }
-        else if item is GKGoal {
-            let gkGoal = item as! GKGoal
+        let attributes = coreAgentGoalsDelegate.getEditableAttributes(for: item)
+        let editorController = ItemEditorController(withAttributes: Array(attributes.keys))
 
-            let name = GameScene.me!.getPrimarySelectionName()!
-            let agent = AFCore.data.entities[name].agent
-            let composite = agent.behavior as! AFCompositeBehavior
-            let behavior = composite.findParent(ofGoal: gkGoal)
-            let afGoal = behavior!.goalsMap[gkGoal]!
-            
-            var attributes = [String]()
+        editorController.delegate = self
+        editorController.editedItem = item
 
-            switch afGoal.goalType {
-            case .toAlignWith:    fallthrough
-            case .toCohereWith:   fallthrough
-            case .toSeparateFrom: attributes = ["Angle", "Distance", "Weight"]
-
-            case .toFleeAgent:    fallthrough
-            case .toSeekAgent:    attributes = ["Weight"]
-
-            case .toReachTargetSpeed: fallthrough
-            case .toWander:           attributes = ["Speed", "Weight"]
-
-            case .toFollow:         attributes = ["Time", "Weight"]
-                
-            case .toStayOn:         fallthrough
-            case .toAvoidAgents:    fallthrough
-            case .toAvoidObstacles: fallthrough
-            case .toInterceptAgent: attributes = ["Time", "Weight"]
+        let names = ["Angle", "Distance", "Speed", "Time", "Weight"]
+        names.forEach {
+            if attributes.contains($0) {
+                editorController.setValue(ofSlider: $0, to: attributes[$0], resetDirtyFlag: true)
             }
-            
-            let editorController = ItemEditorController(withAttributes: attributes)
-            editorController.delegate = self
-            editorController.editedItem = item
-            editorController.editedAFGoal = afGoal
- 
-            editorController.setValue(ofSlider: "Angle", to: Double(afGoal.angle), resetDirtyFlag: true)
-            editorController.setValue(ofSlider: "Distance", to: Double(afGoal.distance), resetDirtyFlag: true)
-            editorController.setValue(ofSlider: "Speed", to: Double(afGoal.speed), resetDirtyFlag: true)
-            editorController.setValue(ofSlider: "Time", to: Double(afGoal.time), resetDirtyFlag: true)
-            editorController.setValue(ofSlider: "Weight", to: Double(afGoal.weight), resetDirtyFlag: true)
-            editorController.preview = true
-        
-            let itemRect = mainView.convert(rect, from: agentGoalsController.view)
-            self.showPopover(withContentController: editorController, forRect: itemRect, preferredEdge: .minX)
         }
+    
+        let itemRect = mainView.convert(rect, from: agentGoalsController.view)
+        self.showPopover(withContentController: editorController, forRect: itemRect, preferredEdge: .minX)
     }
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, item: Any, setState state: NSControl.StateValue) {
@@ -726,6 +684,7 @@ extension AppDelegate: LogSliderDelegate {
             if itemEditorController.preview {
                 let state = ItemEditorSlidersState(itemEditorController)
                 let newSetting = (value: value, didChange: true)
+                
                 switch controller.sliderName {
                 case "Angle": state.angle = newSetting
                 case "Distance": state.distance = newSetting
@@ -734,6 +693,7 @@ extension AppDelegate: LogSliderDelegate {
                 case "Weight": state.weight = newSetting
                 default: fatalError()
                 }
+
                 coreItemEditorDelegate.sliderChanged(state: ItemEditorSlidersState(itemEditorController))
             }
         }

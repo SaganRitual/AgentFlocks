@@ -322,23 +322,31 @@
 		D44256211FE7F9DE00FC454B /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				D4D16562200D7F880065728D /* Delegates */,
 				D44256261FE804F000FC454B /* AFAgent2D.swift */,
-				D4D1655E200D45A40065728D /* AFAgentGoalsDelegate.swift */,
 				D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */,
-				D4C942D8200C39CD00A85BCB /* AFBrowserDelegate.swift */,
 				D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */,
 				D43A7604200B23330048796D /* AFContextMenu.swift */,
 				D44256241FE8048100FC454B /* AFEntity.swift */,
 				D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */,
 				D4F779E220087057005179BA /* AFGraphNode2D.swift */,
 				D43A7600200AEA390048796D /* AFInputState.swift */,
-				D4D16560200D61040065728D /* AFItemEditorDelegate.swift */,
-				D4D1655A200CA2B60065728D /* AFMenuBarDelegate.swift */,
 				D4422621200795070013A6E5 /* AFOrderedMap.swift */,
 				D4506DD41FFE65B50077A42A /* AFPath.swift */,
-				D4D1655C200D401E0065728D /* AFTopBarDelegate.swift */,
 			);
 			path = Source;
+			sourceTree = "<group>";
+		};
+		D4D16562200D7F880065728D /* Delegates */ = {
+			isa = PBXGroup;
+			children = (
+				D4D1655E200D45A40065728D /* AFAgentGoalsDelegate.swift */,
+				D4C942D8200C39CD00A85BCB /* AFBrowserDelegate.swift */,
+				D4D16560200D61040065728D /* AFItemEditorDelegate.swift */,
+				D4D1655A200CA2B60065728D /* AFMenuBarDelegate.swift */,
+				D4D1655C200D401E0065728D /* AFTopBarDelegate.swift */,
+			);
+			path = Delegates;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

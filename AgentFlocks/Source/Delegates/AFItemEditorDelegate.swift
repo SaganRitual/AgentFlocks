@@ -56,13 +56,13 @@ class AFItemEditorDelegate {
 
         switch type {
         case .toAlignWith:
-            let primarySelection = GameScene.me!.getPrimarySelectionName()!
-            let primarySelected = AFCore.data.entities[primarySelection] as AFEntity
+            let primarySelection = inputState.getPrimarySelectionName()!
+            let primarySelected = data.entities[primarySelection] as AFEntity
             
             goal = AFGoal(toAlignWith: names, maxDistance: distance, maxAngle: angle, weight: weight)
 
             for agentName in group {
-                let afAgent = AFCore.data.entities[agentName].agent
+                let afAgent = data.entities[agentName].agent
                 
                 // Hijacking the fwd checkbox; it's otherwise unused for this kind of goal
                 let includePrimary = state.forward
@@ -77,11 +77,11 @@ class AFItemEditorDelegate {
             goal = nil
             
         case .toAvoidObstacles:
-            goal = AFGoal(toAvoidObstacles: Array(AFCore.data.obstacles.keys), time: time, weight: weight)
+            goal = AFGoal(toAvoidObstacles: Array(data.obstacles.keys), time: time, weight: weight)
             
         case .toAvoidAgents:
-            let primarySelection = GameScene.me!.getPrimarySelectionName()!
-            let primarySelected = AFCore.data.entities[primarySelection] as AFEntity
+            let primarySelection = inputState.getPrimarySelectionName()!
+            let primarySelected = data.entities[primarySelection] as AFEntity
             
             let agentNames = Array(group)
             
@@ -97,30 +97,30 @@ class AFItemEditorDelegate {
         case .toCohereWith:
             goal = AFGoal(toCohereWith: names, maxDistance: distance, maxAngle: angle, weight: weight)
             for agentName in group {
-                AFCore.data.entities[agentName].agent.addGoal(goal!)
+                data.entities[agentName].agent.addGoal(goal!)
             }
             
             goal = nil
             
         case .toFleeAgent:
-            let selectedNames = GameScene.me!.getSelectedNames()
+            let selectedNames = inputState.getSelectedNames()
             guard selectedNames.count == 2 else { return }
             
             var si = selectedNames.union(Set<String>())
-            si.remove(GameScene.me!.getPrimarySelectionName()!)
+            si.remove(inputState.getPrimarySelectionName()!)
             
             let nameOfAgentToFlee = si.first!
             goal = AFGoal(toFleeAgent: nameOfAgentToFlee, weight: weight)
             
         case .toFollow:
             let pathIndex = AFCore.inputState.pathForNextPathGoal
-            let pathname = AFCore.data.paths[pathIndex].name
+            let pathname = data.paths[pathIndex].name
             goal = AFGoal(toFollow: pathname, time: Float(time), forward: state.forward, weight: weight)
             
             goal!.pathname = pathname
             
         case .toInterceptAgent:
-            let selectedNames = GameScene.me!.getSelectedNames()
+            let selectedNames = inputState.getSelectedNames()
             guard selectedNames.count == 2 else { return }
             
             let namesAsArray = Array(selectedNames)
@@ -128,10 +128,10 @@ class AFItemEditorDelegate {
             goal = AFGoal(toInterceptAgent: secondaryAgentName, time: time, weight: weight)
             
         case .toSeekAgent:
-            var selectedNames = GameScene.me!.getSelectedNames()
+            var selectedNames = inputState.getSelectedNames()
             guard selectedNames.count == 2 else { return }
             
-            let p = selectedNames.remove(GameScene.me!.getPrimarySelectionName()!)
+            let p = selectedNames.remove(inputState.getPrimarySelectionName()!)
             selectedNames.remove(p!)
             
             let secondaryAgentName = selectedNames.first!
@@ -140,14 +140,14 @@ class AFItemEditorDelegate {
         case .toSeparateFrom:
             goal = AFGoal(toSeparateFrom: names, maxDistance: distance, maxAngle: angle, weight: weight)
             for agentName in group {
-                AFCore.data.entities[agentName].agent.addGoal(goal!)
+                data.entities[agentName].agent.addGoal(goal!)
             }
             
             goal = nil
             
         case .toStayOn:
             let pathIndex = AFCore.inputState.pathForNextPathGoal
-            let pathname = AFCore.data.paths[pathIndex].name
+            let pathname = data.paths[pathIndex].name
             goal = AFGoal(toStayOn: pathname, time: Float(time), weight: weight)
             
             goal!.pathname = pathname

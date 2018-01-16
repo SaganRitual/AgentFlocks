@@ -162,8 +162,6 @@ class LogSliderController: NSViewController {
 		
 		exponentSlider.integerValue = self.exponentValue
 		slider.doubleValue = self.value
-        
-//        delegate = AppDelegate.me!
 	}
 	
 	// MARK: - Private methods
