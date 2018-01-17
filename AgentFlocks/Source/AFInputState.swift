@@ -107,6 +107,11 @@ class AFInputState: GKStateMachine {
         }
     }
     
+    func getEditModeInstructions(_ instructions: AFSelectionState.EditModeInstructions) -> AFSelectionState.EditModeInstructions {
+        let newInstructions = instructions
+        return newInstructions
+    }
+
     func getInputRelay() -> EditModeRelay? {
         if currentState == nil { return nil }
         else { return currentState! as? EditModeRelay }
@@ -221,6 +226,14 @@ class AFInputState: GKStateMachine {
 
         downNodeName = nil
         mouseState = .up
+    }
+    
+    func place(at point: CGPoint) -> String {
+        let imageIndex = AFCore.browserDelegate.agentImageIndex
+        let image = AppDelegate.me!.agents[imageIndex].image
+        let newEntity = data.createEntity(image: image, position: point)
+        
+        return newEntity.name
     }
 
     func rightMouseDown(with event: NSEvent) {

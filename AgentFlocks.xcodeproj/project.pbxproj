@@ -86,6 +86,7 @@
 		D4C7EAE11FFD06EE0008FBCD /* AFGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */; };
 		D4C7EAE31FFD93C00008FBCD /* Agent07.png in Resources */ = {isa = PBXBuildFile; fileRef = D4C7EAE21FFD93C00008FBCD /* Agent07.png */; };
 		D4C942D9200C39CD00A85BCB /* AFBrowserDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C942D8200C39CD00A85BCB /* AFBrowserDelegate.swift */; };
+		D4C9616B200EAE2500ACFCC5 /* AFSelectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C9616A200EAE2500ACFCC5 /* AFSelectionState.swift */; };
 		D4D1655B200CA2B60065728D /* AFMenuBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D1655A200CA2B60065728D /* AFMenuBarDelegate.swift */; };
 		D4D1655D200D401E0065728D /* AFTopBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D1655C200D401E0065728D /* AFTopBarDelegate.swift */; };
 		D4D1655F200D45A40065728D /* AFAgentGoalsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D1655E200D45A40065728D /* AFAgentGoalsDelegate.swift */; };
@@ -179,6 +180,7 @@
 		D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFGoal.swift; sourceTree = "<group>"; };
 		D4C7EAE21FFD93C00008FBCD /* Agent07.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent07.png; sourceTree = "<group>"; };
 		D4C942D8200C39CD00A85BCB /* AFBrowserDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFBrowserDelegate.swift; sourceTree = "<group>"; };
+		D4C9616A200EAE2500ACFCC5 /* AFSelectionState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSelectionState.swift; sourceTree = "<group>"; };
 		D4D1655A200CA2B60065728D /* AFMenuBarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFMenuBarDelegate.swift; sourceTree = "<group>"; };
 		D4D1655C200D401E0065728D /* AFTopBarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFTopBarDelegate.swift; sourceTree = "<group>"; };
 		D4D1655E200D45A40065728D /* AFAgentGoalsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFAgentGoalsDelegate.swift; sourceTree = "<group>"; };
@@ -345,6 +347,7 @@
 				D4D16569200E945B0065728D /* AFInputState_Place.swift */,
 				D4422621200795070013A6E5 /* AFOrderedMap.swift */,
 				D4506DD41FFE65B50077A42A /* AFPath.swift */,
+				D4C9616A200EAE2500ACFCC5 /* AFSelectionState.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -502,6 +505,7 @@
 				7493863B200145C700BAAF8E /* ActiveImageView.swift in Sources */,
 				74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */,
 				D4D1655B200CA2B60065728D /* AFMenuBarDelegate.swift in Sources */,
+				D4C9616B200EAE2500ACFCC5 /* AFSelectionState.swift in Sources */,
 				D44256271FE804F000FC454B /* AFAgent2D.swift in Sources */,
 				D43A7605200B23330048796D /* AFContextMenu.swift in Sources */,
 				D4422622200795070013A6E5 /* AFOrderedMap.swift in Sources */,
