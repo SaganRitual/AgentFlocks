@@ -25,7 +25,6 @@
 class AFCore {
     static var agentGoalsDelegate: AFAgentGoalsDelegate!
     static var browserDelegate: AFBrowserDelegate!
-    static var contextMenu: AFContextMenu!
     static var contextMenuDelegate: AFContextMenuDelegate!
     static var data: AFData!
     static var sceneInput: AFSceneInput!
@@ -36,8 +35,7 @@ class AFCore {
     static var ui: AppDelegate!
     
     static func makeCore(ui: AppDelegate, gameScene: GameScene) -> AFGameSceneDelegate {
-        contextMenu = AFContextMenu(ui: ui)
-        sceneUI = AFSceneUI(gameScene: gameScene, ui: ui, contextMenu: contextMenu)
+        sceneUI = AFSceneUI(gameScene: gameScene, ui: ui, contextMenu: AFContextMenu(ui: ui))
         
         data = AFData(sceneUI: sceneUI)
         sceneUI.data = self.data

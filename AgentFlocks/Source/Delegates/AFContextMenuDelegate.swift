@@ -32,10 +32,7 @@ class AFContextMenuDelegate {
     }
     
     func itemCloneAgent() {
-        let originalEntity = AFCore.data.entities[sceneUI.upNodeName!]
-        let currentPosition = sceneUI.currentPosition
-        
-        _ = sceneUI.makeEntity(copyFrom: originalEntity, position: currentPosition)
+        sceneUI.cloneAgent()
     }
     
     func itemAddPathToLibrary() {

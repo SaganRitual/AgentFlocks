@@ -395,31 +395,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	// MARK: - Context Menu callbacks
 	
 	@IBAction func contextMenuClicked(_ sender: NSMenuItem) {
-        switch sender.tag {
-        case AFContextMenu.ItemTypes.AddPathToLibrary.rawValue:
+        switch AFContextMenu.ItemTypes(rawValue: sender.tag)! {
+        case .AddPathToLibrary:
             coreContextMenuDelegate.itemAddPathToLibrary()
             
-        case AFContextMenu.ItemTypes.Draw.rawValue:
+        case .Draw:
             topBarController.radioButtonDraw.state = NSControl.StateValue.on
             topBarController.radioButtonPath.state = NSControl.StateValue.on
             topBarController.radioButtonAgent.isEnabled = false
 
-        case AFContextMenu.ItemTypes.CloneAgent.rawValue:
+        case .CloneAgent:
             coreContextMenuDelegate.itemCloneAgent()
             
-        case AFContextMenu.ItemTypes.Place.rawValue:
+        case .Place:
             topBarController.radioButtonPlace.state = NSControl.StateValue.on
             topBarController.radioButtonAgent.state = NSControl.StateValue.on
             topBarController.radioButtonAgent.isEnabled = true
             
-        case AFContextMenu.ItemTypes.SetObstacleCloneStamp.rawValue:
+        case .SetObstacleCloneStamp:
             coreContextMenuDelegate.itemSetObstacleCloneStamp()
             
-        case AFContextMenu.ItemTypes.StampObstacle.rawValue:
+        case .StampObstacle:
             coreContextMenuDelegate.itemStampObstacle()
-
-        default:
-            fatalError()
         }
 	}
 	

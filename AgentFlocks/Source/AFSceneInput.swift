@@ -91,7 +91,7 @@ class AFSceneInput: AFGameSceneDelegate {
     
     func mouseDragged(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
-        sceneUI.mouseDrag(on: downNodeName)
+        sceneUI.mouseDrag(on: downNodeName, at: currentPosition)
     }
     
     func mouseUp(with event: NSEvent) {
