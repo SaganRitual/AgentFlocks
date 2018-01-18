@@ -30,6 +30,7 @@ protocol AFGameSceneDelegate {
     func keyUp(with event: NSEvent)
     func mouseDown(with event: NSEvent)
     func mouseDragged(with event: NSEvent)
+    func mouseMoved(with event: NSEvent)
     func mouseUp(with event: NSEvent)
     func rightMouseUp(with event: NSEvent)
     func rightMouseDown(with event: NSEvent)

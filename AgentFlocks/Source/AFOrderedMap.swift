@@ -59,6 +59,12 @@ struct AFOrderedMap<KeyType: Hashable, ValueType: Equatable> {
     var map = [KeyType : ValueType]()
     
     var count: Int { return keys.count }
+    
+    var last: ValueType? {
+        guard keys.count > 0 else { return nil }
+        let key = keys[keys.count - 1]
+        return map[key]!
+    }
 
     mutating func append(key: KeyType, value: ValueType) {
         if keys.contains(key) { fatalError() }

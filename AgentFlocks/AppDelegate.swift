@@ -87,6 +87,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             obstacleImages.append(obstacle.image)
         }
         
+        window.acceptsMouseMovedEvents = true
+        
         agentEditorController.goalsController.delegate = self
         
         topBarController.delegate = self

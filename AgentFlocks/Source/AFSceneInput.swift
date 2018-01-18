@@ -40,7 +40,13 @@ class AFSceneInput: AFGameSceneDelegate {
     }
     
     func getTouchedNode() -> SKNode? {
-        let touchedNodes = gameScene.nodes(at: currentPosition)
+        let touchedNodes = gameScene.nodes(at: currentPosition).filter { $0.name != nil }
+        
+        for entity in data.entities {
+            if touchedNodes.contains(where: { return $0.name == entity.name }) {
+                return entity.agent.spriteContainer
+            }
+        }
         
         for afPath in data.paths {
             // Find the last descendant; I think that will be the top one
@@ -92,6 +98,11 @@ class AFSceneInput: AFGameSceneDelegate {
     func mouseDragged(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
         sceneUI.mouseDrag(on: downNodeName, at: currentPosition)
+    }
+    
+    func mouseMoved(with event: NSEvent) {
+        currentPosition = event.location(in: gameScene)
+        sceneUI.mouseMove(at: currentPosition)
     }
     
     func mouseUp(with event: NSEvent) {

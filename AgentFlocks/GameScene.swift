@@ -73,6 +73,7 @@ extension GameScene {
     override func keyUp(with event: NSEvent) { gameSceneDelegate.keyUp(with: event) }
     override func mouseDown(with event: NSEvent) { gameSceneDelegate.mouseDown(with: event) }
     override func mouseDragged(with event: NSEvent) { gameSceneDelegate.mouseDragged(with: event) }
+    override func mouseMoved(with event: NSEvent) { gameSceneDelegate.mouseMoved(with: event) }
     override func mouseUp(with event: NSEvent) { gameSceneDelegate.mouseUp(with: event) }
     override func rightMouseUp(with event: NSEvent) { gameSceneDelegate.rightMouseUp(with: event) }
 	override func rightMouseDown(with event: NSEvent) { gameSceneDelegate.rightMouseDown(with: event) }

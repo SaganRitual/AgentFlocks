@@ -195,7 +195,8 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         } else {
             sprite.name = NSUUID().uuidString
         }
-        
+
+        node.name = sprite.name
         return (node, sprite)
     }
 
