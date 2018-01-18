@@ -48,6 +48,7 @@ class AFGraphNode2D_Script: Codable, Equatable {
 
 class AFGraphNode2D: GKGraphNode2D, AFScenoid {
     let drawable: Bool
+    let gameScene: GameScene
     let radius: CGFloat = 5
     var selected = false
     let selectionIndicator: SKNode
@@ -60,45 +61,53 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
         get { return vector_float2(Float(sprite.position.x), Float(sprite.position.y)) }
     }
     
-    init(copyFrom: AFGraphNode2D, drawable: Bool = true) {
+    init(copyFrom: AFGraphNode2D, gameScene: GameScene, drawable: Bool = true) {
         let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: radius, position: CGPoint(copyFrom.position), selectionIndicatorRadius: selectionIndicatorRadius)
         sprite = ss
         selectionIndicator = se
         
-        if drawable { GameScene.me!.addChild(sprite) }
+        self.gameScene = gameScene
+        
+        if drawable { gameScene.addChild(sprite) }
         
         self.drawable = drawable
         super.init(point: copyFrom.position)
     }
 
-    init(float2Point: vector_float2, drawable: Bool = true) {
+    init(float2Point: vector_float2, gameScene: GameScene, drawable: Bool = true) {
         let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: radius, position: CGPoint(float2Point), selectionIndicatorRadius: selectionIndicatorRadius)
         sprite = ss
         selectionIndicator = se
         
-        if drawable { GameScene.me!.addChild(sprite) }
+        self.gameScene = gameScene
+
+        if drawable { gameScene.addChild(sprite) }
 
         self.drawable = drawable
         super.init(point: float2Point)
     }
     
-    init(point: CGPoint, drawable: Bool = true) {
+    init(point: CGPoint, gameScene: GameScene, drawable: Bool = true) {
         let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: radius, position: point, selectionIndicatorRadius: selectionIndicatorRadius)
         sprite = ss
         selectionIndicator = se
         
-        if drawable { GameScene.me!.addChild(sprite) }
+        self.gameScene = gameScene
+
+        if drawable { gameScene.addChild(sprite) }
 
         self.drawable = drawable
         super.init(point: vector_float2(Float(point.x), Float(point.y)))
     }
     
-    init(prototype: AFGraphNode2D_Script) {
+    init(prototype: AFGraphNode2D_Script, gameScene: GameScene) {
         let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: CGFloat(radius), position: prototype.position, selectionIndicatorRadius: selectionIndicatorRadius)
         sprite = ss
         selectionIndicator = se
         
-        if prototype.drawable { GameScene.me!.addChild(sprite) }
+        self.gameScene = gameScene
+
+        if prototype.drawable { gameScene.addChild(sprite) }
 
         self.drawable = prototype.drawable
         super.init(point: vector_float2(Float(prototype.position.x), Float(prototype.position.y)))
@@ -138,7 +147,7 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
         guard drawable else { return }
 
         if show {
-            GameScene.me!.addChild(sprite)
+            gameScene.addChild(sprite)
             sprite.fillColor = (self.selected ? .yellow : .white)
         } else {
             sprite.removeFromParent()

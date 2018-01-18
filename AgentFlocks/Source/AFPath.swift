@@ -90,7 +90,7 @@ class AFPath: Equatable {
         name = NSUUID().uuidString
 
         copyFrom.graphNodes.forEach {
-            let newNode = AFGraphNode2D(copyFrom: $0, drawable: false)
+            let newNode = AFGraphNode2D(copyFrom: $0, gameScene: gameScene, drawable: false)
             graphNodes.append(key: newNode.name, value: newNode)
         }
         
@@ -112,7 +112,7 @@ class AFPath: Equatable {
         graphNodes = AFOrderedMap<String, AFGraphNode2D>()
 
         for protoNode in prototype.graphNodes {
-            let afGraphNode = AFGraphNode2D(prototype: protoNode)
+            let afGraphNode = AFGraphNode2D(prototype: protoNode, gameScene: gameScene)
             graphNodes.append(key: afGraphNode.name, value: afGraphNode)
         }
         
@@ -131,7 +131,7 @@ class AFPath: Equatable {
     }
 
     func addGraphNode(at point: CGPoint) -> AFGraphNode2D {
-        let node = AFGraphNode2D(point: point)
+        let node = AFGraphNode2D(point: point, gameScene: gameScene)
         graphNodes.append(key: node.name, value: node)
         refresh()
         
@@ -238,7 +238,7 @@ class AFPath: Equatable {
             nodesArray.append(nodesArray[0])
             visualDotsArray.append(visualDotsArray[0])
             
-            let closingNode = AFGraphNode2D(point: visualDotsArray[0], drawable: false)
+            let closingNode = AFGraphNode2D(point: visualDotsArray[0], gameScene: gameScene, drawable: false)
             graphNodes.append(key: closingNode.name, value: closingNode)
             
             self.finalized = true

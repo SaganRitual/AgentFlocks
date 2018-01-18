@@ -42,16 +42,18 @@ extension AFInputState {
         }
         
         override func didEnter(from previousState: GKState?) {
-            AFContextMenu.reset()
-            AFContextMenu.includeInDisplay(.Place, true)
-            AFContextMenu.enableInDisplay(.Place, true)
+            let psm = getParentStateMachine()
+            psm.contextMenu.reset()
+            psm.contextMenu.includeInDisplay(.Place, true)
+            psm.contextMenu.enableInDisplay(.Place, true)
         }
         
         func finalizePath(close: Bool) {
+            let psm = getParentStateMachine()
             activePath.refresh(final: close) // Auto-add the closing line segment
-            getParentStateMachine().data.paths.append(key: activePath.name, value: activePath)
+            psm.data.paths.append(key: activePath.name, value: activePath)
             
-            AFContextMenu.includeInDisplay(.SetObstacleCloneStamp, true, enable: true)
+            psm.contextMenu.includeInDisplay(.SetObstacleCloneStamp, true, enable: true)
         }
         
         func getPosition(ofNode name: String) -> CGPoint {
@@ -166,8 +168,8 @@ extension AFInputState {
                             // With a new path started, no other options are available
                             // until the path is finalized. However, the "add path" option
                             // is disabled until there are at least two nodes in the path.
-                            AFContextMenu.reset()
-                            AFContextMenu.includeInDisplay(.AddPathToLibrary, true, enable: false)
+                            psm.contextMenu.reset()
+                            psm.contextMenu.includeInDisplay(.AddPathToLibrary, true, enable: false)
                         }
                         
                         let newNode = activePath.addGraphNode(at: psm.currentPosition)
@@ -176,7 +178,7 @@ extension AFInputState {
                         // With two or more nodes, we now have a path that can be
                         // added to the library
                         if activePath.graphNodes.count > 1 {
-                            AFContextMenu.enableInDisplay(.AddPathToLibrary)
+                            psm.contextMenu.enableInDisplay(.AddPathToLibrary)
                         }
                     }
                 }
@@ -184,28 +186,30 @@ extension AFInputState {
         }
         
         func rightMouseUp(with event: NSEvent) {
-            AFContextMenu.show(at: event.locationInWindow)
+            getParentStateMachine().contextMenu.show(at: event.locationInWindow)
         }
         
         func select(_ name: String, primary: Bool) {
-            getParentStateMachine().select(name, primary: primary)
+            let psm = getParentStateMachine()
+            
+            psm.select(name, primary: primary)
             
             activePath.select(name)
             selectedPath = activePath
             
             if activePath.name == name {
                 // Selecting the path as a whole
-                AFContextMenu.includeInDisplay(.SetObstacleCloneStamp, true, enable: true)
+                psm.contextMenu.includeInDisplay(.SetObstacleCloneStamp, true, enable: true)
             } else {
                 // Selecting a node in a path
-                AFContextMenu.includeInDisplay(.SetObstacleCloneStamp, false)
+                psm.contextMenu.includeInDisplay(.SetObstacleCloneStamp, false)
             }
         }
         
         func setObstacleCloneStamp() {
             obstacleCloneStamp = selectedPath.name
             
-            AFContextMenu.includeInDisplay(.StampObstacle, true, enable: true)
+            getParentStateMachine().contextMenu.includeInDisplay(.StampObstacle, true, enable: true)
         }
         
         func stampObstacle(at point: CGPoint) {
