@@ -49,7 +49,7 @@ extension AFInputState {
                 psm.updatePrimarySelectionState(agentName: selectNew)
             }
             
-            AFContextMenu.includeInDisplay(.CloneAgent, false)
+            psm.contextMenu.includeInDisplay(.CloneAgent, false)
         }
         
         func deselectAll() {
@@ -62,13 +62,14 @@ extension AFInputState {
             psm.primarySelection = nil
             psm.updatePrimarySelectionState(agentName: nil)
             
-            AFContextMenu.includeInDisplay(.CloneAgent, false)
+            psm.contextMenu.includeInDisplay(.CloneAgent, false)
         }
         
         override func didEnter(from previousState: GKState?) {
-            AFContextMenu.reset()
-            AFContextMenu.includeInDisplay(.Draw, true)
-            AFContextMenu.enableInDisplay(.Draw, true)
+            let psm = getParentStateMachine()
+            psm.contextMenu.reset()
+            psm.contextMenu.includeInDisplay(.Draw, true)
+            psm.contextMenu.enableInDisplay(.Draw, true)
         }
         
         func getPosition(ofNode name: String) -> CGPoint {
@@ -113,7 +114,7 @@ extension AFInputState {
                     newEntity = psm.data.createEntity(copyFrom: originalEntity, position: psm.currentPosition)
                 } else {
                     let imageIndex = AFCore.browserDelegate.agentImageIndex
-                    let image = AppDelegate.me!.agents[imageIndex].image
+                    let image = psm.ui.agents[imageIndex].image
                     newEntity = psm.data.createEntity(image: image, position: psm.currentPosition)
                 }
                 
@@ -139,7 +140,7 @@ extension AFInputState {
         }
         
         func rightMouseUp(with event: NSEvent) {
-            AFContextMenu.show(at: event.locationInWindow)
+            getParentStateMachine().contextMenu.show(at: event.locationInWindow)
         }
         
         func select(_ index: Int, primary: Bool) {
@@ -157,14 +158,14 @@ extension AFInputState {
             entity.agent.select(primary: primary)
             
             if primary {
-                AppDelegate.agentEditorController.goalsController.dataSource = entity
-                AppDelegate.agentEditorController.attributesController.delegate = entity.agent
+                AFCore.ui.agentEditorController.goalsController.dataSource = entity
+                AFCore.ui.agentEditorController.attributesController.delegate = entity.agent
                 
                 psm.primarySelection = name // Ugliness; move this into inputState
                 psm.updatePrimarySelectionState(agentName: name)
             }
             
-            AFContextMenu.includeInDisplay(.CloneAgent, true, enable: true)
+            psm.contextMenu.includeInDisplay(.CloneAgent, true, enable: true)
         }
         
         func trackMouse(nodeName: String, atPoint: CGPoint) {

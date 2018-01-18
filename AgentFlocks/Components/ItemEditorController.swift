@@ -39,7 +39,10 @@ class ItemEditorController: NSViewController {
 	
 	// MARK: - Initialization
 	
-    init(withAttributes attributes:[String]) {
+    init(withAttributes attributes:[String], agentEditorController: AgentEditorController) {
+        self.agentEditorController = agentEditorController
+        self.agentGoalsController = agentEditorController.goalsController
+        
 		super.init(nibName: NSNib.Name(rawValue: "ItemEditorView"), bundle: nil)
 		for valueName in attributes {
 			// User lowercased attribute name as key
@@ -56,12 +59,12 @@ class ItemEditorController: NSViewController {
 		}
 	}
 	
-	convenience init() {
-        self.init(withAttributes: ["Value"])
+	convenience init(agentEditorController: AgentEditorController) {
+        self.init(withAttributes: ["Value"], agentEditorController: agentEditorController)
 	}
 	
 	required convenience init?(coder: NSCoder) {
-		self.init()
+		fatalError()
 	}
 	
 	override func viewDidLoad() {
@@ -73,11 +76,8 @@ class ItemEditorController: NSViewController {
                 sliderController.parentItemEditorController = self
 			}
 		}
-        
-        agentGoalsController = AgentGoalsController.me!
-        agentEditorController = AppDelegate.agentEditorController
     }
-	
+
 	// MARK: - Public methods
     func refreshAffectedControllers() {
         agentGoalsController.outlineView.reloadData()

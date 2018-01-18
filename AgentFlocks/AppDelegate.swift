@@ -27,8 +27,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     let topBarController = TopBarController()
 	let topBarControllerPadding:CGFloat = 10.0
 	
-	static let agentEditorController = AgentEditorController()
-    static var me: AppDelegate!
+    let agentEditorController = AgentEditorController()
 	let leftBarWidth:CGFloat = 300.0
 	let rightBarWidth:CGFloat = 300.0
 
@@ -57,6 +56,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var coreItemEditorDelegate: AFItemEditorDelegate!
     var coreMenuBarDelegate: AFMenuBarDelegate!
     var coreTopBarDelegate: AFTopBarDelegate!
+    
+    var notificationCenter: NotificationCenter!
 	
 	func applicationWillFinishLaunching(_ notification: Notification) {
 		
@@ -71,8 +72,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		// Visualise constraints when something is wrong
 		UserDefaults.standard.set(true, forKey: "NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints")
 		#endif
-        
-        AppDelegate.me = self
 		
         agents = loadAgents()
         obstacles = loadObstacles()
@@ -88,80 +87,107 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             obstacleImages.append(obstacle.image)
         }
         
-        AppDelegate.agentEditorController.goalsController.delegate = self
+        agentEditorController.goalsController.delegate = self
         
         topBarController.delegate = self
         
         topBarController.agentImages = agentImages
         topBarController.obstacleImages = obstacleImages
+        
+        setupTopBarView()
+        
+        let center = NotificationCenter.default
+        let name = Notification.Name(rawValue: "GameSceneReady")
+        let selector = #selector(gameSceneReady(notification:))
+        center.addObserver(self, selector: selector, name: name, object: nil)
 
-		// Add TopBar to the main window content
-        topbarView.addSubview(topBarController.view)
-		// Set TopBar's layout (stitch to top and to both sides)
-        topBarController.view.translatesAutoresizingMaskIntoConstraints = false
-		NSLayoutConstraint(item: topBarController.view,
-		                   attribute: .top,
-		                   relatedBy: .equal,
-		                   toItem: topbarView,
-		                   attribute: .top,
-		                   multiplier: 1.0,
-		                   constant: topBarControllerPadding).isActive = true
-		NSLayoutConstraint(item: topBarController.view,
-		                   attribute: .left,
-		                   relatedBy: .equal,
-		                   toItem: topbarView,
-		                   attribute: .left,
-		                   multiplier: 1.0,
-		                   constant: topBarControllerPadding).isActive = true
-		NSLayoutConstraint(item: topbarView,
-		                   attribute: .right,
-		                   relatedBy: .equal,
-		                   toItem: topBarController.view,
-		                   attribute: .right,
-		                   multiplier: 1.0,
-		                   constant: topBarControllerPadding).isActive = true
-		NSLayoutConstraint(item: topbarView,
-		                   attribute: .bottom,
-		                   relatedBy: .equal,
-		                   toItem: topBarController.view,
-		                   attribute: .bottom,
-		                   multiplier: 1.0,
-		                   constant: topBarControllerPadding).isActive = true
-		
-		// Add SceneView to the main window content
-		sceneView.addSubview(sceneController.view)
-		// Set SceneView's layout
-		sceneController.view.translatesAutoresizingMaskIntoConstraints = false
-		NSLayoutConstraint(item: sceneController.view,
-		                   attribute: .top,
-		                   relatedBy: .equal,
-		                   toItem: sceneView,
-		                   attribute: .top,
-		                   multiplier: 1.0,
-		                   constant: 0.0).isActive = true
-		NSLayoutConstraint(item: sceneController.view,
-		                   attribute: .left,
-		                   relatedBy: .equal,
-		                   toItem: sceneView,
-		                   attribute: .left,
-		                   multiplier: 1.0,
-		                   constant: 0.0).isActive = true
-		NSLayoutConstraint(item: sceneView,
-		                   attribute: .right,
-		                   relatedBy: .equal,
-		                   toItem: sceneController.view,
-		                   attribute: .right,
-		                   multiplier: 1.0,
-		                   constant: 0.0).isActive = true
-		NSLayoutConstraint(item: sceneView,
-		                   attribute: .bottom,
-		                   relatedBy: .equal,
-		                   toItem: sceneController.view,
-		                   attribute: .bottom,
-		                   multiplier: 1.0,
-		                   constant: 0.0).isActive = true
-		sceneView.cursor = .pointingHand
+        // This instantiates the GameScene, so we have to do it
+        // AFTER we register to listen for GameSceneReady
+        setupSceneView()
+
+        // Create our own notification center instead of using the default.
+        // We had to use default the first time, because we know it's ready;
+        // we can't use this one until everyone is ready.
+        notificationCenter = NotificationCenter()
 	}
+    
+    @objc func gameSceneReady(notification: Notification) {
+        // Ready to go; create the core
+        let gameScene = notification.userInfo!["GameScene"]! as! GameScene
+        gameScene.gameSceneDelegate = AFCore.makeCore(ui: self, gameScene: gameScene)
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    func setupSceneView() {
+        // Add SceneView to the main window content
+        sceneView.addSubview(sceneController.view)
+        // Set SceneView's layout
+        sceneController.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint(item: sceneController.view,
+                           attribute: .top,
+                           relatedBy: .equal,
+                           toItem: sceneView,
+                           attribute: .top,
+                           multiplier: 1.0,
+                           constant: 0.0).isActive = true
+        NSLayoutConstraint(item: sceneController.view,
+                           attribute: .left,
+                           relatedBy: .equal,
+                           toItem: sceneView,
+                           attribute: .left,
+                           multiplier: 1.0,
+                           constant: 0.0).isActive = true
+        NSLayoutConstraint(item: sceneView,
+                           attribute: .right,
+                           relatedBy: .equal,
+                           toItem: sceneController.view,
+                           attribute: .right,
+                           multiplier: 1.0,
+                           constant: 0.0).isActive = true
+        NSLayoutConstraint(item: sceneView,
+                           attribute: .bottom,
+                           relatedBy: .equal,
+                           toItem: sceneController.view,
+                           attribute: .bottom,
+                           multiplier: 1.0,
+                           constant: 0.0).isActive = true
+        sceneView.cursor = .pointingHand
+    }
+    
+    func setupTopBarView() {
+        // Add TopBar to the main window content
+        topbarView.addSubview(topBarController.view)
+        // Set TopBar's layout (stitch to top and to both sides)
+        topBarController.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint(item: topBarController.view,
+                           attribute: .top,
+                           relatedBy: .equal,
+                           toItem: topbarView,
+                           attribute: .top,
+                           multiplier: 1.0,
+                           constant: topBarControllerPadding).isActive = true
+        NSLayoutConstraint(item: topBarController.view,
+                           attribute: .left,
+                           relatedBy: .equal,
+                           toItem: topbarView,
+                           attribute: .left,
+                           multiplier: 1.0,
+                           constant: topBarControllerPadding).isActive = true
+        NSLayoutConstraint(item: topbarView,
+                           attribute: .right,
+                           relatedBy: .equal,
+                           toItem: topBarController.view,
+                           attribute: .right,
+                           multiplier: 1.0,
+                           constant: topBarControllerPadding).isActive = true
+        NSLayoutConstraint(item: topbarView,
+                           attribute: .bottom,
+                           relatedBy: .equal,
+                           toItem: topBarController.view,
+                           attribute: .bottom,
+                           multiplier: 1.0,
+                           constant: topBarControllerPadding).isActive = true
+    }
 	
 	func applicationWillTerminate(_ aNotification: Notification) {
 	}
@@ -215,15 +241,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             
             // Clear out the sliders so they'll recalibrate themselves to the new values
-            AppDelegate.agentEditorController.attributesController.resetSliderControllers()
+            agentEditorController.attributesController.resetSliderControllers()
 
             removeAgentFrames()
         }
     }
     
     func placeAgentFrames(selectedAgent: AFAgent2D) {
-        let ac = AppDelegate.agentEditorController.attributesController
-        let gc = AppDelegate.agentEditorController.goalsController
+        let ac = agentEditorController.attributesController
+        let gc = agentEditorController.goalsController
 
         // Play/pause button image
         gc.playButton.image = selectedAgent.isPlaying ? gc.pauseImage : gc.playImage
@@ -236,17 +262,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         ac.radius = Double(selectedAgent.radius)
         ac.scale = Double(selectedAgent.scale)
         
-		settingsView.addSubview(AppDelegate.agentEditorController.view)
-        AppDelegate.agentEditorController.refresh()
-		AppDelegate.agentEditorController.view.translatesAutoresizingMaskIntoConstraints = false
-		NSLayoutConstraint(item: AppDelegate.agentEditorController.view,
+		settingsView.addSubview(agentEditorController.view)
+        agentEditorController.refresh()
+		agentEditorController.view.translatesAutoresizingMaskIntoConstraints = false
+		NSLayoutConstraint(item: agentEditorController.view,
 		                   attribute: .top,
 		                   relatedBy: .equal,
 		                   toItem: settingsView,
 		                   attribute: .top,
 		                   multiplier: 1.0,
 		                   constant: 0.0).isActive = true
-		NSLayoutConstraint(item: AppDelegate.agentEditorController.view,
+		NSLayoutConstraint(item: agentEditorController.view,
 		                   attribute: .left,
 		                   relatedBy: .equal,
 		                   toItem: settingsView,
@@ -256,18 +282,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 		NSLayoutConstraint(item: settingsView,
 		                   attribute: .right,
 		                   relatedBy: .equal,
-		                   toItem: AppDelegate.agentEditorController.view,
+		                   toItem: agentEditorController.view,
 		                   attribute: .right,
 		                   multiplier: 1.0,
 		                   constant: topBarControllerPadding).isActive = true
 		NSLayoutConstraint(item: settingsView,
 		                   attribute: .bottom,
 		                   relatedBy: .equal,
-		                   toItem: AppDelegate.agentEditorController.view,
+		                   toItem: agentEditorController.view,
 		                   attribute: .bottom,
 		                   multiplier: 1.0,
 		                   constant: topBarControllerPadding).isActive = true
-		NSLayoutConstraint(item: AppDelegate.agentEditorController.view,
+		NSLayoutConstraint(item: agentEditorController.view,
 		                   attribute: .width,
 		                   relatedBy: .equal,
 		                   toItem: nil,
@@ -277,8 +303,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	}
 	
 	func removeAgentFrames() {
-		AppDelegate.agentEditorController.view.removeFromSuperview()
-		AppDelegate.agentEditorController.view.translatesAutoresizingMaskIntoConstraints = true
+		agentEditorController.view.removeFromSuperview()
+		agentEditorController.view.translatesAutoresizingMaskIntoConstraints = true
 	}
 	
 	private func showPopover(withContentController contentController:NSViewController, forRect rect:NSRect, preferredEdge: NSRectEdge) {
@@ -520,7 +546,7 @@ extension AppDelegate: AgentGoalsDelegate {
         guard let mainView = window.contentView else { return }
         
         let attributes = coreAgentGoalsDelegate.getEditableAttributes(for: item)
-        let editorController = ItemEditorController(withAttributes: Array(attributes.keys))
+        let editorController = ItemEditorController(withAttributes: Array(attributes.keys), agentEditorController: agentEditorController)
 
         editorController.delegate = self
         editorController.editedItem = item
@@ -547,7 +573,7 @@ extension AppDelegate: AgentGoalsDelegate {
     func agentGoals(_ agentGoalsController: AgentGoalsController, newBehaviorShowForRect rect: NSRect) {
         guard let mainView = window.contentView else { return }
     
-        let editorController = ItemEditorController(withAttributes: ["Weight"])
+        let editorController = ItemEditorController(withAttributes: ["Weight"], agentEditorController: agentEditorController)
         editorController.delegate = self
         editorController.newItemType = nil
 
@@ -578,7 +604,7 @@ extension AppDelegate: AgentGoalsDelegate {
         case .toWander:           attributeList = ["Speed"] + attributeList
         }
     
-        let editorController = ItemEditorController(withAttributes: attributeList)
+        let editorController = ItemEditorController(withAttributes: attributeList, agentEditorController: agentEditorController)
         editorController.delegate = self
         editorController.newItemType = type
     

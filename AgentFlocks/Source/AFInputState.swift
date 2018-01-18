@@ -54,6 +54,7 @@ extension EditModeRelay {
 }
 
 class AFInputState: GKStateMachine {
+    let contextMenu: AFContextMenu
     var currentPosition = CGPoint.zero
     var data: AFData!
     var downNodeName: String?
@@ -70,7 +71,8 @@ class AFInputState: GKStateMachine {
     
     enum MouseStates { case down, dragging, rightDown, rightUp, up }
 
-    init(gameScene: GameScene, ui: AppDelegate) {
+    init(gameScene: GameScene, ui: AppDelegate, contextMenu: AFContextMenu) {
+        self.contextMenu = contextMenu
         self.gameScene = gameScene
         self.ui = ui
         
@@ -92,16 +94,16 @@ class AFInputState: GKStateMachine {
     }
     
     func deselect_() {
-        AFContextMenu.includeInDisplay(.SetObstacleCloneStamp, false)
+        contextMenu.includeInDisplay(.SetObstacleCloneStamp, false)
     }
 
     func finalizePath(close: Bool) {
         if let cs = currentState as? ModeDraw {
             cs.finalizePath(close: close)
             
-            AFContextMenu.includeInDisplay(.AddPathToLibrary, false)
+            contextMenu.includeInDisplay(.AddPathToLibrary, false)
             
-            AFContextMenu.includeInDisplay(.Place, true, enable: true)
+            contextMenu.includeInDisplay(.Place, true, enable: true)
         } else {
             fatalError()
         }

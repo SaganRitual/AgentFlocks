@@ -47,11 +47,12 @@ class AFContextMenu {
         case AddPathToLibrary, CloneAgent, Draw, Place, SetObstacleCloneStamp, StampObstacle
     }
     
-    private lazy var displayMenu: NSMenu! = AppDelegate.me!.contextMenu
+    private var displayMenu: NSMenu!
     private var items = AFOrderedMap<ItemTypes, AFContextMenuItem>()
-    private static let me = AFContextMenu()
 
-    init() {
+    init(ui: AppDelegate) {
+        displayMenu = ui.contextMenu
+        
         let setup: [ItemTypes : String] = [
             ItemTypes.AddPathToLibrary : "Add path to library",
             ItemTypes.CloneAgent : "Clone",
@@ -66,17 +67,9 @@ class AFContextMenu {
         }
     }
     
-    static func enableInDisplay(_ item: ItemTypes, _ enable: Bool = true, include: Bool? = nil) {
-        me.enableInDisplay(item, enable, include: include)
-    }
-    
     func enableInDisplay(_ item: ItemTypes, _ enable: Bool = true, include: Bool? = nil) {
         items[item].enabled = enable
         if let include = include { items[item].show = include }
-    }
-    
-    static func includeInDisplay(_ item: ItemTypes, _ include: Bool = true, enable: Bool? = nil) {
-        me.includeInDisplay(item, include, enable: enable)
     }
 
     func includeInDisplay(_ item: ItemTypes, _ include: Bool = true, enable: Bool? = nil) {
@@ -84,10 +77,7 @@ class AFContextMenu {
         if let enable = enable { items[item].enabled = enable }
     }
     
-    static func reset() { me.reset() }
     func reset() { items.forEach { $0.reset() } }
-    
-    static func show(at point: CGPoint) { me.show(at: point)}
     
     func show(at point: CGPoint) {
         displayMenu.removeAllItems()
@@ -111,39 +101,3 @@ class AFContextMenu {
     }
 }
 
-class AFContextMenuDelegate {
-    unowned let data: AFData
-    unowned let inputState: AFInputState
-    
-    init(data: AFData, inputState: AFInputState) {
-        self.data = data
-        self.inputState = inputState
-    }
-    
-    func itemCloneAgent() {
-        let originalEntity = AFCore.data.entities[inputState.upNodeName!]
-        let currentPosition = inputState.currentPosition
-        
-        _ = inputState.makeEntity(copyFrom: originalEntity, position: currentPosition)
-    }
-    
-    func itemAddPathToLibrary() {
-        inputState.finalizePath(close: true)
-    }
-    
-    func itemDraw() {
-        inputState.enter(AFInputState.ModeDraw.self)
-    }
-    
-    func itemPlace() {
-        inputState.enter(AFInputState.ModePlace.self)
-    }
-    
-    func itemSetObstacleCloneStamp() {
-        inputState.setObstacleCloneStamp()
-    }
-    
-    func itemStampObstacle() {
-        inputState.stampObstacle()
-    }
-}

@@ -25,15 +25,19 @@
 class AFCore {
     static var agentGoalsDelegate: AFAgentGoalsDelegate!
     static var browserDelegate: AFBrowserDelegate!
+    static var contextMenu: AFContextMenu!
     static var contextMenuDelegate: AFContextMenuDelegate!
     static var data: AFData!
+    static var gameSceneDelegate: AFGameSceneDelegate!
     static var inputState: AFInputState!
     static var itemEditorDelegate: AFItemEditorDelegate!
     static var menuBarDelegate: AFMenuBarDelegate!
     static var topBarDelegate: AFTopBarDelegate!
+    static var ui: AppDelegate!
     
-    static func makeCore(gameScene: GameScene) {
-        inputState = AFInputState(gameScene: gameScene, ui: AppDelegate.me!)
+    static func makeCore(ui: AppDelegate, gameScene: GameScene) -> AFGameSceneDelegate {
+        contextMenu = AFContextMenu(ui: ui)
+        inputState = AFInputState(gameScene: gameScene, ui: ui, contextMenu: contextMenu)
         
         data = AFData(inputState: inputState)
         inputState.data = self.data
@@ -41,15 +45,23 @@ class AFCore {
         agentGoalsDelegate = AFAgentGoalsDelegate(data: data, inputState: inputState)
         browserDelegate = AFBrowserDelegate(inputState)
         contextMenuDelegate = AFContextMenuDelegate(data: data, inputState: inputState)
+        gameSceneDelegate = AFGameSceneDelegate(data: data)
         itemEditorDelegate = AFItemEditorDelegate(data: data, inputState: inputState)
         menuBarDelegate = AFMenuBarDelegate(data: data, inputState: inputState)
         topBarDelegate = AFTopBarDelegate(data: data, inputState: inputState)
         
-        AppDelegate.me!.coreAgentGoalsDelegate = agentGoalsDelegate
-        AppDelegate.me!.coreBrowserDelegate = browserDelegate
-        AppDelegate.me!.coreContextMenuDelegate = contextMenuDelegate
-        AppDelegate.me!.coreItemEditorDelegate = itemEditorDelegate
-        AppDelegate.me!.coreMenuBarDelegate = menuBarDelegate
-        AppDelegate.me!.coreTopBarDelegate = topBarDelegate
+        // Here, "ui" just means the AppDelegate
+        AFCore.ui = ui
+        ui.coreAgentGoalsDelegate = agentGoalsDelegate
+        ui.coreBrowserDelegate = browserDelegate
+        ui.coreContextMenuDelegate = contextMenuDelegate
+        ui.coreItemEditorDelegate = itemEditorDelegate
+        ui.coreMenuBarDelegate = menuBarDelegate
+        ui.coreTopBarDelegate = topBarDelegate
+        
+        // We don't add this one to AppDelegate, because it's owned by
+        // GameScene. We return it so AppDelegate can plug it into
+        // GameScene.
+        return gameSceneDelegate
     }
 }

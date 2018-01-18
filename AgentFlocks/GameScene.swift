@@ -32,15 +32,11 @@ enum AFKeyCodes: UInt {
 }
 
 class GameScene: SKScene, SKViewDelegate {
-    static var me: GameScene?
-
     var inputState: AFInputState!
 
-    var lastUpdateTime : TimeInterval = 0
-
-    override func didMove(to view: SKView) {
-        GameScene.me = self
-    }
+    var lastUpdateTime: TimeInterval = 0
+    
+    var gameSceneDelegate: AFGameSceneDelegate!
     
     func pause() { isPaused = true }
     func play() { isPaused = false; lastUpdateTime = 0 }
@@ -49,8 +45,9 @@ class GameScene: SKScene, SKViewDelegate {
         self.lastUpdateTime = 0
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         
-        AFCore.makeCore(gameScene: self)
-        inputState = AFCore.inputState
+        let center = NotificationCenter.default
+        let name = Notification.Name(rawValue: "GameSceneReady")
+        center.post(name: name, object: nil, userInfo: ["GameScene": self])
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -64,25 +61,20 @@ class GameScene: SKScene, SKViewDelegate {
         // Calculate time since last update
         let dt = currentTime - self.lastUpdateTime
         
-        // Update entities
-        for entity in AFCore.data.entities {
-            entity.update(deltaTime: dt)
-        }
+        // Update core
+        gameSceneDelegate.update(deltaTime: dt)
         
         self.lastUpdateTime = currentTime
     }
 }
 
 extension GameScene {
-    func getSelectedNames() -> Set<String> { return inputState.getSelectedNames() }
-    func getPrimarySelectionName() -> String? { return inputState.getPrimarySelectionName() }
-
-    override func keyDown(with event: NSEvent) { inputState.keyDown(with: event) }
-    override func keyUp(with event: NSEvent) { inputState.keyUp(with: event) }
-    override func mouseDown(with event: NSEvent) { inputState.mouseDown(with: event) }
-    override func mouseDragged(with event: NSEvent) { inputState.mouseDragged(with: event) }
-    override func mouseUp(with event: NSEvent) { inputState.mouseUp(with: event) }
-    override func rightMouseUp(with event: NSEvent) { inputState.rightMouseUp(with: event) }
-	override func rightMouseDown(with event: NSEvent) { inputState.rightMouseDown(with: event) }
+    override func keyDown(with event: NSEvent) { gameSceneDelegate.keyDown(with: event) }
+    override func keyUp(with event: NSEvent) { gameSceneDelegate.keyUp(with: event) }
+    override func mouseDown(with event: NSEvent) { gameSceneDelegate.mouseDown(with: event) }
+    override func mouseDragged(with event: NSEvent) { gameSceneDelegate.mouseDragged(with: event) }
+    override func mouseUp(with event: NSEvent) { gameSceneDelegate.mouseUp(with: event) }
+    override func rightMouseUp(with event: NSEvent) { gameSceneDelegate.rightMouseUp(with: event) }
+	override func rightMouseDown(with event: NSEvent) { gameSceneDelegate.rightMouseDown(with: event) }
 }
 

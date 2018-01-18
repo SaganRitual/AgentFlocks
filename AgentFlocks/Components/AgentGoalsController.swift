@@ -32,8 +32,6 @@ protocol AgentGoalsDataSource {
 }
 
 class AgentGoalsController: NSViewController {
-    static var me: AgentGoalsController!
-	
     typealias GoalType = AFGoalType
 
 	// MARK: - Attributes (public)
@@ -75,8 +73,6 @@ class AgentGoalsController: NSViewController {
 	
 	override func viewDidLoad() {
         super.viewDidLoad()
-        
-        AgentGoalsController.me = self
 		
         playImage = NSImage(named: NSImage.Name(rawValue: "Play"))
         pauseImage = NSImage(named: NSImage.Name(rawValue: "Pause"))

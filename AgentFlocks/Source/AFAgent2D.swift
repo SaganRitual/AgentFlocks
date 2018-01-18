@@ -104,7 +104,7 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         //
         // This is the first data source for agent attributes
         //
-        let ac = AppDelegate.agentEditorController.attributesController
+        let ac = AFCore.ui.agentEditorController.attributesController
         
         mass = Float(ac.defaultMass)
         maxSpeed = Float(ac.defaultMaxAcceleration)
@@ -136,7 +136,7 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         //
         // This is the first data source for agent attributes
         //
-        let ac = AppDelegate.agentEditorController.attributesController
+        let ac = AFCore.ui.agentEditorController.attributesController
         
         mass = Float(ac.defaultMass)
         maxSpeed = Float(ac.defaultMaxAcceleration)

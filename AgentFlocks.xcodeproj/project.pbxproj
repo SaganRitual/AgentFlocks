@@ -81,6 +81,8 @@
 		D472A3711FFFD6860030ACA8 /* LogSliderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D472A36F1FFFD6850030ACA8 /* LogSliderController.swift */; };
 		D472A3721FFFD6860030ACA8 /* LogSliderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D472A3701FFFD6860030ACA8 /* LogSliderView.xib */; };
 		D47BC1F41FECCFE600B3CE6B /* Round2.txt in Resources */ = {isa = PBXBuildFile; fileRef = D47BC1F31FECCFE600B3CE6B /* Round2.txt */; };
+		D4AEE5F9200FD19400933852 /* AFContextMenuDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4AEE5F8200FD19400933852 /* AFContextMenuDelegate.swift */; };
+		D4AEE5FB200FF44E00933852 /* AFGameSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4AEE5FA200FF44E00933852 /* AFGameSceneDelegate.swift */; };
 		D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */; };
 		D4C7EADF1FFD04730008FBCD /* AFBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */; };
 		D4C7EAE11FFD06EE0008FBCD /* AFGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */; };
@@ -174,6 +176,8 @@
 		D472A36F1FFFD6850030ACA8 /* LogSliderController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogSliderController.swift; sourceTree = "<group>"; };
 		D472A3701FFFD6860030ACA8 /* LogSliderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LogSliderView.xib; sourceTree = "<group>"; };
 		D47BC1F31FECCFE600B3CE6B /* Round2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Round2.txt; sourceTree = "<group>"; };
+		D4AEE5F8200FD19400933852 /* AFContextMenuDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFContextMenuDelegate.swift; sourceTree = "<group>"; };
+		D4AEE5FA200FF44E00933852 /* AFGameSceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFGameSceneDelegate.swift; sourceTree = "<group>"; };
 		D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFCompositeBehavior.swift; sourceTree = "<group>"; };
 		D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFBehavior.swift; sourceTree = "<group>"; };
 		D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFGoal.swift; sourceTree = "<group>"; };
@@ -354,6 +358,8 @@
 			children = (
 				D4D1655E200D45A40065728D /* AFAgentGoalsDelegate.swift */,
 				D4C942D8200C39CD00A85BCB /* AFBrowserDelegate.swift */,
+				D4AEE5F8200FD19400933852 /* AFContextMenuDelegate.swift */,
+				D4AEE5FA200FF44E00933852 /* AFGameSceneDelegate.swift */,
 				D4D16560200D61040065728D /* AFItemEditorDelegate.swift */,
 				D4D1655A200CA2B60065728D /* AFMenuBarDelegate.swift */,
 				D4D1655C200D401E0065728D /* AFTopBarDelegate.swift */,
@@ -485,6 +491,7 @@
 			files = (
 				D44256201FE7A41800FC454B /* GameScene.swift in Sources */,
 				74ECDF751F9CB5610096468F /* ItemEditorController.swift in Sources */,
+				D4AEE5F9200FD19400933852 /* AFContextMenuDelegate.swift in Sources */,
 				749386351FFFE1A500BAAF8E /* Configuration.swift in Sources */,
 				D4C7EADF1FFD04730008FBCD /* AFBehavior.swift in Sources */,
 				D4D16561200D61040065728D /* AFItemEditorDelegate.swift in Sources */,
@@ -518,6 +525,7 @@
 				744D8F341F91E53A00D4B048 /* TopBarController.swift in Sources */,
 				D4506DD51FFE65B50077A42A /* AFPath.swift in Sources */,
 				D4D1656A200E945B0065728D /* AFInputState_Place.swift in Sources */,
+				D4AEE5FB200FF44E00933852 /* AFGameSceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
