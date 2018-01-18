@@ -52,16 +52,16 @@ class AFData_Script: Codable {
 
 class AFData {
     var entities = AFOrderedMap<String, AFEntity>()
-    let inputState: AFInputState
+    let sceneUI: AFSceneUI
     var paths = AFOrderedMap<String, AFPath>()
     var obstacles = [String : AFPath]()
     
-    init(inputState: AFInputState) {
-        self.inputState = inputState
+    init(sceneUI: AFSceneUI) {
+        self.sceneUI = sceneUI
     }
     
-    init(inputState: AFInputState, prototype: AFData_Script) {
-        self.inputState = inputState
+    init(sceneUI: AFSceneUI, prototype: AFData_Script) {
+        self.sceneUI = sceneUI
         
         // Order matters here. Obstacles and paths need to be in place
         // before the entities, because the entities have goals that
@@ -74,28 +74,28 @@ class AFData {
     }
     
     func createEntity(prototype: AFEntity_Script) {
-        let entity = inputState.makeEntity(prototype: prototype)
+        let entity = sceneUI.makeEntity(prototype: prototype)
         entities.append(key: entity.name, value: entity)
     }
     
     func createEntity(copyFrom: AFEntity, position: CGPoint) -> AFEntity {
-        let entity = inputState.makeEntity(copyFrom: copyFrom, position: position)
+        let entity = sceneUI.makeEntity(copyFrom: copyFrom, position: position)
         entities.append(key: entity.name, value: entity)
         return entity
     }
     
     func createEntity(image: NSImage, position: CGPoint) -> AFEntity {
-        let entity = inputState.makeEntity(image: image, position: position)
+        let entity = sceneUI.makeEntity(image: image, position: position)
         entities.append(key: entity.name, value: entity)
         return entity
     }
     
     func createObstacle(name: String, prototype: AFPath_Script) {
-        obstacles[name] = inputState.makePath(prototype: prototype)
+        obstacles[name] = sceneUI.makePath(prototype: prototype)
     }
     
     func createPath(prototype: AFPath_Script) {
-        let path = inputState.makePath(prototype: prototype)
+        let path = sceneUI.makePath(prototype: prototype)
         paths.append(key: path.name, value: path)
     }
     

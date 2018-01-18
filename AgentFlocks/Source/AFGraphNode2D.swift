@@ -119,7 +119,6 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
     
     deinit {
         showNode(false)
-        print("deinit")
     }
     
     func deselect() {

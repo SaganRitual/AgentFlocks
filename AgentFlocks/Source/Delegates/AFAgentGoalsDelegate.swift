@@ -26,16 +26,15 @@ import GameplayKit
 
 class AFAgentGoalsDelegate {
     unowned let data: AFData
-    unowned let inputState: AFInputState
+    unowned let sceneUI: AFSceneUI
     
-    init(data: AFData, inputState: AFInputState) {
+    init(data: AFData, sceneUI: AFSceneUI) {
         self.data = data
-        self.inputState = inputState
+        self.sceneUI = sceneUI
     }
     
     func deleteItem(_ protoItem: Any) {
-        let name = inputState.getPrimarySelectionName()!
-        let agent = data.getAgent(name)
+        let agent = data.getAgent(sceneUI.primarySelection!)
         let composite = agent.behavior as! AFCompositeBehavior
         
         if let hotBehavior = protoItem as? AFBehavior {
@@ -49,8 +48,7 @@ class AFAgentGoalsDelegate {
     }
     
     func getEditableAttributes(for motivator: Any) -> AFOrderedMap<String, Double> {
-        let name = inputState.getPrimarySelectionName()!
-        let agent = data.entities[name].agent
+        let agent = data.entities[sceneUI.primarySelection!].agent
         let gkGoal = (motivator as? GKGoal) ?? nil
         let composite = agent.behavior as! AFCompositeBehavior
         let behavior = (gkGoal == nil) ? (motivator as! AFBehavior) : composite.findParent(ofGoal: gkGoal!)
@@ -96,20 +94,18 @@ class AFAgentGoalsDelegate {
     
     func itemClicked(_ item: Any) {
         if let motivator = item as? AFBehavior {
-            inputState.parentOfNewMotivator = motivator
+            sceneUI.parentOfNewMotivator = motivator
         } else if let motivator = item as? GKGoal {
-            let name = inputState.getPrimarySelectionName()!
-            let agent = data.getAgent(name)
+            let agent = data.getAgent(sceneUI.primarySelection!)
             let composite = agent.behavior as! AFCompositeBehavior
             
-            inputState.parentOfNewMotivator = composite.findParent(ofGoal: motivator)
+            sceneUI.parentOfNewMotivator = composite.findParent(ofGoal: motivator)
         }
     }
     
     func enableItem(_ item: Any, parent: Any?, on: Bool) -> [Any]? {
         if let behavior = item as? AFBehavior {
-            let name = inputState.getPrimarySelectionName()!
-            let agent = data.entities[name].agent
+            let agent = data.getAgent(sceneUI.primarySelection!)
             let composite = agent.behavior as! AFCompositeBehavior
             
             composite.enableBehavior(behavior, on: on)
@@ -132,9 +128,8 @@ class AFAgentGoalsDelegate {
     }
     
     func play(_ yesno: Bool) {
-        let name = inputState.getPrimarySelectionName()!
-        let agent = data.entities[name].agent
-        
+        let agent = data.getAgent(sceneUI.primarySelection!)
+
         agent.isPlaying = yesno
     }
 }

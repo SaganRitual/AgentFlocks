@@ -16,12 +16,13 @@ class WindowContentView: NSView {
 		}
 	}
 	
+    // I'm not sure these functions ever get called
 	override func keyDown(with event: NSEvent) {
-		AFCore.inputState.keyDown(with: event)
+        AFCore.sceneUI.keyDown(mouseAt: CGPoint.zero)
 	}
 	
 	override func keyUp(with event: NSEvent) {
-		AFCore.inputState.keyUp(with: event)
+        AFCore.sceneUI.keyUp(mouseAt: CGPoint.zero)
 	}
 	
 }

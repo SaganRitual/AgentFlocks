@@ -176,7 +176,7 @@ class AFAgent2D: GKAgent2D, AFScenoid {
     
     static func makeSpriteContainer(image: NSImage, position: CGPoint, _ name: String? = nil) -> (SKNode, SKSpriteNode) {
         let node = SKNode()
-        node.position = position + AFCore.inputState.nodeToMouseOffset
+        node.position = position + AFCore.sceneUI.nodeToMouseOffset
 
         var texture: SKTexture!
         
@@ -326,7 +326,7 @@ extension AFAgent2D: AgentAttributesDelegate {
     }
     
     func getPrimarySelectedAgent() -> AFAgent2D {
-        let name = AFCore.inputState.getPrimarySelectionName()!
+        let name = AFCore.sceneUI.primarySelection!
         return AFCore.data.entities[name].agent
     }
 }

@@ -64,7 +64,7 @@ extension AFEntity: AgentGoalsDataSource {
         } else if let b = item as? AFBehavior {
             return b.goalCount
         } else {
-            let selected = AFCore.inputState.getSelectedNames()
+            let selected = AFCore.sceneUI.selectedNames
             
             if selected.count > 0 {
                 let entity = AFCore.data.entities[selected.first!]
@@ -88,7 +88,7 @@ extension AFEntity: AgentGoalsDataSource {
             // The best I can think to do is to grab the behavior at [index] in
             // the selected agent's composite. Look into this, find out why we
             // get a nil.
-            let selected = AFCore.inputState.getSelectedNames()
+            let selected = AFCore.sceneUI.selectedNames
             if selected.count > 0 {
                 let entity = AFCore.data.entities[selected.first!]
                 return (entity.agent.behavior as! AFCompositeBehavior)[index]

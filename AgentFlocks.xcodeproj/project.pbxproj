@@ -67,7 +67,7 @@
 		74ECDF741F9CB5610096468F /* ItemEditorView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 74ECDF721F9CB5610096468F /* ItemEditorView.xib */; };
 		74ECDF751F9CB5610096468F /* ItemEditorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74ECDF731F9CB5610096468F /* ItemEditorController.swift */; };
 		D4053F051FF5E3A60038953B /* notes.txt in Resources */ = {isa = PBXBuildFile; fileRef = D4053F041FF5E3A60038953B /* notes.txt */; };
-		D43A7601200AEA390048796D /* AFInputState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D43A7600200AEA390048796D /* AFInputState.swift */; };
+		D43A7601200AEA390048796D /* AFSceneUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D43A7600200AEA390048796D /* AFSceneUI.swift */; };
 		D43A7605200B23330048796D /* AFContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = D43A7604200B23330048796D /* AFContextMenu.swift */; };
 		D4422622200795070013A6E5 /* AFOrderedMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4422621200795070013A6E5 /* AFOrderedMap.swift */; };
 		D442561A1FE7A19000FC454B /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = D44256191FE7A19000FC454B /* GameScene.sks */; };
@@ -83,20 +83,18 @@
 		D47BC1F41FECCFE600B3CE6B /* Round2.txt in Resources */ = {isa = PBXBuildFile; fileRef = D47BC1F31FECCFE600B3CE6B /* Round2.txt */; };
 		D4AEE5F9200FD19400933852 /* AFContextMenuDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4AEE5F8200FD19400933852 /* AFContextMenuDelegate.swift */; };
 		D4AEE5FB200FF44E00933852 /* AFGameSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4AEE5FA200FF44E00933852 /* AFGameSceneDelegate.swift */; };
+		D4AEE632201050DD00933852 /* AFSceneInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4AEE631201050DD00933852 /* AFSceneInput.swift */; };
 		D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */; };
 		D4C7EADF1FFD04730008FBCD /* AFBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */; };
 		D4C7EAE11FFD06EE0008FBCD /* AFGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */; };
 		D4C7EAE31FFD93C00008FBCD /* Agent07.png in Resources */ = {isa = PBXBuildFile; fileRef = D4C7EAE21FFD93C00008FBCD /* Agent07.png */; };
 		D4C942D9200C39CD00A85BCB /* AFBrowserDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C942D8200C39CD00A85BCB /* AFBrowserDelegate.swift */; };
-		D4C9616B200EAE2500ACFCC5 /* AFSelectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C9616A200EAE2500ACFCC5 /* AFSelectionState.swift */; };
 		D4D1655B200CA2B60065728D /* AFMenuBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D1655A200CA2B60065728D /* AFMenuBarDelegate.swift */; };
 		D4D1655D200D401E0065728D /* AFTopBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D1655C200D401E0065728D /* AFTopBarDelegate.swift */; };
 		D4D1655F200D45A40065728D /* AFAgentGoalsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D1655E200D45A40065728D /* AFAgentGoalsDelegate.swift */; };
 		D4D16561200D61040065728D /* AFItemEditorDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D16560200D61040065728D /* AFItemEditorDelegate.swift */; };
 		D4D16564200E93420065728D /* AFCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D16563200E93420065728D /* AFCore.swift */; };
 		D4D16566200E938E0065728D /* AFData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D16565200E938E0065728D /* AFData.swift */; };
-		D4D16568200E942E0065728D /* AFInputState_Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D16567200E942E0065728D /* AFInputState_Draw.swift */; };
-		D4D1656A200E945B0065728D /* AFInputState_Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D16569200E945B0065728D /* AFInputState_Place.swift */; };
 		D4F779E320087057005179BA /* AFGraphNode2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F779E220087057005179BA /* AFGraphNode2D.swift */; };
 /* End PBXBuildFile section */
 
@@ -164,7 +162,7 @@
 		74ECDF721F9CB5610096468F /* ItemEditorView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ItemEditorView.xib; sourceTree = "<group>"; };
 		74ECDF731F9CB5610096468F /* ItemEditorController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemEditorController.swift; sourceTree = "<group>"; };
 		D4053F041FF5E3A60038953B /* notes.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = notes.txt; sourceTree = "<group>"; };
-		D43A7600200AEA390048796D /* AFInputState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFInputState.swift; sourceTree = "<group>"; };
+		D43A7600200AEA390048796D /* AFSceneUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFSceneUI.swift; sourceTree = "<group>"; };
 		D43A7604200B23330048796D /* AFContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFContextMenu.swift; sourceTree = "<group>"; };
 		D4422621200795070013A6E5 /* AFOrderedMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFOrderedMap.swift; sourceTree = "<group>"; };
 		D44256191FE7A19000FC454B /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -179,20 +177,18 @@
 		D47BC1F31FECCFE600B3CE6B /* Round2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Round2.txt; sourceTree = "<group>"; };
 		D4AEE5F8200FD19400933852 /* AFContextMenuDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFContextMenuDelegate.swift; sourceTree = "<group>"; };
 		D4AEE5FA200FF44E00933852 /* AFGameSceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFGameSceneDelegate.swift; sourceTree = "<group>"; };
+		D4AEE631201050DD00933852 /* AFSceneInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFSceneInput.swift; sourceTree = "<group>"; };
 		D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFCompositeBehavior.swift; sourceTree = "<group>"; };
 		D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFBehavior.swift; sourceTree = "<group>"; };
 		D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFGoal.swift; sourceTree = "<group>"; };
 		D4C7EAE21FFD93C00008FBCD /* Agent07.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Agent07.png; sourceTree = "<group>"; };
 		D4C942D8200C39CD00A85BCB /* AFBrowserDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFBrowserDelegate.swift; sourceTree = "<group>"; };
-		D4C9616A200EAE2500ACFCC5 /* AFSelectionState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSelectionState.swift; sourceTree = "<group>"; };
 		D4D1655A200CA2B60065728D /* AFMenuBarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFMenuBarDelegate.swift; sourceTree = "<group>"; };
 		D4D1655C200D401E0065728D /* AFTopBarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFTopBarDelegate.swift; sourceTree = "<group>"; };
 		D4D1655E200D45A40065728D /* AFAgentGoalsDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFAgentGoalsDelegate.swift; sourceTree = "<group>"; };
 		D4D16560200D61040065728D /* AFItemEditorDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFItemEditorDelegate.swift; sourceTree = "<group>"; };
 		D4D16563200E93420065728D /* AFCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFCore.swift; sourceTree = "<group>"; };
 		D4D16565200E938E0065728D /* AFData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFData.swift; sourceTree = "<group>"; };
-		D4D16567200E942E0065728D /* AFInputState_Draw.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFInputState_Draw.swift; sourceTree = "<group>"; };
-		D4D16569200E945B0065728D /* AFInputState_Place.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFInputState_Place.swift; sourceTree = "<group>"; };
 		D4F779E220087057005179BA /* AFGraphNode2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFGraphNode2D.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -346,12 +342,10 @@
 				D44256241FE8048100FC454B /* AFEntity.swift */,
 				D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */,
 				D4F779E220087057005179BA /* AFGraphNode2D.swift */,
-				D43A7600200AEA390048796D /* AFInputState.swift */,
-				D4D16567200E942E0065728D /* AFInputState_Draw.swift */,
-				D4D16569200E945B0065728D /* AFInputState_Place.swift */,
 				D4422621200795070013A6E5 /* AFOrderedMap.swift */,
 				D4506DD41FFE65B50077A42A /* AFPath.swift */,
-				D4C9616A200EAE2500ACFCC5 /* AFSelectionState.swift */,
+				D4AEE631201050DD00933852 /* AFSceneInput.swift */,
+				D43A7600200AEA390048796D /* AFSceneUI.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -498,21 +492,20 @@
 				749386351FFFE1A500BAAF8E /* Configuration.swift in Sources */,
 				D4C7EADF1FFD04730008FBCD /* AFBehavior.swift in Sources */,
 				D4D16561200D61040065728D /* AFItemEditorDelegate.swift in Sources */,
-				D4D16568200E942E0065728D /* AFInputState_Draw.swift in Sources */,
 				744D8F241F91E38300D4B048 /* AppDelegate.swift in Sources */,
 				D4D16566200E938E0065728D /* AFData.swift in Sources */,
 				D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */,
+				D4AEE632201050DD00933852 /* AFSceneInput.swift in Sources */,
 				D44256251FE8048100FC454B /* AFEntity.swift in Sources */,
 				749386412007C9F700BAAF8E /* WindowContentView.swift in Sources */,
 				74ECDF661F9B132C0096468F /* AgentGoalsController.swift in Sources */,
-				D43A7601200AEA390048796D /* AFInputState.swift in Sources */,
+				D43A7601200AEA390048796D /* AFSceneUI.swift in Sources */,
 				D4D1655F200D45A40065728D /* AFAgentGoalsDelegate.swift in Sources */,
 				74622E7B1F9249CA00690C3C /* ImagesListController.swift in Sources */,
 				D4F779E320087057005179BA /* AFGraphNode2D.swift in Sources */,
 				7493863B200145C700BAAF8E /* ActiveImageView.swift in Sources */,
 				74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */,
 				D4D1655B200CA2B60065728D /* AFMenuBarDelegate.swift in Sources */,
-				D4C9616B200EAE2500ACFCC5 /* AFSelectionState.swift in Sources */,
 				D44256271FE804F000FC454B /* AFAgent2D.swift in Sources */,
 				D43A7605200B23330048796D /* AFContextMenu.swift in Sources */,
 				D4422622200795070013A6E5 /* AFOrderedMap.swift in Sources */,
@@ -528,7 +521,6 @@
 				D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */,
 				744D8F341F91E53A00D4B048 /* TopBarController.swift in Sources */,
 				D4506DD51FFE65B50077A42A /* AFPath.swift in Sources */,
-				D4D1656A200E945B0065728D /* AFInputState_Place.swift in Sources */,
 				D4AEE5FB200FF44E00933852 /* AFGameSceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -29,10 +29,10 @@ import GameplayKit
 enum AFBrowserType: Int { case SpriteImages = 1, Agents, Paths, LinkedGoals }
 
 class AFBrowserDelegate {
-    let inputState: AFInputState
+    let sceneUI: AFSceneUI
     var agentImageIndex = 0
     
-    init(_ inputState: AFInputState) { self.inputState = inputState }
+    init(_ sceneUI: AFSceneUI) { self.sceneUI = sceneUI }
     
     func imageSelected(controllerIndex: Int, imageIndex: Int) {
         switch AFBrowserType(rawValue: controllerIndex)! {
@@ -41,10 +41,7 @@ class AFBrowserDelegate {
             
         case .Agents:
             self.agentImageIndex = imageIndex
-            
-            if let head = inputState.currentState as? AFInputState.ModePlace {
-                head.select(imageIndex, primary: true)
-            }
+            sceneUI.select(imageIndex, primary: true)
 
         case .Paths:
             break

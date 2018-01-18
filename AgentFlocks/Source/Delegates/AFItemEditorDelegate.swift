@@ -26,11 +26,11 @@ import GameplayKit
 
 class AFItemEditorDelegate {
     unowned let data: AFData
-    unowned let inputState: AFInputState
+    unowned let sceneUI: AFSceneUI
     
-    init(data: AFData, inputState: AFInputState) {
+    init(data: AFData, sceneUI: AFSceneUI) {
         self.data = data
-        self.inputState = inputState
+        self.sceneUI = sceneUI
     }
     
     private func addMotivator(entity: AFEntity, state: ItemEditorSlidersState) {
@@ -45,7 +45,7 @@ class AFItemEditorDelegate {
 
         let type = state.newItemType!
         var goal: AFGoal?
-        var group = inputState.getSelectedNames()
+        var group = sceneUI.selectedNames
         let names = Array(group)
         
         let angle = Float(state.angle?.value ?? 0)
@@ -56,7 +56,7 @@ class AFItemEditorDelegate {
 
         switch type {
         case .toAlignWith:
-            let primarySelection = inputState.getPrimarySelectionName()!
+            let primarySelection = sceneUI.primarySelection!
             let primarySelected = data.entities[primarySelection] as AFEntity
             
             goal = AFGoal(toAlignWith: names, maxDistance: distance, maxAngle: angle, weight: weight)
@@ -80,8 +80,8 @@ class AFItemEditorDelegate {
             goal = AFGoal(toAvoidObstacles: Array(data.obstacles.keys), time: time, weight: weight)
             
         case .toAvoidAgents:
-            let primarySelection = inputState.getPrimarySelectionName()!
-            let primarySelected = data.entities[primarySelection] as AFEntity
+            let primarySelection = sceneUI.primarySelection
+            let primarySelected = data.entities[primarySelection!] as AFEntity
             
             let agentNames = Array(group)
             
@@ -103,24 +103,24 @@ class AFItemEditorDelegate {
             goal = nil
             
         case .toFleeAgent:
-            let selectedNames = inputState.getSelectedNames()
+            let selectedNames = sceneUI.selectedNames
             guard selectedNames.count == 2 else { return }
             
             var si = selectedNames.union(Set<String>())
-            si.remove(inputState.getPrimarySelectionName()!)
+            si.remove(sceneUI.primarySelection!)
             
             let nameOfAgentToFlee = si.first!
             goal = AFGoal(toFleeAgent: nameOfAgentToFlee, weight: weight)
             
         case .toFollow:
-            let pathIndex = AFCore.inputState.pathForNextPathGoal
+            let pathIndex = AFCore.sceneUI.pathForNextPathGoal
             let pathname = data.paths[pathIndex].name
             goal = AFGoal(toFollow: pathname, time: Float(time), forward: state.forward, weight: weight)
             
             goal!.pathname = pathname
             
         case .toInterceptAgent:
-            let selectedNames = inputState.getSelectedNames()
+            let selectedNames = sceneUI.selectedNames
             guard selectedNames.count == 2 else { return }
             
             let namesAsArray = Array(selectedNames)
@@ -128,10 +128,10 @@ class AFItemEditorDelegate {
             goal = AFGoal(toInterceptAgent: secondaryAgentName, time: time, weight: weight)
             
         case .toSeekAgent:
-            var selectedNames = inputState.getSelectedNames()
+            var selectedNames = sceneUI.selectedNames
             guard selectedNames.count == 2 else { return }
             
-            let p = selectedNames.remove(inputState.getPrimarySelectionName()!)
+            let p = selectedNames.remove(sceneUI.primarySelection!)
             selectedNames.remove(p!)
             
             let secondaryAgentName = selectedNames.first!
@@ -146,7 +146,7 @@ class AFItemEditorDelegate {
             goal = nil
             
         case .toStayOn:
-            let pathIndex = AFCore.inputState.pathForNextPathGoal
+            let pathIndex = AFCore.sceneUI.pathForNextPathGoal
             let pathname = data.paths[pathIndex].name
             goal = AFGoal(toStayOn: pathname, time: Float(time), weight: weight)
             
@@ -160,7 +160,7 @@ class AFItemEditorDelegate {
         }
         
         if goal != nil {
-            inputState.getParentForNewMotivator().addGoal(goal!)
+            sceneUI.getParentForNewMotivator().addGoal(goal!)
         }
     }
     
@@ -170,7 +170,7 @@ class AFItemEditorDelegate {
     }
     
     private func refreshGoal(gkGoal: GKGoal, state: ItemEditorSlidersState) {
-        let afGoal = inputState.parentOfNewMotivator!.goalsMap[gkGoal]!
+        let afGoal = sceneUI.parentOfNewMotivator!.goalsMap[gkGoal]!
         
         // Edit existing goal -- note AFBehavior doesn't give us a way
         // to update the goal. If we want to assign any new values to
@@ -188,15 +188,15 @@ class AFItemEditorDelegate {
         if replacementGoalRequired {
             retransmitGoal(afGoal: afGoal, state: state)
         } else {
-            inputState.parentOfNewMotivator!.setWeightage(Float(state.weight.value), for: afGoal)
+            sceneUI.parentOfNewMotivator!.setWeightage(Float(state.weight.value), for: afGoal)
         }
     }
     
     func refreshMotivators(state: ItemEditorSlidersState) {
-        let selectedNames = inputState.getSelectedNames()
+        let selectedNames = sceneUI.selectedNames
         guard selectedNames.count > 0 else { return }
         
-        let agentName = inputState.getPrimarySelectionName()!
+        let agentName = sceneUI.primarySelection!
         let entity = data.entities[agentName]
         let agent = entity.agent
         
@@ -222,8 +222,8 @@ class AFItemEditorDelegate {
         
         newGoal.weight = weight
         
-        inputState.parentOfNewMotivator!.remove(afGoal)
-        inputState.parentOfNewMotivator!.setWeightage(weight, for: newGoal)
+        sceneUI.parentOfNewMotivator!.remove(afGoal)
+        sceneUI.parentOfNewMotivator!.setWeightage(weight, for: newGoal)
     }
     
     func sliderChanged(state: ItemEditorSlidersState) {

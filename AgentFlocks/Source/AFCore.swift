@@ -28,8 +28,8 @@ class AFCore {
     static var contextMenu: AFContextMenu!
     static var contextMenuDelegate: AFContextMenuDelegate!
     static var data: AFData!
-    static var gameSceneDelegate: AFGameSceneDelegate!
-    static var inputState: AFInputState!
+    static var sceneInput: AFSceneInput!
+    static var sceneUI: AFSceneUI!
     static var itemEditorDelegate: AFItemEditorDelegate!
     static var menuBarDelegate: AFMenuBarDelegate!
     static var topBarDelegate: AFTopBarDelegate!
@@ -37,18 +37,18 @@ class AFCore {
     
     static func makeCore(ui: AppDelegate, gameScene: GameScene) -> AFGameSceneDelegate {
         contextMenu = AFContextMenu(ui: ui)
-        inputState = AFInputState(gameScene: gameScene, ui: ui, contextMenu: contextMenu)
+        sceneUI = AFSceneUI(gameScene: gameScene, ui: ui, contextMenu: contextMenu)
         
-        data = AFData(inputState: inputState)
-        inputState.data = self.data
+        data = AFData(sceneUI: sceneUI)
+        sceneUI.data = self.data
         
-        agentGoalsDelegate = AFAgentGoalsDelegate(data: data, inputState: inputState)
-        browserDelegate = AFBrowserDelegate(inputState)
-        contextMenuDelegate = AFContextMenuDelegate(data: data, inputState: inputState)
-        gameSceneDelegate = AFGameSceneDelegate(data: data)
-        itemEditorDelegate = AFItemEditorDelegate(data: data, inputState: inputState)
-        menuBarDelegate = AFMenuBarDelegate(data: data, inputState: inputState)
-        topBarDelegate = AFTopBarDelegate(data: data, inputState: inputState)
+        agentGoalsDelegate = AFAgentGoalsDelegate(data: data, sceneUI: sceneUI)
+        browserDelegate = AFBrowserDelegate(sceneUI)
+        contextMenuDelegate = AFContextMenuDelegate(data: data, sceneUI: sceneUI)
+        itemEditorDelegate = AFItemEditorDelegate(data: data, sceneUI: sceneUI)
+        menuBarDelegate = AFMenuBarDelegate(data: data, sceneUI: sceneUI)
+        sceneInput = AFSceneInput(data: data, sceneUI: sceneUI, gameScene: gameScene)
+        topBarDelegate = AFTopBarDelegate(data: data, sceneUI: sceneUI)
         
         // Here, "ui" just means the AppDelegate
         AFCore.ui = ui
@@ -62,6 +62,6 @@ class AFCore {
         // We don't add this one to AppDelegate, because it's owned by
         // GameScene. We return it so AppDelegate can plug it into
         // GameScene.
-        return gameSceneDelegate
+        return sceneInput
     }
 }

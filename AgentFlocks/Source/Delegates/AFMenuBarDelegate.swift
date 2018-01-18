@@ -26,11 +26,11 @@ import GameplayKit
 
 class AFMenuBarDelegate {
     unowned let data: AFData
-    unowned let inputState: AFInputState
+    unowned let sceneUI: AFSceneUI
     
-    init(data: AFData, inputState: AFInputState) {
+    init(data: AFData, sceneUI: AFSceneUI) {
         self.data = data
-        self.inputState = inputState
+        self.sceneUI = sceneUI
     }
 }
 
@@ -45,18 +45,18 @@ extension AFMenuBarDelegate {
 
             for i in 0 ..< input.paths.keys.count {
                 let path_ = input.paths.keys[i]
-                let path = inputState.makePath(prototype: input.paths.map[path_]!)
+                let path = sceneUI.makePath(prototype: input.paths.map[path_]!)
                 
                 self.data.paths.append(key: path.name, value: path)
             }
             
             for (key, value) in input.obstacles {
-                let path = inputState.makePath(prototype: value)
+                let path = sceneUI.makePath(prototype: value)
                 self.data.obstacles[key] = path
             }
 
             for entity_ in input.entities {
-                let entity = inputState.makeEntity(prototype: entity_)
+                let entity = sceneUI.makeEntity(prototype: entity_)
                 self.data.entities.append(key: entity.name, value: entity)
             }
         } catch { print(error) }
@@ -78,10 +78,10 @@ extension AFMenuBarDelegate {
 
 extension AFMenuBarDelegate {
     func tempRegisterPath() {
-        inputState.finalizePath(close: false)
+        sceneUI.finalizePath(close: false)
     }
     
     func tempSelectPath(ix: Int) {
-        inputState.pathForNextPathGoal = ix
+        sceneUI.pathForNextPathGoal = ix
     }
 }

@@ -310,7 +310,7 @@ class AFGoal {
         self.time = t
         self.weight = weight
         
-        let afPath = AFPath(gameScene: AFCore.inputState.gameScene, copyFrom: AFCore.data.paths[pathname])
+        let afPath = AFPath(gameScene: AFCore.sceneUI.gameScene, copyFrom: AFCore.data.paths[pathname])
         gkGoal = GKGoal(toFollow: afPath.asPath()!, maxPredictionTime: TimeInterval(t), forward: forward)
     }
     
@@ -389,7 +389,7 @@ class AFGoal {
         self.time = t
         self.weight = weight
         
-        let afPath = AFPath(gameScene: AFCore.inputState.gameScene, copyFrom: AFCore.data.paths[pathname])
+        let afPath = AFPath(gameScene: AFCore.sceneUI.gameScene, copyFrom: AFCore.data.paths[pathname])
         gkGoal = GKGoal(toStayOn: afPath.gkPath, maxPredictionTime: TimeInterval(t))
     }
 

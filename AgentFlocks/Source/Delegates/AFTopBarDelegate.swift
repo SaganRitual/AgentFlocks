@@ -26,19 +26,17 @@ import GameplayKit
 
 class AFTopBarDelegate {
     unowned let data: AFData
-    unowned let inputState: AFInputState
+    unowned let sceneUI: AFSceneUI
     
-    init(data: AFData, inputState: AFInputState) {
+    init(data: AFData, sceneUI: AFSceneUI) {
         self.data = data
-        self.inputState = inputState
+        self.sceneUI = sceneUI
     }
     
     func actionPlace() {
-        inputState.enter(AFInputState.ModePlace.self)
     }
     
     func actionDraw() {
-        inputState.enter(AFInputState.ModeDraw.self)
     }
     
     func getActiveAgentImages() -> [NSImage] {
@@ -69,8 +67,8 @@ class AFTopBarDelegate {
         // Probably will do away with the radio buttons
     }
     
-    func pause() { inputState.gameScene.pause() }
-    func play() { inputState.gameScene.play() }
+    func pause() { sceneUI.gameScene.pause() }
+    func play() { sceneUI.gameScene.play() }
     
     func setSpeed(_ speed: Double) {
         print("setSpeed() not implemented yet")

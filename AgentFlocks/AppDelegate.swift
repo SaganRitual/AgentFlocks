@@ -403,8 +403,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             topBarController.radioButtonDraw.state = NSControl.StateValue.on
             topBarController.radioButtonPath.state = NSControl.StateValue.on
             topBarController.radioButtonAgent.isEnabled = false
-            
-            coreContextMenuDelegate.itemDraw()
 
         case AFContextMenu.ItemTypes.CloneAgent.rawValue:
             coreContextMenuDelegate.itemCloneAgent()
@@ -413,8 +411,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             topBarController.radioButtonPlace.state = NSControl.StateValue.on
             topBarController.radioButtonAgent.state = NSControl.StateValue.on
             topBarController.radioButtonAgent.isEnabled = true
-            
-            coreContextMenuDelegate.itemPlace()
             
         case AFContextMenu.ItemTypes.SetObstacleCloneStamp.rawValue:
             coreContextMenuDelegate.itemSetObstacleCloneStamp()

@@ -24,25 +24,13 @@
 
 import AppKit
 
-class AFGameSceneDelegate {
-    let data: AFData
-    
-    init(data: AFData) {
-        self.data = data
-    }
-    
-    func update(deltaTime dt: TimeInterval) {
-        data.entities.forEach { $0.update(deltaTime: dt) }
-    }
-    
-    func keyDown(with event: NSEvent) {
-        
-    }
-    
-    func keyUp(with event: NSEvent) {  }
-    func mouseDown(with event: NSEvent) { AFCore.inputState.mouseDown(with: event) }
-    func mouseDragged(with event: NSEvent) { AFCore.inputState.mouseDragged(with: event) }
-    func mouseUp(with event: NSEvent) { AFCore.inputState.mouseUp(with: event) }
-    func rightMouseUp(with event: NSEvent) {  }
-    func rightMouseDown(with event: NSEvent) {  }
+protocol AFGameSceneDelegate {
+    func update(deltaTime dt: TimeInterval)
+    func keyDown(with event: NSEvent)
+    func keyUp(with event: NSEvent)
+    func mouseDown(with event: NSEvent)
+    func mouseDragged(with event: NSEvent)
+    func mouseUp(with event: NSEvent)
+    func rightMouseUp(with event: NSEvent)
+    func rightMouseDown(with event: NSEvent)
 }

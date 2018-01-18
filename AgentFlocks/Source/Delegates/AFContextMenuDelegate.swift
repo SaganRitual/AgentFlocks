@@ -24,38 +24,30 @@
 
 class AFContextMenuDelegate {
     unowned let data: AFData
-    unowned let inputState: AFInputState
+    unowned let sceneUI: AFSceneUI
     
-    init(data: AFData, inputState: AFInputState) {
+    init(data: AFData, sceneUI: AFSceneUI) {
         self.data = data
-        self.inputState = inputState
+        self.sceneUI = sceneUI
     }
     
     func itemCloneAgent() {
-        let originalEntity = AFCore.data.entities[inputState.upNodeName!]
-        let currentPosition = inputState.currentPosition
+        let originalEntity = AFCore.data.entities[sceneUI.upNodeName!]
+        let currentPosition = sceneUI.currentPosition
         
-        _ = inputState.makeEntity(copyFrom: originalEntity, position: currentPosition)
+        _ = sceneUI.makeEntity(copyFrom: originalEntity, position: currentPosition)
     }
     
     func itemAddPathToLibrary() {
-        inputState.finalizePath(close: true)
-    }
-    
-    func itemDraw() {
-        inputState.enter(AFInputState.ModeDraw.self)
-    }
-    
-    func itemPlace() {
-        inputState.enter(AFInputState.ModePlace.self)
+        sceneUI.finalizePath(close: true)
     }
     
     func itemSetObstacleCloneStamp() {
-        inputState.setObstacleCloneStamp()
+        sceneUI.setObstacleCloneStamp()
     }
     
     func itemStampObstacle() {
-        inputState.stampObstacle()
+        sceneUI.stampObstacle()
     }
 }
 
