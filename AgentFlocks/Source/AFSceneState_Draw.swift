@@ -35,13 +35,14 @@ extension AFSceneUI {
             self.sceneUI = sceneUI
         }
         
-        func addNodeIfOk(touchedNodes: [SKNode]) {
+        func addNodeIfOk(at position: CGPoint) -> Bool {
             var addNewNode = true
             
             // if the user clicked on a node in the path that isn't the start node,
             // just ignore the click. Don't add a node in the same position. Might
             // change that in the future.
             for node in activePath.graphNodes {
+                let touchedNodes = sceneUI.gameScene.nodes(at: position).filter { $0.name != nil }
                 if touchedNodes.contains(where: { return $0.name == node.name }) {
                     addNewNode = false
                     break
@@ -51,6 +52,8 @@ extension AFSceneUI {
             if addNewNode {
                 addNodeToPath(at: sceneUI.currentPosition)
             }
+            
+            return addNewNode
         }
         
         func addNodeToPath(at position: CGPoint) {
@@ -112,30 +115,39 @@ extension AFSceneUI {
             return activePath == nil || activePath!.finalized
         }
         
-        func mouseMove(at position: CGPoint) {
+        func mouseDown(on nodeName: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
             if let drawIndicator = self.drawIndicator {
                 drawIndicator.removeFromParent()
             }
-            
-            if let last = activePath.graphNodes.last {
-                let linePath = CGMutablePath()
-                linePath.move(to: CGPoint(last.position))
-                linePath.addLine(to: position)
-                
-                drawIndicator = SKShapeNode(path: linePath)
-                sceneUI.gameScene.addChild(drawIndicator)
+
+            if let downName = nodeName, let node = sceneUI.gameScene.childNode(withName: downName) {
+                sceneUI.setNodeToMouseOffset(anchor: node.position)
+            } else {
+                sceneUI.setNodeToMouseOffset(anchor: CGPoint.zero)
             }
+        }
+
+        func mouseMove(at position: CGPoint) {
+            updateDrawIndicator(at: position)
         }
         
         func mouseUp(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
-            if let up = node {
-                mouseUp_(on: up, at: position, flags: flags)
-            } else {
-                mouseUp_(at: position, flags: flags)
+            var updateIndicator = true
+
+            if sceneUI.mouseState == .down {
+                if let up = node {
+                    updateIndicator = mouseUp_(on: up, at: position, flags: flags)
+                } else {
+                    updateIndicator = mouseUp_(at: position, flags: flags)
+                }
             }
+            
+            if updateIndicator { updateDrawIndicator(at: position) }
         }
         
-        func mouseUp_(on node: String, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
+        func mouseUp_(on node: String, at position: CGPoint, flags: NSEvent.ModifierFlags?) -> Bool {
+            var endOfDrag = false
+            
             if let flags = flags, flags.contains(.command) {
                 if sceneUI.mouseState == .down { // cmd+click on a node
                     sceneUI.toggleSelection(node)
@@ -151,13 +163,20 @@ extension AFSceneUI {
                     deselectAll()
                     
                     select(node, primary: true)
+                    
+                    if let ap = activePath, node == ap.graphNodes[0].name, ap.graphNodes.count > 1 {
+                     finalizePathIfOk()
+                    }
                 } else {                    // That is, we just finished dragging the node
+                    endOfDrag = true
                     trackMouse(nodeName: node, atPoint: position)
                 }
             }
+
+            return endOfDrag
         }
         
-        func mouseUp_(at position: CGPoint, flags: NSEvent.ModifierFlags?) {
+        func mouseUp_(at position: CGPoint, flags: NSEvent.ModifierFlags?) -> Bool {
             // Clicked in the black; add a node
             deselectAll()
             
@@ -168,25 +187,22 @@ extension AFSceneUI {
                 optionKey = flags.contains(.option)
             }
             
+            var addedANode = false
             if optionKey {
-                newPathIfOk()           // Start a new path if we aren't already in the middle of one
+                addedANode = newPathIfOk()  // Start a new path if we aren't already in the middle of one
             } else if controlKey {
-                sceneUI.stampObstacle() // Stamp an obstacle, if there's something stampable
+                sceneUI.stampObstacle()     // Stamp an obstacle, if there's something stampable
             } else {
-                let touchedNodes = sceneUI.gameScene.nodes(at: sceneUI.currentPosition).filter { $0.name != nil }
-                
-                if touchedNodes.contains(where: { return $0.name == activePath.graphNodes[0].name }) {
-                    finalizePathIfOk()
-                } else {
-                    addNodeIfOk(touchedNodes: touchedNodes)
-                }
+                addedANode = addNodeIfOk(at: position)
             }
+
+            return addedANode
         }
         
-        func newPathIfOk() {
+        func newPathIfOk() -> Bool {
             // Create a new path if we aren't already drawing one. If
             // we're already drawing, ignore the click
-            guard activePath == nil else { return }
+            guard activePath == nil else { return false }
 
             activePath = AFPath(gameScene: sceneUI.gameScene)
             
@@ -197,6 +213,7 @@ extension AFSceneUI {
             sceneUI.contextMenu.includeInDisplay(.AddPathToLibrary, true, enable: false)
             
             addNodeToPath(at: sceneUI.currentPosition)
+            return true
         }
 
         func select(_ index: Int, primary: Bool) {
@@ -228,6 +245,21 @@ extension AFSceneUI {
             }
         }
         
+        func updateDrawIndicator(at position: CGPoint) {
+            if let drawIndicator = self.drawIndicator {
+                drawIndicator.removeFromParent()
+            }
+            
+            if let last = activePath?.graphNodes.last {
+                let linePath = CGMutablePath()
+                linePath.move(to: CGPoint(last.position))
+                linePath.addLine(to: position)
+                
+                drawIndicator = SKShapeNode(path: linePath)
+                sceneUI.gameScene.addChild(drawIndicator)
+            }
+        }
+
         override func willExit(to nextState: GKState) {
             if let drawIndicator = self.drawIndicator {
                 drawIndicator.removeFromParent()

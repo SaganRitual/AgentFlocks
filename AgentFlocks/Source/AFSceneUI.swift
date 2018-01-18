@@ -29,6 +29,7 @@ class AFSceneUI {
     let contextMenu: AFContextMenu
     var currentPosition = CGPoint.zero
     var data: AFData!
+    var downNodeName: String?
     var mouseState = MouseStates.up
     var nodeToMouseOffset = CGPoint.zero
     var obstacleCloneStamp = String()
@@ -109,20 +110,6 @@ class AFSceneUI {
             return (entity.agent.behavior! as! GKCompositeBehavior)[0] as! AFBehavior
         }
     }
-
-    func getPathThatOwnsNode(_ name: String) -> (AFPath, String)? {
-        for path in data.paths {
-            if path.graphNodes.getIndexOf(name) != nil {
-                return (path, name)
-            }
-        }
-                
-        if let obstacle = data.obstacles[name] {
-            return (obstacle, name)
-        }
-
-        return nil
-    }
     
     func keyDown(mouseAt: CGPoint) {
         
@@ -148,12 +135,10 @@ class AFSceneUI {
         return AFPath(gameScene: gameScene, prototype: prototype)
     }
     
-    func mouseDown(on node: String?, at position: CGPoint) {
-        if let node = node {
-            currentPosition = position
-            let center = stateMachine.drone.getPosition(ofNode: node)
-            setNodeToMouseOffset(anchor: center)
-        }
+    func mouseDown(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
+        downNodeName = node
+        currentPosition = position
+        stateMachine.mouseDown(on: node, at: position, flags: flags)
         mouseState = .down
         upNodeName = nil
     }
@@ -174,6 +159,7 @@ class AFSceneUI {
         currentPosition = position
         stateMachine.mouseUp(on: node, at: position, flags: flags)
         mouseState = .up
+        downNodeName = nil
     }
 
     func place(at point: CGPoint) -> String {
@@ -241,6 +227,7 @@ protocol AFSceneDrone {
     func deselectAll()
     func finalizePath(close: Bool)
     func getPosition(ofNode name: String) -> CGPoint
+    func mouseDown(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?)
     func mouseMove(at position: CGPoint)
     func mouseUp(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?)
     func select(_ name: String, primary: Bool)
@@ -263,6 +250,10 @@ extension AFSceneUI {
             enter(Default.self)
         }
         
+        func mouseDown(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
+            drone.mouseDown(on: node, at: position, flags: flags)
+        }
+
         func mouseMove(at position: CGPoint) {
             drone.mouseMove(at: position)
         }

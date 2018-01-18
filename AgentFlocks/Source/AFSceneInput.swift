@@ -40,38 +40,28 @@ class AFSceneInput: AFGameSceneDelegate {
     }
     
     func getTouchedNode() -> SKNode? {
-        let touchedNodes = gameScene.nodes(at: currentPosition).filter { $0.name != nil }
-        
-        for entity in data.entities {
-            if touchedNodes.contains(where: { return $0.name == entity.name }) {
-                return entity.agent.spriteContainer
-            }
-        }
-        
-        for afPath in data.paths {
-            // Find the last descendant; I think that will be the top one
-            for node in afPath.graphNodes.reversed() {
-                if touchedNodes.contains(node.sprite) {
-                    return node.sprite
+        let touchedNodes = gameScene.nodes(at: currentPosition).filter({
+            var selectable = true
+            if $0.name == nil { selectable = false }
+            else if let userData = $0.userData {
+                if let flag = userData["selectable"] as? Bool {
+                    selectable = flag
+                }
+                
+                if let type = userData["type"] as? String, type == "pathContainer" {
+                    selectable = false
                 }
             }
-        }
+            
+            return selectable
+        })
         
-        for (_, afPath) in data.obstacles {
-            if touchedNodes.contains(afPath.containerNode!) {
-                return afPath.containerNode!
-            }
-        }
-        
-        return nil
+        return touchedNodes.last
     }
     
     func getTouchedNodeName() -> String? {
-        if let node = getTouchedNode() {
-            return node.name
-        } else {
-            return nil
-        }
+        if let node = getTouchedNode() { return node.name }
+        else { return nil }
     }
 
     func keyDown(with event: NSEvent) {
@@ -91,7 +81,7 @@ class AFSceneInput: AFGameSceneDelegate {
     func mouseDown(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
         downNodeName = getTouchedNodeName()
-        sceneUI.mouseDown(on: downNodeName, at: currentPosition)
+        sceneUI.mouseDown(on: downNodeName, at: currentPosition, flags: event.modifierFlags)
         upNodeName = nil
     }
     

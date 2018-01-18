@@ -214,6 +214,8 @@ class AFPath: Equatable {
 
         containerNode = SKNode()
         containerNode!.name = self.name
+        containerNode!.userData = NSMutableDictionary()
+        containerNode!.userData!["type"] = "pathContainer"
 
         var nodesArray = [float2]()
         var visualDotsArray = [CGPoint]()
@@ -264,6 +266,8 @@ class AFPath: Equatable {
         
         visualPathSprite = SKShapeNode(path: visualPath)
         visualPathSprite!.name = name
+        visualPathSprite!.userData = NSMutableDictionary()
+        visualPathSprite!.userData!["selectable"] = false
         containerNode!.addChild(visualPathSprite!)
         
         if !finalized { visualPathSprite!.strokeColor = .red }

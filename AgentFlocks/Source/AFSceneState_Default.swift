@@ -95,6 +95,10 @@ extension AFSceneUI {
             }
         }
         
+        func mouseDown(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
+            
+        }
+        
         func mouseMove(at position: CGPoint) { }
         
         func mouseUp(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
