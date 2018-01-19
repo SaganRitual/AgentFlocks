@@ -46,7 +46,7 @@ class SceneController: NSViewController {
 			sceneView.presentScene(sceneNode)
 			
 			// Sprite Kit applies additional optimizations to improve rendering performance
-			sceneView.ignoresSiblingOrder = true
+            sceneView.ignoresSiblingOrder = true
 			
 			sceneView.showsFPS = true
 			sceneView.showsNodeCount = true

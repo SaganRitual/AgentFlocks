@@ -78,25 +78,13 @@ extension AFSceneUI {
             return sceneUI.data.entities[name].agent.spriteContainer.position
         }
         
-        func getTouchedNode(touchedNodes: [SKNode]) -> SKNode? {
-            // Find the last descendant; I think that will be the top one
-            for entity in sceneUI.data.entities.reversed() {
-                if touchedNodes.contains(entity.agent.sprite) {
-                    return entity.agent.sprite
-                }
-            }
-            
-            return nil
-        }
-        
         func keyUp(with event: NSEvent) {
             if event.keyCode == AFKeyCodes.escape.rawValue {
                 deselectAll()
             }
         }
         
-        func mouseDown(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
-            
+        func mouseDown(on nodeName: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
         }
         
         func mouseMove(at position: CGPoint) { }

@@ -41,22 +41,22 @@ class AFSceneInput: AFGameSceneDelegate {
     
     func getTouchedNode() -> SKNode? {
         let touchedNodes = gameScene.nodes(at: currentPosition).filter({
-            var selectable = true
-            if $0.name == nil { selectable = false }
+            var clickable = true
+            if $0.name == nil { clickable = false }
             else if let userData = $0.userData {
-                if let flag = userData["selectable"] as? Bool {
-                    selectable = flag
+                if let flag = userData["clickable"] as? Bool {
+                    clickable = flag
                 }
                 
                 if let type = userData["type"] as? String, type == "pathContainer" {
-                    selectable = false
+                    clickable = false
                 }
             }
             
-            return selectable
+            return clickable
         })
         
-        return touchedNodes.last
+        return touchedNodes.first
     }
     
     func getTouchedNodeName() -> String? {

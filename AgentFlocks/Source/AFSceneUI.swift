@@ -31,6 +31,7 @@ class AFSceneUI {
     var data: AFData!
     var downNodeName: String?
     var mouseState = MouseStates.up
+    var nextZPosition = 0
     var nodeToMouseOffset = CGPoint.zero
     var obstacleCloneStamp = String()
     var parentOfNewMotivator: AFBehavior?
@@ -53,6 +54,24 @@ class AFSceneUI {
         stateMachine = StateMachine(sceneUI: self)
     }
     
+    func bringToTop(_ nodeName: String) {
+        let clickablesInZOrder = gameScene.children.filter {
+            if let userData = $0.userData, let clickable = userData["clickable"] as? Bool {
+                return clickable
+            } else {
+                return false
+            }
+        }.sorted(by: { $0.zPosition < $1.zPosition })
+        
+        if nodeName == clickablesInZOrder.last!.name! { return } // Already at top
+        
+        let nodeToPromote = gameScene.childNode(withName: nodeName)!
+        let nodeToDemote = clickablesInZOrder.last!
+        
+        nodeToDemote.zPosition = nodeToPromote.zPosition
+        nodeToPromote.zPosition = CGFloat(clickablesInZOrder.count - 1)
+    }
+    
     func cloneAgent() {
         let originalEntity = data.entities[upNodeName!]
         
@@ -63,31 +82,8 @@ class AFSceneUI {
         stateMachine.drone.finalizePath(close: close)
     }
     
-    /*
-    func deselect(_ name: String) {
-        let psm = getParentStateMachine()
-        
-        psm.data.entities[name].agent.deselect()
-        psm.selectedNames.remove(name)
-        
-        // We just now deselected the primary. If there's anyone
-        // else selected, they need to be made the primary.
-        if psm.primarySelection == name {
-            var selectNew: String?
-            
-            if psm.selectedNames.count > 0 {
-                selectNew = psm.selectedNames.first!
-                select(selectNew!, primary: true)
-            } else {
-                psm.primarySelection = nil
-            }
-            
-            psm.updatePrimarySelectionState(agentName: selectNew)
-        }
-        
-        psm.contextMenu.includeInDisplay(.CloneAgent, false)
-    }*/
-
+    func getNextZPosition() -> Int { defer { nextZPosition += 1 }; return nextZPosition }
+    
     func getPathThatOwnsTouchedNode(_ name: String) -> (AFPath, String)? {
         for path in data.paths {
             if path.graphNodes.getIndexOf(name) != nil {
@@ -135,10 +131,12 @@ class AFSceneUI {
         return AFPath(gameScene: gameScene, prototype: prototype)
     }
     
-    func mouseDown(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
-        downNodeName = node
+    func mouseDown(on nodeName: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
+        if let nn = nodeName { bringToTop(nn) }
+
+        downNodeName = nodeName
         currentPosition = position
-        stateMachine.mouseDown(on: node, at: position, flags: flags)
+        stateMachine.mouseDown(on: nodeName, at: position, flags: flags)
         mouseState = .down
         upNodeName = nil
     }

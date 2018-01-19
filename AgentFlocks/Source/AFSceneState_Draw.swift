@@ -131,17 +131,20 @@ extension AFSceneUI {
             updateDrawIndicator(at: position)
         }
         
-        func mouseUp(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
+        func mouseUp(on nodeName: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
             var updateIndicator = true
 
             if sceneUI.mouseState == .down {
-                if let up = node {
+                if let up = nodeName {
+                    if let node = sceneUI.gameScene.childNode(withName: up) {
+                        node.zPosition = 0
+                    }
                     updateIndicator = mouseUp_(on: up, at: position, flags: flags)
                 } else {
                     updateIndicator = mouseUp_(at: position, flags: flags)
                 }
             }
-            
+
             if updateIndicator { updateDrawIndicator(at: position) }
         }
         

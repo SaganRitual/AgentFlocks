@@ -175,8 +175,13 @@ class AFAgent2D: GKAgent2D, AFScenoid {
     }
     
     static func makeSpriteContainer(image: NSImage, position: CGPoint, _ name: String? = nil) -> (SKNode, SKSpriteNode) {
-        let node = SKNode()
-        node.position = position + AFCore.sceneUI.nodeToMouseOffset
+        let container = SKNode()
+        container.position = position + AFCore.sceneUI.nodeToMouseOffset
+        
+        container.userData = NSMutableDictionary()
+        container.userData!["clickable"] = true
+        container.userData!["selectable"] = true
+        container.zPosition = CGFloat(AFCore.sceneUI.getNextZPosition())
 
         var texture: SKTexture!
         
@@ -187,17 +192,16 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         }
         
         let sprite = SKSpriteNode(texture: texture)
-        sprite.zPosition = 0
-        node.addChild(sprite)
-        
+
         if let n = name {
             sprite.name = n
         } else {
             sprite.name = NSUUID().uuidString
         }
 
-        node.name = sprite.name
-        return (node, sprite)
+        container.name = sprite.name
+        container.addChild(sprite)
+        return (container, sprite)
     }
 
     static func makeSpriteContainer(imageFile: String, position: CGPoint, _ name: String? = nil) -> (SKNode, SKSpriteNode) {
