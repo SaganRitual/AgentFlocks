@@ -1,5 +1,5 @@
 //
-// Created by Rob Bishop on 1/18/18
+// Created by Rob Bishop on 1/20/18
 //
 // Copyright © 2018 Rob Bishop
 //
@@ -25,15 +25,66 @@
 import GameplayKit
 
 extension AFSceneUI {
-    
-    class Default: GKState, AFSceneDrone {
-        let sceneUI: AFSceneUI
-        
-        init(_ sceneUI: AFSceneUI) {
-            self.sceneUI = sceneUI
+    class Default: BaseState {
+        override func click(name: String?, flags: NSEvent.ModifierFlags?) {
+            // If the user has dragged across the black for no particular reason,
+            // ignore the mouse up; pretend nothing happened
+            guard !(sceneUI.upNodeName == nil && sceneUI.mouseState == .dragging) else { return }
+            
+            if let name = name { click_node(name: name, flags: flags) }
+            else { click_black(flags: flags) }
         }
         
-        func deselect(_ name: String) {
+        private func click_black(flags: NSEvent.ModifierFlags?) {
+            deselectAll()
+            
+            var newEntity: AFEntity!
+            
+            if flags?.contains(.option) ?? false {
+                sceneUI.enter(Draw.self)
+                return
+            } else if flags?.contains(.control) ?? false {
+                // ctrl-click gives a clone of the selected guy, goals and all.
+                // If no one is selected, we don't do anything.
+                guard sceneUI.data.entities.count > 0 else { return }
+                
+                let originalIx = sceneUI.data.entities.count - 1
+                let originalEntity = sceneUI.data.entities[originalIx]
+                
+                newEntity = sceneUI.data.createEntity(copyFrom: originalEntity, position: sceneUI.currentPosition)
+            } else {
+                let imageIndex = AFCore.browserDelegate.agentImageIndex
+                let image = sceneUI.ui.agents[imageIndex].image
+                newEntity = sceneUI.data.createEntity(image: image, position: sceneUI.currentPosition)
+            }
+            
+            select(newEntity.name, primary: true)
+        }
+        
+        private func click_node(name: String, flags: NSEvent.ModifierFlags?) {
+            // opt-click and ctrl-click currently have no meaning when
+            // clicking on a node, so we just ignore them
+            guard !((flags?.contains(.control) ?? false) ||
+                (flags?.contains(.option) ?? false)) else { return }
+            
+            if let flags = flags, flags.contains(.command) {
+                if sceneUI.mouseState == .down { // cmd+click on a node
+                    sceneUI.toggleSelection(sceneUI.upNodeName!)
+                }
+            } else {
+                if sceneUI.mouseState == .down {    // That is, we're coming out of down as opposed to drag
+                    let setSelection = (sceneUI.primarySelection != sceneUI.upNodeName!)
+                    
+                    deselectAll()
+                    
+                    if setSelection {
+                        select(sceneUI.upNodeName!, primary: true)
+                    }
+                }
+            }
+        }
+        
+        override func deselect(_ name: String) {
             sceneUI.data.entities[name].agent.deselect()
             sceneUI.selectedNames.remove(name)
             
@@ -55,10 +106,9 @@ extension AFSceneUI {
             sceneUI.contextMenu.includeInDisplay(.CloneAgent, false)
         }
         
-        func deselectAll() {
+        override func deselectAll() {
             sceneUI.data.entities.forEach{ $0.agent.deselect() }
             
-            // Ugliness; this stuff should be in inputState
             sceneUI.selectedNames.removeAll()
             sceneUI.primarySelection = nil
             sceneUI.updatePrimarySelectionState(agentName: nil)
@@ -67,94 +117,15 @@ extension AFSceneUI {
         }
         
         override func didEnter(from previousState: GKState?) {
-            sceneUI.contextMenu.reset()
-            sceneUI.contextMenu.includeInDisplay(.Draw, true)
-            sceneUI.contextMenu.enableInDisplay(.Draw, true)
+            showClosedPathHandles()
         }
         
-        func finalizePath(close: Bool) {}
-        
-        func getPosition(ofNode name: String) -> CGPoint {
-            return sceneUI.data.entities[name].agent.spriteContainer.position
-        }
-        
-        func keyUp(with event: NSEvent) {
-            if event.keyCode == AFKeyCodes.escape.rawValue {
-                deselectAll()
-            }
-        }
-        
-        func mouseDown(on nodeName: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
-        }
-        
-        func mouseMove(at position: CGPoint) { }
-        
-        func mouseUp(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
-            // If the user has dragged across the black for no particular reason,
-            // ignore the mouse up; pretend nothing happened
-            guard !(sceneUI.upNodeName == nil && sceneUI.mouseState == .dragging) else { return }
-            
-            if sceneUI.upNodeName == nil {
-                // Mouse up in the black; always a full deselect
-                deselectAll()
-                
-                var newEntity: AFEntity!
-                var controlKey = false
-                var optionKey = false
-                if let flags = flags {
-                    controlKey = flags.contains(.control)
-                    optionKey = flags.contains(.option)
-                }
-                
-                if optionKey {
-                    sceneUI.stateMachine.enter(Draw.self)
-                    sceneUI.mouseUp(on: node, at: position, flags: flags)
-                    return
-                } else if controlKey {
-                    // ctrl-click gives a clone of the last guy, goals and all
-                    guard sceneUI.data.entities.count > 0 else { return }
-                    
-                    let originalIx = sceneUI.data.entities.count - 1
-                    let originalEntity = sceneUI.data.entities[originalIx]
-                    
-                    newEntity = sceneUI.data.createEntity(copyFrom: originalEntity, position: position)
-                } else {
-                    let imageIndex = AFCore.browserDelegate.agentImageIndex
-                    let image = sceneUI.ui.agents[imageIndex].image
-                    newEntity = sceneUI.data.createEntity(image: image, position: position)
-                }
-                
-                select(newEntity.name, primary: true)
-                sceneUI.updatePrimarySelectionState(agentName: newEntity.name)
-            } else {
-                if let flags = flags, flags.contains(.command) {
-                    if sceneUI.mouseState == .down { // cmd+click on a node
-                        sceneUI.toggleSelection(sceneUI.upNodeName!)
-                    }
-                } else {
-                    if sceneUI.mouseState == .down {    // That is, we're coming out of down as opposed to drag
-                        let setSelection = (sceneUI.primarySelection != sceneUI.upNodeName!)
-                        
-                        deselectAll()
-                        
-                        if setSelection {
-                            select(sceneUI.upNodeName!, primary: true)
-                        }
-                    }
-                }
-            }
-        }
-        
-        func rightMouseUp(with event: NSEvent) {
-            sceneUI.contextMenu.show(at: event.locationInWindow)
-        }
-        
-        func select(_ index: Int, primary: Bool) {
+        override func select(_ index: Int, primary: Bool) {
             let entity = sceneUI.data.entities[index]
             select(entity.name, primary: primary)
         }
         
-        func select(_ name: String, primary: Bool) {
+        override func select(_ name: String, primary: Bool) {
             sceneUI.selectedNames.insert(name)
             
             let entity = sceneUI.data.entities[name]
@@ -164,21 +135,11 @@ extension AFSceneUI {
                 AFCore.ui.agentEditorController.goalsController.dataSource = entity
                 AFCore.ui.agentEditorController.attributesController.delegate = entity.agent
                 
-                sceneUI.primarySelection = name // Ugliness; move this into inputState
+                sceneUI.primarySelection = name
                 sceneUI.updatePrimarySelectionState(agentName: name)
             }
             
             sceneUI.contextMenu.includeInDisplay(.CloneAgent, true, enable: true)
-        }
-        
-        func trackMouse(nodeName: String, atPoint: CGPoint) {
-            let offset = sceneUI.nodeToMouseOffset
-            let agent = sceneUI.data.entities[nodeName].agent
-            
-            agent.position = vector_float2(Float(atPoint.x), Float(atPoint.y))
-            agent.position.x += Float(offset.x)
-            agent.position.y += Float(offset.y)
-            agent.update(deltaTime: 0)
         }
         
         override func willExit(to nextState: GKState) {

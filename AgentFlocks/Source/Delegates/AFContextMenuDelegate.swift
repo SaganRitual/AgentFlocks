@@ -39,10 +39,6 @@ class AFContextMenuDelegate {
         sceneUI.finalizePath(close: true)
     }
     
-    func itemSetObstacleCloneStamp() {
-        sceneUI.setObstacleCloneStamp()
-    }
-    
     func itemStampObstacle() {
         sceneUI.stampObstacle()
     }

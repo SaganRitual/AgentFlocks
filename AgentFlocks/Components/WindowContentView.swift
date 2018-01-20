@@ -15,14 +15,17 @@ class WindowContentView: NSView {
 			return true
 		}
 	}
+    
+    override func flagsChanged(with event: NSEvent) {
+        AFCore.sceneUI.flagsChanged(to: event.modifierFlags)
+    }
 	
-    // I'm not sure these functions ever get called
 	override func keyDown(with event: NSEvent) {
-        AFCore.sceneUI.keyDown(mouseAt: CGPoint.zero)
+        AFCore.sceneUI.keyDown(event.keyCode, mouseAt: CGPoint.zero, flags: event.modifierFlags)
 	}
 	
 	override func keyUp(with event: NSEvent) {
-        AFCore.sceneUI.keyUp(mouseAt: CGPoint.zero)
+        AFCore.sceneUI.keyUp(event.keyCode, mouseAt: CGPoint.zero, flags: event.modifierFlags)
 	}
 	
 }

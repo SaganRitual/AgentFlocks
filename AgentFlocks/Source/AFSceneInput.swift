@@ -43,14 +43,8 @@ class AFSceneInput: AFGameSceneDelegate {
         let touchedNodes = gameScene.nodes(at: currentPosition).filter({
             var clickable = true
             if $0.name == nil { clickable = false }
-            else if let userData = $0.userData {
-                if let flag = userData["clickable"] as? Bool {
-                    clickable = flag
-                }
-                
-                if let type = userData["type"] as? String, type == "pathContainer" {
-                    clickable = false
-                }
+            else if let userData = $0.userData, let flag = userData["clickable"] as? Bool {
+                clickable = flag
             }
             
             return clickable
@@ -68,26 +62,28 @@ class AFSceneInput: AFGameSceneDelegate {
         currentPosition = event.location(in: gameScene)
         downNodeName = nil
         upNodeName = nil
-        sceneUI.keyDown(mouseAt: currentPosition)
+        sceneUI.keyDown(event.keyCode, mouseAt: currentPosition, flags: event.modifierFlags)
     }
 
     func keyUp(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
         downNodeName = nil
         upNodeName = nil
-        sceneUI.keyUp(mouseAt: currentPosition)
+        sceneUI.keyUp(event.keyCode, mouseAt: currentPosition, flags: event.modifierFlags)
     }
 
     func mouseDown(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
         downNodeName = getTouchedNodeName()
-        sceneUI.mouseDown(on: downNodeName, at: currentPosition, flags: event.modifierFlags)
+        let downNode = getTouchedNode()
+        sceneUI.mouseDown(on: downNode, at: currentPosition, flags: event.modifierFlags)
         upNodeName = nil
     }
     
     func mouseDragged(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
-        sceneUI.mouseDrag(on: downNodeName, at: currentPosition)
+        let downNode = getTouchedNode()
+        sceneUI.mouseDrag(on: downNode, at: currentPosition)
     }
     
     func mouseMoved(with event: NSEvent) {

@@ -74,6 +74,8 @@ class AFAgent2D: GKAgent2D, AFScenoid {
 
         super.init()
         
+        applyUserData(to: sprite)
+        
         behavior = AFCompositeBehavior(prototype: prototype.motivator, agent: self)
         
         mass = prototype.mass
@@ -98,6 +100,8 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         
         self.position.x = Float(position.x)
         self.position.y = Float(position.y)
+        
+        applyUserData(to: sprite)
 
         behavior = AFCompositeBehavior(copyFrom: (copyFrom.behavior as! AFCompositeBehavior), agent: self)
         
@@ -127,6 +131,8 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         
         super.init()
         
+        applyUserData(to: sprite)
+
         behavior = AFCompositeBehavior(agent: self)
         
         let b = AFBehavior(agent: self)
@@ -160,6 +166,13 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         b.setWeightage(goal.weight, for: goal)
         (behavior as! AFCompositeBehavior).setWeight(goal.weight, for: b)
     }
+    
+    func applyUserData(to: SKNode) {
+        to.userData = NSMutableDictionary()
+        to.userData!["clickable"] = true
+        to.userData!["selectable"] = true
+        to.userData!["nodeOwner"] = self
+    }
 
     func deselect() {
         selected = false;
@@ -177,27 +190,22 @@ class AFAgent2D: GKAgent2D, AFScenoid {
     static func makeSpriteContainer(image: NSImage, position: CGPoint, _ name: String? = nil) -> (SKNode, SKSpriteNode) {
         let container = SKNode()
         container.position = position + AFCore.sceneUI.nodeToMouseOffset
-        
-        container.userData = NSMutableDictionary()
-        container.userData!["clickable"] = true
-        container.userData!["selectable"] = true
         container.zPosition = CGFloat(AFCore.sceneUI.getNextZPosition())
 
         var texture: SKTexture!
         
-        if image.isValid {
-            texture = SKTexture(image: image)
-        } else {
-            texture = SKTexture(imageNamed: "Herman")
-        }
+        if image.isValid { texture = SKTexture(image: image) }
+        else { texture = SKTexture(imageNamed: "Herman") }
         
         let sprite = SKSpriteNode(texture: texture)
 
-        if let n = name {
-            sprite.name = n
-        } else {
-            sprite.name = NSUUID().uuidString
-        }
+        if let n = name { sprite.name = n }
+        else { sprite.name = NSUUID().uuidString }
+        
+        sprite.userData = NSMutableDictionary()
+        sprite.userData!["clickable"] = true
+        sprite.userData!["selectable"] = true
+        sprite.userData!["nodeOwner"] = self
 
         container.name = sprite.name
         container.addChild(sprite)
@@ -208,6 +216,11 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         let path = Bundle.main.resourcePath!
         let image = NSImage(byReferencingFile: "\(path)/\(imageFile)")!
         return makeSpriteContainer(image: image, position: position, name)
+    }
+    
+    func move(to position: CGPoint) {
+        self.position = position.as_vector_float2()
+        spriteContainer.position = position
     }
 
     func select(primary: Bool = true) {

@@ -11,6 +11,8 @@ import Cocoa
 protocol ItemEditorDelegate {
 	func itemEditorApplyPressed(_ controller: ItemEditorController)
 	func itemEditorCancelPressed(_ controller: ItemEditorController)
+    func itemEditorActivated(_ controller: ItemEditorController)
+    func itemEditorDeactivated(_ controller: ItemEditorController)
 }
 
 class ItemEditorController: NSViewController {
@@ -76,6 +78,7 @@ class ItemEditorController: NSViewController {
                 sliderController.parentItemEditorController = self
 			}
 		}
+        
     }
 
 	// MARK: - Public methods

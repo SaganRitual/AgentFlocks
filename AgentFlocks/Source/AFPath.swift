@@ -68,6 +68,7 @@ class AFPath_Script: Codable, Equatable {
 class AFPath: Equatable {
     var containerNode: SKNode?
     var finalized = false
+    var fullPathHandleSprite: SKShapeNode!
     let gameScene: GameScene
     var gkPath: GKPath!
     var graphNodes: AFOrderedMap<String, AFGraphNode2D>
@@ -88,6 +89,10 @@ class AFPath: Equatable {
         self.gameScene = gameScene
         graphNodes = AFOrderedMap<String, AFGraphNode2D>()
         name = NSUUID().uuidString
+        
+        fullPathHandleSprite = SKShapeNode(circleOfRadius: 30)
+        fullPathHandleSprite.fillColor = .blue
+        fullPathHandleSprite.name = self.name
 
         copyFrom.graphNodes.forEach {
             let newNode = AFGraphNode2D(copyFrom: $0, gameScene: gameScene, drawable: false)
@@ -194,6 +199,14 @@ class AFPath: Equatable {
         return nsImage
     }
     
+    func getLastHandlePosition() -> CGPoint? {
+        if let last = graphNodes.last { return CGPoint(last.position) } else { return nil }
+    }
+    
+    func move(to position: CGPoint) {
+        
+    }
+    
     func moveNode(node: String, to point: CGPoint) {
         let x = Float(point.x)
         let y = Float(point.y)
@@ -214,8 +227,6 @@ class AFPath: Equatable {
 
         containerNode = SKNode()
         containerNode!.name = self.name
-        containerNode!.userData = NSMutableDictionary()
-        containerNode!.userData!["type"] = "pathContainer"
 
         var nodesArray = [float2]()
         var visualDotsArray = [CGPoint]()
@@ -267,7 +278,9 @@ class AFPath: Equatable {
         visualPathSprite = SKShapeNode(path: visualPath)
         visualPathSprite!.name = name
         visualPathSprite!.userData = NSMutableDictionary()
+        visualPathSprite!.userData!["clickable"] = false
         visualPathSprite!.userData!["selectable"] = false
+        visualPathSprite!.userData!["nodeOwner"] = self
         containerNode!.addChild(visualPathSprite!)
         
         if !finalized { visualPathSprite!.strokeColor = .red }
@@ -289,6 +302,15 @@ class AFPath: Equatable {
             graphNodes[ix].select(primary: true)
         } else {
             AFCore.data.obstacles[name]!.visualPathSprite?.strokeColor = .green
+        }
+    }
+    
+    func showFullPathHandle(_ show: Bool = false) {
+        if show {
+            showNodes(false)
+            containerNode!.addChild(fullPathHandleSprite)
+        } else {
+            fullPathHandleSprite?.removeFromParent()
         }
     }
     

@@ -164,6 +164,33 @@ class AFItemEditorDelegate {
         }
     }
     
+    func itemEditorActivated(goalType: AFGoalType?) {
+        guard let goalType = goalType else { return }
+        
+        switch goalType {
+        case .toAlignWith:        fallthrough
+        case .toAvoidAgents:      fallthrough
+        case .toCohereWith:       fallthrough
+        case .toSeparateFrom:     sceneUI.setGoalSetupInputMode(.MultiSelectAgents)
+
+        case .toAvoidObstacles:   sceneUI.setGoalSetupInputMode(.MultiSelectObstacles)
+            
+        case .toFleeAgent:        fallthrough
+        case .toInterceptAgent:   fallthrough
+        case .toSeekAgent:        sceneUI.setGoalSetupInputMode(.SingleSelectAgent)
+            
+        case .toFollow:           fallthrough
+        case .toStayOn:           sceneUI.setGoalSetupInputMode(.SingleSelectPath)
+
+        case .toReachTargetSpeed: fallthrough
+        case .toWander:           sceneUI.setGoalSetupInputMode(.NoSelect)
+        }
+    }
+    
+    func itemEditorDeactivated() {
+        
+    }
+    
     private func refreshBehavior(agent: AFAgent2D, behavior: AFBehavior, weight: Double) {
         behavior.weight = Float(weight)
         (agent.behavior! as! AFCompositeBehavior).setWeight(behavior.weight, for: behavior)

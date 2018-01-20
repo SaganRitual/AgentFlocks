@@ -414,9 +414,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             topBarController.radioButtonAgent.state = NSControl.StateValue.on
             topBarController.radioButtonAgent.isEnabled = true
             
-        case .SetObstacleCloneStamp:
-            coreContextMenuDelegate.itemSetObstacleCloneStamp()
-            
         case .StampObstacle:
             coreContextMenuDelegate.itemStampObstacle()
         }
@@ -688,7 +685,17 @@ extension AppDelegate: ItemEditorDelegate {
 	func itemEditorCancelPressed(_ controller: ItemEditorController) {
 		activePopover?.close()
 	}
+    
+    func itemEditorActivated(_ controller: ItemEditorController) {
+        let state = ItemEditorSlidersState(controller)
+        let type = state.newItemType
+        
+        coreItemEditorDelegate.itemEditorActivated(goalType: type)
+    }
 	
+    func itemEditorDeactivated(_ controller: ItemEditorController) {
+        coreItemEditorDelegate.itemEditorDeactivated()
+    }
 }
 
 extension AppDelegate: LogSliderDelegate {

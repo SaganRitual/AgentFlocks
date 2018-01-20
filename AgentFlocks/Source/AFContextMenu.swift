@@ -44,7 +44,7 @@ class AFContextMenuItem: Equatable {
 
 class AFContextMenu {
     enum ItemTypes: Int {
-        case AddPathToLibrary, CloneAgent, Draw, Place, SetObstacleCloneStamp, StampObstacle
+        case AddPathToLibrary, CloneAgent, Draw, Place, StampObstacle
     }
     
     private var displayMenu: NSMenu!
@@ -58,7 +58,6 @@ class AFContextMenu {
             ItemTypes.CloneAgent : "Clone",
             ItemTypes.Draw : "Draw",
             ItemTypes.Place : "Place",
-            ItemTypes.SetObstacleCloneStamp : "Set obstacle clone stamp",
             ItemTypes.StampObstacle : "Stamp obstacle"
         ]
         

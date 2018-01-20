@@ -69,9 +69,10 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
         self.gameScene = gameScene
         
         if drawable { gameScene.addChild(sprite) }
-        
         self.drawable = drawable
+
         super.init(point: copyFrom.position)
+        applyUserData(to: sprite)
     }
 
     init(float2Point: vector_float2, gameScene: GameScene, drawable: Bool = true) {
@@ -82,9 +83,10 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
         self.gameScene = gameScene
 
         if drawable { gameScene.addChild(sprite) }
-
         self.drawable = drawable
+
         super.init(point: float2Point)
+        applyUserData(to: sprite)
     }
     
     init(point: CGPoint, gameScene: GameScene, drawable: Bool = true) {
@@ -95,9 +97,10 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
         self.gameScene = gameScene
 
         if drawable { gameScene.addChild(sprite) }
-
         self.drawable = drawable
+        
         super.init(point: vector_float2(Float(point.x), Float(point.y)))
+        applyUserData(to: sprite)
     }
     
     init(prototype: AFGraphNode2D_Script, gameScene: GameScene) {
@@ -108,9 +111,10 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
         self.gameScene = gameScene
 
         if prototype.drawable { gameScene.addChild(sprite) }
-
         self.drawable = prototype.drawable
+
         super.init(point: vector_float2(Float(prototype.position.x), Float(prototype.position.y)))
+        applyUserData(to: sprite)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -121,6 +125,13 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
         showNode(false)
     }
     
+    func applyUserData(to: SKNode) {
+        to.userData = NSMutableDictionary()
+        to.userData!["clickable"] = true
+        to.userData!["selectable"] = true
+        to.userData!["nodeOwner"] = self
+    }
+
     func deselect() {
         selected = false
         selectionIndicator.removeFromParent()
@@ -135,6 +146,10 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
         let selectionIndicator = AFAgent2D.makeRing(radius: Float(selectionIndicatorRadius), isForSelector: true, primary: true)
         
         return (sprite, selectionIndicator)
+    }
+    
+    func move(to position: CGPoint) {
+        sprite.position = position
     }
     
     func select(primary: Bool) {

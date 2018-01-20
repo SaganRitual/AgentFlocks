@@ -24,12 +24,17 @@
 
 import GameplayKit
 
-class AFSceneUI {
+enum GoalSetupInputMode {
+    case MultiSelectAgents, MultiSelectObstacles, NoSelect, SingleSelectAgent, SingleSelectPath
+}
+
+class AFSceneUI: GKStateMachine {
     var activePath: AFPath!     // The one we're doing stuff to, whether it's selected or not (like dragging handles)
     let contextMenu: AFContextMenu
     var currentPosition = CGPoint.zero
     var data: AFData!
     var downNodeName: String?
+    var goalSetupInputMode = GoalSetupInputMode.NoSelect
     var mouseState = MouseStates.up
     var nextZPosition = 0
     var nodeToMouseOffset = CGPoint.zero
@@ -40,7 +45,6 @@ class AFSceneUI {
     unowned let gameScene: GameScene
     var selectedNames = Set<String>()
     var selectedPath: AFPath!   // The one that has a visible selection indicator on it, if any
-    var stateMachine: AFSceneUI.StateMachine!
     var ui: AppDelegate
     var upNodeName: String?
 
@@ -50,22 +54,31 @@ class AFSceneUI {
         self.contextMenu = contextMenu
         self.gameScene = gameScene
         self.ui = ui
+
+        super.init(states: [
+            Draw(sceneUI: self), Default(sceneUI: self), GoalSetup(sceneUI: self)
+        ])
         
-        stateMachine = StateMachine(sceneUI: self)
+        enter(Default.self)
     }
     
-    func bringToTop(_ nodeName: String) {
-        let clickablesInZOrder = gameScene.children.filter {
-            if let userData = $0.userData, let clickable = userData["clickable"] as? Bool {
-                return clickable
-            } else {
-                return false
-            }
-        }.sorted(by: { $0.zPosition < $1.zPosition })
+    func addNodeToPath(at position: CGPoint) {
+        let newNode = activePath.addGraphNode(at: position)
+        select(newNode.name, primary: true)
         
-        if nodeName == clickablesInZOrder.last!.name! { return } // Already at top
+        // With two or more nodes, we now have a path that can be
+        // added to the library
+        if activePath.graphNodes.count > 1 {
+            contextMenu.enableInDisplay(.AddPathToLibrary)
+        }
+    }
+
+    func bringToTop(_ node: SKNode) {
+        let clickablesInZOrder = gameScene.children.filter { isNodeBranchClickable($0) }.sorted(by: { $0.zPosition < $1.zPosition })
         
-        let nodeToPromote = gameScene.childNode(withName: nodeName)!
+        if node.name! == clickablesInZOrder.last!.name! { return } // Already at top
+        
+        let nodeToPromote = gameScene.childNode(withName: node.name!)!
         let nodeToDemote = clickablesInZOrder.last!
         
         nodeToDemote.zPosition = nodeToPromote.zPosition
@@ -73,17 +86,50 @@ class AFSceneUI {
     }
     
     func cloneAgent() {
-        let originalEntity = data.entities[upNodeName!]
-        
+        guard let originalName = primarySelection else { return }
+
+        let originalEntity = data.entities[originalName]
         _ = makeEntity(copyFrom: originalEntity, position: currentPosition)
     }
     
+    func isNodeClickable(_ node: SKNode) -> Bool {
+        if let userData = node.userData, let clickable = userData["clickable"] as? Bool, clickable == true {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func isNodeBranchClickable(_ node: SKNode) -> Bool {
+        if isNodeClickable(node) { return true }
+        for child in node.children { if isNodeClickable(child) { return true } }
+        return false
+    }
+
     func finalizePath(close: Bool) {
-        stateMachine.drone.finalizePath(close: close)
+        activePath.refresh(final: close) // Auto-add the closing line segment
+        AFCore.data.paths.append(key: activePath.name, value: activePath)
+                
+        contextMenu.includeInDisplay(.AddPathToLibrary, false)
+        contextMenu.includeInDisplay(.Place, true, enable: true)
+        
+        activePath = nil
+        enter(Default.self)
+    }
+
+    func flagsChanged(to newFlags: NSEvent.ModifierFlags) {
+        let show = newFlags.contains(.control)
+        data.paths.forEach { $0.showFullPathHandle(show) }
     }
     
     func getNextZPosition() -> Int { defer { nextZPosition += 1 }; return nextZPosition }
-    
+
+    func getNode(named: String?) -> SKNode? {
+        guard let name = named else { return nil }
+        
+        return gameScene.childNode(withName: name)
+    }
+
     func getPathThatOwnsTouchedNode(_ name: String) -> (AFPath, String)? {
         for path in data.paths {
             if path.graphNodes.getIndexOf(name) != nil {
@@ -107,12 +153,12 @@ class AFSceneUI {
         }
     }
     
-    func keyDown(mouseAt: CGPoint) {
-        
+    func keyDown(_ key: UInt16, mouseAt: CGPoint, flags: NSEvent.ModifierFlags?) {
+        print(key)
+        if !(currentState is GoalSetup) { showPathDragHandles() }
     }
     
-    func keyUp(mouseAt: CGPoint) {
-        
+    func keyUp(_ key: UInt16, mouseAt: CGPoint, flags: NSEvent.ModifierFlags?) {
     }
     
     func makeEntity(image: NSImage, position: CGPoint) -> AFEntity {
@@ -131,31 +177,47 @@ class AFSceneUI {
         return AFPath(gameScene: gameScene, prototype: prototype)
     }
     
-    func mouseDown(on nodeName: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
-        if let nn = nodeName { bringToTop(nn) }
+    func mouseDown(on node: SKNode?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
+        if let node = node { bringToTop(node) }
 
-        downNodeName = nodeName
+        downNodeName = node?.name
         currentPosition = position
-        stateMachine.mouseDown(on: nodeName, at: position, flags: flags)
         mouseState = .down
         upNodeName = nil
     }
     
-    func mouseDrag(on node: String?, at position: CGPoint) {
-        if let node = node {
-            stateMachine.drone.trackMouse(nodeName: node, atPoint: position)
-        }
+    func mouseDrag(on node: SKNode?, at position: CGPoint) {
         mouseState = .dragging
+        
+        if let node = node, let userData = node.userData {
+            switch userData["nodeOwner"] {
+            case let agent as AFAgent2D: agent.move(to: position)
+                
+            case let node as AFGraphNode2D:
+                node.move(to: position)
+                drone.updateDrawIndicator(position)
+                if let (path, _) = getPathThatOwnsTouchedNode(node.name) {
+                    path.refresh()
+                } else {
+                    activePath?.refresh()
+                }
+
+            case let path as AFPath: path.move(to: position)
+            default: break
+            }
+        }
     }
     
     func mouseMove(at position: CGPoint) {
-        stateMachine.mouseMove(at: position)
+        drone.mouseMove(to: position)
     }
     
     func mouseUp(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
         upNodeName = node
         currentPosition = position
-        stateMachine.mouseUp(on: node, at: position, flags: flags)
+        
+        drone.click(name: node, flags: flags)
+        
         mouseState = .up
         downNodeName = nil
     }
@@ -178,35 +240,39 @@ class AFSceneUI {
         mouseState = .rightUp
     }
     
-    func select(_ imageIndex: Int, primary: Bool) {
-        stateMachine.drone.select(imageIndex, primary: primary)
+    func select(_ index: Int, primary: Bool) {
+        drone.select(index, primary: primary)
     }
     
+    func select(_ name: String, primary: Bool) {
+        drone.select(name, primary: primary)
+    }
+    
+    func setGoalSetupInputMode(_ mode: GoalSetupInputMode) {
+        goalSetupInputMode = mode
+        enter(GoalSetup.self)
+    }
+
     func setNodeToMouseOffset(anchor: CGPoint) {
         nodeToMouseOffset.x = anchor.x - currentPosition.x
         nodeToMouseOffset.y = anchor.y - currentPosition.y
     }
-
-    func setObstacleCloneStamp() {
-        obstacleCloneStamp = selectedPath.name
+    
+    func showPathDragHandles(_ show: Bool = true) {
         
-        contextMenu.includeInDisplay(.StampObstacle, true, enable: true)
     }
     
     func stampObstacle() {
-        stateMachine.drone.deselectAll()
-
         let offset = currentPosition - CGPoint(activePath.graphNodes[0].position)
         let newPath = AFPath.init(gameScene: gameScene, copyFrom: activePath, offset: offset)
 
         newPath.stampObstacle()
         data.obstacles[newPath.name] = newPath
-        stateMachine.drone.select(newPath.name, primary: true)
     }
 
     func toggleSelection(_ name: String) {
-        if selectedNames.contains(name) { stateMachine.drone.deselect(name) }
-        else { stateMachine.drone.select(name, primary: primarySelection == nil) }
+        if selectedNames.contains(name) { drone.deselect(name) }
+        else { drone.select(name, primary: primarySelection == nil) }
     }
 
     func updatePrimarySelectionState(agentName: String?) {
@@ -232,33 +298,3 @@ protocol AFSceneDrone {
     func select(_ imageIndex: Int, primary: Bool)
     func trackMouse(nodeName: String, atPoint: CGPoint)
 }
-
-extension AFSceneUI {
-    
-    class StateMachine: GKStateMachine {
-        let sceneUI: AFSceneUI
-        
-        var drone: AFSceneDrone { set{} get { return currentState! as! AFSceneDrone } }
-        
-        init(sceneUI: AFSceneUI) {
-            self.sceneUI = sceneUI
-            
-            super.init(states: [ Draw(sceneUI), Default(sceneUI) ])
-            
-            enter(Default.self)
-        }
-        
-        func mouseDown(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
-            drone.mouseDown(on: node, at: position, flags: flags)
-        }
-
-        func mouseMove(at position: CGPoint) {
-            drone.mouseMove(at: position)
-        }
-        
-        func mouseUp(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
-            drone.mouseUp(on: node, at: position, flags: flags)
-        }
-    }
-}
-
