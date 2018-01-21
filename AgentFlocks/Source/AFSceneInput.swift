@@ -27,6 +27,7 @@ import GameplayKit
 class AFSceneInput: AFGameSceneDelegate {
     var currentPosition = CGPoint.zero
     let data: AFData
+    var downNode: SKNode?
     var downNodeName: String?
     let gameScene: GameScene!
     let sceneUI: AFSceneUI
@@ -75,14 +76,14 @@ class AFSceneInput: AFGameSceneDelegate {
     func mouseDown(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
         downNodeName = getTouchedNodeName()
-        let downNode = getTouchedNode()
+        downNode = getTouchedNode()
         sceneUI.mouseDown(on: downNode, at: currentPosition, flags: event.modifierFlags)
         upNodeName = nil
     }
     
     func mouseDragged(with event: NSEvent) {
+        guard let downNode = self.downNode else { return }
         currentPosition = event.location(in: gameScene)
-        let downNode = getTouchedNode()
         sceneUI.mouseDrag(on: downNode, at: currentPosition)
     }
     
