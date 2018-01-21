@@ -49,6 +49,7 @@ class AFGraphNode2D_Script: Codable, Equatable {
 class AFGraphNode2D: GKGraphNode2D, AFScenoid {
     let drawable: Bool
     let gameScene: GameScene
+    unowned let pathOwner: AFPath
     let radius: CGFloat = 5
     var selected = false
     let selectionIndicator: SKNode
@@ -61,49 +62,55 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
         get { return vector_float2(Float(sprite.position.x), Float(sprite.position.y)) }
     }
     
-    init(copyFrom: AFGraphNode2D, gameScene: GameScene, drawable: Bool = true) {
+    init(pathOwner: AFPath, copyFrom: AFGraphNode2D, gameScene: GameScene, drawable: Bool = true) {
         let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: radius, position: CGPoint(copyFrom.position), selectionIndicatorRadius: selectionIndicatorRadius)
         sprite = ss
         selectionIndicator = se
-        
+
         self.gameScene = gameScene
+        self.pathOwner = copyFrom.pathOwner
         
         if drawable { gameScene.addChild(sprite) }
         self.drawable = drawable
 
         super.init(point: copyFrom.position)
-        applyUserData(to: sprite)
+        applyMarkerUserData(to: sprite)
+        applySelectionIndicatorUserData(to: selectionIndicator)
     }
 
-    init(float2Point: vector_float2, gameScene: GameScene, drawable: Bool = true) {
+    init(pathOwner: AFPath, float2Point: vector_float2, gameScene: GameScene, drawable: Bool = true) {
         let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: radius, position: CGPoint(float2Point), selectionIndicatorRadius: selectionIndicatorRadius)
         sprite = ss
         selectionIndicator = se
-        
+
         self.gameScene = gameScene
+        self.pathOwner = pathOwner
 
         if drawable { gameScene.addChild(sprite) }
         self.drawable = drawable
 
         super.init(point: float2Point)
-        applyUserData(to: sprite)
+        applyMarkerUserData(to: sprite)
+        applySelectionIndicatorUserData(to: selectionIndicator)
     }
     
-    init(point: CGPoint, gameScene: GameScene, drawable: Bool = true) {
+    init(pathOwner: AFPath, point: CGPoint, gameScene: GameScene, drawable: Bool = true) {
         let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: radius, position: point, selectionIndicatorRadius: selectionIndicatorRadius)
         sprite = ss
         selectionIndicator = se
-        
+
         self.gameScene = gameScene
+        self.pathOwner = pathOwner
 
         if drawable { gameScene.addChild(sprite) }
         self.drawable = drawable
         
         super.init(point: vector_float2(Float(point.x), Float(point.y)))
-        applyUserData(to: sprite)
+        applyMarkerUserData(to: sprite)
+        applySelectionIndicatorUserData(to: selectionIndicator)
     }
     
-    init(prototype: AFGraphNode2D_Script, gameScene: GameScene) {
+    init(pathOwner: AFPath, prototype: AFGraphNode2D_Script, gameScene: GameScene) {
         let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: CGFloat(radius), position: prototype.position, selectionIndicatorRadius: selectionIndicatorRadius)
         sprite = ss
         selectionIndicator = se
@@ -112,9 +119,11 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
 
         if prototype.drawable { gameScene.addChild(sprite) }
         self.drawable = prototype.drawable
+        self.pathOwner = pathOwner
 
         super.init(point: vector_float2(Float(prototype.position.x), Float(prototype.position.y)))
-        applyUserData(to: sprite)
+        applyMarkerUserData(to: sprite)
+        applySelectionIndicatorUserData(to: selectionIndicator)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -125,11 +134,22 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
         showNode(false)
     }
     
-    func applyUserData(to: SKNode) {
+    func applySelectionIndicatorUserData(to: SKNode) {
+        to.userData = NSMutableDictionary()
+        to.userData!["clickable"] = false
+        to.userData!["selectable"] = false
+        to.userData!["nodeOwner"] = self
+        to.userData!["pathOwner"] = pathOwner
+        to.userData!["nodeType"] = "Marker selection indicator"
+    }
+    
+    func applyMarkerUserData(to: SKNode) {
         to.userData = NSMutableDictionary()
         to.userData!["clickable"] = true
         to.userData!["selectable"] = true
         to.userData!["nodeOwner"] = self
+        to.userData!["pathOwner"] = pathOwner
+        to.userData!["nodeType"] = "Graph node"
     }
 
     func deselect() {
@@ -142,6 +162,7 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
         sprite.fillColor = .yellow
         sprite.name = NSUUID().uuidString
         sprite.position = position
+        sprite.zPosition = CGFloat(AFCore.sceneUI.getNextZPosition())
         
         let selectionIndicator = AFAgent2D.makeRing(radius: Float(selectionIndicatorRadius), isForSelector: true, primary: true)
         

@@ -48,7 +48,7 @@ class AFAgentGoalsDelegate {
     }
     
     func getEditableAttributes(for motivator: Any) -> AFOrderedMap<String, Double> {
-        let agent = data.entities[sceneUI.primarySelection!].agent
+        let agent = data.entities[sceneUI.primarySelection!]!.agent
         let gkGoal = (motivator as? GKGoal) ?? nil
         let composite = agent.behavior as! AFCompositeBehavior
         let behavior = (gkGoal == nil) ? (motivator as! AFBehavior) : composite.findParent(ofGoal: gkGoal!)
@@ -68,27 +68,27 @@ class AFAgentGoalsDelegate {
             case .toAlignWith:        fallthrough
             case .toCohereWith:       fallthrough
             case .toSeparateFrom:
-                attributes.append(key: "Angle", value: attributes_["Angle"])
-                attributes.append(key: "Distance", value: attributes_["Distance"])
+                attributes.append(key: "Angle", value: attributes_["Angle"]!)
+                attributes.append(key: "Distance", value: attributes_["Distance"]!)
                 
             case .toFleeAgent:        fallthrough
             case .toSeekAgent:        fallthrough
             case .toReachTargetSpeed: fallthrough
             case .toWander:
-                attributes.append(key: "Speed", value: attributes_["Speed"])
+                attributes.append(key: "Speed", value: attributes_["Speed"]!)
                 
             case .toFollow:           fallthrough
             case .toStayOn:           fallthrough
             case .toAvoidAgents:      fallthrough
             case .toAvoidObstacles:   fallthrough
             case .toInterceptAgent:
-                attributes.append(key: "Time", value: attributes_["Time"])
+                attributes.append(key: "Time", value: attributes_["Time"]!)
             }
         } else {
             attributes_.append(key: "Weight", value: Double(behavior!.weight))
         }
         
-        attributes.append(key: "Weight", value: attributes_["Weight"])
+        attributes.append(key: "Weight", value: attributes_["Weight"]!)
         return attributes
     }
     

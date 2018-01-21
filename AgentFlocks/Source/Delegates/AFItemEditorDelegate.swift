@@ -57,12 +57,12 @@ class AFItemEditorDelegate {
         switch type {
         case .toAlignWith:
             let primarySelection = sceneUI.primarySelection!
-            let primarySelected = data.entities[primarySelection] as AFEntity
+            let primarySelected = data.entities[primarySelection]! as AFEntity
             
             goal = AFGoal(toAlignWith: names, maxDistance: distance, maxAngle: angle, weight: weight)
 
             for agentName in group {
-                let afAgent = data.entities[agentName].agent
+                let afAgent = data.entities[agentName]!.agent
                 
                 // Hijacking the fwd checkbox; it's otherwise unused for this kind of goal
                 let includePrimary = state.forward
@@ -81,7 +81,7 @@ class AFItemEditorDelegate {
             
         case .toAvoidAgents:
             let primarySelection = sceneUI.primarySelection
-            let primarySelected = data.entities[primarySelection!] as AFEntity
+            let primarySelected = data.entities[primarySelection!]! as AFEntity
             
             let agentNames = Array(group)
             
@@ -97,7 +97,7 @@ class AFItemEditorDelegate {
         case .toCohereWith:
             goal = AFGoal(toCohereWith: names, maxDistance: distance, maxAngle: angle, weight: weight)
             for agentName in group {
-                data.entities[agentName].agent.addGoal(goal!)
+                data.entities[agentName]!.agent.addGoal(goal!)
             }
             
             goal = nil
@@ -140,7 +140,7 @@ class AFItemEditorDelegate {
         case .toSeparateFrom:
             goal = AFGoal(toSeparateFrom: names, maxDistance: distance, maxAngle: angle, weight: weight)
             for agentName in group {
-                data.entities[agentName].agent.addGoal(goal!)
+                data.entities[agentName]!.agent.addGoal(goal!)
             }
             
             goal = nil
@@ -224,7 +224,7 @@ class AFItemEditorDelegate {
         guard selectedNames.count > 0 else { return }
         
         let agentName = sceneUI.primarySelection!
-        let entity = data.entities[agentName]
+        let entity = data.entities[agentName]!
         let agent = entity.agent
         
         if let behavior = state.editedItem as? AFBehavior {

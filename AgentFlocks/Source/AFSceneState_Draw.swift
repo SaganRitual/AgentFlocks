@@ -64,23 +64,23 @@ extension AFSceneUI {
         }
         
         override func deselect(_ name: String) {
-            sceneUI.activePath.graphNodes[name].deselect()
+            sceneUI.activePath.graphNodes[name]!.deselect()
             sceneUI.selectedNames.remove(name)
         }
         
         override func deselectAll() {
-            sceneUI.selectedNames.forEach { sceneUI.activePath.graphNodes[$0].deselect() }
+            sceneUI.selectedNames.forEach { sceneUI.activePath?.graphNodes[$0]!.deselect() }
             sceneUI.selectedNames.removeAll()
         }
         
         override func didEnter(from previousState: GKState?) {
-            showClosedPathHandles()
+            sceneUI.showFullPathHandle(true)
             
             // Plain click in the black starts a path and plants the first handle
             newPath()
             click(name: nil, flags: nil)
         }
-        
+
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             // Can't leave draw state until the active path is closed
             return sceneUI.activePath == nil

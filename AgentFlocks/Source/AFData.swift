@@ -100,7 +100,7 @@ class AFData {
     }
     
     func getAgent(_ name: String) -> AFAgent2D {
-        let entity = entities[name]
+        let entity = entities[name]!
         return entity.agent
     }
 }

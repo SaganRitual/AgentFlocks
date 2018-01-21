@@ -546,7 +546,7 @@ extension AppDelegate: AgentGoalsDelegate {
         let names = ["Angle", "Distance", "Speed", "Time", "Weight"]
         names.forEach {
             if attributes.contains($0) {
-                editorController.setValue(ofSlider: $0, to: attributes[$0], resetDirtyFlag: true)
+                editorController.setValue(ofSlider: $0, to: attributes[$0]!, resetDirtyFlag: true)
             }
         }
     

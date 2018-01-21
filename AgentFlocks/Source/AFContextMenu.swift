@@ -67,13 +67,13 @@ class AFContextMenu {
     }
     
     func enableInDisplay(_ item: ItemTypes, _ enable: Bool = true, include: Bool? = nil) {
-        items[item].enabled = enable
-        if let include = include { items[item].show = include }
+        items[item]!.enabled = enable
+        if let include = include { items[item]!.show = include }
     }
 
     func includeInDisplay(_ item: ItemTypes, _ include: Bool = true, enable: Bool? = nil) {
-        items[item].show = include
-        if let enable = enable { items[item].enabled = enable }
+        items[item]!.show = include
+        if let enable = enable { items[item]!.enabled = enable }
     }
     
     func reset() { items.forEach { $0.reset() } }

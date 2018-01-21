@@ -345,7 +345,7 @@ extension AFAgent2D: AgentAttributesDelegate {
     
     func getPrimarySelectedAgent() -> AFAgent2D {
         let name = AFCore.sceneUI.primarySelection!
-        return AFCore.data.entities[name].agent
+        return AFCore.data.entities[name]!.agent
     }
 }
 

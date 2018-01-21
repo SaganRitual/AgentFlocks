@@ -67,7 +67,7 @@ extension AFEntity: AgentGoalsDataSource {
             let selected = AFCore.sceneUI.selectedNames
             
             if selected.count > 0 {
-                let entity = AFCore.data.entities[selected.first!]
+                let entity = AFCore.data.entities[selected.first!]!
                 return (entity.agent.behavior as! GKCompositeBehavior).behaviorCount
             }
             
@@ -90,7 +90,7 @@ extension AFEntity: AgentGoalsDataSource {
             // get a nil.
             let selected = AFCore.sceneUI.selectedNames
             if selected.count > 0 {
-                let entity = AFCore.data.entities[selected.first!]
+                let entity = AFCore.data.entities[selected.first!]!
                 return (entity.agent.behavior as! AFCompositeBehavior)[index]
             }
         }

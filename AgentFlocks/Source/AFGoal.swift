@@ -147,7 +147,7 @@ class AFGoal {
             }
 
         case .toFollow:
-            let afPath = AFCore.data.paths[pathname!]
+            let afPath = AFCore.data.paths[pathname!]!
             gkGoal = GKGoal(toFollow: afPath.gkPath, maxPredictionTime: TimeInterval(time), forward: forward)
 
         case .toInterceptAgent:
@@ -186,7 +186,7 @@ class AFGoal {
             gkGoal = GKGoal(toSeparateFrom: gkAgents, maxDistance: distance, maxAngle: angle)
             
         case .toStayOn:
-            let afPath = AFCore.data.paths[pathname!]
+            let afPath = AFCore.data.paths[pathname!]!
             gkGoal = GKGoal(toStayOn: afPath.gkPath, maxPredictionTime: TimeInterval(time))
             
         case .toWander:
@@ -310,7 +310,7 @@ class AFGoal {
         self.time = t
         self.weight = weight
         
-        let afPath = AFPath(gameScene: AFCore.sceneUI.gameScene, copyFrom: AFCore.data.paths[pathname])
+        let afPath = AFPath(gameScene: AFCore.sceneUI.gameScene, copyFrom: AFCore.data.paths[pathname]!)
         gkGoal = GKGoal(toFollow: afPath.asPath()!, maxPredictionTime: TimeInterval(t), forward: forward)
     }
     
@@ -389,7 +389,7 @@ class AFGoal {
         self.time = t
         self.weight = weight
         
-        let afPath = AFPath(gameScene: AFCore.sceneUI.gameScene, copyFrom: AFCore.data.paths[pathname])
+        let afPath = AFPath(gameScene: AFCore.sceneUI.gameScene, copyFrom: AFCore.data.paths[pathname]!)
         gkGoal = GKGoal(toStayOn: afPath.gkPath, maxPredictionTime: TimeInterval(t))
     }
 

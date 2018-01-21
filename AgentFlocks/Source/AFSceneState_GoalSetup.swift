@@ -28,7 +28,7 @@ extension AFSceneUI {
     
     class GoalSetup: BaseState {
         override func didEnter(from previousState: GKState?) {
-            showClosedPathHandles()
+            sceneUI.showFullPathHandle(true)
             
             // Set selection indicator color to blue
         }
@@ -77,6 +77,10 @@ extension AFSceneUI {
                     }
                 }
             }
+        }
+
+        override func flagsChanged(to newFlags: NSEvent.ModifierFlags) {
+            sceneUI.showFullPathHandle(true)
         }
     }
 }

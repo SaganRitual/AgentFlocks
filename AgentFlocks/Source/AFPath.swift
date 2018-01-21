@@ -68,12 +68,14 @@ class AFPath_Script: Codable, Equatable {
 class AFPath: Equatable {
     var containerNode: SKNode?
     var finalized = false
-    var fullPathHandleSprite: SKShapeNode!
+    let fullPathHandleSprite: SKShapeNode
     let gameScene: GameScene
     var gkPath: GKPath!
     var graphNodes: AFOrderedMap<String, AFGraphNode2D>
     var gkObstacle: GKPolygonObstacle!
+    static let handleOffset = CGPoint(x: 0, y: 15)
     let name: String
+    var pathHandleIsVisible = false
     var radius: Float = 5.0
     var visualPathSprite: SKShapeNode?
     
@@ -81,6 +83,17 @@ class AFPath: Equatable {
         self.gameScene = gameScene
         graphNodes = AFOrderedMap<String, AFGraphNode2D>()
         name = NSUUID().uuidString
+        
+        fullPathHandleSprite = SKShapeNode(circleOfRadius: 10)
+        fullPathHandleSprite.fillColor = .blue
+        fullPathHandleSprite.name = self.name
+        fullPathHandleSprite.zPosition = CGFloat(AFCore.sceneUI.getNextZPosition())
+        fullPathHandleSprite.userData = NSMutableDictionary()
+        fullPathHandleSprite.userData!["clickable"] = true
+        fullPathHandleSprite.userData!["selectable"] = false
+        fullPathHandleSprite.userData!["nodeOwner"] = self
+        fullPathHandleSprite.userData!["pathOwner"] = self
+        fullPathHandleSprite.userData!["nodeType"] = "path handle"
 
         self.gkObstacle = obstacle
     }
@@ -90,12 +103,19 @@ class AFPath: Equatable {
         graphNodes = AFOrderedMap<String, AFGraphNode2D>()
         name = NSUUID().uuidString
         
-        fullPathHandleSprite = SKShapeNode(circleOfRadius: 30)
+        fullPathHandleSprite = SKShapeNode(circleOfRadius: 10)
         fullPathHandleSprite.fillColor = .blue
         fullPathHandleSprite.name = self.name
+        fullPathHandleSprite.zPosition = CGFloat(AFCore.sceneUI.getNextZPosition())
+        fullPathHandleSprite.userData = NSMutableDictionary()
+        fullPathHandleSprite.userData!["clickable"] = true
+        fullPathHandleSprite.userData!["selectable"] = false
+        fullPathHandleSprite.userData!["nodeOwner"] = self
+        fullPathHandleSprite.userData!["pathOwner"] = self
+        fullPathHandleSprite.userData!["nodeType"] = "path handle"
 
         copyFrom.graphNodes.forEach {
-            let newNode = AFGraphNode2D(copyFrom: $0, gameScene: gameScene, drawable: false)
+            let newNode = AFGraphNode2D(pathOwner: self, copyFrom: $0, gameScene: gameScene, drawable: false)
             graphNodes.append(key: newNode.name, value: newNode)
         }
         
@@ -113,11 +133,13 @@ class AFPath: Equatable {
         self.gameScene = gameScene
         name = prototype.name
         radius = prototype.radius
+        
+        fullPathHandleSprite = SKShapeNode() // Just flung it in here to get it to compile
 
         graphNodes = AFOrderedMap<String, AFGraphNode2D>()
 
         for protoNode in prototype.graphNodes {
-            let afGraphNode = AFGraphNode2D(prototype: protoNode, gameScene: gameScene)
+            let afGraphNode = AFGraphNode2D(pathOwner: self, prototype: protoNode, gameScene: gameScene)
             graphNodes.append(key: afGraphNode.name, value: afGraphNode)
         }
         
@@ -128,6 +150,7 @@ class AFPath: Equatable {
     
     deinit {
         visualPathSprite?.removeFromParent()
+        fullPathHandleSprite.removeFromParent()
         containerNode?.removeFromParent()
     }
 
@@ -136,7 +159,7 @@ class AFPath: Equatable {
     }
 
     func addGraphNode(at point: CGPoint) -> AFGraphNode2D {
-        let node = AFGraphNode2D(point: point, gameScene: gameScene)
+        let node = AFGraphNode2D(pathOwner: self, point: point, gameScene: gameScene)
         graphNodes.append(key: node.name, value: node)
         refresh()
         
@@ -187,6 +210,7 @@ class AFPath: Equatable {
     }
     
     func deselectAll() {
+        showSelectionIndicator(false)
         graphNodes.forEach{ $0.deselect() }
         AFCore.data.obstacles.forEach{ $1.deselect() }
     }
@@ -203,14 +227,26 @@ class AFPath: Equatable {
         if let last = graphNodes.last { return CGPoint(last.position) } else { return nil }
     }
     
+    func getNodesForBringToTop() -> [SKShapeNode] {
+        var nodes = [SKShapeNode]()
+        graphNodes.forEach { nodes.append($0.sprite) }
+        nodes.append(self.fullPathHandleSprite)
+        return nodes.reversed()
+    }
+
     func move(to position: CGPoint) {
-        
+        fullPathHandleSprite.position = position
+        let offset = position - AFPath.handleOffset - CGPoint(graphNodes[0].position)
+        graphNodes.forEach { $0.position += offset.as_vector_float2() }
+        refresh()
     }
     
-    func moveNode(node: String, to point: CGPoint) {
-        let x = Float(point.x)
-        let y = Float(point.y)
-        graphNodes[node].position = [x, y]
+    func moveNode(nodeName: String, to point: CGPoint) {
+        graphNodes[nodeName]!.position = point.as_vector_float2()
+        
+        if nodeName == graphNodes[0].name {
+            fullPathHandleSprite.position = point + AFPath.handleOffset
+        }
 
         refresh()
     }
@@ -227,6 +263,12 @@ class AFPath: Equatable {
 
         containerNode = SKNode()
         containerNode!.name = self.name
+        containerNode!.userData = NSMutableDictionary()
+        containerNode!.userData!["clickable"] = false
+        containerNode!.userData!["selectable"] = false
+        containerNode!.userData!["nodeOwner"] = self
+        containerNode!.userData!["pathOwner"] = self
+        containerNode!.userData!["nodeType"] = "container node"
 
         var nodesArray = [float2]()
         var visualDotsArray = [CGPoint]()
@@ -245,14 +287,23 @@ class AFPath: Equatable {
             // will draw properly
             let last = visualDotsArray.count - 1
             visualDotsArray[last] = visualDotsArray[0]
+            movePathHandle(to: CGPoint(graphNodes[0].position))
+            pathHandleIsVisible = true
         }
         
         if final && !self.finalized {  // To draw from the last point back to the first
             nodesArray.append(nodesArray[0])
             visualDotsArray.append(visualDotsArray[0])
             
-            let closingNode = AFGraphNode2D(point: visualDotsArray[0], gameScene: gameScene, drawable: false)
+            let closingNode = AFGraphNode2D(pathOwner: self, point: visualDotsArray[0], gameScene: gameScene, drawable: false)
+            closingNode.sprite.userData!["clickable"]! = false
             graphNodes.append(key: closingNode.name, value: closingNode)
+            
+            deselectAll()
+            select(self.name)
+            
+            movePathHandle(to: CGPoint(graphNodes[0].position))
+            pathHandleIsVisible = true
             
             self.finalized = true
         }
@@ -278,15 +329,21 @@ class AFPath: Equatable {
         visualPathSprite = SKShapeNode(path: visualPath)
         visualPathSprite!.name = name
         visualPathSprite!.userData = NSMutableDictionary()
+        visualPathSprite!.zPosition = 0
         visualPathSprite!.userData!["clickable"] = false
         visualPathSprite!.userData!["selectable"] = false
         visualPathSprite!.userData!["nodeOwner"] = self
+        visualPathSprite!.userData!["pathOwner"] = self
+        visualPathSprite!.userData!["nodeType"] = "visual path sprite"
         containerNode!.addChild(visualPathSprite!)
         
         if !finalized { visualPathSprite!.strokeColor = .red }
         if gkObstacle != nil { visualPathSprite!.fillColor = .gray }
 
-        if let c = containerNode { gameScene.addChild(c) }
+        if let c = containerNode {
+            if pathHandleIsVisible { showPathHandle(true) }
+            gameScene.addChild(c)
+        }
     }
     
     func remove(node: AFGraphNode2D) {
@@ -300,17 +357,31 @@ class AFPath: Equatable {
     func select(_ name: String) {
         if let ix = graphNodes.getIndexOf(name) {
             graphNodes[ix].select(primary: true)
+        } else if name == self.name {
+            showSelectionIndicator()
         } else {
             AFCore.data.obstacles[name]!.visualPathSprite?.strokeColor = .green
         }
     }
     
-    func showFullPathHandle(_ show: Bool = false) {
+    func movePathHandle(to: CGPoint) {
+        fullPathHandleSprite.position = to + AFPath.handleOffset
+    }
+    
+    func showPathHandle(_ show: Bool = true) {
+        // Allows the higher levels to call us at will, without worrying
+        // about the current state. Remove it every time we come in here,
+        // then turn it back on if they wanted it on.
+        fullPathHandleSprite.removeFromParent()
+
+        pathHandleIsVisible = show
+
         if show {
-            showNodes(false)
+            // Total hack. I can't figure out who is changing this value, so for
+            // now, I'm plugging the hole. I'm sick of chasing it.
+            fullPathHandleSprite.zPosition = 0
+
             containerNode!.addChild(fullPathHandleSprite)
-        } else {
-            fullPathHandleSprite?.removeFromParent()
         }
     }
     
@@ -319,6 +390,10 @@ class AFPath: Equatable {
         
         let reallyShow = (gkObstacle == nil) ? show : false
         graphNodes.forEach{ $0.showNode(reallyShow) }
+    }
+    
+    func showSelectionIndicator(_ show: Bool = true) {
+        fullPathHandleSprite.strokeColor = (show ? .green : .clear)
     }
     
     func stampObstacle() {

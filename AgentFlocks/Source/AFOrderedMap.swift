@@ -99,8 +99,8 @@ struct AFOrderedMap<KeyType: Hashable, ValueType: Equatable> {
         return map[key]!
     }
     
-    func getValue(for key: KeyType) -> ValueType {
-        return map[key]!
+    func getValue(for key: KeyType) -> ValueType? {
+        return map[key]
     }
     
     mutating func remove(at index: Int) {
@@ -122,7 +122,7 @@ struct AFOrderedMap<KeyType: Hashable, ValueType: Equatable> {
     }
     
     subscript(_ ix: Int) -> ValueType { return getValue(at: ix) }
-    subscript(_ key: KeyType) -> ValueType { return getValue(for: key) }
+    subscript(_ key: KeyType) -> ValueType? { return getValue(for: key) }
 }
 
 extension AFOrderedMap: Sequence {

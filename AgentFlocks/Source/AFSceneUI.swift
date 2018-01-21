@@ -36,7 +36,6 @@ class AFSceneUI: GKStateMachine {
     var downNodeName: String?
     var goalSetupInputMode = GoalSetupInputMode.NoSelect
     var mouseState = MouseStates.up
-    var nextZPosition = 0
     var nodeToMouseOffset = CGPoint.zero
     var obstacleCloneStamp = String()
     var parentOfNewMotivator: AFBehavior?
@@ -74,36 +73,60 @@ class AFSceneUI: GKStateMachine {
     }
 
     func bringToTop(_ node: SKNode) {
-        let clickablesInZOrder = gameScene.children.filter { isNodeBranchClickable($0) }.sorted(by: { $0.zPosition < $1.zPosition })
+        if let userData = node.userData, let pathOwner = userData["pathOwner"] as? AFPath {
+            pathOwner.getNodesForBringToTop().forEach { bringToTop_($0) }
+        } else {
+            bringToTop_(node)
+        }
+    }
+    
+    func bringToTop_(_ nodeToPromote: SKNode) {
+        // Get them in order
+        var zOrderStack = gameScene.children.sorted(by: { $0.name == nil || $0.zPosition < $1.zPosition })
+
+        // Eliminate any gaps
+        zOrderStack.enumerated().forEach {  $1.zPosition = ($1.name == nil) ? -1 : CGFloat($0) }
         
-        if node.name! == clickablesInZOrder.last!.name! { return } // Already at top
+        // Nameless nodes go to the bottom. So if we're in here due to a nameless node,
+        // just take the opportunity to make the zPositions contiguous and then bail.
+        if nodeToPromote.name == nil { return }
+
+        // Find the slot where the promotee lives
+        if let emptySlot = zOrderStack.index(where: { $0.name != nil && $0.name == nodeToPromote.name }) {
+            // Take him out
+            zOrderStack.remove(at: emptySlot)
+            
+            // Put him at the end, which is the top
+            zOrderStack.append(nodeToPromote)
+            
+            // Reorder the gameScene zPositions
+            zOrderStack.enumerated().forEach { $1.zPosition = CGFloat($0) }
+        } else {
+            print("Doesn't look right", zOrderStack.count)
+        }
         
-        let nodeToPromote = gameScene.childNode(withName: node.name!)!
-        let nodeToDemote = clickablesInZOrder.last!
-        
-        nodeToDemote.zPosition = nodeToPromote.zPosition
-        nodeToPromote.zPosition = CGFloat(clickablesInZOrder.count - 1)
+        // Use this to dig into that ordering issue further if I
+        // ever get the stomach for it.
+        func dumpChildren(of node: SKNode, tabCount: Int) {
+            let debugStack = node.children.sorted(by: { $0.zPosition > $1.zPosition })
+            debugStack.forEach {
+                var typeString = "<type unknown>"
+                if let userData = $0.userData, let type = userData["nodeType"] as? String {
+                    typeString = type
+                }
+                for _ in 0 ..< tabCount { print("\t", separator: "", terminator: "") }
+                print($0.zPosition, typeString, $0.name ?? "<no name>")
+                
+                dumpChildren(of: $0, tabCount: tabCount + 1)
+            }
+        }
     }
     
     func cloneAgent() {
         guard let originalName = primarySelection else { return }
 
-        let originalEntity = data.entities[originalName]
+        let originalEntity = data.entities[originalName]!
         _ = makeEntity(copyFrom: originalEntity, position: currentPosition)
-    }
-    
-    func isNodeClickable(_ node: SKNode) -> Bool {
-        if let userData = node.userData, let clickable = userData["clickable"] as? Bool, clickable == true {
-            return true
-        } else {
-            return false
-        }
-    }
-    
-    func isNodeBranchClickable(_ node: SKNode) -> Bool {
-        if isNodeClickable(node) { return true }
-        for child in node.children { if isNodeClickable(child) { return true } }
-        return false
     }
 
     func finalizePath(close: Bool) {
@@ -118,11 +141,10 @@ class AFSceneUI: GKStateMachine {
     }
 
     func flagsChanged(to newFlags: NSEvent.ModifierFlags) {
-        let show = newFlags.contains(.control)
-        data.paths.forEach { $0.showFullPathHandle(show) }
+        drone.flagsChanged(to: newFlags)
     }
     
-    func getNextZPosition() -> Int { defer { nextZPosition += 1 }; return nextZPosition }
+    func getNextZPosition() -> Int { return gameScene.children.count }
 
     func getNode(named: String?) -> SKNode? {
         guard let name = named else { return nil }
@@ -148,14 +170,28 @@ class AFSceneUI: GKStateMachine {
         if let p = parentOfNewMotivator { return p }
         else {
             let agentName = primarySelection!
-            let entity = data.entities[agentName]
+            let entity = data.entities[agentName]!
             return (entity.agent.behavior! as! GKCompositeBehavior)[0] as! AFBehavior
         }
     }
     
+    func isNodeClickable(_ node: SKNode) -> Bool {
+        if let userData = node.userData, let clickable = userData["clickable"] as? Bool, clickable == true {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    // meaning is there any descendant of this node that is clickable. If there
+    // is, count the branch -- namely the top node -- as clickable.
+    func isNodeBranchClickable(_ node: SKNode) -> Bool {
+        if isNodeClickable(node) { return true }
+        for child in node.children { if isNodeClickable(child) { return true } }
+        return false
+    }
+
     func keyDown(_ key: UInt16, mouseAt: CGPoint, flags: NSEvent.ModifierFlags?) {
-        print(key)
-        if !(currentState is GoalSetup) { showPathDragHandles() }
     }
     
     func keyUp(_ key: UInt16, mouseAt: CGPoint, flags: NSEvent.ModifierFlags?) {
@@ -178,10 +214,14 @@ class AFSceneUI: GKStateMachine {
     }
     
     func mouseDown(on node: SKNode?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
-        if let node = node { bringToTop(node) }
-
         downNodeName = node?.name
         currentPosition = position
+
+        if let node = node {
+            bringToTop(node)
+            setNodeToMouseOffset(anchor: node.position)
+        }
+
         mouseState = .down
         upNodeName = nil
     }
@@ -195,14 +235,15 @@ class AFSceneUI: GKStateMachine {
                 
             case let node as AFGraphNode2D:
                 node.move(to: position)
-                drone.updateDrawIndicator(position)
+                drone.updateDrawIndicator(position + nodeToMouseOffset)
                 if let (path, _) = getPathThatOwnsTouchedNode(node.name) {
                     path.refresh()
                 } else {
                     activePath?.refresh()
                 }
 
-            case let path as AFPath: path.move(to: position)
+            case let path as AFPath:
+                path.move(to: position + nodeToMouseOffset)
             default: break
             }
         }
@@ -258,8 +299,8 @@ class AFSceneUI: GKStateMachine {
         nodeToMouseOffset.y = anchor.y - currentPosition.y
     }
     
-    func showPathDragHandles(_ show: Bool = true) {
-        
+    func showFullPathHandle(_ show: Bool = true) {
+        activePath?.showPathHandle(show)
     }
     
     func stampObstacle() {
@@ -279,7 +320,7 @@ class AFSceneUI: GKStateMachine {
         var agent: AFAgent2D?
         
         if let agentName = agentName {
-            agent = data.entities[agentName].agent
+            agent = data.entities[agentName]!.agent
         }
         
         ui.changePrimarySelectionState(selectedAgent: agent)
