@@ -169,9 +169,9 @@ class AFAgent2D: GKAgent2D, AFScenoid {
     
     func applyUserData(to: SKNode) {
         to.userData = NSMutableDictionary()
-        to.userData!["clickable"] = true
-        to.userData!["selectable"] = true
-        to.userData!["nodeOwner"] = self
+        to.userData![AFUserDataItem.Clickable] = true
+        to.userData![AFUserDataItem.Selectable] = true
+        to.userData![AFUserDataItem.NodeOwner] = self
     }
 
     func deselect() {
@@ -203,9 +203,9 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         else { sprite.name = NSUUID().uuidString }
         
         sprite.userData = NSMutableDictionary()
-        sprite.userData!["clickable"] = true
-        sprite.userData!["selectable"] = true
-        sprite.userData!["nodeOwner"] = self
+        sprite.userData![AFUserDataItem.Clickable] = true
+        sprite.userData![AFUserDataItem.Selectable] = true
+        sprite.userData![AFUserDataItem.NodeOwner] = self
 
         container.name = sprite.name
         container.addChild(sprite)

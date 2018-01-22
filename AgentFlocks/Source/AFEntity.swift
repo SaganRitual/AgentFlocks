@@ -22,7 +22,7 @@ class AFEntity_Script: Codable, Equatable {
     }
 }
 
-class AFEntity: GKEntity {
+class AFEntity: GKEntity, AFCloneable {
     let agent: AFAgent2D
     
     var name: String { return agent.sprite.name! }
@@ -49,6 +49,10 @@ class AFEntity: GKEntity {
         super.init()
         
         addComponent(agent)
+    }
+    
+    func clone(position: CGPoint) -> AFEntity {
+        return AFEntity(scene: AFCore.sceneUI.gameScene, copyFrom: self, position: position)
     }
     
     required init?(coder aDecoder: NSCoder) {

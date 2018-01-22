@@ -49,95 +49,10 @@ class AFSceneInput: AFGameSceneDelegate {
         self.gameScene = gameScene
     }
 
-    struct InputInfo {
-        let downNode: SKNode?
-        let flags: NSEvent.ModifierFlags?
-        let key: UInt16
-        let mousePosition: CGPoint
-        let node: SKNode?
-        let upNode: SKNode?
-
-        init(flags: NSEvent.ModifierFlags, key: UInt16, mousePosition: CGPoint, node: SKNode?) {
-            self.flags = flags
-            self.key = key
-            self.mousePosition = mousePosition
-            self.node = node
-
-            self.downNode = nil
-            self.upNode = nil
-        }
-
-        init(downNode: SKNode?, flags: NSEvent.ModifierFlags?, mousePosition: CGPoint, node: SKNode?, upNode: SKNode?) {
-            self.downNode = downNode
-            self.mousePosition = mousePosition
-            self.node = node
-            self.upNode = upNode
-            self.flags = flags
-
-            self.key = 0
-        }
-
-        init(downNode: SKNode?, mousePosition: CGPoint, node: SKNode?) {
-            self.downNode = downNode
-            self.mousePosition = mousePosition
-            self.node = node
-
-            self.key = 0
-            self.flags = nil
-            self.upNode = nil
-        }
-
-        init(flags: NSEvent.ModifierFlags, key: UInt16, mousePosition: CGPoint) {
-            self.flags = flags
-            self.key = key
-            self.mousePosition = mousePosition
-
-            self.downNode = nil
-            self.node = nil
-            self.upNode = nil
-        }
-        
-        init(downNode: SKNode?, flags: NSEvent.ModifierFlags, mousePosition: CGPoint) {
-            self.downNode = downNode
-            self.flags = flags
-            self.mousePosition = mousePosition
-            
-            self.node = nil
-            self.upNode = nil
-            self.key = 0
-        }
-        
-        init(downNode: SKNode?, mousePosition: CGPoint) {
-            self.downNode = downNode
-            self.mousePosition = mousePosition
-            
-            self.flags = nil
-            self.node = nil
-            self.upNode = nil
-            self.key = 0
-        }
-        
-        init(mousePosition: CGPoint) {
-            self.mousePosition = mousePosition
-            
-            self.downNode = nil
-            self.flags = nil
-            self.node = nil
-            self.upNode = nil
-            self.key = 0
-        }
-    }
-
     func getTouchedNode() -> SKNode? {
-        let touchedNodes = gameScene.nodes(at: currentPosition).filter({
-            var clickable = true
-            if $0.name == nil { clickable = false }
-            else if let userData = $0.userData, let flag = userData["clickable"] as? Bool {
-                clickable = flag
-            }
-            
-            return clickable
-        })
+        let touchedNodes = gameScene.nodes(at: currentPosition).filter {
+            return (AFSceneUI.getUserDataItem(.Clickable, from: $0) as? Bool) ?? false
+        }
         
         return touchedNodes.first
     }
@@ -217,5 +132,86 @@ class AFSceneInput: AFGameSceneDelegate {
     
     func update(deltaTime dt: TimeInterval) {
         data.entities.forEach { $0.update(deltaTime: dt ) }
+    }
+}
+
+extension AFSceneInput {
+    struct InputInfo {
+        let downNode: SKNode?
+        let flags: NSEvent.ModifierFlags?
+        let key: UInt16
+        let mousePosition: CGPoint
+        let node: SKNode?
+        let upNode: SKNode?
+        
+        init(flags: NSEvent.ModifierFlags, key: UInt16, mousePosition: CGPoint, node: SKNode?) {
+            self.flags = flags
+            self.key = key
+            self.mousePosition = mousePosition
+            self.node = node
+            
+            self.downNode = nil
+            self.upNode = nil
+        }
+        
+        init(downNode: SKNode?, flags: NSEvent.ModifierFlags?, mousePosition: CGPoint, node: SKNode?, upNode: SKNode?) {
+            self.downNode = downNode
+            self.mousePosition = mousePosition
+            self.node = node
+            self.upNode = upNode
+            self.flags = flags
+            
+            self.key = 0
+        }
+        
+        init(downNode: SKNode?, mousePosition: CGPoint, node: SKNode?) {
+            self.downNode = downNode
+            self.mousePosition = mousePosition
+            self.node = node
+            
+            self.key = 0
+            self.flags = nil
+            self.upNode = nil
+        }
+        
+        init(flags: NSEvent.ModifierFlags, key: UInt16, mousePosition: CGPoint) {
+            self.flags = flags
+            self.key = key
+            self.mousePosition = mousePosition
+            
+            self.downNode = nil
+            self.node = nil
+            self.upNode = nil
+        }
+        
+        init(downNode: SKNode?, flags: NSEvent.ModifierFlags, mousePosition: CGPoint) {
+            self.downNode = downNode
+            self.flags = flags
+            self.mousePosition = mousePosition
+            
+            self.node = nil
+            self.upNode = nil
+            self.key = 0
+        }
+        
+        init(downNode: SKNode?, mousePosition: CGPoint) {
+            self.downNode = downNode
+            self.mousePosition = mousePosition
+            
+            self.flags = nil
+            self.node = nil
+            self.upNode = nil
+            self.key = 0
+        }
+        
+        init(mousePosition: CGPoint) {
+            self.mousePosition = mousePosition
+            
+            self.downNode = nil
+            self.flags = nil
+            self.node = nil
+            self.upNode = nil
+            self.key = 0
+        }
     }
 }

@@ -38,34 +38,30 @@ extension AFSceneUI {
         private func click_black(flags: NSEvent.ModifierFlags?) {
             deselectAll()
             
-            var newEntity: AFEntity!
-            
             if flags?.contains(.option) ?? false {
                 sceneUI.enter(Draw.self)
                 return
             } else if flags?.contains(.control) ?? false {
                 // ctrl-click gives a clone of the selected guy, goals and all.
                 // If no one is selected, we don't do anything.
-                guard sceneUI.data.entities.count > 0 else { return }
+                guard let selected = sceneUI.primarySelection else { return }
                 
-                let originalIx = sceneUI.data.entities.count - 1
-                let originalEntity = sceneUI.data.entities[originalIx]
-                
-                newEntity = sceneUI.data.createEntity(copyFrom: originalEntity, position: sceneUI.currentPosition)
+                if let theClone = clone(selected, position: sceneUI.currentPosition) {
+                    select(theClone.name, primary: true)
+                }
             } else {
                 let imageIndex = AFCore.browserDelegate.agentImageIndex
                 let image = sceneUI.ui.agents[imageIndex].image
-                newEntity = sceneUI.data.createEntity(image: image, position: sceneUI.currentPosition)
+                let newEntity = sceneUI.data.createEntity(image: image, position: sceneUI.currentPosition)
+                select(newEntity.name, primary: true)
             }
-            
-            select(newEntity.name, primary: true)
         }
         
         private func click_node(name: String, flags: NSEvent.ModifierFlags?) {
             // opt-click and ctrl-click currently have no meaning when
             // clicking on a node, so we just ignore them
             guard !((flags?.contains(.control) ?? false) ||
-                (flags?.contains(.option) ?? false)) else { return }
+                    (flags?.contains(.option) ?? false)) else { return }
             
             if let flags = flags, flags.contains(.command) {
                 if sceneUI.mouseState == .down { // cmd+click on a node
@@ -84,6 +80,16 @@ extension AFSceneUI {
             }
         }
         
+        func clone(_ node: SKNode, position: CGPoint) -> AFEntity? {
+            if let userData = node.userData {
+                if let toBeCloned = userData["theCloneablePart"] as? AFCloneable {
+                    return toBeCloned.clone(position: position)
+                }
+            }
+            
+            return nil
+        }
+
         override func deselect(_ name: String) {
             if let entity = sceneUI.data.entities[name] {
                 deselectEntity(entity)
@@ -113,7 +119,7 @@ extension AFSceneUI {
             
             // We just now deselected the primary. If there's anyone
             // else selected, they need to be made the primary.
-            if sceneUI.primarySelection == entity {
+            if sceneUI.primarySelection?.name == entity.name {
                 var selectNew: String?
                 
                 if sceneUI.selectedNames.count > 0 {
@@ -176,4 +182,9 @@ extension AFSceneUI {
             deselectAll()
         }
     }
+}
+
+protocol AFCloneable {
+    var name: String { get }
+    func clone(position: CGPoint) -> AFEntity
 }

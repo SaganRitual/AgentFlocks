@@ -28,10 +28,6 @@ extension AFSceneUI {
     class Draw: BaseState {
         var drawIndicator: SKNode?
         
-        override init(sceneUI: AFSceneUI) {
-            super.init(sceneUI: sceneUI)
-        }
-        
         override func click(name: String?, flags: NSEvent.ModifierFlags?) {
             if let name = name { click_node(name: name, flags: flags) }
             else { click_black(flags: flags) }

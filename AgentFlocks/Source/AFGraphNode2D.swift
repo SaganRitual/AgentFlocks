@@ -136,20 +136,20 @@ class AFGraphNode2D: GKGraphNode2D, AFScenoid {
     
     func applySelectionIndicatorUserData(to: SKNode) {
         to.userData = NSMutableDictionary()
-        to.userData!["clickable"] = false
-        to.userData!["selectable"] = false
-        to.userData!["nodeOwner"] = self
-        to.userData!["pathOwner"] = pathOwner
-        to.userData!["nodeType"] = "Marker selection indicator"
+        to.userData![AFUserDataItem.Clickable] = false
+        to.userData![AFUserDataItem.Selectable] = false
+        to.userData![AFUserDataItem.NodeOwner] = self
+        to.userData![AFUserDataItem.PathOwner] = pathOwner
+        to.userData![AFUserDataItem.NodeType] = "Marker selection indicator"
     }
     
     func applyMarkerUserData(to: SKNode) {
         to.userData = NSMutableDictionary()
-        to.userData!["clickable"] = true
-        to.userData!["selectable"] = true
-        to.userData!["nodeOwner"] = self
-        to.userData!["pathOwner"] = pathOwner
-        to.userData!["nodeType"] = "Graph node"
+        to.userData![AFUserDataItem.Clickable] = true
+        to.userData![AFUserDataItem.Selectable] = true
+        to.userData![AFUserDataItem.NodeOwner] = self
+        to.userData![AFUserDataItem.PathOwner] = pathOwner
+        to.userData![AFUserDataItem.NodeType] = "Graph node"
     }
 
     func deselect() {

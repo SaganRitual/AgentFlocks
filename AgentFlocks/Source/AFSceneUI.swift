@@ -28,6 +28,9 @@ enum GoalSetupInputMode {
     case MultiSelectAgents, MultiSelectObstacles, NoSelect, SingleSelectAgent, SingleSelectPath
 }
 
+enum AFUserDataItem { case Clickable, Drawable, NodeOwner, NodeType, PathOwner, Selectable, TheCloneablePart }
+
+
 class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
     var activePath: AFPath!     // The one we're doing stuff to, whether it's selected or not (like dragging handles)
     let contextMenu: AFContextMenu
@@ -54,9 +57,7 @@ class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
         self.gameScene = gameScene
         self.ui = ui
 
-        super.init(states: [
-            Draw(sceneUI: self), Default(sceneUI: self), GoalSetup(sceneUI: self)
-        ])
+        super.init(states: [ Draw(), Default(), GoalSetup() ])
         
         enter(Default.self)
     }
@@ -73,7 +74,7 @@ class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
     }
 
     func bringToTop(_ node: SKNode) {
-        if let userData = node.userData, let pathOwner = userData["pathOwner"] as? AFPath {
+        if let pathOwner = AFSceneUI.getUserDataItem(.PathOwner, from: node) as? AFPath {
             pathOwner.getNodesForBringToTop().forEach { bringToTop_($0) }
         } else {
             bringToTop_(node)
@@ -110,10 +111,8 @@ class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
         func dumpChildren(of node: SKNode, tabCount: Int) {
             let debugStack = node.children.sorted(by: { $0.zPosition > $1.zPosition })
             debugStack.forEach {
-                var typeString = "<type unknown>"
-                if let userData = $0.userData, let type = userData["nodeType"] as? String {
-                    typeString = type
-                }
+                let typeString = (AFSceneUI.getUserDataItem(.NodeType, from: $0) as? String) ?? "<type unknown>"
+
                 for _ in 0 ..< tabCount { print("\t", separator: "", terminator: "") }
                 print($0.zPosition, typeString, $0.name ?? "<no name>")
                 
@@ -175,12 +174,12 @@ class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
         }
     }
     
+    static func getUserDataItem(_ item: AFUserDataItem, from: SKNode) -> Any? {
+        return from.userData?[item]
+    }
+    
     func isNodeClickable(_ node: SKNode) -> Bool {
-        if let userData = node.userData, let clickable = userData["clickable"] as? Bool, clickable == true {
-            return true
-        } else {
-            return false
-        }
+        return (AFSceneUI.getUserDataItem(.Clickable, from: node) as? Bool) == true
     }
     
     // meaning is there any descendant of this node that is clickable. If there
@@ -229,8 +228,8 @@ class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
     func mouseDrag(_ info: AFSceneInput.InputInfo) {
         mouseState = .dragging
         
-        if let node = info.node, let userData = node.userData {
-            switch userData["nodeOwner"] {
+        if let node = info.node {
+            switch AFSceneUI.getUserDataItem(.NodeOwner, from: node) {
             case let agent as AFAgent2D: agent.move(to: info.mousePosition)
                 
             case let node as AFGraphNode2D:

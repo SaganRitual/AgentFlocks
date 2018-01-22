@@ -89,11 +89,11 @@ class AFPath: Equatable {
         fullPathHandleSprite.name = self.name
         fullPathHandleSprite.zPosition = CGFloat(AFCore.sceneUI.getNextZPosition())
         fullPathHandleSprite.userData = NSMutableDictionary()
-        fullPathHandleSprite.userData!["clickable"] = true
-        fullPathHandleSprite.userData!["selectable"] = false
-        fullPathHandleSprite.userData!["nodeOwner"] = self
-        fullPathHandleSprite.userData!["pathOwner"] = self
-        fullPathHandleSprite.userData!["nodeType"] = "path handle"
+        fullPathHandleSprite.userData![AFUserDataItem.Clickable] = true
+        fullPathHandleSprite.userData![AFUserDataItem.Selectable] = false
+        fullPathHandleSprite.userData![AFUserDataItem.NodeOwner] = self
+        fullPathHandleSprite.userData![AFUserDataItem.PathOwner] = self
+        fullPathHandleSprite.userData![AFUserDataItem.NodeType] = "path handle"
 
         self.gkObstacle = obstacle
     }
@@ -108,11 +108,11 @@ class AFPath: Equatable {
         fullPathHandleSprite.name = self.name
         fullPathHandleSprite.zPosition = CGFloat(AFCore.sceneUI.getNextZPosition())
         fullPathHandleSprite.userData = NSMutableDictionary()
-        fullPathHandleSprite.userData!["clickable"] = true
-        fullPathHandleSprite.userData!["selectable"] = false
-        fullPathHandleSprite.userData!["nodeOwner"] = self
-        fullPathHandleSprite.userData!["pathOwner"] = self
-        fullPathHandleSprite.userData!["nodeType"] = "path handle"
+        fullPathHandleSprite.userData![AFUserDataItem.Clickable] = true
+        fullPathHandleSprite.userData![AFUserDataItem.Selectable] = false
+        fullPathHandleSprite.userData![AFUserDataItem.NodeOwner] = self
+        fullPathHandleSprite.userData![AFUserDataItem.PathOwner] = self
+        fullPathHandleSprite.userData![AFUserDataItem.NodeType] = "path handle"
 
         copyFrom.graphNodes.forEach {
             let newNode = AFGraphNode2D(pathOwner: self, copyFrom: $0, gameScene: gameScene, drawable: false)
@@ -264,11 +264,11 @@ class AFPath: Equatable {
         containerNode = SKNode()
         containerNode!.name = self.name
         containerNode!.userData = NSMutableDictionary()
-        containerNode!.userData!["clickable"] = false
-        containerNode!.userData!["selectable"] = false
-        containerNode!.userData!["nodeOwner"] = self
-        containerNode!.userData!["pathOwner"] = self
-        containerNode!.userData!["nodeType"] = "container node"
+        containerNode!.userData![AFUserDataItem.Clickable] = false
+        containerNode!.userData![AFUserDataItem.Selectable] = false
+        containerNode!.userData![AFUserDataItem.NodeOwner] = self
+        containerNode!.userData![AFUserDataItem.PathOwner] = self
+        containerNode!.userData![AFUserDataItem.NodeType] = "container node"
 
         var nodesArray = [float2]()
         var visualDotsArray = [CGPoint]()
@@ -296,7 +296,7 @@ class AFPath: Equatable {
             visualDotsArray.append(visualDotsArray[0])
             
             let closingNode = AFGraphNode2D(pathOwner: self, point: visualDotsArray[0], gameScene: gameScene, drawable: false)
-            closingNode.sprite.userData!["clickable"]! = false
+            closingNode.sprite.userData![AFUserDataItem.Clickable]! = false
             graphNodes.append(key: closingNode.name, value: closingNode)
             
             deselectAll()
@@ -330,11 +330,11 @@ class AFPath: Equatable {
         visualPathSprite!.name = name
         visualPathSprite!.userData = NSMutableDictionary()
         visualPathSprite!.zPosition = 0
-        visualPathSprite!.userData!["clickable"] = false
-        visualPathSprite!.userData!["selectable"] = false
-        visualPathSprite!.userData!["nodeOwner"] = self
-        visualPathSprite!.userData!["pathOwner"] = self
-        visualPathSprite!.userData!["nodeType"] = "visual path sprite"
+        visualPathSprite!.userData![AFUserDataItem.Clickable] = false
+        visualPathSprite!.userData![AFUserDataItem.Selectable] = false
+        visualPathSprite!.userData![AFUserDataItem.NodeOwner] = self
+        visualPathSprite!.userData![AFUserDataItem.PathOwner] = self
+        visualPathSprite!.userData![AFUserDataItem.NodeType] = "visual path sprite"
         containerNode!.addChild(visualPathSprite!)
         
         if !finalized { visualPathSprite!.strokeColor = .red }

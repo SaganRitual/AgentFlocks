@@ -39,12 +39,7 @@ extension AFSceneUI {
     var drone: AFSceneUIState { return currentState! as! AFSceneUIState }
     
     class BaseState: GKState, AFSceneUIState {
-        let sceneUI: AFSceneUI
-        
-        init(sceneUI: AFSceneUI) {
-            self.sceneUI = sceneUI
-            super.init()
-        }
+        var sceneUI: AFSceneUI { return stateMachine! as! AFSceneUI }
         
         func click(name: String?, flags: NSEvent.ModifierFlags?) {}
         func deselect(_ name: String) {}
