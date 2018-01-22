@@ -28,7 +28,7 @@ enum GoalSetupInputMode {
     case MultiSelectAgents, MultiSelectObstacles, NoSelect, SingleSelectAgent, SingleSelectPath
 }
 
-enum AFUserDataItem { case Clickable, Drawable, NodeOwner, NodeType, PathOwner, Selectable, TheCloneablePart }
+enum AFUserDataItem { case Clickable, Drawable, NodeOwner, NodeType, OwningAgent, PathOwner, Selectable, TheCloneablePart }
 
 
 class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
@@ -45,7 +45,7 @@ class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
     var pathForNextPathGoal = 0
     var primarySelection: SKNode?
     unowned let gameScene: GameScene
-    var selectedNames = Set<String>()
+    var selectedNodes = Set<SKNode>()
     var selectedPath: AFPath!   // The one that has a visible selection indicator on it, if any
     var ui: AppDelegate
     var upNode: SKNode?
@@ -64,7 +64,7 @@ class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
     
     func addNodeToPath(at position: CGPoint) {
         let newNode = activePath.addGraphNode(at: position)
-        select(newNode.name, primary: true)
+        select(newNode.sprite, primary: true)
         
         // With two or more nodes, we now have a path that can be
         // added to the library
@@ -285,8 +285,8 @@ class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
         drone.select(index, primary: primary)
     }
     
-    func select(_ name: String, primary: Bool) {
-        drone.select(name, primary: primary)
+    func select(_ node: SKNode, primary: Bool) {
+        drone.select(node, primary: primary)
     }
     
     func setGoalSetupInputMode(_ mode: GoalSetupInputMode) {
@@ -311,19 +311,19 @@ class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
         data.obstacles[newPath.name] = newPath
     }
 
-    func toggleSelection(_ name: String) {
-        if selectedNames.contains(name) { drone.deselect(name) }
-        else { drone.select(name, primary: primarySelection == nil) }
+    func toggleSelection(_ node: SKNode) {
+        if selectedNodes.contains(node) { drone.deselect(node) }
+        else { drone.select(node, primary: primarySelection == nil) }
     }
 
-    func updatePrimarySelectionState(agentName: String?) {
-        var agent: AFAgent2D?
+    func updatePrimarySelectionState(agentNode: SKNode?) {
+        var afAgent: AFAgent2D?
         
-        if let agentName = agentName {
-            agent = data.entities[agentName]!.agent
+        if let agentNode = agentNode {
+            afAgent = AFSceneUI.getUserDataItem(.OwningAgent, from: agentNode) as? AFAgent2D
         }
-        
-        ui.changePrimarySelectionState(selectedAgent: agent)
+
+        ui.changePrimarySelectionState(selectedAgent: afAgent)
     }
 }
 
@@ -335,7 +335,7 @@ protocol AFSceneDrone {
     func mouseDown(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?)
     func mouseMove(at position: CGPoint)
     func mouseUp(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?)
-    func select(_ name: String, primary: Bool)
+    func select(_ node: SKNode, primary: Bool)
     func select(_ imageIndex: Int, primary: Bool)
     func trackMouse(nodeName: String, atPoint: CGPoint)
 }

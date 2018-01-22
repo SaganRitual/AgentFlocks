@@ -55,18 +55,18 @@ extension AFSceneUI {
                 sceneUI.finalizePath(close: true)
             } else {
                 deselectAll()
-                select(name, primary: true)
+                select(graphNodes[name]!.sprite, primary: true)
             }
         }
         
-        override func deselect(_ name: String) {
-            sceneUI.activePath.graphNodes[name]!.deselect()
-            sceneUI.selectedNames.remove(name)
+        override func deselect(_ node: SKNode) {
+            sceneUI.activePath.graphNodes[node.name!]!.deselect()
+            sceneUI.selectedNodes.remove(node)
         }
         
         override func deselectAll() {
-            sceneUI.selectedNames.forEach { sceneUI.activePath?.graphNodes[$0]!.deselect() }
-            sceneUI.selectedNames.removeAll()
+            sceneUI.selectedNodes.forEach { sceneUI.activePath?.graphNodes[$0.name!]!.deselect() }
+            sceneUI.selectedNodes.removeAll()
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -98,9 +98,9 @@ extension AFSceneUI {
             sceneUI.contextMenu.includeInDisplay(.AddPathToLibrary, true, enable: false)
         }
         
-        override func select(_ name: String, primary: Bool) {
-            sceneUI.activePath.select(name)
-            sceneUI.selectedNames.insert(name)
+        override func select(_ node: SKNode, primary: Bool) {
+            sceneUI.activePath.select(node)
+            sceneUI.selectedNodes.insert(node)
         }
         
         override func updateDrawIndicator(_ position: CGPoint) {

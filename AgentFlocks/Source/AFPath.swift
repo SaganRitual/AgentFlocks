@@ -300,7 +300,7 @@ class AFPath: Equatable {
             graphNodes.append(key: closingNode.name, value: closingNode)
             
             deselectAll()
-            select(self.name)
+            select(fullPathHandleSprite)
             
             movePathHandle(to: CGPoint(graphNodes[0].position))
             pathHandleIsVisible = true
@@ -354,8 +354,8 @@ class AFPath: Equatable {
         graphNodes.remove(node)
     }
     
-    func select(_ name: String) {
-        if let ix = graphNodes.getIndexOf(name) {
+    func select(_ node: SKNode) {
+        if let ix = graphNodes.getIndexOf(node.name!) {
             graphNodes[ix].select(primary: true)
         } else if name == self.name {
             showSelectionIndicator()

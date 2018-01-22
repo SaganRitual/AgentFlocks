@@ -26,12 +26,12 @@ import GameplayKit
 
 protocol AFSceneUIState {
     func click(name: String?, flags: NSEvent.ModifierFlags?)
-    func deselect(_ name: String)
+    func deselect(_ node: SKNode)
     func deselectAll()
     func flagsChanged(to newFlags: NSEvent.ModifierFlags)
     func mouseMove(to position: CGPoint)
     func select(_ index: Int, primary: Bool)
-    func select(_ name: String, primary: Bool)
+    func select(_ node: SKNode, primary: Bool)
     func updateDrawIndicator(_ position: CGPoint)
 }
 
@@ -42,7 +42,7 @@ extension AFSceneUI {
         var sceneUI: AFSceneUI { return stateMachine! as! AFSceneUI }
         
         func click(name: String?, flags: NSEvent.ModifierFlags?) {}
-        func deselect(_ name: String) {}
+        func deselect(_ node: SKNode) {}
         func deselectAll() {}
 
         func flagsChanged(to newFlags: NSEvent.ModifierFlags) {
@@ -59,7 +59,7 @@ extension AFSceneUI {
 
         func mouseMove(to position: CGPoint) {}
         func select(_ index: Int, primary: Bool) {}
-        func select(_ name: String, primary: Bool) {}
+        func select(_ node: SKNode, primary: Bool) {}
         
         func updateDrawIndicator(_ position: CGPoint) { }
     }

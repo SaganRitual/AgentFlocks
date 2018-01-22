@@ -45,8 +45,8 @@ class AFItemEditorDelegate {
 
         let type = state.newItemType!
         var goal: AFGoal?
-        var group = sceneUI.selectedNames
-        let names = Array(group)
+        let group = sceneUI.selectedNodes
+        let nodes = Array(group)
         
         let angle = Float(state.angle?.value ?? 0)
         let distance = Float(state.distance?.value ?? 0)
@@ -59,17 +59,17 @@ class AFItemEditorDelegate {
             let primarySelection = sceneUI.primarySelection!
             let primarySelected = data.entities[primarySelection.name!]! as AFEntity
             
-            goal = AFGoal(toAlignWith: names, maxDistance: distance, maxAngle: angle, weight: weight)
+            goal = AFGoal(toAlignWith: nodes, maxDistance: distance, maxAngle: angle, weight: weight)
 
-            for agentName in group {
-                let afAgent = data.entities[agentName]!.agent
+            for agentNode in group {
+                let afAgent = data.entities[agentNode.name!]!.agent
                 
                 // Hijacking the fwd checkbox; it's otherwise unused for this kind of goal
                 let includePrimary = state.forward
                 
                 // User can select whether to give this alignment goal to the
                 // primary selected, in addition to all the others in the selection.
-                if includePrimary || afAgent.name != primarySelected.name {
+                if includePrimary || agentNode.name! != primarySelected.name {
                     afAgent.addGoal(goal!)
                 }
             }
@@ -80,37 +80,44 @@ class AFItemEditorDelegate {
             goal = AFGoal(toAvoidObstacles: Array(data.obstacles.keys), time: time, weight: weight)
             
         case .toAvoidAgents:
-            let primarySelection = sceneUI.primarySelection
-            let primarySelected = data.entities[primarySelection!.name!]! as AFEntity
+            let primarySelection = sceneUI.primarySelection!
             
-            let agentNames = Array(group)
-            
-            if let ix = group.index(of: primarySelected.agent.name) {
-                group.remove(at: ix)
+            // Make sure we're not trying to avoid ourselves too
+            let agentNodes = Array(group).filter {
+                if let nodeName = $0.name, let primarySelectionName = primarySelection.name {
+                    return nodeName != primarySelectionName
+                }
+                return true
             }
             
-            goal = AFGoal(toAvoidAgents: agentNames, time: time, weight: weight)
-            primarySelected.agent.addGoal(goal!)
+            goal = AFGoal(toAvoidAgents: agentNodes, time: time, weight: weight)
+            
+            if let agent = AFSceneUI.getUserDataItem(.OwningAgent, from: primarySelection) as? AFAgent2D {
+                agent.addGoal(goal!)
+            }
             
             goal = nil
             
         case .toCohereWith:
-            goal = AFGoal(toCohereWith: names, maxDistance: distance, maxAngle: angle, weight: weight)
-            for agentName in group {
-                data.entities[agentName]!.agent.addGoal(goal!)
+            goal = AFGoal(toCohereWith: nodes, maxDistance: distance, maxAngle: angle, weight: weight)
+
+            for node in nodes {
+                if let agent = AFSceneUI.getUserDataItem(.OwningAgent, from: node) as? AFAgent2D {
+                    agent.addGoal(goal!)
+                }
             }
             
             goal = nil
             
         case .toFleeAgent:
-            let selectedNames = sceneUI.selectedNames
-            guard selectedNames.count == 2 else { return }
+            let selectedNodes = sceneUI.selectedNodes
+            guard selectedNodes.count == 2 else { return }
             
-            var si = selectedNames.union(Set<String>())
-            si.remove(sceneUI.primarySelection!.name!)
+            var si = selectedNodes.union(Set<SKNode>())
+            si.remove(sceneUI.primarySelection!)
             
-            let nameOfAgentToFlee = si.first!
-            goal = AFGoal(toFleeAgent: nameOfAgentToFlee, weight: weight)
+            let agentToFlee = si.first!
+            goal = AFGoal(toFleeAgent: agentToFlee, weight: weight)
             
         case .toFollow:
             let pathIndex = AFCore.sceneUI.pathForNextPathGoal
@@ -120,27 +127,24 @@ class AFItemEditorDelegate {
             goal!.pathname = pathname
             
         case .toInterceptAgent:
-            let selectedNames = sceneUI.selectedNames
-            guard selectedNames.count == 2 else { return }
+            let selectedNodes = sceneUI.selectedNodes
+            guard selectedNodes.count == 2 else { return }
             
-            let namesAsArray = Array(selectedNames)
-            let secondaryAgentName = namesAsArray[1]
-            goal = AFGoal(toInterceptAgent: secondaryAgentName, time: time, weight: weight)
+            let targetAgentNode = nodes.filter { $0 != sceneUI.primarySelection }.first!
+            goal = AFGoal(toInterceptAgent: targetAgentNode, time: time, weight: weight)
             
         case .toSeekAgent:
-            var selectedNames = sceneUI.selectedNames
-            guard selectedNames.count == 2 else { return }
+            let selectedNodes = sceneUI.selectedNodes
+            guard selectedNodes.count == 2 else { return }
             
-            let p = selectedNames.remove(sceneUI.primarySelection!.name!)
-            selectedNames.remove(p!)
-            
-            let secondaryAgentName = selectedNames.first!
-            goal = AFGoal(toSeekAgent: secondaryAgentName, weight: weight)
+            let targetAgentNode = nodes.filter { $0 != sceneUI.primarySelection }.first!
+            goal = AFGoal(toSeekAgent: targetAgentNode, weight: weight)
             
         case .toSeparateFrom:
-            goal = AFGoal(toSeparateFrom: names, maxDistance: distance, maxAngle: angle, weight: weight)
-            for agentName in group {
-                data.entities[agentName]!.agent.addGoal(goal!)
+            goal = AFGoal(toSeparateFrom: nodes, maxDistance: distance, maxAngle: angle, weight: weight)
+
+            if let agent = AFSceneUI.getUserDataItem(.OwningAgent, from: sceneUI.primarySelection!) as? AFAgent2D {
+                agent.addGoal(goal!)
             }
             
             goal = nil
@@ -220,8 +224,8 @@ class AFItemEditorDelegate {
     }
     
     func refreshMotivators(state: ItemEditorSlidersState) {
-        let selectedNames = sceneUI.selectedNames
-        guard selectedNames.count > 0 else { return }
+        let selectedNodes = sceneUI.selectedNodes
+        guard selectedNodes.count > 0 else { return }
         
         let node = sceneUI.primarySelection!
         let entity = data.entities[node.name!]!

@@ -172,6 +172,7 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         to.userData![AFUserDataItem.Clickable] = true
         to.userData![AFUserDataItem.Selectable] = true
         to.userData![AFUserDataItem.NodeOwner] = self
+        to.userData![AFUserDataItem.OwningAgent] = self
     }
 
     func deselect() {
@@ -206,6 +207,7 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         sprite.userData![AFUserDataItem.Clickable] = true
         sprite.userData![AFUserDataItem.Selectable] = true
         sprite.userData![AFUserDataItem.NodeOwner] = self
+        sprite.userData![AFUserDataItem.OwningAgent] = self
 
         container.name = sprite.name
         container.addChild(sprite)

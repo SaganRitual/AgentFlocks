@@ -64,7 +64,7 @@ extension AFSceneUI {
             
             if effectiveFlagState?.contains(.command) ?? false {
                 if sceneUI.mouseState == .down { // cmd+click on a node
-                    sceneUI.toggleSelection(sceneUI.upNode!.name!)
+                    sceneUI.toggleSelection(sceneUI.upNode!)
                 }
             } else {
                 if sceneUI.mouseState == .down {    // That is, we're coming out of down as opposed to drag
@@ -73,7 +73,7 @@ extension AFSceneUI {
                     deselectAll()
                     
                     if setSelection {
-                        select(sceneUI.upNode!.name!, primary: true)
+                        select(sceneUI.upNode!, primary: true)
                     }
                 }
             }

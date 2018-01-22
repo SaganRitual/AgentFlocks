@@ -47,7 +47,6 @@ class AFGoal_Script: Codable {
     init(goal: AFGoal) {
         name = goal.name
 
-        agentNames = goal.agentNames
         enabled = goal.enabled
         forward = goal.forward
         goalType = goal.goalType
@@ -59,11 +58,13 @@ class AFGoal_Script: Codable {
         distance = goal.distance
         speed = goal.speed
         time = goal.time
+
+        goal.agentNodes.forEach { agentNames.append($0.name!) }
     }
 }
 
 class AFGoal {
-    var agentNames = [String]()
+    var agentNodes = [SKNode]()
     var agents = [GKAgent]()
     var enabled = true
     var forward = true
@@ -83,7 +84,6 @@ class AFGoal {
     init(prototype: AFGoal_Script) {
         enabled = prototype.enabled
         
-        agentNames = prototype.agentNames
         angle = prototype.angle
         distance = prototype.distance
         goalType = prototype.goalType
@@ -97,9 +97,9 @@ class AFGoal {
         switch goalType {
         case .toAlignWith:
             var gkAgents = [GKAgent]()
-            for aligneeName in agentNames {
+            for aligneeNode in agentNodes {
                 for entity in AFCore.data.entities {
-                    if entity.name == aligneeName {
+                    if entity.agent.sprite == aligneeNode {
                         gkAgents.append(entity.agent)
                     }
                 }
@@ -108,9 +108,9 @@ class AFGoal {
 
         case .toAvoidAgents:
             var gkAgents = [GKAgent]()
-            for avoideeName in agentNames {
+            for avoideeNode in agentNodes {
                 for entity in AFCore.data.entities {
-                    if entity.name == avoideeName {
+                    if entity.agent.sprite == avoideeNode {
                         gkAgents.append(entity.agent)
                     }
                 }
@@ -126,9 +126,9 @@ class AFGoal {
 
         case .toCohereWith:
             var gkAgents = [GKAgent]()
-            for coheree in agentNames {
+            for coheree in agentNodes {
                 for entity in AFCore.data.entities {
-                    if entity.name == coheree {
+                    if entity.agent.sprite == coheree {
                         gkAgents.append(entity.agent)
                     }
                 }
@@ -137,9 +137,9 @@ class AFGoal {
             gkGoal = GKGoal(toCohereWith: gkAgents, maxDistance: distance, maxAngle: angle)
 
         case .toFleeAgent:
-            for agentName in agentNames {
+            for agentNode in agentNodes {
                 for entity in AFCore.data.entities {
-                    if entity.name == agentName {
+                    if entity.agent.sprite == agentNode {
                         gkGoal = GKGoal(toFleeAgent: entity.agent)
                         break
                     }
@@ -151,9 +151,9 @@ class AFGoal {
             gkGoal = GKGoal(toFollow: afPath.gkPath, maxPredictionTime: TimeInterval(time), forward: forward)
 
         case .toInterceptAgent:
-            for agentName in agentNames {
+            for agentNode in agentNodes {
                 for entity in AFCore.data.entities {
-                    if entity.name == agentName {
+                    if entity.agent.sprite == agentNode {
                         gkGoal = GKGoal(toInterceptAgent: entity.agent, maxPredictionTime: TimeInterval(time))
                         break
                     }
@@ -164,9 +164,9 @@ class AFGoal {
             gkGoal = GKGoal(toReachTargetSpeed: speed)
             
         case .toSeekAgent:
-            for agentName in agentNames {
+            for agentNode in agentNodes {
                 for entity in AFCore.data.entities {
-                    if entity.name == agentName {
+                    if entity.agent.sprite == agentNode {
                         gkGoal = GKGoal(toSeekAgent: entity.agent)
                         break
                     }
@@ -175,9 +175,9 @@ class AFGoal {
 
         case .toSeparateFrom:
             var gkAgents = [GKAgent]()
-            for separatees in agentNames {
+            for separatee in agentNodes {
                 for entity in AFCore.data.entities {
-                    if entity.name == separatees {
+                    if entity.agent.sprite == separatee {
                         gkAgents.append(entity.agent)
                     }
                 }
@@ -197,7 +197,7 @@ class AFGoal {
     init(copyFrom: AFGoal) {
         goalType = copyFrom.goalType
 
-        self.agentNames = copyFrom.agentNames
+        self.agentNodes = copyFrom.agentNodes
         self.angle = copyFrom.angle
         self.distance = copyFrom.distance
         self.time = copyFrom.time
@@ -207,17 +207,17 @@ class AFGoal {
         self.pathname = copyFrom.pathname
     }
     
-    init(toAlignWith agentNames: [String], maxDistance: Float, maxAngle: Float, weight: Float) {
+    init(toAlignWith agentNodes: [SKNode], maxDistance: Float, maxAngle: Float, weight: Float) {
         goalType = .toAlignWith
         
         var gkAgents = [GKAgent]()
         for entity in AFCore.data.entities {
-            if agentNames.contains(entity.name) {
+            if agentNodes.contains(entity.agent.sprite) {
                 gkAgents.append(entity.agent)
             }
         }
         
-        self.agentNames = agentNames
+        self.agentNodes = agentNodes
         self.agents = gkAgents
         self.angle = maxAngle
         self.distance = maxDistance
@@ -227,17 +227,17 @@ class AFGoal {
         gkGoal = GKGoal(toAlignWith: gkAgents, maxDistance: maxDistance, maxAngle: maxAngle)
     }
     
-    init(toAvoidAgents agentNames: [String], time: TimeInterval, weight: Float) {
+    init(toAvoidAgents agentNodes: [SKNode], time: TimeInterval, weight: Float) {
         goalType = .toAvoidAgents
         
         var gkAgents = [GKAgent]()
         for entity in AFCore.data.entities {
-            if agentNames.contains(entity.name) {
+            if agentNodes.contains(entity.agent.sprite) {
                 gkAgents.append(entity.agent)
             }
         }
 
-        self.agentNames = agentNames
+        self.agentNodes = agentNodes
         self.agents = gkAgents
         self.name = NSUUID().uuidString
         self.time = Float(time)
@@ -263,18 +263,18 @@ class AFGoal {
         gkGoal = GKGoal(toAvoid: obstacles, maxPredictionTime: time)
     }
     
-    init(toCohereWith agentNames: [String], maxDistance: Float, maxAngle: Float, weight: Float) {
+    init(toCohereWith agentNodes: [SKNode], maxDistance: Float, maxAngle: Float, weight: Float) {
         goalType = .toCohereWith
         
         var gkAgents = [GKAgent]()
         for entity in AFCore.data.entities {
-            if agentNames.contains(entity.name) {
+            if agentNodes.contains(entity.agent.sprite) {
                 gkAgents.append(entity.agent)
             }
         }
         
         self.agents = gkAgents
-        self.agentNames = agentNames
+        self.agentNodes = agentNodes
         self.angle = maxAngle
         self.distance = maxDistance
         self.name = NSUUID().uuidString
@@ -283,17 +283,17 @@ class AFGoal {
         gkGoal = GKGoal(toCohereWith: gkAgents, maxDistance: maxDistance, maxAngle: maxAngle)
     }
     
-    init(toFleeAgent agentName: String, weight: Float) {
+    init(toFleeAgent agentNode: SKNode, weight: Float) {
         goalType = .toFleeAgent
         
         var gkAgents = [GKAgent]()
         for entity in AFCore.data.entities {
-            if agentName == entity.name {
+            if agentNode == entity.agent.sprite {
                 gkAgents.append(entity.agent)
             }
         }
 
-        self.agentNames = [agentName]
+        self.agentNodes = [agentNode]
         self.agents = gkAgents
         self.name = NSUUID().uuidString
         self.weight = weight
@@ -314,17 +314,17 @@ class AFGoal {
         gkGoal = GKGoal(toFollow: afPath.asPath()!, maxPredictionTime: TimeInterval(t), forward: forward)
     }
     
-    init(toInterceptAgent agentName: String, time: TimeInterval, weight: Float) {
+    init(toInterceptAgent agentNode: SKNode, time: TimeInterval, weight: Float) {
         goalType = .toInterceptAgent
         
         var gkAgents = [GKAgent]()
         for entity in AFCore.data.entities {
-            if agentName == entity.name {
+            if agentNode == entity.agent.sprite {
                 gkAgents.append(entity.agent)
             }
         }
         
-        self.agentNames = [agentName]
+        self.agentNodes = [agentNode]
         self.agents = gkAgents
         self.time = Float(time)
         self.name = NSUUID().uuidString
@@ -343,17 +343,17 @@ class AFGoal {
         gkGoal = GKGoal(toReachTargetSpeed: speed)
     }
     
-    init(toSeekAgent agentName: String, weight: Float) {
+    init(toSeekAgent agentNode: SKNode, weight: Float) {
         goalType = .toSeekAgent
         
         var gkAgents = [GKAgent]()
         for entity in AFCore.data.entities {
-            if agentName == entity.name {
+            if agentNode == entity.agent.sprite {
                 gkAgents.append(entity.agent)
             }
         }
 
-        self.agentNames = [agentName]
+        self.agentNodes = [agentNode]
         self.agents = gkAgents
         self.name = NSUUID().uuidString
         self.weight = weight
@@ -361,17 +361,17 @@ class AFGoal {
         gkGoal = GKGoal(toSeekAgent: self.agents[0])
     }
     
-    init(toSeparateFrom agentNames: [String], maxDistance: Float, maxAngle: Float, weight: Float) {
+    init(toSeparateFrom agentNodes: [SKNode], maxDistance: Float, maxAngle: Float, weight: Float) {
         goalType = .toSeparateFrom
         
         var gkAgents = [GKAgent]()
         for entity in AFCore.data.entities {
-            if agentNames.contains(entity.name) {
+            if agentNodes.contains(entity.agent.sprite) {
                 gkAgents.append(entity.agent)
             }
         }
         
-        self.agentNames = agentNames
+        self.agentNodes = agentNodes
         self.agents = gkAgents
         self.angle = maxAngle
         self.distance = maxDistance
@@ -428,19 +428,19 @@ extension AFGoal {
     static func makeGoal(copyFrom: AFGoal, weight: Float) -> AFGoal {
         switch copyFrom.goalType {
         case .toSeekAgent:        fallthrough
-        case .toFleeAgent:        return makeGoal(copyFrom.goalType, agent: copyFrom.agentNames[0], weight: weight)
+        case .toFleeAgent:        return makeGoal(copyFrom.goalType, agentNode: copyFrom.agentNodes[0], weight: weight)
 
         case .toReachTargetSpeed: fallthrough
         case .toWander:           return makeGoal(copyFrom.goalType, speed: copyFrom.speed, weight: weight)
 
-        case .toAvoidAgents:      return makeGoal(copyFrom.goalType, agents: copyFrom.agentNames, time: copyFrom.time, weight: weight)
+        case .toAvoidAgents:      return makeGoal(copyFrom.goalType, agentNodes: copyFrom.agentNodes, time: copyFrom.time, weight: weight)
         case .toAvoidObstacles:   return makeGoal(copyFrom.goalType, obstacleNames: copyFrom.obstacleNames, time: copyFrom.time, weight: weight)
-        case .toInterceptAgent:   return makeGoal(copyFrom.goalType, agents: copyFrom.agentNames, time: copyFrom.time, weight: weight)
+        case .toInterceptAgent:   return makeGoal(copyFrom.goalType, agentNodes: copyFrom.agentNodes, time: copyFrom.time, weight: weight)
 
         case .toAlignWith:        fallthrough
         case .toCohereWith:       fallthrough
         case .toSeparateFrom:
-            return makeGoal(copyFrom.goalType, agentNames: copyFrom.agentNames, distance: copyFrom.distance, angle: copyFrom.angle, weight: weight)
+            return makeGoal(copyFrom.goalType, agentNodes: copyFrom.agentNodes, distance: copyFrom.distance, angle: copyFrom.angle, weight: weight)
 
         case .toFollow:           fallthrough
         case .toStayOn:           return makeGoal(copyFrom.goalType, pathname: copyFrom.pathname!, time: copyFrom.time, forward: copyFrom.forward, weight: weight)
@@ -456,11 +456,11 @@ extension AFGoal {
         }
     }
     
-    static func makeGoal(_ type: AFGoalType, agentNames: [String], distance: Float, angle: Float, weight: Float) -> AFGoal {
+    static func makeGoal(_ type: AFGoalType, agentNodes: [SKNode], distance: Float, angle: Float, weight: Float) -> AFGoal {
         switch type {
-        case .toAlignWith:    return AFGoal(toAlignWith: agentNames, maxDistance: distance, maxAngle: angle, weight: weight)
-        case .toCohereWith:   return AFGoal(toCohereWith: agentNames, maxDistance: distance, maxAngle: angle, weight: weight)
-        case .toSeparateFrom: return AFGoal(toSeparateFrom: agentNames, maxDistance: distance, maxAngle: angle, weight: weight)
+        case .toAlignWith:    return AFGoal(toAlignWith: agentNodes, maxDistance: distance, maxAngle: angle, weight: weight)
+        case .toCohereWith:   return AFGoal(toCohereWith: agentNodes, maxDistance: distance, maxAngle: angle, weight: weight)
+        case .toSeparateFrom: return AFGoal(toSeparateFrom: agentNodes, maxDistance: distance, maxAngle: angle, weight: weight)
             
         default: fatalError()
         }
@@ -474,18 +474,18 @@ extension AFGoal {
         }
     }
 
-    static func makeGoal(_ type: AFGoalType, agents: [String], time: Float, weight: Float) -> AFGoal {
+    static func makeGoal(_ type: AFGoalType, agentNodes: [SKNode], time: Float, weight: Float) -> AFGoal {
         switch type {
-        case .toAvoidAgents: return AFGoal(toAvoidAgents: agents, time: TimeInterval(time), weight: weight)
+        case .toAvoidAgents: return AFGoal(toAvoidAgents: agentNodes, time: TimeInterval(time), weight: weight)
             
         default: fatalError()
         }
     }
     
-    static func makeGoal(_ type: AFGoalType, agent: String, weight: Float) -> AFGoal {
+    static func makeGoal(_ type: AFGoalType, agentNode: SKNode, weight: Float) -> AFGoal {
         switch type {
-        case .toFleeAgent: return AFGoal(toFleeAgent: agent, weight: weight)
-        case .toSeekAgent: return AFGoal(toSeekAgent: agent, weight: weight)
+        case .toFleeAgent: return AFGoal(toFleeAgent: agentNode, weight: weight)
+        case .toSeekAgent: return AFGoal(toSeekAgent: agentNode, weight: weight)
             
         default: fatalError()
         }
