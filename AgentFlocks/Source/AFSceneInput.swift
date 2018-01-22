@@ -50,11 +50,9 @@ class AFSceneInput: AFGameSceneDelegate {
     }
 
     func getTouchedNode() -> SKNode? {
-        let touchedNodes = gameScene.nodes(at: currentPosition).filter {
-            return (AFSceneUI.getUserDataItem(.Clickable, from: $0) as? Bool) ?? false
-        }
-        
-        return touchedNodes.first
+        return gameScene.nodes(at: currentPosition).filter {
+            AFSceneUI.AFNodeAdapter($0).getIsClickable()
+        }.first
     }
 
     func keyDown(with event: NSEvent) {

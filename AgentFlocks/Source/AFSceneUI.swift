@@ -28,9 +28,6 @@ enum GoalSetupInputMode {
     case MultiSelectAgents, MultiSelectObstacles, NoSelect, SingleSelectAgent, SingleSelectPath
 }
 
-enum AFUserDataItem { case Clickable, Drawable, NodeOwner, NodeType, OwningAgent, PathOwner, Selectable, TheCloneablePart }
-
-
 class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
     var activePath: AFPath!     // The one we're doing stuff to, whether it's selected or not (like dragging handles)
     let contextMenu: AFContextMenu
@@ -74,7 +71,7 @@ class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
     }
 
     func bringToTop(_ node: SKNode) {
-        if let pathOwner = AFSceneUI.getUserDataItem(.PathOwner, from: node) as? AFPath {
+        if let pathOwner = AFNodeAdapter(node).getPathOwner() {
             pathOwner.getNodesForBringToTop().forEach { bringToTop_($0) }
         } else {
             bringToTop_(node)
@@ -111,7 +108,7 @@ class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
         func dumpChildren(of node: SKNode, tabCount: Int) {
             let debugStack = node.children.sorted(by: { $0.zPosition > $1.zPosition })
             debugStack.forEach {
-                let typeString = (AFSceneUI.getUserDataItem(.NodeType, from: $0) as? String) ?? "<type unknown>"
+                let typeString = AFNodeAdapter($0).getTypeString() ?? "<type unknown>"
 
                 for _ in 0 ..< tabCount { print("\t", separator: "", terminator: "") }
                 print($0.zPosition, typeString, $0.name ?? "<no name>")
@@ -174,13 +171,7 @@ class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
         }
     }
     
-    static func getUserDataItem(_ item: AFUserDataItem, from: SKNode) -> Any? {
-        return from.userData?[item]
-    }
-    
-    func isNodeClickable(_ node: SKNode) -> Bool {
-        return (AFSceneUI.getUserDataItem(.Clickable, from: node) as? Bool) == true
-    }
+    func isNodeClickable(_ node: SKNode) -> Bool { return AFNodeAdapter(node).getIsClickable() }
     
     // meaning is there any descendant of this node that is clickable. If there
     // is, count the branch -- namely the top node -- as clickable.
@@ -229,7 +220,7 @@ class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
         mouseState = .dragging
         
         if let node = info.node {
-            switch AFSceneUI.getUserDataItem(.NodeOwner, from: node) {
+            switch AFNodeAdapter(node).getNodeOwner() {
             case let agent as AFAgent2D: agent.move(to: info.mousePosition)
                 
             case let node as AFGraphNode2D:
@@ -317,14 +308,56 @@ class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
     }
 
     func updatePrimarySelectionState(agentNode: SKNode?) {
-        var afAgent: AFAgent2D?
-        
-        if let agentNode = agentNode {
-            afAgent = AFSceneUI.getUserDataItem(.OwningAgent, from: agentNode) as? AFAgent2D
-        }
-
+        let afAgent = AFNodeAdapter(agentNode).getOwningAgent()
         ui.changePrimarySelectionState(selectedAgent: afAgent)
     }
+}
+
+extension AFSceneUI {
+    struct AFNodeAdapter {
+        enum AFUserDataItem { case Clickable, Drawable, NodeOwner, NodeType,
+            OwningAgent, PathOwner, Selectable, TheCloneablePart }
+
+        var node: SKNode?
+        
+        init(_ node: SKNode?) { self.node = node }
+        
+        func getCloneablePart() -> AFCloneable? { return getUserDataItem(.TheCloneablePart) as? AFCloneable }
+        func getIsClickable() -> Bool { return getUserDataItem(.Clickable) as? Bool ?? false }
+        func getNodeOwner() -> Any? { return getUserDataItem(.NodeOwner) }
+        func getOwningAgent() -> AFAgent2D? { return getUserDataItem(.OwningAgent) as? AFAgent2D }
+        func getPathOwner() -> AFPath? { return getUserDataItem(.PathOwner) as? AFPath }
+        func getTypeString() -> String? { return getUserDataItem(.NodeType) as? String }
+        func getUserDataItem(_ item: AFUserDataItem) -> Any? { return node?.userData?[item] }
+        func setIsClickable(_ newValue: Bool) { setUserDataItem(.Clickable, to: newValue) }
+
+        func setupUserData(clickable: Bool? = nil, drawable: Bool? = nil, nodeOwner: Any? = nil,
+                           nodeType: String? = nil, owningAgent: AFAgent2D? = nil, pathOwner: AFPath? = nil,
+                           selectable: Bool? = nil, theCloneablePart: AFCloneable? = nil)
+        {
+            if let node = node {
+                node.userData = NSMutableDictionary()
+                let u = node.userData!
+                
+                u[AFUserDataItem.Clickable] = clickable ?? false
+                u[AFUserDataItem.Drawable] = drawable ?? false
+                u[AFUserDataItem.NodeType] = nodeType ?? "<no type specified>"
+                u[AFUserDataItem.Selectable] = selectable ?? false
+
+                if let nodeOwner = nodeOwner { u[AFUserDataItem.NodeOwner] = nodeOwner }
+                if let owningAgent = owningAgent { u[AFUserDataItem.OwningAgent] = owningAgent }
+                if let pathOwner = pathOwner { u[AFUserDataItem.PathOwner] = pathOwner }
+                if let theCloneablePart = theCloneablePart { u[AFUserDataItem.TheCloneablePart] = theCloneablePart }
+            }
+        }
+        
+        func setUserDataItem(_ item: AFUserDataItem, to value: Any) { node?.userData?[item]? = value }
+    }
+}
+
+protocol AFCloneable {
+    var name: String { get }
+    func clone(position: CGPoint) -> AFEntity
 }
 
 protocol AFSceneDrone {

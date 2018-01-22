@@ -239,6 +239,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func changePrimarySelectionState(selectedAgent: AFAgent2D?) {
         if let selectedAgent = selectedAgent {
+            // Note: this has to happen before the sceneUI can work with
+            // agents. But it doesn't happen until the first click. I'm
+            // not crazy about this setup. Fix it when the time comes.
             placeAgentFrames(selectedAgent: selectedAgent)
         } else {
             

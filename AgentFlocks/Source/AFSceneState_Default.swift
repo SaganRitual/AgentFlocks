@@ -81,7 +81,7 @@ extension AFSceneUI {
         }
         
         func clone(_ node: SKNode, position: CGPoint) -> AFEntity? {
-            if let toBeCloned = AFSceneUI.getUserDataItem(.TheCloneablePart, from: node) as? AFCloneable {
+            if let toBeCloned = AFSceneUI.AFNodeAdapter(node).getCloneablePart() {
                 return toBeCloned.clone(position: position)
             }
             
@@ -153,7 +153,7 @@ extension AFSceneUI {
         override func select(_ node: SKNode, primary: Bool) {
             sceneUI.selectedNodes.insert(node)
             
-            let nodeOwner = AFSceneUI.getUserDataItem(.NodeOwner, from: node)
+            let nodeOwner = AFSceneUI.AFNodeAdapter(node).getNodeOwner()
             
             switch nodeOwner {
             case let entity as AFEntity: selectAgent(of: entity, primarySelection: (primary ? node : nil))
@@ -182,7 +182,3 @@ extension AFSceneUI {
     }
 }
 
-protocol AFCloneable {
-    var name: String { get }
-    func clone(position: CGPoint) -> AFEntity
-}

@@ -92,7 +92,7 @@ class AFItemEditorDelegate {
             
             goal = AFGoal(toAvoidAgents: agentNodes, time: time, weight: weight)
             
-            if let agent = AFSceneUI.getUserDataItem(.OwningAgent, from: primarySelection) as? AFAgent2D {
+            if let agent = AFSceneUI.AFNodeAdapter(primarySelection).getOwningAgent() {
                 agent.addGoal(goal!)
             }
             
@@ -102,7 +102,7 @@ class AFItemEditorDelegate {
             goal = AFGoal(toCohereWith: nodes, maxDistance: distance, maxAngle: angle, weight: weight)
 
             for node in nodes {
-                if let agent = AFSceneUI.getUserDataItem(.OwningAgent, from: node) as? AFAgent2D {
+                if let agent = AFSceneUI.AFNodeAdapter(node).getOwningAgent() {
                     agent.addGoal(goal!)
                 }
             }
@@ -143,7 +143,7 @@ class AFItemEditorDelegate {
         case .toSeparateFrom:
             goal = AFGoal(toSeparateFrom: nodes, maxDistance: distance, maxAngle: angle, weight: weight)
 
-            if let agent = AFSceneUI.getUserDataItem(.OwningAgent, from: sceneUI.primarySelection!) as? AFAgent2D {
+            if let agent = AFSceneUI.AFNodeAdapter(sceneUI.primarySelection).getOwningAgent() {
                 agent.addGoal(goal!)
             }
             

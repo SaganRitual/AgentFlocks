@@ -88,12 +88,11 @@ class AFPath: Equatable {
         fullPathHandleSprite.fillColor = .blue
         fullPathHandleSprite.name = self.name
         fullPathHandleSprite.zPosition = CGFloat(AFCore.sceneUI.getNextZPosition())
-        fullPathHandleSprite.userData = NSMutableDictionary()
-        fullPathHandleSprite.userData![AFUserDataItem.Clickable] = true
-        fullPathHandleSprite.userData![AFUserDataItem.Selectable] = false
-        fullPathHandleSprite.userData![AFUserDataItem.NodeOwner] = self
-        fullPathHandleSprite.userData![AFUserDataItem.PathOwner] = self
-        fullPathHandleSprite.userData![AFUserDataItem.NodeType] = "path handle"
+        
+        AFSceneUI.AFNodeAdapter(fullPathHandleSprite).setupUserData(
+            clickable: true, nodeOwner: self, nodeType: "Path handle",
+            pathOwner: self, selectable: false
+        )
 
         self.gkObstacle = obstacle
     }
@@ -107,12 +106,11 @@ class AFPath: Equatable {
         fullPathHandleSprite.fillColor = .blue
         fullPathHandleSprite.name = self.name
         fullPathHandleSprite.zPosition = CGFloat(AFCore.sceneUI.getNextZPosition())
-        fullPathHandleSprite.userData = NSMutableDictionary()
-        fullPathHandleSprite.userData![AFUserDataItem.Clickable] = true
-        fullPathHandleSprite.userData![AFUserDataItem.Selectable] = false
-        fullPathHandleSprite.userData![AFUserDataItem.NodeOwner] = self
-        fullPathHandleSprite.userData![AFUserDataItem.PathOwner] = self
-        fullPathHandleSprite.userData![AFUserDataItem.NodeType] = "path handle"
+        
+        AFSceneUI.AFNodeAdapter(fullPathHandleSprite).setupUserData(
+            clickable: true, nodeOwner: self, nodeType: "Path handle",
+            pathOwner: self, selectable: false
+        )
 
         copyFrom.graphNodes.forEach {
             let newNode = AFGraphNode2D(pathOwner: self, copyFrom: $0, gameScene: gameScene, drawable: false)
@@ -263,12 +261,11 @@ class AFPath: Equatable {
 
         containerNode = SKNode()
         containerNode!.name = self.name
-        containerNode!.userData = NSMutableDictionary()
-        containerNode!.userData![AFUserDataItem.Clickable] = false
-        containerNode!.userData![AFUserDataItem.Selectable] = false
-        containerNode!.userData![AFUserDataItem.NodeOwner] = self
-        containerNode!.userData![AFUserDataItem.PathOwner] = self
-        containerNode!.userData![AFUserDataItem.NodeType] = "container node"
+        
+        AFSceneUI.AFNodeAdapter(containerNode!).setupUserData(
+            clickable: false, nodeOwner: self, nodeType: "container node",
+            pathOwner: self, selectable: false
+        )
 
         var nodesArray = [float2]()
         var visualDotsArray = [CGPoint]()
@@ -296,7 +293,7 @@ class AFPath: Equatable {
             visualDotsArray.append(visualDotsArray[0])
             
             let closingNode = AFGraphNode2D(pathOwner: self, point: visualDotsArray[0], gameScene: gameScene, drawable: false)
-            closingNode.sprite.userData![AFUserDataItem.Clickable]! = false
+            AFSceneUI.AFNodeAdapter(closingNode.sprite).setIsClickable(true)
             graphNodes.append(key: closingNode.name, value: closingNode)
             
             deselectAll()
@@ -330,11 +327,12 @@ class AFPath: Equatable {
         visualPathSprite!.name = name
         visualPathSprite!.userData = NSMutableDictionary()
         visualPathSprite!.zPosition = 0
-        visualPathSprite!.userData![AFUserDataItem.Clickable] = false
-        visualPathSprite!.userData![AFUserDataItem.Selectable] = false
-        visualPathSprite!.userData![AFUserDataItem.NodeOwner] = self
-        visualPathSprite!.userData![AFUserDataItem.PathOwner] = self
-        visualPathSprite!.userData![AFUserDataItem.NodeType] = "visual path sprite"
+        
+        AFSceneUI.AFNodeAdapter(visualPathSprite!).setupUserData(
+            clickable: false, nodeOwner: self, nodeType: "Visual path sprite",
+            pathOwner: self, selectable: false
+        )
+
         containerNode!.addChild(visualPathSprite!)
         
         if !finalized { visualPathSprite!.strokeColor = .red }

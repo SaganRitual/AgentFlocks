@@ -168,11 +168,10 @@ class AFAgent2D: GKAgent2D, AFScenoid {
     }
     
     func applyUserData(to: SKNode) {
-        to.userData = NSMutableDictionary()
-        to.userData![AFUserDataItem.Clickable] = true
-        to.userData![AFUserDataItem.Selectable] = true
-        to.userData![AFUserDataItem.NodeOwner] = self
-        to.userData![AFUserDataItem.OwningAgent] = self
+        AFSceneUI.AFNodeAdapter(to).setupUserData(
+            clickable: true, nodeOwner: self, nodeType: "random part of agent entourage",
+            owningAgent: self, selectable: true
+        )
     }
 
     func deselect() {
@@ -203,11 +202,9 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         if let n = name { sprite.name = n }
         else { sprite.name = NSUUID().uuidString }
         
-        sprite.userData = NSMutableDictionary()
-        sprite.userData![AFUserDataItem.Clickable] = true
-        sprite.userData![AFUserDataItem.Selectable] = true
-        sprite.userData![AFUserDataItem.NodeOwner] = self
-        sprite.userData![AFUserDataItem.OwningAgent] = self
+        AFSceneUI.AFNodeAdapter(sprite).setupUserData(
+            clickable: true, nodeOwner: self, nodeType: "unspecified agent groupie", selectable: true
+        )
 
         container.name = sprite.name
         container.addChild(sprite)
