@@ -57,7 +57,7 @@ class AFItemEditorDelegate {
         switch type {
         case .toAlignWith:
             let primarySelection = sceneUI.primarySelection!
-            let primarySelected = data.entities[primarySelection]! as AFEntity
+            let primarySelected = data.entities[primarySelection.name!]! as AFEntity
             
             goal = AFGoal(toAlignWith: names, maxDistance: distance, maxAngle: angle, weight: weight)
 
@@ -81,7 +81,7 @@ class AFItemEditorDelegate {
             
         case .toAvoidAgents:
             let primarySelection = sceneUI.primarySelection
-            let primarySelected = data.entities[primarySelection!]! as AFEntity
+            let primarySelected = data.entities[primarySelection!.name!]! as AFEntity
             
             let agentNames = Array(group)
             
@@ -107,7 +107,7 @@ class AFItemEditorDelegate {
             guard selectedNames.count == 2 else { return }
             
             var si = selectedNames.union(Set<String>())
-            si.remove(sceneUI.primarySelection!)
+            si.remove(sceneUI.primarySelection!.name!)
             
             let nameOfAgentToFlee = si.first!
             goal = AFGoal(toFleeAgent: nameOfAgentToFlee, weight: weight)
@@ -131,7 +131,7 @@ class AFItemEditorDelegate {
             var selectedNames = sceneUI.selectedNames
             guard selectedNames.count == 2 else { return }
             
-            let p = selectedNames.remove(sceneUI.primarySelection!)
+            let p = selectedNames.remove(sceneUI.primarySelection!.name!)
             selectedNames.remove(p!)
             
             let secondaryAgentName = selectedNames.first!
@@ -223,8 +223,8 @@ class AFItemEditorDelegate {
         let selectedNames = sceneUI.selectedNames
         guard selectedNames.count > 0 else { return }
         
-        let agentName = sceneUI.primarySelection!
-        let entity = data.entities[agentName]!
+        let node = sceneUI.primarySelection!
+        let entity = data.entities[node.name!]!
         let agent = entity.agent
         
         if let behavior = state.editedItem as? AFBehavior {

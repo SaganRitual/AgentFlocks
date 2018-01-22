@@ -29,7 +29,7 @@ extension AFSceneUI {
         override func click(name: String?, flags: NSEvent.ModifierFlags?) {
             // If the user has dragged across the black for no particular reason,
             // ignore the mouse up; pretend nothing happened
-            guard !(sceneUI.upNodeName == nil && sceneUI.mouseState == .dragging) else { return }
+            guard !(sceneUI.upNode == nil && sceneUI.mouseState == .dragging) else { return }
             
             if let name = name { click_node(name: name, flags: flags) }
             else { click_black(flags: flags) }
@@ -69,16 +69,16 @@ extension AFSceneUI {
             
             if let flags = flags, flags.contains(.command) {
                 if sceneUI.mouseState == .down { // cmd+click on a node
-                    sceneUI.toggleSelection(sceneUI.upNodeName!)
+                    sceneUI.toggleSelection(sceneUI.upNode!.name!)
                 }
             } else {
                 if sceneUI.mouseState == .down {    // That is, we're coming out of down as opposed to drag
-                    let setSelection = (sceneUI.primarySelection != sceneUI.upNodeName!)
+                    let setSelection = (sceneUI.primarySelection != sceneUI.upNode!)
                     
                     deselectAll()
                     
                     if setSelection {
-                        select(sceneUI.upNodeName!, primary: true)
+                        select(sceneUI.upNode!.name!, primary: true)
                     }
                 }
             }
@@ -113,7 +113,7 @@ extension AFSceneUI {
             
             // We just now deselected the primary. If there's anyone
             // else selected, they need to be made the primary.
-            if sceneUI.primarySelection == entity.name {
+            if sceneUI.primarySelection == entity {
                 var selectNew: String?
                 
                 if sceneUI.selectedNames.count > 0 {
@@ -165,7 +165,7 @@ extension AFSceneUI {
                 AFCore.ui.agentEditorController.goalsController.dataSource = entity
                 AFCore.ui.agentEditorController.attributesController.delegate = entity.agent
                 
-                sceneUI.primarySelection = name
+                sceneUI.primarySelection = entity.agent.sprite
                 sceneUI.updatePrimarySelectionState(agentName: name)
             }
             

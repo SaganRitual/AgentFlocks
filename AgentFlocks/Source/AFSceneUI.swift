@@ -28,24 +28,24 @@ enum GoalSetupInputMode {
     case MultiSelectAgents, MultiSelectObstacles, NoSelect, SingleSelectAgent, SingleSelectPath
 }
 
-class AFSceneUI: GKStateMachine {
+class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
     var activePath: AFPath!     // The one we're doing stuff to, whether it's selected or not (like dragging handles)
     let contextMenu: AFContextMenu
     var currentPosition = CGPoint.zero
     var data: AFData!
-    var downNodeName: String?
+    var downNode: SKNode?
     var goalSetupInputMode = GoalSetupInputMode.NoSelect
     var mouseState = MouseStates.up
     var nodeToMouseOffset = CGPoint.zero
     var obstacleCloneStamp = String()
     var parentOfNewMotivator: AFBehavior?
     var pathForNextPathGoal = 0
-    var primarySelection: String?
+    var primarySelection: SKNode?
     unowned let gameScene: GameScene
     var selectedNames = Set<String>()
     var selectedPath: AFPath!   // The one that has a visible selection indicator on it, if any
     var ui: AppDelegate
-    var upNodeName: String?
+    var upNode: SKNode?
 
     enum MouseStates { case down, dragging, rightDown, rightUp, up }
 
@@ -123,9 +123,9 @@ class AFSceneUI: GKStateMachine {
     }
     
     func cloneAgent() {
-        guard let originalName = primarySelection else { return }
+        guard let copyFrom = primarySelection else { return }
 
-        let originalEntity = data.entities[originalName]!
+        let originalEntity = data.entities[copyFrom.name!]!
         _ = makeEntity(copyFrom: originalEntity, position: currentPosition)
     }
 
@@ -169,8 +169,8 @@ class AFSceneUI: GKStateMachine {
     func getParentForNewMotivator() -> AFBehavior {
         if let p = parentOfNewMotivator { return p }
         else {
-            let agentName = primarySelection!
-            let entity = data.entities[agentName]!
+            let agent = primarySelection!
+            let entity = data.entities[agent.name!]!
             return (entity.agent.behavior! as! GKCompositeBehavior)[0] as! AFBehavior
         }
     }
@@ -191,10 +191,10 @@ class AFSceneUI: GKStateMachine {
         return false
     }
 
-    func keyDown(_ key: UInt16, mouseAt: CGPoint, flags: NSEvent.ModifierFlags?) {
+    func keyDown(_ info: AFSceneInput.InputInfo) {
     }
     
-    func keyUp(_ key: UInt16, mouseAt: CGPoint, flags: NSEvent.ModifierFlags?) {
+    func keyUp(_ info: AFSceneInput.InputInfo) {
     }
     
     func makeEntity(image: NSImage, position: CGPoint) -> AFEntity {
@@ -213,29 +213,29 @@ class AFSceneUI: GKStateMachine {
         return AFPath(gameScene: gameScene, prototype: prototype)
     }
     
-    func mouseDown(on node: SKNode?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
-        downNodeName = node?.name
-        currentPosition = position
+    func mouseDown(_ info: AFSceneInput.InputInfo) {
+        downNode = info.node
+        currentPosition = info.mousePosition
 
-        if let node = node {
+        if let node = info.node {
             bringToTop(node)
             setNodeToMouseOffset(anchor: node.position)
         }
 
         mouseState = .down
-        upNodeName = nil
+        upNode = nil
     }
     
-    func mouseDrag(on node: SKNode?, at position: CGPoint) {
+    func mouseDrag(_ info: AFSceneInput.InputInfo) {
         mouseState = .dragging
         
-        if let node = node, let userData = node.userData {
+        if let node = info.node, let userData = node.userData {
             switch userData["nodeOwner"] {
-            case let agent as AFAgent2D: agent.move(to: position)
+            case let agent as AFAgent2D: agent.move(to: info.mousePosition)
                 
             case let node as AFGraphNode2D:
-                node.move(to: position)
-                drone.updateDrawIndicator(position + nodeToMouseOffset)
+                node.move(to: info.mousePosition)
+                drone.updateDrawIndicator(info.mousePosition + nodeToMouseOffset)
                 if let (path, _) = getPathThatOwnsTouchedNode(node.name) {
                     path.refresh()
                 } else {
@@ -243,24 +243,25 @@ class AFSceneUI: GKStateMachine {
                 }
 
             case let path as AFPath:
-                path.move(to: position + nodeToMouseOffset)
+                path.move(to: info.mousePosition + nodeToMouseOffset)
             default: break
             }
         }
     }
     
-    func mouseMove(at position: CGPoint) {
-        drone.mouseMove(to: position)
+    func mouseMove(_ info: AFSceneInput.InputInfo) {
+        drone.mouseMove(to: info.mousePosition)
     }
     
-    func mouseUp(on node: String?, at position: CGPoint, flags: NSEvent.ModifierFlags?) {
-        upNodeName = node
-        currentPosition = position
+    func mouseUp(_ info: AFSceneInput.InputInfo) {
+        upNode = info.node
+        currentPosition = info.mousePosition
         
-        drone.click(name: node, flags: flags)
+        let nodeName: String? = info.node?.name ?? nil
+        drone.click(name: nodeName, flags: info.flags)
         
         mouseState = .up
-        downNodeName = nil
+        downNode = nil
     }
 
     func place(at point: CGPoint) -> String {
@@ -271,13 +272,13 @@ class AFSceneUI: GKStateMachine {
         return newEntity.name
     }
 
-    func rightMouseDown(on node: String?) {
-        upNodeName = nil
+    func rightMouseDown(_ info: AFSceneInput.InputInfo) {
+        upNode = nil
         mouseState = .rightDown
     }
     
-    func rightMouseUp(on node: String?) {
-        upNodeName = node
+    func rightMouseUp(_ info: AFSceneInput.InputInfo) {
+        upNode = info.node
         mouseState = .rightUp
     }
     

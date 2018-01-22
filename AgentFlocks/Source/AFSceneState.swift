@@ -38,15 +38,6 @@ protocol AFSceneUIState {
 extension AFSceneUI {
     var drone: AFSceneUIState { return currentState! as! AFSceneUIState }
     
-    func mouseUp(name: String?, flags: NSEvent.ModifierFlags?) {
-        upNodeName = name
-        guard upNodeName == downNodeName else { return }
-        
-        downNodeName = nil
-        
-        drone.click(name: name, flags: flags)
-    }
-    
     class BaseState: GKState, AFSceneUIState {
         let sceneUI: AFSceneUI
         

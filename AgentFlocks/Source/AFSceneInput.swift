@@ -24,22 +24,110 @@
 
 import GameplayKit
 
+protocol AFSceneInputDelegate {
+    func keyDown(_ info: AFSceneInput.InputInfo)
+    func keyUp(_ info: AFSceneInput.InputInfo)
+    func mouseDown(_ info: AFSceneInput.InputInfo)
+    func mouseDrag(_ info: AFSceneInput.InputInfo)
+    func mouseMove(_ info: AFSceneInput.InputInfo)
+    func mouseUp(_ info: AFSceneInput.InputInfo)
+    func rightMouseDown(_ info: AFSceneInput.InputInfo)
+    func rightMouseUp(_ info: AFSceneInput.InputInfo)
+}
+
 class AFSceneInput: AFGameSceneDelegate {
     var currentPosition = CGPoint.zero
     let data: AFData
+    var delegate: AFSceneInputDelegate?
     var downNode: SKNode?
-    var downNodeName: String?
     let gameScene: GameScene!
-    let sceneUI: AFSceneUI
     var touchedNodes = [SKNode]()
-    var upNodeName: String?
+    var upNode: SKNode?
     
-    init(data: AFData, sceneUI: AFSceneUI, gameScene: GameScene) {
+    init(data: AFData, gameScene: GameScene) {
         self.data = data
         self.gameScene = gameScene
-        self.sceneUI = sceneUI
     }
-    
+
+    struct InputInfo {
+        let downNode: SKNode?
+        let flags: NSEvent.ModifierFlags?
+        let key: UInt16
+        let mousePosition: CGPoint
+        let node: SKNode?
+        let upNode: SKNode?
+
+        init(flags: NSEvent.ModifierFlags, key: UInt16, mousePosition: CGPoint, node: SKNode?) {
+            self.flags = flags
+            self.key = key
+            self.mousePosition = mousePosition
+            self.node = node
+
+            self.downNode = nil
+            self.upNode = nil
+        }
+
+        init(downNode: SKNode?, flags: NSEvent.ModifierFlags?, mousePosition: CGPoint, node: SKNode?, upNode: SKNode?) {
+            self.downNode = downNode
+            self.mousePosition = mousePosition
+            self.node = node
+            self.upNode = upNode
+            self.flags = flags
+
+            self.key = 0
+        }
+
+        init(downNode: SKNode?, mousePosition: CGPoint, node: SKNode?) {
+            self.downNode = downNode
+            self.mousePosition = mousePosition
+            self.node = node
+
+            self.key = 0
+            self.flags = nil
+            self.upNode = nil
+        }
+
+        init(flags: NSEvent.ModifierFlags, key: UInt16, mousePosition: CGPoint) {
+            self.flags = flags
+            self.key = key
+            self.mousePosition = mousePosition
+
+            self.downNode = nil
+            self.node = nil
+            self.upNode = nil
+        }
+        
+        init(downNode: SKNode?, flags: NSEvent.ModifierFlags, mousePosition: CGPoint) {
+            self.downNode = downNode
+            self.flags = flags
+            self.mousePosition = mousePosition
+            
+            self.node = nil
+            self.upNode = nil
+            self.key = 0
+        }
+        
+        init(downNode: SKNode?, mousePosition: CGPoint) {
+            self.downNode = downNode
+            self.mousePosition = mousePosition
+            
+            self.flags = nil
+            self.node = nil
+            self.upNode = nil
+            self.key = 0
+        }
+        
+        init(mousePosition: CGPoint) {
+            self.mousePosition = mousePosition
+            
+            self.downNode = nil
+            self.flags = nil
+            self.node = nil
+            self.upNode = nil
+            self.key = 0
+        }
+    }
+
     func getTouchedNode() -> SKNode? {
         let touchedNodes = gameScene.nodes(at: currentPosition).filter({
             var clickable = true
@@ -53,64 +141,78 @@ class AFSceneInput: AFGameSceneDelegate {
         
         return touchedNodes.first
     }
-    
-    func getTouchedNodeName() -> String? {
-        if let node = getTouchedNode() { return node.name }
-        else { return nil }
-    }
 
     func keyDown(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
-        downNodeName = nil
-        upNodeName = nil
-        sceneUI.keyDown(event.keyCode, mouseAt: currentPosition, flags: event.modifierFlags)
+        downNode = nil
+        upNode = nil
+        
+        let info = InputInfo(flags: event.modifierFlags, key: event.keyCode, mousePosition: currentPosition)
+        delegate?.keyDown(info)
     }
 
     func keyUp(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
-        downNodeName = nil
-        upNodeName = nil
-        sceneUI.keyUp(event.keyCode, mouseAt: currentPosition, flags: event.modifierFlags)
+        downNode = nil
+        upNode = nil
+        
+        let info = InputInfo(flags: event.modifierFlags, key: event.keyCode, mousePosition: currentPosition)
+        delegate?.keyUp(info)
     }
 
     func mouseDown(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
-        downNodeName = getTouchedNodeName()
         downNode = getTouchedNode()
-        sceneUI.mouseDown(on: downNode, at: currentPosition, flags: event.modifierFlags)
-        upNodeName = nil
+        
+        let info = InputInfo(downNode: downNode, flags: event.modifierFlags, mousePosition: currentPosition)
+        delegate?.mouseDown(info)
+
+        upNode = nil
     }
     
     func mouseDragged(with event: NSEvent) {
         guard let downNode = self.downNode else { return }
         currentPosition = event.location(in: gameScene)
-        sceneUI.mouseDrag(on: downNode, at: currentPosition)
+        
+        let info = InputInfo(downNode: downNode, mousePosition: currentPosition, node: downNode)
+        delegate?.mouseDrag(info)
     }
     
     func mouseMoved(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
-        sceneUI.mouseMove(at: currentPosition)
+        
+        let info = InputInfo(mousePosition: currentPosition)
+        delegate?.mouseMove(info)
     }
     
     func mouseUp(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
-        upNodeName = getTouchedNodeName()
-        sceneUI.mouseUp(on: upNodeName, at: currentPosition, flags: event.modifierFlags)
-        downNodeName = nil
+        upNode = getTouchedNode()
+        
+        let info = InputInfo(downNode: downNode, flags: event.modifierFlags, mousePosition: currentPosition, node: upNode, upNode: upNode)
+        delegate?.mouseUp(info)
+        
+        downNode = nil
     }
     
     func rightMouseDown(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
-        downNodeName = getTouchedNodeName()
-        sceneUI.rightMouseDown(on: downNodeName)
-        upNodeName = nil
+        downNode = getTouchedNode()
+
+        let info = InputInfo(downNode: downNode, flags: nil, mousePosition: currentPosition, node: upNode, upNode: upNode)
+        delegate?.rightMouseDown(info)
+        upNode = nil
+        
     }
     
     func rightMouseUp(with event: NSEvent) {
         currentPosition = event.location(in: gameScene)
-        upNodeName = getTouchedNodeName()
-        sceneUI.rightMouseUp(on: upNodeName)
-        downNodeName = nil
+        upNode = getTouchedNode()
+
+        let info = InputInfo(downNode: downNode, flags: nil, mousePosition: currentPosition, node: upNode, upNode: upNode)
+        delegate?.rightMouseUp(info)
+        
+        downNode = nil
     }
     
     func update(deltaTime dt: TimeInterval) {

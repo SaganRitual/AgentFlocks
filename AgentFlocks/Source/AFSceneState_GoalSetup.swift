@@ -64,16 +64,16 @@ extension AFSceneUI {
             
             if effectiveFlagState?.contains(.command) ?? false {
                 if sceneUI.mouseState == .down { // cmd+click on a node
-                    sceneUI.toggleSelection(sceneUI.upNodeName!)
+                    sceneUI.toggleSelection(sceneUI.upNode!.name!)
                 }
             } else {
                 if sceneUI.mouseState == .down {    // That is, we're coming out of down as opposed to drag
-                    let setSelection = (sceneUI.primarySelection != sceneUI.upNodeName!)
+                    let setSelection = (sceneUI.primarySelection != sceneUI.upNode!)
                     
                     deselectAll()
                     
                     if setSelection {
-                        select(sceneUI.upNodeName!, primary: true)
+                        select(sceneUI.upNode!.name!, primary: true)
                     }
                 }
             }

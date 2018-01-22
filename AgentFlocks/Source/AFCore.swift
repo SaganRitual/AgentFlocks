@@ -45,7 +45,10 @@ class AFCore {
         contextMenuDelegate = AFContextMenuDelegate(data: data, sceneUI: sceneUI)
         itemEditorDelegate = AFItemEditorDelegate(data: data, sceneUI: sceneUI)
         menuBarDelegate = AFMenuBarDelegate(data: data, sceneUI: sceneUI)
-        sceneInput = AFSceneInput(data: data, sceneUI: sceneUI, gameScene: gameScene)
+
+        sceneInput = AFSceneInput(data: data, gameScene: gameScene)
+        sceneInput.delegate = sceneUI
+
         topBarDelegate = AFTopBarDelegate(data: data, sceneUI: sceneUI)
         
         // Here, "ui" just means the AppDelegate
