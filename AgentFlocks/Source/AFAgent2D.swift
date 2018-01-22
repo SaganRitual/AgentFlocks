@@ -343,8 +343,7 @@ extension AFAgent2D: AgentAttributesDelegate {
     }
     
     func getPrimarySelectedAgent() -> AFAgent2D {
-        let node = AFCore.sceneUI.primarySelection!
-        return AFCore.data.entities[node.name!]!.agent
+        return AFSceneUI.AFNodeAdapter(AFCore.sceneUI.primarySelection!).getOwningAgent()!
     }
 }
 

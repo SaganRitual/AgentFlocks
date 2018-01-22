@@ -57,20 +57,20 @@ class AFItemEditorDelegate {
         switch type {
         case .toAlignWith:
             let primarySelection = sceneUI.primarySelection!
-            let primarySelected = data.entities[primarySelection.name!]! as AFEntity
+            let primarySelected = AFSceneUI.AFNodeAdapter(primarySelection).getOwningEntity()
             
             goal = AFGoal(toAlignWith: nodes, maxDistance: distance, maxAngle: angle, weight: weight)
 
             for agentNode in group {
-                let afAgent = data.entities[agentNode.name!]!.agent
-                
-                // Hijacking the fwd checkbox; it's otherwise unused for this kind of goal
-                let includePrimary = state.forward
-                
-                // User can select whether to give this alignment goal to the
-                // primary selected, in addition to all the others in the selection.
-                if includePrimary || agentNode.name! != primarySelected.name {
-                    afAgent.addGoal(goal!)
+                if let afAgent = AFSceneUI.AFNodeAdapter(agentNode).getOwningAgent() {
+                    // Hijacking the fwd checkbox; it's otherwise unused for this kind of goal
+                    let includePrimary = state.forward
+                    
+                    // User can select whether to give this alignment goal to the
+                    // primary selected, in addition to all the others in the selection.
+                    if includePrimary || agentNode != primarySelected {
+                        afAgent.addGoal(goal!)
+                    }
                 }
             }
             
@@ -83,12 +83,7 @@ class AFItemEditorDelegate {
             let primarySelection = sceneUI.primarySelection!
             
             // Make sure we're not trying to avoid ourselves too
-            let agentNodes = Array(group).filter {
-                if let nodeName = $0.name, let primarySelectionName = primarySelection.name {
-                    return nodeName != primarySelectionName
-                }
-                return true
-            }
+            let agentNodes = Array(group).filter { $0 != primarySelection }
             
             goal = AFGoal(toAvoidAgents: agentNodes, time: time, weight: weight)
             
@@ -228,7 +223,7 @@ class AFItemEditorDelegate {
         guard selectedNodes.count > 0 else { return }
         
         let node = sceneUI.primarySelection!
-        let entity = data.entities[node.name!]!
+        let entity = AFSceneUI.AFNodeAdapter(node).getOwningEntity()!
         let agent = entity.agent
         
         if let behavior = state.editedItem as? AFBehavior {

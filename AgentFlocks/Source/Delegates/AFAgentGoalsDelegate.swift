@@ -34,7 +34,8 @@ class AFAgentGoalsDelegate {
     }
     
     func deleteItem(_ protoItem: Any) {
-        let agent = data.getAgent(sceneUI.primarySelection!.name!)
+        guard let agent = AFSceneUI.AFNodeAdapter(sceneUI.primarySelection).getOwningAgent() else { return }
+
         let composite = agent.behavior as! AFCompositeBehavior
         
         if let hotBehavior = protoItem as? AFBehavior {
@@ -48,7 +49,8 @@ class AFAgentGoalsDelegate {
     }
     
     func getEditableAttributes(for motivator: Any) -> AFOrderedMap<String, Double> {
-        let agent = data.entities[sceneUI.primarySelection!.name!]!.agent
+        guard let agent = AFSceneUI.AFNodeAdapter(sceneUI.primarySelection).getOwningAgent() else { fatalError() }
+
         let gkGoal = (motivator as? GKGoal) ?? nil
         let composite = agent.behavior as! AFCompositeBehavior
         let behavior = (gkGoal == nil) ? (motivator as! AFBehavior) : composite.findParent(ofGoal: gkGoal!)
@@ -96,7 +98,7 @@ class AFAgentGoalsDelegate {
         if let motivator = item as? AFBehavior {
             sceneUI.parentOfNewMotivator = motivator
         } else if let motivator = item as? GKGoal {
-            let agent = data.getAgent(sceneUI.primarySelection!.name!)
+            guard let agent = AFSceneUI.AFNodeAdapter(sceneUI.primarySelection).getOwningAgent() else { return }
             let composite = agent.behavior as! AFCompositeBehavior
             
             sceneUI.parentOfNewMotivator = composite.findParent(ofGoal: motivator)
@@ -105,7 +107,8 @@ class AFAgentGoalsDelegate {
     
     func enableItem(_ item: Any, parent: Any?, on: Bool) -> [Any]? {
         if let behavior = item as? AFBehavior {
-            let agent = data.getAgent(sceneUI.primarySelection!.name!)
+            guard let agent = AFSceneUI.AFNodeAdapter(sceneUI.primarySelection).getOwningAgent() else { return nil }
+
             let composite = agent.behavior as! AFCompositeBehavior
             
             composite.enableBehavior(behavior, on: on)
@@ -128,8 +131,7 @@ class AFAgentGoalsDelegate {
     }
     
     func play(_ yesno: Bool) {
-        let agent = data.getAgent(sceneUI.primarySelection!.name!)
-
+        guard let agent = AFSceneUI.AFNodeAdapter(sceneUI.primarySelection).getOwningAgent() else { return }
         agent.isPlaying = yesno
     }
 }

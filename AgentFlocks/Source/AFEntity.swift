@@ -34,12 +34,15 @@ class AFEntity: GKEntity, AFCloneable {
         
         super.init()
         
+        AFSceneUI.AFNodeAdapter(agent.sprite).setOwningEntity(self)
         addComponent(agent)
     }
     
     init(scene: GameScene, copyFrom: AFEntity, position: CGPoint) {
         agent = AFAgent2D(scene: scene, copyFrom: copyFrom.agent, position: position)
         super.init()
+        
+        AFSceneUI.AFNodeAdapter(agent.sprite).setOwningEntity(self)
         addComponent(agent)
     }
     
@@ -48,6 +51,7 @@ class AFEntity: GKEntity, AFCloneable {
         
         super.init()
         
+        AFSceneUI.AFNodeAdapter(agent.sprite).setOwningEntity(self)
         addComponent(agent)
     }
     

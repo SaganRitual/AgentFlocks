@@ -316,7 +316,7 @@ class AFSceneUI: GKStateMachine, AFSceneInputDelegate {
 extension AFSceneUI {
     struct AFNodeAdapter {
         enum AFUserDataItem { case Clickable, Drawable, NodeOwner, NodeType,
-            OwningAgent, PathOwner, Selectable, TheCloneablePart }
+            OwningAgent, OwningEntity, PathOwner, Selectable, TheCloneablePart }
 
         var node: SKNode?
         
@@ -326,10 +326,12 @@ extension AFSceneUI {
         func getIsClickable() -> Bool { return getUserDataItem(.Clickable) as? Bool ?? false }
         func getNodeOwner() -> Any? { return getUserDataItem(.NodeOwner) }
         func getOwningAgent() -> AFAgent2D? { return getUserDataItem(.OwningAgent) as? AFAgent2D }
+        func getOwningEntity() -> AFEntity? { return getUserDataItem(.OwningEntity) as? AFEntity }
         func getPathOwner() -> AFPath? { return getUserDataItem(.PathOwner) as? AFPath }
         func getTypeString() -> String? { return getUserDataItem(.NodeType) as? String }
         func getUserDataItem(_ item: AFUserDataItem) -> Any? { return node?.userData?[item] }
         func setIsClickable(_ newValue: Bool) { setUserDataItem(.Clickable, to: newValue) }
+        func setOwningEntity(_ entity: AFEntity) { setUserDataItem(.OwningEntity, to: entity) }
 
         func setupUserData(clickable: Bool? = nil, drawable: Bool? = nil, nodeOwner: Any? = nil,
                            nodeType: String? = nil, owningAgent: AFAgent2D? = nil, pathOwner: AFPath? = nil,
