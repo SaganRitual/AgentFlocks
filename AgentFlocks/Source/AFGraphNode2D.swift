@@ -24,166 +24,139 @@
 
 import GameplayKit
 
-extension CGPoint {
-    init(_ vf: vector_float2) {
-        self = CGPoint(x: CGFloat(vf.x), y: CGFloat(vf.y))
-    }
-}
+//class AFGraphNode2D_Script: Codable, Equatable {
+//    let drawable: Bool
+//    let name: String
+//    let position: CGPoint
+//
+//    init(afGraphNode: AFGraphNode2D) {
+//        drawable = afGraphNode.drawable
+//        name = afGraphNode.name
+//        position = CGPoint(afGraphNode.position)
+//    }
+//
+//    static func ==(lhs: AFGraphNode2D_Script, rhs: AFGraphNode2D_Script) -> Bool {
+//        return lhs.name == rhs.name
+//    }
+//}
 
-class AFGraphNode2D_Script: Codable, Equatable {
-    let drawable: Bool
-    let name: String
-    let position: CGPoint
-
-    init(afGraphNode: AFGraphNode2D) {
-        drawable = afGraphNode.drawable
-        name = afGraphNode.name
-        position = CGPoint(afGraphNode.position)
-    }
-
-    static func ==(lhs: AFGraphNode2D_Script, rhs: AFGraphNode2D_Script) -> Bool {
-        return lhs.name == rhs.name
-    }
-}
-
-class AFGraphNode2D: GKGraphNode2D, AFScenoid {
-    let drawable: Bool
-    let gameScene: GameScene
-    unowned let pathOwner: AFPath
-    let radius: CGFloat = 5
-    var selected = false
-    let selectionIndicator: SKNode
-    let selectionIndicatorRadius: CGFloat = 10
-    let sprite: SKShapeNode
+class AFGraphNode2D: GKGraphNode2D {
+    private unowned let appData: AFDataModel
+    private let familyName: String
+    private let name: String
+    private let radius: CGFloat = 5
+    private let scene: SKScene
+    private var isSelected = false
+    private var spriteSet: SpriteSet
     
-    var name: String { return sprite.name! }
     override var position: vector_float2 {
-        set { super.position = newValue; sprite.position = CGPoint(newValue) }
-        get { return vector_float2(Float(sprite.position.x), Float(sprite.position.y)) }
+        set { super.position = newValue; spriteSet.position = CGPoint(newValue) }
+        get { return vector_float2(Float(spriteSet.position.x), Float(spriteSet.position.y)) }
     }
-    
-    init(pathOwner: AFPath, copyFrom: AFGraphNode2D, gameScene: GameScene, drawable: Bool = true) {
-        let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: radius, position: CGPoint(copyFrom.position), selectionIndicatorRadius: selectionIndicatorRadius)
-        sprite = ss
-        selectionIndicator = se
 
-        self.gameScene = gameScene
-        self.pathOwner = copyFrom.pathOwner
+    init(appData: AFDataModel, embryo: AFGraphNodeData, position: CGPoint, scene: SKScene) {
+        let name = NSUUID().uuidString
+        self.appData = appData
+        self.familyName = embryo.familyName
+        self.name = name
+        self.scene = scene
+        self.spriteSet = SpriteSet(name: name, scene: scene, position: position)
         
-        if drawable { gameScene.addChild(sprite) }
-        self.drawable = drawable
-
-        super.init(point: copyFrom.position)
-        applyMarkerUserData(to: sprite)
-        applySelectionIndicatorUserData(to: selectionIndicator)
+        super.init(point: position.as_vector_float2())
     }
 
-    init(pathOwner: AFPath, float2Point: vector_float2, gameScene: GameScene, drawable: Bool = true) {
-        let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: radius, position: CGPoint(float2Point), selectionIndicatorRadius: selectionIndicatorRadius)
-        sprite = ss
-        selectionIndicator = se
-
-        self.gameScene = gameScene
-        self.pathOwner = pathOwner
-
-        if drawable { gameScene.addChild(sprite) }
-        self.drawable = drawable
-
-        super.init(point: float2Point)
-        applyMarkerUserData(to: sprite)
-        applySelectionIndicatorUserData(to: selectionIndicator)
-    }
-    
-    init(pathOwner: AFPath, point: CGPoint, gameScene: GameScene, drawable: Bool = true) {
-        let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: radius, position: point, selectionIndicatorRadius: selectionIndicatorRadius)
-        sprite = ss
-        selectionIndicator = se
-
-        self.gameScene = gameScene
-        self.pathOwner = pathOwner
-
-        if drawable { gameScene.addChild(sprite) }
-        self.drawable = drawable
-        
-        super.init(point: vector_float2(Float(point.x), Float(point.y)))
-        applyMarkerUserData(to: sprite)
-        applySelectionIndicatorUserData(to: selectionIndicator)
-    }
-    
-    init(pathOwner: AFPath, prototype: AFGraphNode2D_Script, gameScene: GameScene) {
-        let (ss, se) = AFGraphNode2D.makeMarkerSprite(radius: CGFloat(radius), position: prototype.position, selectionIndicatorRadius: selectionIndicatorRadius)
-        sprite = ss
-        selectionIndicator = se
-        
-        self.gameScene = gameScene
-
-        if prototype.drawable { gameScene.addChild(sprite) }
-        self.drawable = prototype.drawable
-        self.pathOwner = pathOwner
-
-        super.init(point: vector_float2(Float(prototype.position.x), Float(prototype.position.y)))
-        applyMarkerUserData(to: sprite)
-        applySelectionIndicatorUserData(to: selectionIndicator)
-    }
-    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    deinit {
-        showNode(false)
+    func hasBeenDeleted(_ name: String) {
+        
     }
     
-    func applySelectionIndicatorUserData(to: SKNode) {
-        AFSceneUI.AFNodeAdapter(to).setupUserData(
-            clickable: false, nodeOwner: self, nodeType: "Marker selection indicator",
-            pathOwner: self.pathOwner, selectable: false
-        )
+    func hasBeenDeselected(_ name: String) {
+        if name == self.name { self.isSelected = true }
+        spriteSet.hasBeenDeselected()
     }
     
-    func applyMarkerUserData(to: SKNode) {
-        AFSceneUI.AFNodeAdapter(to).setupUserData(
-            clickable: true, nodeOwner: self, nodeType: "Graph node",
-            pathOwner: self.pathOwner, selectable: true
-        )
-    }
-
-    func deselect() {
-        selected = false
-        selectionIndicator.removeFromParent()
-    }
-
-    static func makeMarkerSprite(radius: CGFloat, position: CGPoint, selectionIndicatorRadius: CGFloat) -> (SKShapeNode, SKNode) {
-        let sprite = SKShapeNode(circleOfRadius: radius)
-        sprite.fillColor = .yellow
-        sprite.name = NSUUID().uuidString
-        sprite.position = position
-        sprite.zPosition = CGFloat(AFCore.sceneUI.getNextZPosition())
-        
-        let selectionIndicator = AFAgent2D.makeRing(radius: Float(selectionIndicatorRadius), isForSelector: true, primary: true)
-        
-        return (sprite, selectionIndicator)
+    func hasBeenSelected(_ name: String, primary: Bool) {
+        if name == self.name { self.isSelected = true }
+        spriteSet.hasBeenSelected(primary: primary)
     }
     
     func move(to position: CGPoint) {
-        sprite.position = position
-    }
-    
-    func select(primary: Bool) {
-        selected = true
-        sprite.addChild(selectionIndicator)
-    }
-    
-    func showNode(_ show: Bool = true) {
-        guard drawable else { return }
-
-        if show {
-            gameScene.addChild(sprite)
-            sprite.fillColor = (self.selected ? .yellow : .white)
-        } else {
-            sprite.removeFromParent()
-            selectionIndicator.removeFromParent()
-        }
+        self.position = position.as_vector_float2()
     }
 }
 
+extension AFGraphNode2D {
+
+    // MARK - Sprite central for the agent
+    
+    class SpriteContainerNode: SKNode {
+        var graphNodeConnector: NSMutableDictionary { return super.userData! }
+        
+        init(name: String) {
+            super.init()
+            super.name = name
+            super.userData = NSMutableDictionary()
+        }
+        
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+    }
+    
+    class SpriteSet: AFSceneControllerDelegate {
+        var isSelected = false
+        let primaryContainer: AFGraphNode2D.SpriteContainerNode
+        unowned let scene: SKScene
+        var selectionIndicator: SKNode
+        let selectionIndicatorRadius: CGFloat = 30
+        let theSprite: SKShapeNode
+        
+        var position: CGPoint {
+            get { return primaryContainer.position }
+            set { primaryContainer.position = newValue }
+        }
+        
+        init(name: String, scene: SKScene, position: CGPoint) {
+            (theSprite, selectionIndicator) = SpriteSet.makeMarkerSprite(radius: 30, position: position, selectionIndicatorRadius: 40)
+            
+            primaryContainer = AFGraphNode2D.SpriteContainerNode(name: name)
+            primaryContainer.position = position
+            
+            self.scene = scene
+            
+            scene.addChild(primaryContainer)
+            primaryContainer.addChild(theSprite)
+        }
+        
+        deinit {
+            primaryContainer.removeFromParent()
+        }
+        
+        func hasBeenDeselected() {
+            isSelected = false
+            selectionIndicator.removeFromParent()
+        }
+        
+        func hasBeenSelected(primary: Bool) {        // 40 is just a number that makes the rings look about right to me
+            isSelected = true
+            
+            selectionIndicator = AFAgent2D.makeRing(radius: 40, isForSelector: true, primary: primary)
+            primaryContainer.addChild(selectionIndicator)
+        }
+        
+        static func makeMarkerSprite(radius: CGFloat, position: CGPoint, selectionIndicatorRadius: CGFloat) -> (SKShapeNode, SKNode) {
+            let sprite = SKShapeNode(circleOfRadius: selectionIndicatorRadius)
+            sprite.fillColor = .yellow
+            sprite.name = NSUUID().uuidString
+            sprite.position = position
+            sprite.zPosition = CGFloat(AFCore.sceneUI.getNextZPosition())
+            
+            let selectionIndicator = AFAgent2D.makeRing(radius: Float(selectionIndicatorRadius), isForSelector: true, primary: true)
+            
+            return (sprite, selectionIndicator)
+        }
+    }
+}

@@ -25,141 +25,76 @@
 import GameplayKit
 
 class AFItemEditorDelegate {
-    unowned let data: AFData
-    unowned let sceneUI: AFSceneUI
+    unowned let appData: AFDataModel
+    unowned let sceneUI: AFSceneController
     
-    init(data: AFData, sceneUI: AFSceneUI) {
-        self.data = data
+    init(appData: AFDataModel, sceneUI: AFSceneController) {
+        self.appData = appData
         self.sceneUI = sceneUI
     }
     
-    private func addMotivator(entity: AFEntity, state: ItemEditorSlidersState) {
-        if state.newItemType == nil {
-            let newBehavior = AFBehavior(agent: entity.agent)
-            newBehavior.weight = Float(state.weight.value)
-            
-            let hotComposite = entity.agent.behavior as! AFCompositeBehavior
-            hotComposite.setWeight(newBehavior.weight, for: newBehavior)
-            return
-        }
+    private func addMotivator(to agent: String, state: ItemEditorSlidersState) {
+        let weight = Float(state.weight.value)
+
+        if state.newItemType == nil { appData.newBehavior(for: agent, weight: weight); return }
 
         let type = state.newItemType!
         var goal: AFGoal?
-        let group = sceneUI.selectedNodes
-        let nodes = Array(group)
+        let selectedNames = Array(sceneUI.selectedNodes).map { $0.name! }
+        var primaryNode = sceneUI.primarySelection!
         
         let angle = Float(state.angle?.value ?? 0)
         let distance = Float(state.distance?.value ?? 0)
         let speed = Float(state.speed?.value ?? 0)
         let time = TimeInterval(state.time?.value ?? 0)
-        let weight = Float(state.weight.value)
 
         switch type {
-        case .toAlignWith:
-            let primarySelection = sceneUI.primarySelection!
-            let primarySelected = AFSceneUI.AFNodeAdapter(primarySelection).getOwningEntity()
+        case .toAlignWith:    fallthrough
+        case .toCohereWith:   fallthrough
+        case .toSeparateFrom:
+            appData.newGoal(type, for: [agent], parentBehavior: nil, weight: weight, targets: selectedNames,
+                            angle: angle, distance: distance, speed: speed, time: time, forward: true)
             
-            goal = AFGoal(toAlignWith: nodes, maxDistance: distance, maxAngle: angle, weight: weight)
-
-            for agentNode in group {
-                if let afAgent = AFSceneUI.AFNodeAdapter(agentNode).getOwningAgent() {
-                    // Hijacking the fwd checkbox; it's otherwise unused for this kind of goal
-                    let includePrimary = state.forward
-                    
-                    // User can select whether to give this alignment goal to the
-                    // primary selected, in addition to all the others in the selection.
-                    if includePrimary || agentNode != primarySelected {
-                        afAgent.addGoal(goal!)
-                    }
-                }
-            }
-            
-            goal = nil
-            
-        case .toAvoidObstacles:
-            goal = AFGoal(toAvoidObstacles: Array(data.obstacles.keys), time: time, weight: weight)
+        case .toAvoidObstacles:break
+//            appData.newGoal(type, for: nodes, targets: Array(appData.obstacles.keys), parentBehavior: nil, weight: weight)
+//            goal = AFGoal(toAvoidObstacles: Array(data.obstacles.keys), time: time, weight: weight)
             
         case .toAvoidAgents:
-            let primarySelection = sceneUI.primarySelection!
-            
             // Make sure we're not trying to avoid ourselves too
-            let agentNodes = Array(group).filter { $0 != primarySelection }
+            let sansSelf = selectedNames.filter { $0 != sceneUI.primarySelection!.name }
             
-            goal = AFGoal(toAvoidAgents: agentNodes, time: time, weight: weight)
-            
-            if let agent = AFSceneUI.AFNodeAdapter(primarySelection).getOwningAgent() {
-                agent.addGoal(goal!)
-            }
-            
-            goal = nil
-            
-        case .toCohereWith:
-            goal = AFGoal(toCohereWith: nodes, maxDistance: distance, maxAngle: angle, weight: weight)
+            appData.newGoal(type, for: sceneUI.primarySelection!.name!, parentBehavior: nil, weight: weight,
+                            targets: sansSelf, angle: angle, distance: distance, speed: speed,
+                            time: time, forward: nil)
 
-            for node in nodes {
-                if let agent = AFSceneUI.AFNodeAdapter(node).getOwningAgent() {
-                    agent.addGoal(goal!)
-                }
-            }
-            
-            goal = nil
-            
-        case .toFleeAgent:
-            let selectedNodes = sceneUI.selectedNodes
-            guard selectedNodes.count == 2 else { return }
-            
-            var si = selectedNodes.union(Set<SKNode>())
-            si.remove(sceneUI.primarySelection!)
-            
-            let agentToFlee = si.first!
-            goal = AFGoal(toFleeAgent: agentToFlee, weight: weight)
-            
-        case .toFollow:
-            let pathIndex = AFCore.sceneUI.pathForNextPathGoal
-            let pathname = data.paths[pathIndex].name
-            goal = AFGoal(toFollow: pathname, time: Float(time), forward: state.forward, weight: weight)
-            
-            goal!.pathname = pathname
-            
-        case .toInterceptAgent:
-            let selectedNodes = sceneUI.selectedNodes
-            guard selectedNodes.count == 2 else { return }
-            
-            let targetAgentNode = nodes.filter { $0 != sceneUI.primarySelection }.first!
-            goal = AFGoal(toInterceptAgent: targetAgentNode, time: time, weight: weight)
-            
+        case .toFleeAgent:      fallthrough
+        case .toInterceptAgent: fallthrough
         case .toSeekAgent:
-            let selectedNodes = sceneUI.selectedNodes
-            guard selectedNodes.count == 2 else { return }
+            // Ugly, come back to it. The UI is telling us a specific node he wants to
+            // exclude from the selection. I think I was trying to prevent the subject
+            // of the goal from being added to his own goal. But now I'm tired and it's
+            // harder to think about it.
+            let sansTarget = selectedNames.filter { $0 != primaryNode.name! }
+//            appData.newGoal(type, for: sansTarget, weight, weight, targets: [selectedNames.first!],
+//                            angle: angle, distance: distance, speed: speed,time: time, forward: true)
             
-            let targetAgentNode = nodes.filter { $0 != sceneUI.primarySelection }.first!
-            goal = AFGoal(toSeekAgent: targetAgentNode, weight: weight)
+        case .toFollow:  fallthrough
+        case .toStayOn:/*
+            appData.newGoal(type, for: primaryNode.name!, targets: [pathName], parentBehavior: nil,
+                            time: Float(time), angle: angle, distance: distance, speed: speed,
+                            time: time, weight: weight, forward: state.forward)
             
-        case .toSeparateFrom:
-            goal = AFGoal(toSeparateFrom: nodes, maxDistance: distance, maxAngle: angle, weight: weight)
-
-            if let agent = AFSceneUI.AFNodeAdapter(sceneUI.primarySelection).getOwningAgent() {
-                agent.addGoal(goal!)
-            }
-            
-            goal = nil
-            
-        case .toStayOn:
             let pathIndex = AFCore.sceneUI.pathForNextPathGoal
-            let pathname = data.paths[pathIndex].name
+            let pathname = appData.paths[pathIndex].name
             goal = AFGoal(toStayOn: pathname, time: Float(time), weight: weight)
             
-            goal!.pathname = pathname
+            goal!.pathname = pathname*/
+            break
             
-        case .toReachTargetSpeed:
-            goal = AFGoal(toReachTargetSpeed: speed, weight: weight)
-            
+        case .toReachTargetSpeed:  fallthrough
         case .toWander:
-            goal = AFGoal(toWander: speed, weight: weight)
-        }
-        
-        if goal != nil {
-            sceneUI.getParentForNewMotivator().addGoal(goal!)
+            appData.newGoal(type, for: primaryNode.name!, time: time, weight: weight,
+                            angle: angle, distance: distance, speed: speed, forward: true)
         }
     }
     
@@ -191,12 +126,12 @@ class AFItemEditorDelegate {
     }
     
     private func refreshBehavior(agent: AFAgent2D, behavior: AFBehavior, weight: Double) {
-        behavior.weight = Float(weight)
-        (agent.behavior! as! AFCompositeBehavior).setWeight(behavior.weight, for: behavior)
+//        behavior.weight = Float(weight)
+//        (agent.behavior! as! AFCompositeBehavior).setWeight(behavior.weight, for: behavior)
     }
     
     private func refreshGoal(gkGoal: GKGoal, state: ItemEditorSlidersState) {
-        let afGoal = sceneUI.parentOfNewMotivator!.goalsMap[gkGoal]!
+//        let afGoal = sceneUI.parentOfNewMotivator!.goalsMap[gkGoal]!
         
         // Edit existing goal -- note AFBehavior doesn't give us a way
         // to update the goal. If we want to assign any new values to
@@ -211,11 +146,11 @@ class AFItemEditorDelegate {
         // However, the weight of the goal is managed by the behavior.
         // So if all we're updating is the weight, we can just change that
         // directly in the behavior, without creating a new goal.
-        if replacementGoalRequired {
-            retransmitGoal(afGoal: afGoal, state: state)
-        } else {
-            sceneUI.parentOfNewMotivator!.setWeightage(Float(state.weight.value), for: afGoal)
-        }
+//        if replacementGoalRequired {
+//            retransmitGoal(afGoal: afGoal, state: state)
+//        } else {
+//            sceneUI.parentOfNewMotivator!.setWeight(Float(state.weight.value), for: afGoal)
+//        }
     }
     
     func refreshMotivators(state: ItemEditorSlidersState) {
@@ -223,33 +158,32 @@ class AFItemEditorDelegate {
         guard selectedNodes.count > 0 else { return }
         
         let node = sceneUI.primarySelection!
-        let entity = AFSceneUI.AFNodeAdapter(node).getOwningEntity()!
-        let agent = entity.agent
+        let agent = AFNodeAdapter(node).getOwningAgent()
         
         if let behavior = state.editedItem as? AFBehavior {
             refreshBehavior(agent: agent, behavior: behavior, weight: state.weight.value)
         } else if let gkGoal = state.editedItem as? GKGoal {
             refreshGoal(gkGoal: gkGoal, state: state)
         } else {
-            addMotivator(entity: entity, state: state)
+//            addMotivator(entity: entity, state: state)
         }
     }
     
     func retransmitGoal(afGoal: AFGoal, state: ItemEditorSlidersState) {
-        let newGoal = AFGoal.makeGoal(copyFrom: afGoal, weight: afGoal.weight)
+//        let newGoal = AFGoal.makeGoal(copyFrom: afGoal, weight: afGoal.weight)
         
         // Everyone has a weight
         let weight = Float(state.weight.value)
         
-        if let angleState = state.angle { newGoal.angle = Float(angleState.value) }
-        if let distanceState = state.distance { newGoal.distance = Float(distanceState.value) }
-        if let speedState = state.speed { newGoal.speed = Float(speedState.value) }
-        if let timeState = state.time { newGoal.time = Float(timeState.value) }
-        
-        newGoal.weight = weight
-        
-        sceneUI.parentOfNewMotivator!.remove(afGoal)
-        sceneUI.parentOfNewMotivator!.setWeightage(weight, for: newGoal)
+//        if let angleState = state.angle { newGoal.angle = Float(angleState.value) }
+//        if let distanceState = state.distance { newGoal.distance = Float(distanceState.value) }
+//        if let speedState = state.speed { newGoal.speed = Float(speedState.value) }
+//        if let timeState = state.time { newGoal.time = Float(timeState.value) }
+//        
+//        newGoal.weight = weight
+//        
+////        sceneUI.parentOfNewMotivator!.remove(afGoal)
+//        sceneUI.parentOfNewMotivator!.setWeightage(weight, for: newGoal)
     }
     
     func sliderChanged(state: ItemEditorSlidersState) {

@@ -24,17 +24,15 @@
 
 import GameplayKit
 
-extension AFSceneUI {
+extension AFSceneController {
     
     class GoalSetup: BaseState {
         override func didEnter(from previousState: GKState?) {
-            sceneUI.showFullPathHandle(true)
-            
             // Set selection indicator color to blue
         }
         
-        override func click(name: String?, flags: NSEvent.ModifierFlags?) {
-            if let name = name { click_node(name: name, flags: flags) }
+        override func click(_ node: SKNode?, flags: NSEvent.ModifierFlags?) {
+            if let node = node { click_node(node, flags: flags) }
             else { click_black(flags: flags) }
         }
         
@@ -48,7 +46,7 @@ extension AFSceneUI {
         }
         
         // This looks a lot like Default.click_node()
-        private func click_node(name: String, flags: NSEvent.ModifierFlags?) {
+        private func click_node(_ node: SKNode, flags: NSEvent.ModifierFlags?) {
             // opt-click and ctrl-click currently have no meaning when
             // clicking on a node, so we just ignore them
             guard !((flags?.contains(.control) ?? false) ||
@@ -80,7 +78,6 @@ extension AFSceneUI {
         }
 
         override func flagsChanged(to newFlags: NSEvent.ModifierFlags) {
-            sceneUI.showFullPathHandle(true)
         }
     }
 }

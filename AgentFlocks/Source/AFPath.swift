@@ -24,386 +24,180 @@
 
 import GameplayKit
 
-class AFObstacle_Script: Codable, Equatable {
-    var name: String
-    
-    init(afPath: AFPath) {
-        self.name = afPath.name
-    }
-
-    static func ==(lhs: AFObstacle_Script, rhs: AFObstacle_Script) -> Bool {
-        return lhs.name == rhs.name
-    }
-}
-
-class AFObstacle {
-    var name: String
-    
-    init(prototype: AFObstacle_Script) {
-        self.name = prototype.name
-    }
-}
-
-class AFPath_Script: Codable, Equatable {
-    var name: String
-    var graphNodes: AFOrderedMap_Script<String, AFGraphNode2D_Script>
-    var radius: Float
-
-    init(afPath: AFPath) {
-        name = afPath.name
-        radius = afPath.radius
-        graphNodes = AFOrderedMap_Script<String, AFGraphNode2D_Script>()
-        
-        for afGraphNode in afPath.graphNodes {
-            let newNode = AFGraphNode2D_Script(afGraphNode: afGraphNode)
-            graphNodes.append(key: newNode.name, value: newNode)
-        }
-    }
-
-    static func ==(lhs: AFPath_Script, rhs: AFPath_Script) -> Bool {
-        return lhs.name == rhs.name
-    }
-}
-
 class AFPath: Equatable {
-    var containerNode: SKNode?
-    var finalized = false
-    let fullPathHandleSprite: SKShapeNode
-    let gameScene: GameScene
-    var gkPath: GKPath!
-    var graphNodes: AFOrderedMap<String, AFGraphNode2D>
-    var gkObstacle: GKPolygonObstacle!
-    static let handleOffset = CGPoint(x: 0, y: 15)
+    private unowned var appData: AFDataModel
+    private var finalized = false
+    private unowned let scene: SKScene
+    private var gkPath: GKPath! = nil
+    private var graphNodes = AFOrderedMap<String, AFGraphNode2D>()
+    private static let handleOffset = CGPoint(x: 0, y: 15)
     let name: String
-    var pathHandleIsVisible = false
-    var radius: Float = 5.0
-    var visualPathSprite: SKShapeNode?
+    private unowned let notifications: NotificationCenter
+    private let spriteSet: SpriteSet
     
-    init(gameScene: GameScene, obstacle: GKPolygonObstacle? = nil) {
-        self.gameScene = gameScene
-        graphNodes = AFOrderedMap<String, AFGraphNode2D>()
-        name = NSUUID().uuidString
+    init(appData: AFDataModel, embryo: AFPathData, scene: SKScene) {
+        let name = NSUUID().uuidString
         
-        fullPathHandleSprite = SKShapeNode(circleOfRadius: 10)
-        fullPathHandleSprite.fillColor = .blue
-        fullPathHandleSprite.name = self.name
-        fullPathHandleSprite.zPosition = CGFloat(AFCore.sceneUI.getNextZPosition())
-        
-        AFSceneUI.AFNodeAdapter(fullPathHandleSprite).setupUserData(
-            clickable: true, nodeOwner: self, nodeType: "Path handle",
-            pathOwner: self, selectable: false
-        )
+        self.appData = appData
+        self.name = name
+        self.notifications = appData.notifications
+        self.scene = scene
+        self.spriteSet = SpriteSet(name: name, scene: scene)
 
-        self.gkObstacle = obstacle
-    }
-    
-    init(gameScene: GameScene, copyFrom: AFPath, offset: CGPoint? = nil) {
-        self.gameScene = gameScene
-        graphNodes = AFOrderedMap<String, AFGraphNode2D>()
-        name = NSUUID().uuidString
-        
-        fullPathHandleSprite = SKShapeNode(circleOfRadius: 10)
-        fullPathHandleSprite.fillColor = .blue
-        fullPathHandleSprite.name = self.name
-        fullPathHandleSprite.zPosition = CGFloat(AFCore.sceneUI.getNextZPosition())
-        
-        AFSceneUI.AFNodeAdapter(fullPathHandleSprite).setupUserData(
-            clickable: true, nodeOwner: self, nodeType: "Path handle",
-            pathOwner: self, selectable: false
-        )
+        let newGraphNode = NSNotification.Name(rawValue: AFDataModel.NotificationType.NewGraphNode.rawValue)
+        let aSelector = #selector(newGraphNodeHasBeenCreated(_:))
+        self.notifications.addObserver(self, selector: aSelector, name: newGraphNode, object: appData)
 
-        copyFrom.graphNodes.forEach {
-            let newNode = AFGraphNode2D(pathOwner: self, copyFrom: $0, gameScene: gameScene, drawable: false)
-            graphNodes.append(key: newNode.name, value: newNode)
-        }
-        
-        if let offset = offset {
-            graphNodes.forEach { 
-                let p = CGPoint($0.position) + offset
-                $0.position = p.as_vector_float2()
-            }
-        }
-        
-        refresh(final: true)
-    }
-    
-    init(gameScene: GameScene, prototype: AFPath_Script) {
-        self.gameScene = gameScene
-        name = prototype.name
-        radius = prototype.radius
-        
-        fullPathHandleSprite = SKShapeNode() // Just flung it in here to get it to compile
+        let select = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
+        let bSelector = #selector(hasBeenSelected(_:primary:))
+        self.notifications.addObserver(self, selector: bSelector, name: select, object: appData)
 
-        graphNodes = AFOrderedMap<String, AFGraphNode2D>()
-
-        for protoNode in prototype.graphNodes {
-            let afGraphNode = AFGraphNode2D(pathOwner: self, prototype: protoNode, gameScene: gameScene)
-            graphNodes.append(key: afGraphNode.name, value: afGraphNode)
-        }
-        
-        // Force the new path to rebuild its internal stuff
-        finalized = false
-        refresh()
-    }
-    
-    deinit {
-        visualPathSprite?.removeFromParent()
-        fullPathHandleSprite.removeFromParent()
-        containerNode?.removeFromParent()
+        let deleteGraphNode = NSNotification.Name(rawValue: AFDataModel.NotificationType.DeletedGraphNode.rawValue)
+        let cSelector = #selector(graphNodeHasBeenDeleted(_:))
+        self.notifications.addObserver(self, selector: cSelector, name: deleteGraphNode, object: appData)
     }
 
     static func ==(lhs: AFPath, rhs: AFPath) -> Bool {
         return lhs.name == rhs.name
     }
 
-    func addGraphNode(at point: CGPoint) -> AFGraphNode2D {
-        let node = AFGraphNode2D(pathOwner: self, point: point, gameScene: gameScene)
-        graphNodes.append(key: node.name, value: node)
-        refresh()
-        
-        return node
+    func addGraphNode(at point: CGPoint) {
+        appData.newGraphNode(for: self.name)
     }
-    
-    func asObstacle() -> GKPolygonObstacle? {
-        guard graphNodes.count > 1 else { return nil }
-
-        if gkObstacle == nil || gkObstacle != nil {
-            var floats = [float2]()
-            
-            for node in graphNodes {
-                floats.append(float2(x: node.position.x, y: node.position.y))
-            }
-            
-            gkObstacle = GKPolygonObstacle(points: floats)
-            
-            let obs = SKNode.obstacles(fromNodeBounds: [visualPathSprite!])
-            gkObstacle = obs[0]
-        }
-        
-        return gkObstacle
-    }
-    
-    func asPath() -> GKPath? {
-        guard graphNodes.count > 1 else { return nil }
-        
-        if gkPath == nil {
-            var floats = [float2]()
-            
-            for node in graphNodes {
-                floats.append(float2(x: node.position.x, y: node.position.y))
-            }
-            
-            gkPath = GKPath(points: floats, radius: radius, cyclical: true)
-        }
-        
-        return gkPath
-    }
-
-    func deselect(_ ix: Int? = nil) {
-        if let ix = ix {
-            graphNodes[ix].deselect()
-        } else {
-            visualPathSprite?.strokeColor = .white
-        }
-    }
-    
-    func deselectAll() {
-        showSelectionIndicator(false)
-        graphNodes.forEach{ $0.deselect() }
-        AFCore.data.obstacles.forEach{ $1.deselect() }
-    }
-    
-    func getImageData(size: CGSize) -> NSImage {
-        let texture = gameScene.view!.texture(from: visualPathSprite!)!
-        let cgImage = texture.cgImage()
-        let nsImage = NSImage(cgImage: cgImage, size: size)
-        
-        return nsImage
-    }
-    
+  
     func getLastHandlePosition() -> CGPoint? {
         if let last = graphNodes.last { return CGPoint(last.position) } else { return nil }
     }
     
-    func getNodesForBringToTop() -> [SKShapeNode] {
-        var nodes = [SKShapeNode]()
-        graphNodes.forEach { nodes.append($0.sprite) }
-        nodes.append(self.fullPathHandleSprite)
-        return nodes.reversed()
-    }
-
-    func move(to position: CGPoint) {
-        fullPathHandleSprite.position = position
-        let offset = position - AFPath.handleOffset - CGPoint(graphNodes[0].position)
-        graphNodes.forEach { $0.position += offset.as_vector_float2() }
-        refresh()
+    @objc func graphNodeHasBeenDeleted(_ name: String) { _ = graphNodes.remove(name) }
+    
+    @objc func hasBeenSelected(_ name: String, primary: Bool) {
+        // The scene controller just calls out the name of the
+        // node who's been selected. It's up to the node to
+        // respond only to its own name.
+        guard name == self.name else { return }
+        graphNodes.forEach { $0.hasBeenSelected(name, primary: primary) }
     }
     
-    func moveNode(nodeName: String, to point: CGPoint) {
-        graphNodes[nodeName]!.position = point.as_vector_float2()
-        
-        if nodeName == graphNodes[0].name {
-            fullPathHandleSprite.position = point + AFPath.handleOffset
-        }
-
-        refresh()
+    func move(to position: CGPoint) { spriteSet.move(to: position) }
+    
+    @objc func newGraphNodeHasBeenCreated(_ name: String) {
+        let embryo = appData.getGraphNode(name, parentPath: self.name)
+        let afNode = AFGraphNode2D(appData: appData, embryo: embryo, position: CGPoint.zero, scene: self.scene)
+        self.graphNodes.append(key: name, value: afNode)
+        spriteSet.refresh(self)
     }
 
-    func refresh(final: Bool = false) {
-        if let c = containerNode {
-            c.removeFromParent()    // Entirely remove the old one
-            containerNode = nil
-        }
+}
 
-        // GKPath constructor will totally crash the app such
-        // that XCode can't catch the error
-        guard graphNodes.count > 1 else { return }
-
-        containerNode = SKNode()
-        containerNode!.name = self.name
+extension AFPath {
+    class SpriteContainerNode: SKNode {
+        var pathConnector: NSMutableDictionary { return super.userData! }
         
-        AFSceneUI.AFNodeAdapter(containerNode!).setupUserData(
-            clickable: false, nodeOwner: self, nodeType: "container node",
-            pathOwner: self, selectable: false
-        )
-
-        var nodesArray = [float2]()
-        var visualDotsArray = [CGPoint]()
-        
-        for node in graphNodes {
-            let cgPoint = CGPoint(x: CGFloat(node.position.x), y: CGFloat(node.position.y))
-            let float2Point = vector_float2(node.position.x, node.position.y)
-            
-            nodesArray.append(float2Point)
-            visualDotsArray.append(cgPoint)
+        init(name: String) {
+            super.init()
+            super.name = name
+            super.userData = NSMutableDictionary()
         }
         
-        if self.finalized {
-            // If we've already closed the path, we need to keep
-            // the last (dummy) point in sync with the first, so the lines
-            // will draw properly
-            let last = visualDotsArray.count - 1
-            visualDotsArray[last] = visualDotsArray[0]
-            movePathHandle(to: CGPoint(graphNodes[0].position))
-            pathHandleIsVisible = true
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+    }
+    
+    class SpriteSet: AFSceneControllerDelegate {
+        var isSelected = false
+        private var name: String
+        private var pathHandle: SKShapeNode!
+        private var primaryContainer: AFPath.SpriteContainerNode
+        private unowned let scene: SKScene
+        private var visualPathNode: SKShapeNode!
+
+        init(name: String, scene: SKScene) {
+            self.name = name
+            self.scene = scene
+            self.visualPathNode = nil
+
+            primaryContainer = AFPath.SpriteContainerNode(name: name)
+            pathHandle = SKShapeNode(circleOfRadius: 15)
+            
+            primaryContainer.addChild(pathHandle)
+            scene.addChild(primaryContainer)
         }
         
-        if final && !self.finalized {  // To draw from the last point back to the first
-            nodesArray.append(nodesArray[0])
-            visualDotsArray.append(visualDotsArray[0])
+        deinit {
+            primaryContainer.removeFromParent()
+        }
+        
+        func getImageData(size: CGSize) -> NSImage {
+            let texture = scene.view!.texture(from: visualPathNode!)!
+            let cgImage = texture.cgImage()
+            let nsImage = NSImage(cgImage: cgImage, size: size)
             
-            let closingNode = AFGraphNode2D(pathOwner: self, point: visualDotsArray[0], gameScene: gameScene, drawable: false)
-            AFSceneUI.AFNodeAdapter(closingNode.sprite).setIsClickable(true)
-            graphNodes.append(key: closingNode.name, value: closingNode)
-            
-            deselectAll()
-            select(fullPathHandleSprite)
-            
-            movePathHandle(to: CGPoint(graphNodes[0].position))
-            pathHandleIsVisible = true
-            
-            self.finalized = true
+            return nsImage
         }
 
-        gkPath = GKPath(points: nodesArray, radius: 1, cyclical: true)
+        func hasBeenDeselected() {
+            isSelected = false
+            pathHandle.strokeColor = .clear
+        }
         
-        // If we have an obstacle, we need to blow it away and
-        // replace it with one that reflects the latest path
-        if gkObstacle != nil { _ = asObstacle() }
+        func hasBeenSelected(primary: Bool) {
+            isSelected = true
+            pathHandle.strokeColor = .green
+        }
         
-        var startPoint: CGPoint!
-        let visualPath = CGMutablePath()
-        for dot in visualDotsArray {
-            let point = CGPoint(x: CGFloat(dot.x), y: CGFloat(dot.y))
-            if startPoint == nil {
-                startPoint = point
-                visualPath.move(to: point)
-            } else {
-                visualPath.addLine(to: point)
+        func move(to position: CGPoint) {
+
+        }
+
+        func refresh(_ owningPath: AFPath) {
+            // GKPath constructor will totally crash the app such
+            // that XCode can't catch the error
+            guard owningPath.graphNodes.count > 1 else { return }
+            
+            reset()
+            
+            var visualDotsArray = [CGPoint]()
+            
+            for node in owningPath.graphNodes {
+                let cgPoint = CGPoint(node.position)
+                visualDotsArray.append(cgPoint)
             }
+            
+            var startPoint: CGPoint!
+            let visualPath = CGMutablePath()
+            for dot in visualDotsArray {
+                let point = dot
+                if startPoint == nil {
+                    startPoint = point
+                    visualPath.move(to: point)
+                } else {
+                    visualPath.addLine(to: point)
+                }
+            }
+            
+            visualPathNode = SKShapeNode(path: visualPath)
+            visualPathNode!.name = name
+            
+            primaryContainer.addChild(visualPathNode!)
+            scene.addChild(primaryContainer)
         }
         
-        visualPathSprite = SKShapeNode(path: visualPath)
-        visualPathSprite!.name = name
-        visualPathSprite!.userData = NSMutableDictionary()
-        visualPathSprite!.zPosition = 0
-        
-        AFSceneUI.AFNodeAdapter(visualPathSprite!).setupUserData(
-            clickable: false, nodeOwner: self, nodeType: "Visual path sprite",
-            pathOwner: self, selectable: false
-        )
-
-        containerNode!.addChild(visualPathSprite!)
-        
-        if !finalized { visualPathSprite!.strokeColor = .red }
-        if gkObstacle != nil { visualPathSprite!.fillColor = .gray }
-
-        if let c = containerNode {
-            if pathHandleIsVisible { showPathHandle(true) }
-            gameScene.addChild(c)
+        func reset() {
+            primaryContainer.removeFromParent()
+            primaryContainer = AFPath.SpriteContainerNode(name: self.name)
         }
-    }
-    
-    func remove(node: AFGraphNode2D) {
-        graphNodes.remove(node.name)
-    }
-    
-    func remove(node: String) {
-        graphNodes.remove(node)
-    }
-    
-    func select(_ node: SKNode) {
-        if let ix = graphNodes.getIndexOf(node.name!) {
-            graphNodes[ix].select(primary: true)
-        } else if name == self.name {
-            showSelectionIndicator()
-        } else {
-            AFCore.data.obstacles[name]!.visualPathSprite?.strokeColor = .green
-        }
-    }
-    
-    func movePathHandle(to: CGPoint) {
-        fullPathHandleSprite.position = to + AFPath.handleOffset
-    }
-    
-    func showPathHandle(_ show: Bool = true) {
-        // Allows the higher levels to call us at will, without worrying
-        // about the current state. Remove it every time we come in here,
-        // then turn it back on if they wanted it on.
-        fullPathHandleSprite.removeFromParent()
-
-        pathHandleIsVisible = show
-
-        if show {
-            // Total hack. I can't figure out who is changing this value, so for
-            // now, I'm plugging the hole. I'm sick of chasing it.
-            fullPathHandleSprite.zPosition = 0
-
-            containerNode!.addChild(fullPathHandleSprite)
-        }
-    }
-    
-    func showNodes(_ show: Bool = false) {
-        visualPathSprite?.strokeColor = (show ? .white : NSColor(calibratedWhite: 1, alpha: 0.5))
-        
-        let reallyShow = (gkObstacle == nil) ? show : false
-        graphNodes.forEach{ $0.showNode(reallyShow) }
-    }
-    
-    func showSelectionIndicator(_ show: Bool = true) {
-        fullPathHandleSprite.strokeColor = (show ? .green : .clear)
-    }
-    
-    func stampObstacle() {
-        _ = self.asObstacle()
-        refresh(final: true)
     }
 }
 
 extension CGPoint {
+    init(_ position: vector_float2) { self.x = CGFloat(position.x); self.y = CGFloat(position.y) }
+
     func as_vector_float2() -> vector_float2 { return [Float(x), Float(y)] }
     
     static func +=(lhs : inout CGPoint, rhs : CGPoint) { lhs.x += rhs.x; lhs.y += rhs.y }
     static func +(lhs : CGPoint, rhs : CGPoint) -> CGPoint { return CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y) }
     static func -(lhs : CGPoint, rhs : CGPoint) -> CGPoint { return CGPoint(x: lhs.x - rhs.x, y: lhs.y - rhs.y) }
 }
+

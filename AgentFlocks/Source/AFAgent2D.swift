@@ -7,11 +7,7 @@
 //
 
 import GameplayKit
-
-protocol AFScenoid {
-    func select(primary: Bool)
-}
-
+/*
 class AFAgent2D_Script: Codable {
     let motivator: AFCompositeBehavior_Script!
     let imageFile: String
@@ -23,7 +19,7 @@ class AFAgent2D_Script: Codable {
     let radius: Float
     
     init(agent: AFAgent2D) {
-        position = CGPoint(x: CGFloat(agent.position.x), y: CGFloat(agent.position.y))
+        position = CGPoint(agent.position)
         mass = agent.mass
         maxSpeed = agent.maxSpeed
         maxAcceleration = agent.maxAcceleration
@@ -36,7 +32,7 @@ class AFAgent2D_Script: Codable {
     }
 }
 
-class AFAgent2D: GKAgent2D, AFScenoid {
+class AFAgent2D: GKAgent2D {
     var isPlaying = true
     let originalSize: CGSize
     var radiusIndicator: SKNode?
@@ -168,7 +164,7 @@ class AFAgent2D: GKAgent2D, AFScenoid {
     }
     
     func applyUserData(to: SKNode) {
-        AFSceneUI.AFNodeAdapter(to).setupUserData(
+        AFSceneController.AFNodeAdapter(to).setupUserData(
             clickable: true, nodeOwner: self, nodeType: "random part of agent entourage",
             owningAgent: self, selectable: true
         )
@@ -202,7 +198,7 @@ class AFAgent2D: GKAgent2D, AFScenoid {
         if let n = name { sprite.name = n }
         else { sprite.name = NSUUID().uuidString }
         
-        AFSceneUI.AFNodeAdapter(sprite).setupUserData(
+        AFSceneController.AFNodeAdapter(sprite).setupUserData(
             clickable: true, nodeOwner: self, nodeType: "unspecified agent groupie", selectable: true
         )
 
@@ -343,7 +339,8 @@ extension AFAgent2D: AgentAttributesDelegate {
     }
     
     func getPrimarySelectedAgent() -> AFAgent2D {
-        return AFSceneUI.AFNodeAdapter(AFCore.sceneUI.primarySelection!).getOwningAgent()!
+        return AFSceneController.AFNodeAdapter(AFCore.sceneUI.primarySelection!).getOwningAgent()!
     }
 }
 
+*/

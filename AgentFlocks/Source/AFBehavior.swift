@@ -24,6 +24,33 @@
 
 import GameplayKit
 
+class AFBehavior: GKBehavior {
+    private unowned let appData: AFDataModel
+    private var enabled = true
+    private let familyName: String
+    private var goalsMap = [GKGoal: AFGoal]()
+    let name: String
+    private var savedState: (weight: Float, goal: AFGoal)?
+    private unowned let scene: SKScene
+    
+    init(embryo: AFBehaviorData, scene: SKScene) {
+        self.appData = AFCore.appData
+        self.familyName = embryo.familyName
+        self.name = NSUUID().uuidString
+        self.scene = scene
+    }
+    
+    func aGoalWasCreated(embryo: AFGoalData, weight: Float) {
+        let newGoal = AFGoal(embryo: embryo, scene: scene)
+        setWeight(weight, for: newGoal)
+    }
+    
+    func setWeight(_ weight: Float, for goal: AFGoal) {
+//        super.setWeight(weight, for: goal.gkGoal)
+    }
+}
+
+/*
 class AFBehavior_Script: Codable {
     var enabled = true
     var goals: [AFGoal_Script]
@@ -138,3 +165,4 @@ class AFBehavior: GKBehavior {
         return weight(for: goal.gkGoal)
     }
 }
+*/

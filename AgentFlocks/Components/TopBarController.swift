@@ -9,6 +9,7 @@
 import Cocoa
 
 protocol TopBarDelegate {
+    func recallAgents()
 	func topBar(_ controller: TopBarController, actionChangedTo action: TopBarController.Action, for object: TopBarController.Object)
 	func topBar(_ controller: TopBarController, obstacleSelected index:Int)
 	func topBar(_ controller: TopBarController, agentSelected index:Int)
@@ -211,13 +212,7 @@ class TopBarController: NSViewController {
 	}
 	
     @IBAction func recallAgents(_ sender: NSButton) {
-        for entity in AFCore.data.entities {
-            let spriteContainer = entity.agent.spriteContainer
-            
-            entity.agent.position.x = 0
-            entity.agent.position.y = 0
-            spriteContainer.position = CGPoint.zero
-        }
+        delegate?.recallAgents()
     }
 	
 	@IBAction func libraryCheckButtonChecked(_ sender: NSButton) {

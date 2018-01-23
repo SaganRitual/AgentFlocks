@@ -25,11 +25,11 @@
 import GameplayKit
 
 class AFMenuBarDelegate {
-    unowned let data: AFData
-    unowned let sceneUI: AFSceneUI
+    unowned let appData: AFDataModel
+    unowned let sceneUI: AFSceneController
     
-    init(data: AFData, sceneUI: AFSceneUI) {
-        self.data = data
+    init(appData: AFDataModel, sceneUI: AFSceneController) {
+        self.appData = appData
         self.sceneUI = sceneUI
     }
 }
@@ -38,39 +38,39 @@ class AFMenuBarDelegate {
 
 extension AFMenuBarDelegate {
     func fileOpen(_ url: URL) {
-        do {
-            let jsonData = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            let input = try decoder.decode(AFData_Script.self, from: jsonData)
-
-            for i in 0 ..< input.paths.keys.count {
-                let path_ = input.paths.keys[i]
-                let path = sceneUI.makePath(prototype: input.paths.map[path_]!)
-                
-                self.data.paths.append(key: path.name, value: path)
-            }
-            
-            for (key, value) in input.obstacles {
-                let path = sceneUI.makePath(prototype: value)
-                self.data.obstacles[key] = path
-            }
-
-            for entity_ in input.entities {
-                let entity = sceneUI.makeEntity(prototype: entity_)
-                self.data.entities.append(key: entity.name, value: entity)
-            }
-        } catch { print(error) }
+//        do {
+//            let jsonData = try Data(contentsOf: url)
+//            let decoder = JSONDecoder()
+//            let input = try decoder.decode(AFData_Script.self, from: jsonData)
+//
+//            for i in 0 ..< input.paths.keys.count {
+//                let path_ = input.paths.keys[i]
+//                let path = sceneUI.makePath(prototype: input.paths.map[path_]!)
+//
+//                self.data.paths.append(key: path.name, value: path)
+//            }
+//
+//            for (key, value) in input.obstacles {
+//                let path = sceneUI.makePath(prototype: value)
+//                self.data.obstacles[key] = path
+//            }
+//
+//            for entity_ in input.entities {
+//                let entity = sceneUI.makeEntity(prototype: entity_)
+//                self.data.entities.append(key: entity.name, value: entity)
+//            }
+//        } catch { print(error) }
     }
     
     func fileSave(_ url: URL) {
-        do {
-            let encoder = JSONEncoder()
-            let script = try encoder.encode(AFData_Script(data))
-
-            do {
-                try script.write(to: url)
-            } catch { print(error) }
-        } catch { print(error) }
+//        do {
+//            let encoder = JSONEncoder()
+//            let script = try encoder.encode(AFData_Script(data))
+//
+//            do {
+//                try script.write(to: url)
+//            } catch { print(error) }
+//        } catch { print(error) }
     }
 }
 

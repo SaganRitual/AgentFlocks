@@ -237,12 +237,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return foundObstacles
     }
     
-    func changePrimarySelectionState(selectedAgent: AFAgent2D?) {
-        if let selectedAgent = selectedAgent {
+    func changePrimarySelectionState(node: SKNode?) {
+        if let node = node {
             // Note: this has to happen before the sceneUI can work with
             // agents. But it doesn't happen until the first click. I'm
             // not crazy about this setup. Fix it when the time comes.
-            placeAgentFrames(selectedAgent: selectedAgent)
+            placeAgentFrames(node: node)
         } else {
             
             // Clear out the sliders so they'll recalibrate themselves to the new values
@@ -252,20 +252,27 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    func placeAgentFrames(selectedAgent: AFAgent2D) {
+    func placeAgentFrames(node: SKNode) {
         let ac = agentEditorController.attributesController
         let gc = agentEditorController.goalsController
+        
+        let selectedAgent = AFNodeAdapter(node).getOwningAgent()
+        
+        // When we have the new stuff working, this seems like
+        // the most obvious place for assigning the selected
+        // agent to the sliders.
+//        ac.delegate = selectedAgent
 
         // Play/pause button image
-        gc.playButton.image = selectedAgent.isPlaying ? gc.pauseImage : gc.playImage
+//        gc.playButton.image = selectedAgent.isPlaying ? gc.pauseImage : gc.playImage
 
         // This is where we finally read back out the actual
         // values from the GKAgent and store them in the attributes controller
-        ac.mass = Double(selectedAgent.mass)
-        ac.maxAcceleration = Double(selectedAgent.maxAcceleration)
-        ac.maxSpeed = Double(selectedAgent.maxSpeed)
-        ac.radius = Double(selectedAgent.radius)
-        ac.scale = Double(selectedAgent.scale)
+//        ac.mass = Double(selectedAgent.mass)
+//        ac.maxAcceleration = Double(selectedAgent.maxAcceleration)
+//        ac.maxSpeed = Double(selectedAgent.maxSpeed)
+//        ac.radius = Double(selectedAgent.radius)
+//        ac.scale = Double(selectedAgent.scale)
         
 		settingsView.addSubview(agentEditorController.view)
         agentEditorController.refresh()
@@ -428,6 +435,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 extension AppDelegate: TopBarDelegate {
     
+    func recallAgents() {
+    }
+    
 	func topBar(_ controller: TopBarController, actionChangedTo action: TopBarController.Action, for object: TopBarController.Object) {
         switch action {
         case .Place:
@@ -528,7 +538,7 @@ extension AppDelegate: AgentGoalsDelegate {
             let row = outlineView.selectedRow
             let protoItem = outlineView.item(atRow: row)
             
-            coreAgentGoalsDelegate.deleteItem(protoItem!)
+            coreAgentGoalsDelegate.deleteItem(protoItem! as! String)
             outlineView.reloadData()
         }
     }

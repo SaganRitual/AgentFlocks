@@ -109,10 +109,10 @@ struct AFOrderedMap<KeyType: Hashable, ValueType: Equatable> {
         map.removeValue(forKey: key)
     }
     
-    mutating func remove(_ name: KeyType) {
+    mutating func remove(_ name: KeyType) -> ValueType? {
         let ix = keys.index(of: name)!
         keys.remove(at: ix)
-        map.removeValue(forKey: name)
+        return map.removeValue(forKey: name)
     }
     
     func reversed() -> [ValueType] {

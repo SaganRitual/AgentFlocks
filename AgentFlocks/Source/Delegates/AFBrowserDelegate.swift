@@ -29,19 +29,19 @@ import GameplayKit
 enum AFBrowserType: Int { case SpriteImages = 1, Agents, Paths, LinkedGoals }
 
 class AFBrowserDelegate {
-    let sceneUI: AFSceneUI
+    let sceneUI: AFSceneController
     var agentImageIndex = 0
     
-    init(_ sceneUI: AFSceneUI) { self.sceneUI = sceneUI }
+    init(_ sceneUI: AFSceneController) { self.sceneUI = sceneUI }
     
     func imageSelected(controllerIndex: Int, imageIndex: Int) {
         switch AFBrowserType(rawValue: controllerIndex)! {
         case .SpriteImages:
             self.agentImageIndex = imageIndex
             
-        case .Agents:
-            self.agentImageIndex = imageIndex
-            sceneUI.select(imageIndex, primary: true)
+        case .Agents: break
+//            self.agentImageIndex = imageIndex
+//            sceneUI.select(imageIndex, primary: true)
 
         case .Paths:
             break

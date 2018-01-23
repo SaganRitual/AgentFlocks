@@ -33,26 +33,25 @@ protocol AFSceneInputDelegate {
     func mouseUp(_ info: AFSceneInput.InputInfo)
     func rightMouseDown(_ info: AFSceneInput.InputInfo)
     func rightMouseUp(_ info: AFSceneInput.InputInfo)
+    func update(deltaTime dt: TimeInterval)
 }
 
 class AFSceneInput: AFGameSceneDelegate {
     var currentPosition = CGPoint.zero
-    let data: AFData
+    let appData: AFDataModel
     var delegate: AFSceneInputDelegate?
     var downNode: SKNode?
     let gameScene: GameScene!
     var touchedNodes = [SKNode]()
     var upNode: SKNode?
     
-    init(data: AFData, gameScene: GameScene) {
-        self.data = data
+    init(appData: AFDataModel, gameScene: GameScene) {
+        self.appData = appData
         self.gameScene = gameScene
     }
 
     func getTouchedNode() -> SKNode? {
-        return gameScene.nodes(at: currentPosition).filter {
-            AFSceneUI.AFNodeAdapter($0).getIsClickable()
-        }.first
+        return gameScene.nodes(at: currentPosition).filter { AFNodeAdapter($0).getIsClickable() }.first
     }
 
     func keyDown(with event: NSEvent) {
@@ -129,7 +128,7 @@ class AFSceneInput: AFGameSceneDelegate {
     }
     
     func update(deltaTime dt: TimeInterval) {
-        data.entities.forEach { $0.update(deltaTime: dt ) }
+        delegate?.update(deltaTime: dt)
     }
 }
 

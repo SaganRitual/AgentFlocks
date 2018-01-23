@@ -24,43 +24,33 @@
 
 import GameplayKit
 
-protocol AFSceneUIState {
-    func click(name: String?, flags: NSEvent.ModifierFlags?)
+protocol AFSceneControllerState {
+    func click(_ node: SKNode?, flags: NSEvent.ModifierFlags?)
     func deselect(_ node: SKNode)
     func deselectAll()
     func flagsChanged(to newFlags: NSEvent.ModifierFlags)
     func mouseMove(to position: CGPoint)
-    func select(_ index: Int, primary: Bool)
+    func newAgentHasBeenCreated(_ name: String)
+    func newPathHasBeenCreated(_ name: String)
     func select(_ node: SKNode, primary: Bool)
     func updateDrawIndicator(_ position: CGPoint)
 }
 
-extension AFSceneUI {
-    var drone: AFSceneUIState { return currentState! as! AFSceneUIState }
+extension AFSceneController {
+    var drone: AFSceneControllerState { return currentState! as! AFSceneControllerState }
     
-    class BaseState: GKState, AFSceneUIState {
-        var sceneUI: AFSceneUI { return stateMachine! as! AFSceneUI }
+    class BaseState: GKState, AFSceneControllerState {
+        var sceneUI: AFSceneController { return stateMachine! as! AFSceneController }
         
-        func click(name: String?, flags: NSEvent.ModifierFlags?) {}
+        func announceSelect(_ node: SKNode, primary: Bool) {}
+        func click(_ node: SKNode?, flags: NSEvent.ModifierFlags?) {}
         func deselect(_ node: SKNode) {}
         func deselectAll() {}
-
-        func flagsChanged(to newFlags: NSEvent.ModifierFlags) {
-            showFullPathHandle(allPaths: true, show: true)
-        }
-        
-        func showFullPathHandle(allPaths: Bool, show: Bool) {
-            if allPaths {
-                sceneUI.data.paths.forEach { $0.showPathHandle(show) }
-            } else {
-                sceneUI.activePath?.showPathHandle(show)
-            }
-        }
-
+        func flagsChanged(to newFlags: NSEvent.ModifierFlags) {}
         func mouseMove(to position: CGPoint) {}
-        func select(_ index: Int, primary: Bool) {}
+        func newAgentHasBeenCreated(_ name: String) {}
+        func newPathHasBeenCreated(_ name: String) {}
         func select(_ node: SKNode, primary: Bool) {}
-        
         func updateDrawIndicator(_ position: CGPoint) { }
     }
 }

@@ -24,14 +24,14 @@
 
 import GameplayKit
 
-extension AFSceneUI {
+extension AFSceneController {
     class Default: BaseState {
-        override func click(name: String?, flags: NSEvent.ModifierFlags?) {
+        override func click(_ node: SKNode?, flags: NSEvent.ModifierFlags?) {
             // If the user has dragged across the black for no particular reason,
             // ignore the mouse up; pretend nothing happened
             guard !(sceneUI.upNode == nil && sceneUI.mouseState == .dragging) else { return }
             
-            if let name = name { click_node(name: name, flags: flags) }
+            if let node = node { click_node(node, flags: flags) }
             else { click_black(flags: flags) }
         }
         
@@ -46,18 +46,17 @@ extension AFSceneUI {
                 // If no one is selected, we don't do anything.
                 guard let selected = sceneUI.primarySelection else { return }
                 
-                if let theClone = clone(selected, position: sceneUI.currentPosition) {
-                    select(theClone.agent.sprite, primary: true)
-                }
+                clone(selected, position: sceneUI.currentPosition)
             } else {
-                let imageIndex = AFCore.browserDelegate.agentImageIndex
-                let image = sceneUI.ui.agents[imageIndex].image
-                let newEntity = sceneUI.data.createEntity(image: image, position: sceneUI.currentPosition)
-                select(newEntity.agent.sprite, primary: true)
+//                // plain click in the black; create a new agent
+//                let imageIndex = AFCore.browserDelegate.agentImageIndex
+//                let image = sceneUI.ui.agents[imageIndex].image
+                
+                sceneUI.appData.newAgent()  // We'll hear back when the low-level data is setup
             }
         }
         
-        private func click_node(name: String, flags: NSEvent.ModifierFlags?) {
+        private func click_node(_ node: SKNode, flags: NSEvent.ModifierFlags?) {
             // opt-click and ctrl-click currently have no meaning when
             // clicking on a node, so we just ignore them
             guard !((flags?.contains(.control) ?? false) ||
@@ -80,100 +79,16 @@ extension AFSceneUI {
             }
         }
         
-        func clone(_ node: SKNode, position: CGPoint) -> AFEntity? {
-            if let toBeCloned = AFSceneUI.AFNodeAdapter(node).getCloneablePart() {
-                return toBeCloned.clone(position: position)
-            }
-            
-            return nil
-        }
-
-        override func deselect(_ node: SKNode) {
-            if let entity = sceneUI.data.entities[node.name!] {
-                deselectEntity(entity)
-            } else if let path = sceneUI.data.paths[node.name!] {
-                deselectPath(path)
-            } else if let ix = sceneUI.activePath.graphNodes.getIndexOf(node.name!) {
-                sceneUI.activePath.deselect(ix)
-            } else {
-                print("obstacle or something")
-            }
-        }
-        
-        override func deselectAll() {
-            sceneUI.data.entities.forEach{ $0.agent.deselect() }
-            sceneUI.data.paths.forEach { $0.deselectAll() }
-            
-            sceneUI.selectedNodes.removeAll()
-            sceneUI.primarySelection = nil
-            sceneUI.updatePrimarySelectionState(agentNode: nil)
-            
-            sceneUI.contextMenu.includeInDisplay(.CloneAgent, false)
-        }
-        
-        func deselectEntity(_ entity: AFEntity) {
-            entity.agent.deselect()
-            sceneUI.selectedNodes.remove(entity.agent.sprite)
-            
-            // We just now deselected the primary. If there's anyone
-            // else selected, they need to be made the primary.
-            if sceneUI.primarySelection == entity.agent.sprite {
-                var selectNew: SKNode?
-                
-                if sceneUI.selectedNodes.count > 0 {
-                    selectNew = sceneUI.selectedNodes.first!
-                    select(selectNew!, primary: true)
-                } else {
-                    sceneUI.primarySelection = nil
-                }
-                
-                sceneUI.updatePrimarySelectionState(agentNode: selectNew)
-            }
-            
-            sceneUI.contextMenu.includeInDisplay(.CloneAgent, false)
-        }
-        
-        func deselectPathNode(path: AFPath, nodeName: String) {
-            path.graphNodes[nodeName]!.deselect()
-            //sceneUI.selectedNodes.remove(nodeName)
-        }
-        
-        func deselectPath(_ path: AFPath) {
-            path.deselect()
-        }
+        func clone(_ node: SKNode, position: CGPoint) { sceneUI.appData.cloneAgent(node.name!) }
         
         override func didEnter(from previousState: GKState?) {
         }
         
-        override func select(_ index: Int, primary: Bool) {
-            let entity = sceneUI.data.entities[index]
-            select(entity.agent.sprite, primary: primary)
-        }
-        
-        override func select(_ node: SKNode, primary: Bool) {
-            sceneUI.selectedNodes.insert(node)
-            
-            let nodeOwner = AFSceneUI.AFNodeAdapter(node).getNodeOwner()
-            
-            switch nodeOwner {
-            case let entity as AFEntity: selectAgent(of: entity, primarySelection: (primary ? node : nil))
-            case let path as AFPath: path.select(node)
-            default: print("obstacles or smething")
-            }
-        }
-        
-        func selectAgent(of entity: AFEntity, primarySelection: SKNode?) {
-            entity.agent.select(primary: primarySelection != nil)
-            
-            if let node = sceneUI.primarySelection {
-                AFCore.ui.agentEditorController.goalsController.dataSource = entity
-                AFCore.ui.agentEditorController.attributesController.delegate = entity.agent
-                
-                sceneUI.primarySelection = node
-                sceneUI.updatePrimarySelectionState(agentNode: node)
-            }
-            
-            sceneUI.contextMenu.includeInDisplay(.CloneAgent, true, enable: true)
+        override func newAgentHasBeenCreated(_ name: String) {
+            let embryo = sceneUI.appData.getAgent(name)
+            let image = sceneUI.ui.agents[AFCore.browserDelegate.agentImageIndex].image
+            _ = AFAgent2D(appData: sceneUI.appData, embryo: embryo, image: image,
+                          position: sceneUI.currentPosition, scene: sceneUI.gameScene)
         }
         
         override func willExit(to nextState: GKState) {

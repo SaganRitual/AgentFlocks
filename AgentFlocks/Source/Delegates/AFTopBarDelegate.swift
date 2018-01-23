@@ -25,11 +25,11 @@
 import GameplayKit
 
 class AFTopBarDelegate {
-    unowned let data: AFData
-    unowned let sceneUI: AFSceneUI
+    unowned let appData: AFDataModel
+    unowned let sceneUI: AFSceneController
     
-    init(data: AFData, sceneUI: AFSceneUI) {
-        self.data = data
+    init(appData: AFDataModel, sceneUI: AFSceneController) {
+        self.appData = appData
         self.sceneUI = sceneUI
     }
     
@@ -42,12 +42,12 @@ class AFTopBarDelegate {
     func getActiveAgentImages() -> [NSImage] {
         var agentImages = [NSImage]()
         
-        data.entities.forEach {
-            let sprite = $0.agent.sprite
-            let cgImage = sprite.texture!.cgImage()
-            let nsImage = NSImage(cgImage: cgImage, size: sprite.size)
-            agentImages.append(nsImage)
-        }
+//        appData.entities.forEach {
+//            let sprite = $0.agent.sprite
+//            let cgImage = sprite.texture!.cgImage()
+//            let nsImage = NSImage(cgImage: cgImage, size: sprite.size)
+//            agentImages.append(nsImage)
+//        }
         
         return agentImages
     }
@@ -55,10 +55,10 @@ class AFTopBarDelegate {
     func getActivePathImages() -> [NSImage] {
         var pathImages = [NSImage]()
         
-        data.paths.forEach {
-            let s = CGSize(width: 50, height: 50)
-            pathImages.append($0.getImageData(size: s))
-        }
+//        appData.paths.forEach {
+//            let s = CGSize(width: 50, height: 50)
+//            pathImages.append($0.getImageData(size: s))
+//        }
         
         return pathImages
     }
@@ -69,6 +69,8 @@ class AFTopBarDelegate {
     
     func pause() { sceneUI.gameScene.pause() }
     func play() { sceneUI.gameScene.play() }
+    
+    func recallAgents() { sceneUI.recallAgents() }
     
     func setSpeed(_ speed: Double) {
         print("setSpeed() not implemented yet")

@@ -7,7 +7,7 @@
 //
 
 import GameplayKit
-
+/*
 class AFEntity_Script: Codable, Equatable {
     let agent: AFAgent2D_Script
     let name: String
@@ -34,7 +34,7 @@ class AFEntity: GKEntity, AFCloneable {
         
         super.init()
         
-        AFSceneUI.AFNodeAdapter(agent.sprite).setOwningEntity(self)
+        AFSceneController.AFNodeAdapter(agent.sprite).setOwningEntity(self)
         addComponent(agent)
     }
     
@@ -42,7 +42,7 @@ class AFEntity: GKEntity, AFCloneable {
         agent = AFAgent2D(scene: scene, copyFrom: copyFrom.agent, position: position)
         super.init()
         
-        AFSceneUI.AFNodeAdapter(agent.sprite).setOwningEntity(self)
+        AFSceneController.AFNodeAdapter(agent.sprite).setOwningEntity(self)
         addComponent(agent)
     }
     
@@ -51,7 +51,7 @@ class AFEntity: GKEntity, AFCloneable {
         
         super.init()
         
-        AFSceneUI.AFNodeAdapter(agent.sprite).setOwningEntity(self)
+        AFSceneController.AFNodeAdapter(agent.sprite).setOwningEntity(self)
         addComponent(agent)
     }
     
@@ -145,3 +145,4 @@ extension AFEntity: AgentGoalsDataSource {
     }
 }
 
+*/

@@ -71,15 +71,15 @@
 		D40E7E722013E0B500FD953C /* AFSceneState_Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40E7E712013E0B500FD953C /* AFSceneState_Draw.swift */; };
 		D40E7E742013E0F300FD953C /* AFSceneState_GoalSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D40E7E732013E0F300FD953C /* AFSceneState_GoalSetup.swift */; };
 		D420D47E2012FC3B004A9B46 /* AFSceneState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D420D47D2012FC3A004A9B46 /* AFSceneState.swift */; };
-		D43A7601200AEA390048796D /* AFSceneUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D43A7600200AEA390048796D /* AFSceneUI.swift */; };
 		D43A7605200B23330048796D /* AFContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = D43A7604200B23330048796D /* AFContextMenu.swift */; };
 		D4422622200795070013A6E5 /* AFOrderedMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4422621200795070013A6E5 /* AFOrderedMap.swift */; };
 		D442561A1FE7A19000FC454B /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = D44256191FE7A19000FC454B /* GameScene.sks */; };
 		D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561D1FE7A2F000FC454B /* SceneController.swift */; };
 		D44256201FE7A41800FC454B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561F1FE7A41800FC454B /* GameScene.swift */; };
-		D44256251FE8048100FC454B /* AFEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256241FE8048100FC454B /* AFEntity.swift */; };
-		D44256271FE804F000FC454B /* AFAgent2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44256261FE804F000FC454B /* AFAgent2D.swift */; };
 		D442562B1FE80FA000FC454B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D442562A1FE80FA000FC454B /* README.md */; };
+		D442B988201692810072EE5A /* AFAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B987201692810072EE5A /* AFAgent.swift */; };
+		D442B98E20172AA40072EE5A /* AFSceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B98D20172AA40072EE5A /* AFSceneController.swift */; };
+		D442B990201774570072EE5A /* AFMotivatorsReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B98F201774570072EE5A /* AFMotivatorsReader.swift */; };
 		D44FCF2E1FFF5AA30067258D /* (null) in Resources */ = {isa = PBXBuildFile; };
 		D4506DD51FFE65B50077A42A /* AFPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4506DD41FFE65B50077A42A /* AFPath.swift */; };
 		D472A3711FFFD6860030ACA8 /* LogSliderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D472A36F1FFFD6850030ACA8 /* LogSliderController.swift */; };
@@ -170,15 +170,16 @@
 		D40E7E712013E0B500FD953C /* AFSceneState_Draw.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFSceneState_Draw.swift; sourceTree = "<group>"; };
 		D40E7E732013E0F300FD953C /* AFSceneState_GoalSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFSceneState_GoalSetup.swift; sourceTree = "<group>"; };
 		D420D47D2012FC3A004A9B46 /* AFSceneState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSceneState.swift; sourceTree = "<group>"; };
-		D43A7600200AEA390048796D /* AFSceneUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFSceneUI.swift; sourceTree = "<group>"; };
 		D43A7604200B23330048796D /* AFContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFContextMenu.swift; sourceTree = "<group>"; };
 		D4422621200795070013A6E5 /* AFOrderedMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFOrderedMap.swift; sourceTree = "<group>"; };
 		D44256191FE7A19000FC454B /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		D442561D1FE7A2F000FC454B /* SceneController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneController.swift; sourceTree = "<group>"; };
 		D442561F1FE7A41800FC454B /* GameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
-		D44256241FE8048100FC454B /* AFEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFEntity.swift; sourceTree = "<group>"; };
 		D44256261FE804F000FC454B /* AFAgent2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFAgent2D.swift; sourceTree = "<group>"; };
 		D442562A1FE80FA000FC454B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		D442B987201692810072EE5A /* AFAgent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFAgent.swift; sourceTree = "<group>"; };
+		D442B98D20172AA40072EE5A /* AFSceneController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSceneController.swift; sourceTree = "<group>"; };
+		D442B98F201774570072EE5A /* AFMotivatorsReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFMotivatorsReader.swift; sourceTree = "<group>"; };
 		D4506DD41FFE65B50077A42A /* AFPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFPath.swift; sourceTree = "<group>"; };
 		D472A36F1FFFD6850030ACA8 /* LogSliderController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogSliderController.swift; sourceTree = "<group>"; };
 		D472A3701FFFD6860030ACA8 /* LogSliderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LogSliderView.xib; sourceTree = "<group>"; };
@@ -341,23 +342,24 @@
 			isa = PBXGroup;
 			children = (
 				D4D16562200D7F880065728D /* Delegates */,
+				D442B987201692810072EE5A /* AFAgent.swift */,
 				D44256261FE804F000FC454B /* AFAgent2D.swift */,
 				D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */,
 				D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */,
 				D43A7604200B23330048796D /* AFContextMenu.swift */,
 				D4D16563200E93420065728D /* AFCore.swift */,
 				D4D16565200E938E0065728D /* AFData.swift */,
-				D44256241FE8048100FC454B /* AFEntity.swift */,
 				D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */,
 				D4F779E220087057005179BA /* AFGraphNode2D.swift */,
+				D442B98F201774570072EE5A /* AFMotivatorsReader.swift */,
 				D4422621200795070013A6E5 /* AFOrderedMap.swift */,
 				D4506DD41FFE65B50077A42A /* AFPath.swift */,
+				D442B98D20172AA40072EE5A /* AFSceneController.swift */,
 				D4AEE631201050DD00933852 /* AFSceneInput.swift */,
 				D420D47D2012FC3A004A9B46 /* AFSceneState.swift */,
 				D40E7E6F2013E06700FD953C /* AFSceneState_Default.swift */,
 				D40E7E712013E0B500FD953C /* AFSceneState_Draw.swift */,
 				D40E7E732013E0F300FD953C /* AFSceneState_GoalSetup.swift */,
-				D43A7600200AEA390048796D /* AFSceneUI.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -510,19 +512,18 @@
 				D4D16566200E938E0065728D /* AFData.swift in Sources */,
 				D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */,
 				D4AEE632201050DD00933852 /* AFSceneInput.swift in Sources */,
-				D44256251FE8048100FC454B /* AFEntity.swift in Sources */,
 				749386412007C9F700BAAF8E /* WindowContentView.swift in Sources */,
 				74ECDF661F9B132C0096468F /* AgentGoalsController.swift in Sources */,
 				D40E7E702013E06700FD953C /* AFSceneState_Default.swift in Sources */,
-				D43A7601200AEA390048796D /* AFSceneUI.swift in Sources */,
 				D4D1655F200D45A40065728D /* AFAgentGoalsDelegate.swift in Sources */,
 				74622E7B1F9249CA00690C3C /* ImagesListController.swift in Sources */,
 				D4F779E320087057005179BA /* AFGraphNode2D.swift in Sources */,
 				7493863B200145C700BAAF8E /* ActiveImageView.swift in Sources */,
 				D420D47E2012FC3B004A9B46 /* AFSceneState.swift in Sources */,
+				D442B990201774570072EE5A /* AFMotivatorsReader.swift in Sources */,
 				74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */,
+				D442B988201692810072EE5A /* AFAgent.swift in Sources */,
 				D4D1655B200CA2B60065728D /* AFMenuBarDelegate.swift in Sources */,
-				D44256271FE804F000FC454B /* AFAgent2D.swift in Sources */,
 				D43A7605200B23330048796D /* AFContextMenu.swift in Sources */,
 				D4422622200795070013A6E5 /* AFOrderedMap.swift in Sources */,
 				74ECDF6A1F9B1C630096468F /* AgentEditorController.swift in Sources */,
@@ -534,6 +535,7 @@
 				74938643200AAAA000BAAF8E /* FlippedClipView.swift in Sources */,
 				749386381FFFECC300BAAF8E /* PreferencesController.swift in Sources */,
 				D4C942D9200C39CD00A85BCB /* AFBrowserDelegate.swift in Sources */,
+				D442B98E20172AA40072EE5A /* AFSceneController.swift in Sources */,
 				D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */,
 				744D8F341F91E53A00D4B048 /* TopBarController.swift in Sources */,
 				D4506DD51FFE65B50077A42A /* AFPath.swift in Sources */,

@@ -32,7 +32,7 @@ enum AFKeyCodes: UInt {
 }
 
 class GameScene: SKScene, SKViewDelegate {
-    var sceneUI: AFSceneUI!
+    var sceneUI: AFSceneController!
 
     var lastUpdateTime: TimeInterval = 0
     

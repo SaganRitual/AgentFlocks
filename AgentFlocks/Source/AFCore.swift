@@ -26,30 +26,30 @@ class AFCore {
     static var agentGoalsDelegate: AFAgentGoalsDelegate!
     static var browserDelegate: AFBrowserDelegate!
     static var contextMenuDelegate: AFContextMenuDelegate!
-    static var data: AFData!
+    static var appData: AFDataModel!
     static var sceneInput: AFSceneInput!
-    static var sceneUI: AFSceneUI!
+    static var sceneUI: AFSceneController!
     static var itemEditorDelegate: AFItemEditorDelegate!
     static var menuBarDelegate: AFMenuBarDelegate!
     static var topBarDelegate: AFTopBarDelegate!
     static var ui: AppDelegate!
     
     static func makeCore(ui: AppDelegate, gameScene: GameScene) -> AFGameSceneDelegate {
-        sceneUI = AFSceneUI(gameScene: gameScene, ui: ui, contextMenu: AFContextMenu(ui: ui))
+        sceneUI = AFSceneController(appData: appData, gameScene: gameScene, ui: ui, contextMenu: AFContextMenu(ui: ui))
         
-        data = AFData(sceneUI: sceneUI)
-        sceneUI.data = self.data
+        appData = AFDataModel()
+        sceneUI.appData = self.appData
         
-        agentGoalsDelegate = AFAgentGoalsDelegate(data: data, sceneUI: sceneUI)
+        agentGoalsDelegate = AFAgentGoalsDelegate(appData: appData, sceneUI: sceneUI)
         browserDelegate = AFBrowserDelegate(sceneUI)
-        contextMenuDelegate = AFContextMenuDelegate(data: data, sceneUI: sceneUI)
-        itemEditorDelegate = AFItemEditorDelegate(data: data, sceneUI: sceneUI)
-        menuBarDelegate = AFMenuBarDelegate(data: data, sceneUI: sceneUI)
+        contextMenuDelegate = AFContextMenuDelegate(appData: appData, sceneUI: sceneUI)
+        itemEditorDelegate = AFItemEditorDelegate(appData: appData, sceneUI: sceneUI)
+        menuBarDelegate = AFMenuBarDelegate(appData: appData, sceneUI: sceneUI)
 
-        sceneInput = AFSceneInput(data: data, gameScene: gameScene)
+        sceneInput = AFSceneInput(appData: appData, gameScene: gameScene)
         sceneInput.delegate = sceneUI
 
-        topBarDelegate = AFTopBarDelegate(data: data, sceneUI: sceneUI)
+        topBarDelegate = AFTopBarDelegate(appData: appData, sceneUI: sceneUI)
         
         // Here, "ui" just means the AppDelegate
         AFCore.ui = ui

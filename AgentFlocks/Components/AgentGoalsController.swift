@@ -27,7 +27,7 @@ protocol AgentGoalsDataSource {
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemExpandable item: Any) -> Bool
     func agentGoals(_ agentGoalsController: AgentGoalsController, child index: Int, ofItem item: Any?) -> Any
     func agentGoals(_ agentGoalsController: AgentGoalsController, labelOfItem item: Any) -> String
-	func agentGoals(_ agentGoalsController: AgentGoalsController, weightOfItem item: Any) -> Double
+	func agentGoals(_ agentGoalsController: AgentGoalsController, weightOfItem item: Any) -> Float
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemEnabled item: Any) -> Bool
 }
 

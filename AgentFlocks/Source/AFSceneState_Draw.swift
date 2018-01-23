@@ -24,57 +24,38 @@
 
 import GameplayKit
 
-extension AFSceneUI {
+extension AFSceneController {
     class Draw: BaseState {
         var drawIndicator: SKNode?
         
-        override func click(name: String?, flags: NSEvent.ModifierFlags?) {
-            if let name = name { click_node(name: name, flags: flags) }
+        override func click(_ node: SKNode?, flags: NSEvent.ModifierFlags?) {
+            if let node = node { click_node(node, flags: flags) }
             else { click_black(flags: flags) }
         }
         
         private func click_black(flags: NSEvent.ModifierFlags?) {
             // Ignore all modified clicks in the black, for now
             guard !((flags?.contains(.command) ?? false) ||
-                (flags?.contains(.control) ?? false) ||
-                (flags?.contains(.option) ?? false)) else { return }
+                    (flags?.contains(.control) ?? false) ||
+                    (flags?.contains(.option) ?? false)) else { return }
             
             // Clicked in the black; add a node
             deselectAll()
-            sceneUI.addNodeToPath(at: sceneUI.currentPosition)
+            
+            sceneUI.appData.newGraphNode(for: sceneUI.activePath.name)
         }
         
-        private func click_node(name: String, flags: NSEvent.ModifierFlags?) {
+        private func click_node(_ node: SKNode, flags: NSEvent.ModifierFlags?) {
             // Ignore all modified clicks on a path node, for now
             guard !((flags?.contains(.command) ?? false) ||
-                (flags?.contains(.control) ?? false) ||
-                (flags?.contains(.option) ?? false)) else { return }
+                    (flags?.contains(.control) ?? false) ||
+                    (flags?.contains(.option) ?? false)) else { return }
             
-            let graphNodes = sceneUI.activePath.graphNodes
-            if graphNodes.count > 2 && name == graphNodes[0].name {
-                sceneUI.finalizePath(close: true)
-            } else {
-                deselectAll()
-                select(graphNodes[name]!.sprite, primary: true)
-            }
-        }
-        
-        override func deselect(_ node: SKNode) {
-            sceneUI.activePath.graphNodes[node.name!]!.deselect()
-            sceneUI.selectedNodes.remove(node)
-        }
-        
-        override func deselectAll() {
-            sceneUI.selectedNodes.forEach { sceneUI.activePath?.graphNodes[$0.name!]!.deselect() }
-            sceneUI.selectedNodes.removeAll()
+            sceneUI.select(node, primary: false)
         }
         
         override func didEnter(from previousState: GKState?) {
-            sceneUI.showFullPathHandle(true)
-            
-            // Plain click in the black starts a path and plants the first handle
-            newPath()
-            click(name: nil, flags: nil)
+            // Plain click in the black starts a path and plants the first vertex handle
         }
 
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
@@ -86,21 +67,17 @@ extension AFSceneUI {
             updateDrawIndicator(position)
         }
         
-        func newPath() {
+        override func newPathHasBeenCreated(_ name: String) {
             guard sceneUI.activePath == nil else { fatalError() }
             
-            sceneUI.activePath = AFPath(gameScene: sceneUI.gameScene)
+            let embryo = sceneUI.appData.getPath(name)
+            sceneUI.activePath = AFPath(appData: sceneUI.appData, embryo: embryo, scene: sceneUI.gameScene)
             
             // With a new path started, no other options are available
             // until the path is finalized. However, the "add path" option
             // is disabled until there are at least two nodes in the path.
             sceneUI.contextMenu.reset()
             sceneUI.contextMenu.includeInDisplay(.AddPathToLibrary, true, enable: false)
-        }
-        
-        override func select(_ node: SKNode, primary: Bool) {
-            sceneUI.activePath.select(node)
-            sceneUI.selectedNodes.insert(node)
         }
         
         override func updateDrawIndicator(_ position: CGPoint) {

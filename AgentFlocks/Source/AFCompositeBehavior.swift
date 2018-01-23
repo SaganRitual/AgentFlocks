@@ -24,6 +24,18 @@
 
 import GameplayKit
 
+class AFCompositeBehavior: GKCompositeBehavior {
+    var savedState: (weight: Float, behavior: GKBehavior)?
+    var saveMap = [AFBehavior: Float]()
+
+    func addBehavior(data: AFBehaviorData, scene: SKScene, weight: Float) {
+        let newBehavior = AFBehavior(embryo: data, scene: scene)
+        setWeight(weight, for: newBehavior)
+    }
+}
+
+/*
+
 class AFCompositeBehavior_Script: Codable {
     var behaviors: [AFBehavior_Script]
     
@@ -37,8 +49,8 @@ class AFCompositeBehavior_Script: Codable {
         }
     }
 }
-
-class AFCompositeBehavior: GKCompositeBehavior {
+*/
+extension AFCompositeBehavior {/*
     var savedState: (weight: Float, behavior: GKBehavior)?
     
     init(prototype: AFCompositeBehavior_Script, agent: AFAgent2D) {
@@ -69,19 +81,18 @@ class AFCompositeBehavior: GKCompositeBehavior {
     func addBehavior(_ newBehavior: AFBehavior) {
         setWeight(newBehavior.weight, for: newBehavior)
     }
-    
-    var saveMap = [AFBehavior: Float]()
+    */
     
     func enableBehavior(_ behavior: AFBehavior, on: Bool = true) {
         if on {
-            behavior.enabled = true
+//            behavior.enabled = true
             
             let weight = saveMap[behavior]!
             setWeight(weight, for: behavior)
 
             saveMap.removeValue(forKey: behavior)
         } else {
-            behavior.enabled = false
+//            behavior.enabled = false
             
             let weight = self.weight(for: behavior)
             saveMap[behavior] = weight
@@ -89,19 +100,19 @@ class AFCompositeBehavior: GKCompositeBehavior {
             remove(behavior)
         }
     }
-    
+  
     func findParent(ofGoal: GKGoal) -> AFBehavior? {
         for i in 0 ..< behaviorCount {
             let behavior = self[i] as! AFBehavior
             
-            if behavior.goalsMap[ofGoal] != nil {
-                return behavior
-            }
+//            if behavior.goalsMap[ofGoal] != nil {
+//                return behavior
+//            }
         }
         
         return nil
     }
-    
+    /*
     func getChild(at index: Int) -> AFBehavior {
         return self[index] as! AFBehavior
     }
@@ -117,5 +128,6 @@ class AFCompositeBehavior: GKCompositeBehavior {
     func toString() -> String {
         return "You've found a bug"
     }
+ */
 }
 

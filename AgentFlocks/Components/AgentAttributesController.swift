@@ -10,8 +10,6 @@ import Cocoa
 
 protocol AgentAttributesDelegate {
 	func agent(_ controller: AgentAttributesController, newValue value:Double, ofAttribute:AgentAttributesController.Attribute)
-    
-    func getPrimarySelectedAgent() -> AFAgent2D
 }
 
 class AgentAttributesController: NSViewController {
@@ -19,82 +17,76 @@ class AgentAttributesController: NSViewController {
 	enum Attribute { case mass, maxAcceleration, maxSpeed, radius, scale }
 	
 	// MARK: - Attributes (public)
+    
+    func getMass() -> Float { return Float(massSliderController.value) }
 	
-    var mass:Double {
-        get {
-            return massSliderController.value
-        }
-        set {
-            guard !AgentAttributesController.massReentrant else { return }
-            
-            AgentAttributesController.massReentrant = true
-            massSliderController.value = newValue
-            reloadAgentAttributes(skip: .mass)
-            AgentAttributesController.massReentrant = false
+    func setMass(_ mass: Float, fromData: Bool) {
+        if fromData {
+            // Mass is coming straight from the data, so just set it in the
+            // slider; no need for the slider to relay the message further
+            massSliderController.value = Double(mass)
+        } else {
+            // Mass is coming from the slider; send it down to the data; it
+            // will call us (and everyone else) back after updating the...data
+            AFCore.appData.setAttribute(.Mass, to: mass, for: targetAgent)
         }
     }
     
-    func reloadAgentAttributes(skip: AgentAttributesController.Attribute) {
-        let agent = delegate!.getPrimarySelectedAgent()
+    func getMaxAcceleration() -> Float { return Float(maxAccelerationSliderController.value) }
+    
+    func setMaxAcceleration(_ maxAcceleration: Float, fromData: Bool) {
+        if fromData {
+            // Max accel is coming straight from the data, so just set it in the
+            // slider; no need for the slider to relay the message further
+            maxAccelerationSliderController.value = Double(maxAcceleration)
+        } else {
+            // Max accel is coming from the slider; send it down to the data; it
+            // will call us (and everyone else) back after updating the...data
+            AFCore.appData.setAttribute(.MaxAcceleration, to: maxAcceleration, for: targetAgent)
+        }
+    }
 
-        if skip != .mass { mass = Double(agent.mass) }
-        if skip != .maxAcceleration { maxAcceleration = Double(agent.maxAcceleration) }
-        if skip != .maxSpeed { maxSpeed = Double(agent.maxSpeed) }
-        if skip != .radius { radius = Double(agent.radius) }
-        if skip != .scale { scale = Double(agent.scale) }
-    }
-
-    var maxAcceleration:Double {
-        get {
-            return maxAccelerationSliderController.value
-        }
-        set {
-            guard !AgentAttributesController.maxAccelerationReentrant else { return }
-            
-            AgentAttributesController.maxAccelerationReentrant = true
-            maxAccelerationSliderController.value = newValue
-            reloadAgentAttributes(skip: .maxAcceleration)
-            AgentAttributesController.maxAccelerationReentrant = false
+    func getMaxSpeed() -> Float { return Float(maxSpeedSliderController.value) }
+    
+    func setMaxSpeed(_ maxSpeed: Float, fromData: Bool) {
+        if fromData {
+            // Max speed is coming straight from the data, so just set it in the
+            // slider; no need for the slider to relay the message further
+            maxSpeedSliderController.value = Double(maxSpeed)
+        } else {
+            // Max speed is coming from the slider; send it down to the data; it
+            // will call us (and everyone else) back after updating the...data
+            AFCore.appData.setAttribute(.MaxSpeed, to: maxSpeed, for: targetAgent)
         }
     }
-    var maxSpeed:Double {
-        get {
-            return maxSpeedSliderController.value
-        }
-        set {
-            guard !AgentAttributesController.maxSpeedReentrant else { return }
-            
-            AgentAttributesController.maxSpeedReentrant = true
-            maxSpeedSliderController.value = newValue
-            reloadAgentAttributes(skip: .maxSpeed)
-            AgentAttributesController.maxSpeedReentrant = false
-        }
-    }
-    var radius:Double {
-        get {
-            return radiusSliderController.value
-        }
-        set {
-            guard !AgentAttributesController.radiusReentrant else { return }
-            
-            AgentAttributesController.radiusReentrant = true
-            radiusSliderController.value = newValue
-            reloadAgentAttributes(skip: .radius)
-            AgentAttributesController.radiusReentrant = false
+    
+    func getRadius() -> Float { return Float(radiusSliderController.value) }
+    
+    func setRadius(_ radius: Float, fromData: Bool) {
+        if fromData {
+            // Mass is coming straight from the data, so just set it in the
+            // slider; no need for the slider to relay the message further
+            radiusSliderController.value = Double(radius)
+        } else {
+            // radius is coming from the slider; send it down to the data; it
+            // will call us (and everyone else) back after updating the...data
+            AFCore.appData.setAttribute(.Radius, to: radius, for: targetAgent)
         }
     }
-	var scale:Double {
-		get {
-			return scaleSliderController.value
-		}
-		set {
-            guard !AgentAttributesController.scaleReentrant else { return }
-            
-            AgentAttributesController.scaleReentrant = true
-			scaleSliderController.value = newValue
-            AgentAttributesController.scaleReentrant = false
-		}
-	}
+    
+    func getScale() -> Float { return Float(scaleSliderController.value) }
+    
+    func setScale(_ scale: Float, fromData: Bool) {
+        if fromData {
+            // Scale is coming straight from the data, so just set it in the
+            // slider; no need for the slider to relay the message further
+            scaleSliderController.value = Double(scale)
+        } else {
+            // Scale is coming from the slider; send it down to the data; it
+            // will call us (and everyone else) back after updating the...data
+            AFCore.appData.setAttribute(.Scale, to: scale, for: targetAgent)
+        }
+    }
 
 	var defaultMass:Double {
 		get {
@@ -158,24 +150,53 @@ class AgentAttributesController: NSViewController {
     private let maxAccelerationSliderController = LogSliderController()
     private let radiusSliderController = LogSliderController()
     private let scaleSliderController = LogSliderController()
-
-    static var massReentrant = false
-    static var maxAccelerationReentrant = false
-    static var maxSpeedReentrant = false
-    static var radiusReentrant = false
-    static var scaleReentrant = false
     
     private var persistentDefaultsLoaded = false
+
+    private unowned let appData: AFDataModel
+    private unowned var dataNotifications: NotificationCenter
+    private var targetAgent = String()
+    private unowned var uiNotifications: NotificationCenter
     
 	// MARK: - Initialization
 	
 	init() {
-		super.init(nibName: NSNib.Name(rawValue: "AgentAttributesView"), bundle: nil)
+        self.appData = AFCore.appData
+        self.uiNotifications = AFCore.sceneUI.notificationsSender
+        self.dataNotifications = AFCore.appData.notifications
+
+        super.init(nibName: NSNib.Name(rawValue: "AgentAttributesView"), bundle: nil)
+
+        let aName = Notification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
+        let aSelector = #selector(hasBeenSelected(_:))
+        self.uiNotifications.addObserver(self, selector: aSelector, name: aName, object: nil)
+
+        let bName = Notification.Name(rawValue: AFDataModel.NotificationType.SetAttribute.rawValue)
+        let bSelector = #selector(attributeHasBeenUpdated(_:to:))
+        self.dataNotifications.addObserver(self, selector: bSelector, name: bName, object: nil)
 	}
 	
 	required convenience init?(coder: NSCoder) {
 		self.init()
 	}
+    
+    @objc func attributeHasBeenUpdated(_ attribute: Int, to newValue: Float) {
+        switch AFAgentAttribute(rawValue: attribute)! {
+        case .Mass:
+            setMass(newValue, fromData: true)
+        default: break
+        }
+    }
+    
+    @objc func hasBeenSelected(_ name: String) {
+        let agentData = appData.getAgent(name)
+        
+        setMass(agentData.attributes[AFAgentAttribute.Mass]!, fromData: true)
+        setMaxAcceleration(agentData.attributes[AFAgentAttribute.MaxAcceleration]!, fromData: true)
+        setMaxSpeed(agentData.attributes[AFAgentAttribute.MaxSpeed]!, fromData: true)
+        setRadius(agentData.attributes[AFAgentAttribute.Radius]!, fromData: true)
+        setScale(agentData.attributes[AFAgentAttribute.Scale]!, fromData: true)
+    }
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -203,8 +224,10 @@ class AgentAttributesController: NSViewController {
             defaultRadius = 25
             defaultScale = 1
         }
+        
+        
     }
-	
+    
 	override func viewWillAppear() {
 	}
 	
@@ -245,22 +268,14 @@ class AgentAttributesController: NSViewController {
 extension AgentAttributesController: LogSliderDelegate {
 	
 	func logSlider(_ controller: LogSliderController, newValue value: Double) {
+        let v = Float(value)
+        
 		switch controller {
-        case massSliderController:
-            mass = value
-            delegate?.agent(self, newValue: value, ofAttribute: .mass)
-        case maxAccelerationSliderController:
-            maxAcceleration = value
-            delegate?.agent(self, newValue: value, ofAttribute: .maxAcceleration)
-        case maxSpeedSliderController:
-            maxSpeed = value
-            delegate?.agent(self, newValue: value, ofAttribute: .maxSpeed)
-        case radiusSliderController:
-            radius = value
-            delegate?.agent(self, newValue: value, ofAttribute: .radius)
-		case scaleSliderController:
-            scale = value
-			delegate?.agent(self, newValue: value, ofAttribute: .scale)
+        case massSliderController:            setMass(v, fromData: false)
+        case maxAccelerationSliderController: setMaxAcceleration(v, fromData: false)
+        case maxSpeedSliderController:        setMaxSpeed(v, fromData: false)
+        case radiusSliderController:          setRadius(v, fromData: false)
+		case scaleSliderController:           setScale(v, fromData: false)
 		default:
 			return
 		}
