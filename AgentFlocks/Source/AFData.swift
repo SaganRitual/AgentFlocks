@@ -38,75 +38,14 @@ class AFDataModel {
     private var delegate: AFDataModelDelegate?
     private var paths = [String : AFPathData]()
     
-    enum NotificationType: String { case DeletedAgent = "DeletedAgent", DeletedBehavior = "DeletedBehavior",
-        DeletedGoal = "DeletedGoal", DeletedGraphNode = "DeletedGraphNode", DeletedPath = "DeletedPath",
+    enum NotificationType: String { case CoreReady = "CoreReady", DeletedAgent = "DeletedAgent",
+        DeletedBehavior = "DeletedBehavior", DeletedGoal = "DeletedGoal",
+        DeletedGraphNode = "DeletedGraphNode", DeletedPath = "DeletedPath", GameSceneReady = "GameSceneReady",
         NewAgent = "NewAgent", NewBehavior = "NewBehavior", NewGoal = "NewGoal",
         NewGraphNode = "NewGraphNode", NewPath = "NewPath", SetAttribute = "SetAttribute" }
     
     init() {
         notifications = NotificationCenter()
-    }
-    
-    func announceDeletedAgent(_ agent: String) {
-        let n = Notification.Name(rawValue: NotificationType.DeletedAgent.rawValue)
-        let nn = Notification(name: n, object: agent, userInfo: nil)
-        notifications.post(nn)
-    }
-    
-    func announceDeletedBehavior(_ behavior: String, agent: String) {
-        let n = Notification.Name(rawValue: NotificationType.DeletedBehavior.rawValue)
-        let p = (behavior: behavior, agent: agent)
-        let nn = Notification(name: n, object: p, userInfo: nil)
-        notifications.post(nn)
-    }
-    
-    func announceDeletedGoal(_ goal: String, parentBehavior: String, agent: String) {
-        let n = Notification.Name(rawValue: NotificationType.DeletedGoal.rawValue)
-        let nn = Notification(name: n, object: (goal, parentBehavior, agent), userInfo: nil)
-        notifications.post(nn)
-    }
-    
-    func announceDeletedGraphNode(_ nodeName: String, path: String) {
-        let n = Notification.Name(rawValue: NotificationType.DeletedGraphNode.rawValue)
-        let nn = Notification(name: n, object: (nodeName, path), userInfo: nil)
-        notifications.post(nn)
-    }
-    
-    func announceDeletedPath(_ path: String) {
-        let n = Notification.Name(rawValue: NotificationType.DeletedPath.rawValue)
-        let nn = Notification(name: n, object: path, userInfo: nil)
-        notifications.post(nn)
-    }
-
-    func announceNewAgent(_ agent: String) {
-        let n = Notification.Name(rawValue: NotificationType.NewAgent.rawValue)
-        let nn = Notification(name: n, object: agent, userInfo: nil)
-        notifications.post(nn)
-    }
-    
-    func announceNewBehavior(_ behavior: String, agent: String) {
-        let n = Notification.Name(rawValue: NotificationType.NewBehavior.rawValue)
-        let p = (behavior: behavior, agent: agent)
-        let nn = Notification(name: n, object: p, userInfo: nil)
-        notifications.post(nn)
-    }
-    
-    func announceNewGoal(_ goal: String, parentBehavior: String, agent: String) {
-        let n = Notification.Name(rawValue: NotificationType.NewGoal.rawValue)
-        let nn = Notification(name: n, object: (goal, parentBehavior, agent), userInfo: nil)
-        notifications.post(nn)
-    }
-    
-    func announceNewGraphNode(_ nodeName: String, path: String) {
-        let n = Notification.Name(rawValue: NotificationType.NewGraphNode.rawValue)
-        let nn = Notification(name: n, object: (nodeName, path), userInfo: nil)
-        notifications.post(nn)
-    }
-    
-    func announceNewPath(_ path: String) {
-        let n = Notification.Name(rawValue: NotificationType.NewPath.rawValue)
-        let nn = Notification(name: n, object: path, userInfo: nil)
-        notifications.post(nn)
     }
 
     func cloneAgent(_ name: String) {
@@ -336,6 +275,87 @@ class AFDataModel {
         
         let n = Notification.Name(rawValue: NotificationType.SetAttribute.rawValue)
         let nn = Notification(name: n, object: (attribute, value, agent), userInfo: nil)
+        notifications.post(nn)
+    }
+}
+
+// MARK - Announcement functions
+
+extension AFDataModel {
+    
+    func announceCoreReady() {
+        let u: [String : Any] = [
+            "AFDataModel" : self, "UINotifications" : AFCore.sceneUI.notificationsSender,
+            "DataNotifications" : notifications
+        ]
+        
+        let n = Notification.Name(rawValue: NotificationType.CoreReady.rawValue)
+        let nn = Notification(name: n, object: self, userInfo: u)
+
+        // Note that we post the core ready message to the default notification
+        // center, not our app-specific one.
+        NotificationCenter.default.post(nn)
+    }
+    
+    func announceDeletedAgent(_ agent: String) {
+        let n = Notification.Name(rawValue: NotificationType.DeletedAgent.rawValue)
+        let nn = Notification(name: n, object: agent, userInfo: nil)
+        notifications.post(nn)
+    }
+    
+    func announceDeletedBehavior(_ behavior: String, agent: String) {
+        let n = Notification.Name(rawValue: NotificationType.DeletedBehavior.rawValue)
+        let p = (behavior: behavior, agent: agent)
+        let nn = Notification(name: n, object: p, userInfo: nil)
+        notifications.post(nn)
+    }
+    
+    func announceDeletedGoal(_ goal: String, parentBehavior: String, agent: String) {
+        let n = Notification.Name(rawValue: NotificationType.DeletedGoal.rawValue)
+        let nn = Notification(name: n, object: (goal, parentBehavior, agent), userInfo: nil)
+        notifications.post(nn)
+    }
+    
+    func announceDeletedGraphNode(_ nodeName: String, path: String) {
+        let n = Notification.Name(rawValue: NotificationType.DeletedGraphNode.rawValue)
+        let nn = Notification(name: n, object: (nodeName, path), userInfo: nil)
+        notifications.post(nn)
+    }
+    
+    func announceDeletedPath(_ path: String) {
+        let n = Notification.Name(rawValue: NotificationType.DeletedPath.rawValue)
+        let nn = Notification(name: n, object: path, userInfo: nil)
+        notifications.post(nn)
+    }
+    
+    func announceNewAgent(_ agent: String) {
+        let n = Notification.Name(rawValue: NotificationType.NewAgent.rawValue)
+        let nn = Notification(name: n, object: agent, userInfo: nil)
+        notifications.post(nn)
+    }
+    
+    func announceNewBehavior(_ behavior: String, agent: String) {
+        let n = Notification.Name(rawValue: NotificationType.NewBehavior.rawValue)
+        let p = (behavior: behavior, agent: agent)
+        let nn = Notification(name: n, object: p, userInfo: nil)
+        notifications.post(nn)
+    }
+    
+    func announceNewGoal(_ goal: String, parentBehavior: String, agent: String) {
+        let n = Notification.Name(rawValue: NotificationType.NewGoal.rawValue)
+        let nn = Notification(name: n, object: (goal, parentBehavior, agent), userInfo: nil)
+        notifications.post(nn)
+    }
+    
+    func announceNewGraphNode(_ nodeName: String, path: String) {
+        let n = Notification.Name(rawValue: NotificationType.NewGraphNode.rawValue)
+        let nn = Notification(name: n, object: (nodeName, path), userInfo: nil)
+        notifications.post(nn)
+    }
+    
+    func announceNewPath(_ path: String) {
+        let n = Notification.Name(rawValue: NotificationType.NewPath.rawValue)
+        let nn = Notification(name: n, object: path, userInfo: nil)
         notifications.post(nn)
     }
 }

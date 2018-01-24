@@ -153,28 +153,44 @@ class AgentAttributesController: NSViewController {
     
     private var persistentDefaultsLoaded = false
 
-    private unowned let appData: AFDataModel
-    private unowned var dataNotifications: NotificationCenter
+    private var appData: AFDataModel!
+    private var dataNotifications: NotificationCenter!
     private var targetAgent = String()
-    private unowned var uiNotifications: NotificationCenter
+    private var uiNotifications: NotificationCenter!
     
 	// MARK: - Initialization
 	
 	init() {
-        self.appData = AFCore.appData
-        self.uiNotifications = AFCore.sceneUI.notificationsSender
-        self.dataNotifications = AFCore.appData.notifications
-
         super.init(nibName: NSNib.Name(rawValue: "AgentAttributesView"), bundle: nil)
-
-        let aName = Notification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
-        let aSelector = #selector(hasBeenSelected(_:))
-        self.uiNotifications.addObserver(self, selector: aSelector, name: aName, object: nil)
-
-        let bName = Notification.Name(rawValue: AFDataModel.NotificationType.SetAttribute.rawValue)
-        let bSelector = #selector(attributeHasBeenUpdated(_:to:))
-        self.dataNotifications.addObserver(self, selector: bSelector, name: bName, object: nil)
+        
+        // Note: we're using the default center here; that's where we all
+        // broadcast our ready messages.
+        let center = NotificationCenter.default
+        let name = Notification.Name(rawValue: AFSceneController.NotificationType.AppCoreReady.rawValue)
+        let selector = #selector(coreReady(notification:))
+        center.addObserver(self, selector: selector, name: name, object: nil)
 	}
+    
+    @objc func coreReady(notification: Notification) {
+        if let info = notification.userInfo {
+            // Come back to this: the ui should be publishing its own notifications--
+            // we should be waiting for a shout from the UI to tell us where its
+            // personal notification center is.
+            self.appData = info["DataModel"] as! AFDataModel
+            self.uiNotifications = info["UINotifications"] as! NotificationCenter
+            self.dataNotifications = info["DataNotifications"] as! NotificationCenter
+
+            let aName = Notification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
+            let aSelector = #selector(hasBeenSelected(_:))
+            self.uiNotifications.addObserver(self, selector: aSelector, name: aName, object: nil)
+            
+            let bName = Notification.Name(rawValue: AFDataModel.NotificationType.SetAttribute.rawValue)
+            let bSelector = #selector(attributeHasBeenUpdated(_:to:))
+            self.dataNotifications.addObserver(self, selector: bSelector, name: bName, object: nil)
+        }
+        
+        NotificationCenter.default.removeObserver(self)
+    }
 	
 	required convenience init?(coder: NSCoder) {
 		self.init()

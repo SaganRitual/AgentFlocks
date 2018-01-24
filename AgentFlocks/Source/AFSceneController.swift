@@ -77,7 +77,7 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     var goalSetupInputMode = GoalSetupInputMode.NoSelect
     var mouseState = MouseStates.up
     var nodeToMouseOffset = CGPoint.zero
-    unowned let notificationsReceiver: NotificationCenter
+    var notificationsReceiver: NotificationCenter!
     let notificationsSender: NotificationCenter
     var obstacleCloneStamp = String()
     var parentOfNewMotivator: AFBehavior?
@@ -90,28 +90,44 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     var upNode: SKNode?
 
     enum MouseStates { case down, dragging, rightDown, rightUp, up }
-    enum NotificationType: String { case Deselected = "Deselected", Recalled = "Recalled", Selected = "Selected"}
+    enum NotificationType: String { case AppCoreReady = "AppCoreReady", Deselected = "Deselected",
+        Recalled = "Recalled", Selected = "Selected"}
 
-    init(appData: AFDataModel, gameScene: GameScene, ui: AppDelegate, contextMenu: AFContextMenu) {
-        self.appData = appData
+    init(gameScene: GameScene, ui: AppDelegate, contextMenu: AFContextMenu) {
         self.contextMenu = contextMenu
         self.gameScene = gameScene
-        self.notificationsReceiver = appData.notifications
         self.notificationsSender = NotificationCenter()
 
         self.ui = ui
 
         super.init(states: [ Draw(), Default(), GoalSetup() ])
-
-        let newAgent = NSNotification.Name(rawValue: AFDataModel.NotificationType.NewAgent.rawValue)
-        let aSelector = #selector(newAgentHasBeenCreated(_:))
-        self.notificationsReceiver.addObserver(self, selector: aSelector, name: newAgent, object: appData)
         
-        let newPath = NSNotification.Name(rawValue: AFDataModel.NotificationType.NewPath.rawValue)
-        let bSelector = #selector(newPathHasBeenCreated(_:))
-        self.notificationsReceiver.addObserver(self, selector: bSelector, name: newPath, object: appData)
+        // Note: we're using the default center here; that's where we all
+        // broadcast our ready messages.
+        let center = NotificationCenter.default
+        let sceneControllerReady = Notification.Name(rawValue: NotificationType.AppCoreReady.rawValue)
+        let selector = #selector(coreReady(notification:))
+        center.addObserver(self, selector: selector, name: nil, object: nil)
 
         enter(Default.self)
+    }
+    
+    @objc func coreReady(notification: Notification) {
+        guard let info = notification.userInfo as? [String : Any] else { return }
+        guard let dataModelEntry = info["DataModel"] else { return }
+        
+        NotificationCenter.default.removeObserver(self)
+
+        self.appData = info["DataModel"] as! AFDataModel
+        self.notificationsReceiver = info["DataNotifications"] as! NotificationCenter
+
+        let aNotification = NSNotification.Name(rawValue: AFDataModel.NotificationType.NewAgent.rawValue)
+        let aSelector = #selector(newAgentHasBeenCreated(_:))
+        self.notificationsReceiver.addObserver(self, selector: aSelector, name: aNotification, object: nil)
+        
+        let bNotification = NSNotification.Name(rawValue: AFDataModel.NotificationType.NewPath.rawValue)
+        let bSelector = #selector(newPathHasBeenCreated(_:))
+        self.notificationsReceiver.addObserver(self, selector: bSelector, name: bNotification, object: nil)
     }
     
     func addNodeToPath(at position: CGPoint) { activePath.addGraphNode(at: position) }
