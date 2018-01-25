@@ -140,6 +140,11 @@ class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
             sprites.hasBeenSelected(primary: primary)
         }
     }
+    
+    func move(to position: CGPoint) {
+        self.position = position.as_vector_float2()
+        sprites.move(to: position)
+    }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -188,21 +193,18 @@ extension AFAgent2D {
             self.scale_ = scale
             self.scene = scene
 
-            // The primaryContainer node is the only component in the
-            // system who is directly aware of the Agent. When we
-            // destruct the sprite, the Agent will destruct too.
             primaryContainer = AFAgent2D.SpriteContainerNode(name: name)
-            AFNodeAdapter(primaryContainer).setOwningAgent(owningAgent)
 
             let texture = SKTexture(image: image)
             theSprite = SKSpriteNode(texture: texture)
+            theSprite.name = name
             
+            theSprite.userData = NSMutableDictionary()
+            AFNodeAdapter(theSprite).setOwningAgent(owningAgent)
+            AFNodeAdapter(theSprite).setIsClickable()
+
             scene.addChild(primaryContainer)
             primaryContainer.addChild(theSprite)
-//
-//            let barfNode = SKShapeNode(circleOfRadius: 50)
-//            barfNode.fillColor = .red
-//            scene.addChild(barfNode)
         }
         
         deinit {
@@ -231,6 +233,10 @@ extension AFAgent2D {
             
             radiusIndicator = AFAgent2D.makeRing(radius: radiusIndicatorLength, isForSelector: false, primary: primary)
             primaryContainer.addChild(radiusIndicator)
+        }
+        
+        func move(to position: CGPoint) {
+            primaryContainer.position = position
         }
     }
 }

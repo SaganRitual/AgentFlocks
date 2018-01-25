@@ -79,8 +79,8 @@ struct AFNodeAdapter {
         }
     }
     
-    func move(to: CGPoint) {
-        
+    func move(to position: CGPoint) {
+        getOwningAgent()!.move(to: position)
     }
     
     func setIsClickable(_ set: Bool = true) {
@@ -261,7 +261,9 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     func mouseDrag(_ info: AFSceneInput.InputInfo) {
         mouseState = .dragging
         
-        if let node = info.node { AFNodeAdapter(node).move(to: info.mousePosition) }
+        if let node = info.node {
+            AFNodeAdapter(node).move(to: info.mousePosition)
+        }
     }
     
     func mouseMove(_ info: AFSceneInput.InputInfo) {
@@ -350,8 +352,8 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     }
 
     func toggleSelection(_ node: SKNode) {
-        if selectedNodes.contains(node) { drone.deselect(node) }
-        else { drone.select(node, primary: primarySelection == nil) }
+        if selectedNodes.contains(node) { deselect(node) }
+        else { select(node, primary: primarySelection == nil) }
     }
 //
 //    func updatePrimarySelectionState(agentNode: SKNode?) {

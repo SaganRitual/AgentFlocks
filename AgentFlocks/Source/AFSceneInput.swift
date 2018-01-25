@@ -51,10 +51,7 @@ class AFSceneInput: AFGameSceneDelegate {
     }
 
     func getTouchedNode() -> SKNode? {
-        // We have a lot of sprites flying around, but we only care about the primary
-        // containers, all of which are marked as clickable. Everyone else is like
-        // they're not really there.
-        return gameScene.nodes(at: currentPosition).filter { AFNodeAdapter($0).getIsClickable() ?? false }.first
+        return gameScene.nodes(at: currentPosition).filter { AFNodeAdapter($0).getIsClickable() }.first
     }
 
     func keyDown(with event: NSEvent) {
