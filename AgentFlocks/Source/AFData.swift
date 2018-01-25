@@ -38,7 +38,7 @@ class AFDataModel {
     private var delegate: AFDataModelDelegate?
     private var paths = [String : AFPathData]()
     
-    enum NotificationType: String { case CoreReady = "CoreReady", DeletedAgent = "DeletedAgent",
+    enum NotificationType: String { case AppCoreReady = "AppCoreReady", DeletedAgent = "DeletedAgent",
         DeletedBehavior = "DeletedBehavior", DeletedGoal = "DeletedGoal",
         DeletedGraphNode = "DeletedGraphNode", DeletedPath = "DeletedPath", GameSceneReady = "GameSceneReady",
         NewAgent = "NewAgent", NewBehavior = "NewBehavior", NewGoal = "NewGoal",
@@ -270,6 +270,16 @@ class AFDataModel {
         announceNewPath(path.name)
     }
     
+    func isMyFamily(object: String, family: String) -> Bool {
+        if let a = agents[family] {
+            return object == family || a.isMyFamily(object)
+        } else if let p = paths[family] {
+            return object == family || p.isMyFamily(object)
+        } else {
+            fatalError()
+        }
+    }
+
     func setAttribute(_ attribute: AFAgentAttribute, to value: Float, for agent: String) {
         agents[agent]!.attributes[attribute] = value
         
@@ -282,14 +292,14 @@ class AFDataModel {
 // MARK - Announcement functions
 
 extension AFDataModel {
-    
+
     func announceCoreReady() {
         let u: [String : Any] = [
             "AFDataModel" : self, "UINotifications" : AFCore.sceneUI.notificationsSender,
             "DataNotifications" : notifications
         ]
         
-        let n = Notification.Name(rawValue: NotificationType.CoreReady.rawValue)
+        let n = Notification.Name(rawValue: NotificationType.AppCoreReady.rawValue)
         let nn = Notification(name: n, object: self, userInfo: u)
 
         // Note that we post the core ready message to the default notification
@@ -363,19 +373,37 @@ extension AFDataModel {
 class AFAgentData {
     var attributes = [AFAgentAttribute : Float]()
     let compositeBehaviorData: AFCompositeBehaviorData
+    let familyName: String
     let name: String
     let scale: Float
     
+    static let defaultAttributes: [AFAgentAttribute : Float] = [
+        .Mass : 1.0, .MaxAcceleration : 200.0, .MaxSpeed : 100.0, .Radius: 50.0, .Scale: 1.0
+    ]
+    
     init() {
-        self.name = NSUUID().uuidString
-        self.compositeBehaviorData = AFCompositeBehaviorData(familyName: self.name)
+        let newName = NSUUID().uuidString
+
+        self.attributes = AFAgentData.defaultAttributes
+        self.compositeBehaviorData = AFCompositeBehaviorData(familyName: newName)
+        
+        self.familyName = newName
+        self.name = newName
         self.scale = 1
     }
     
     init(copyFrom: AFAgentData) {
-        self.name = NSUUID().uuidString // Always, a unique name, even when copying
+        let newName = NSUUID().uuidString
+
+        self.attributes = (copyFrom.attributes.count == 0) ? AFAgentData.defaultAttributes : copyFrom.attributes
         self.compositeBehaviorData = AFCompositeBehaviorData(copyFrom: copyFrom.compositeBehaviorData)
+        self.familyName = copyFrom.familyName
+        self.name = newName // Always, a unique name, even when copying
         self.scale = copyFrom.scale
+    }
+    
+    func isMyFamily(_ object: String) -> Bool {
+        return object == self.name || compositeBehaviorData.isMyFamily(object)
     }
 }
 
@@ -398,6 +426,10 @@ class AFBehaviorData {
             let newGoal = AFGoalData(copyFrom: $0.value.goalData)
             self.goals[newGoal.name] = (newGoal, $0.value.weight)
         }
+    }
+    
+    func isMyFamily(_ object: String) -> Bool {
+        return self.name == object || goals.contains(where: { $0.value.goalData.isMyFamily(object) })
     }
     
     func newGoal(_ type: AFGoalType, for agent: String, parentBehavior: String, weight: Float, targets: [String]? = nil,
@@ -438,6 +470,10 @@ class AFCompositeBehaviorData {
         let newBehavior = AFBehaviorData(familyName: self.familyName)
         behaviors[newBehavior.name] = (newBehavior, weight)
         return newBehavior.name
+    }
+    
+    func isMyFamily(_ object: String) -> Bool {
+        return self.name == object || behaviors.contains(where: { $0.value.behaviorData.isMyFamily(object) })
     }
 }
 
@@ -487,6 +523,10 @@ class AFGoalData {
         self.time = time
         self.weight = nil
     }
+    
+    func isMyFamily(_ object: String) -> Bool {
+        return self.name == object
+    }
 }
 
 class AFGraphNodeData: Equatable {
@@ -509,6 +549,10 @@ class AFPathData {
     
     init() {
         self.name = NSUUID().uuidString
+    }
+    
+    func isMyFamily(_ object: String) -> Bool {
+        return self.name == object || graphNodes[object] != nil
     }
 }
 

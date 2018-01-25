@@ -124,6 +124,9 @@ extension AFCompositeBehavior {/*
     func howManyChildren() -> Int {
         return behaviorCount
     }
+     */
+    
+    /*
     
     func toString() -> String {
         return "You've found a bug"

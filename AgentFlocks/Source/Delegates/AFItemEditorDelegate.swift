@@ -158,7 +158,7 @@ class AFItemEditorDelegate {
         guard selectedNodes.count > 0 else { return }
         
         let node = sceneUI.primarySelection!
-        let agent = AFNodeAdapter(node).getOwningAgent()
+        let agent = AFNodeAdapter(node).getOwningAgent()!
         
         if let behavior = state.editedItem as? AFBehavior {
             refreshBehavior(agent: agent, behavior: behavior, weight: state.weight.value)

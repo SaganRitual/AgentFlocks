@@ -36,7 +36,7 @@ extension AFSceneController {
         }
         
         private func click_black(flags: NSEvent.ModifierFlags?) {
-            deselectAll()
+            sceneUI.deselectAll()
             
             if flags?.contains(.option) ?? false {
                 sceneUI.enter(Draw.self)
@@ -70,10 +70,10 @@ extension AFSceneController {
                 if sceneUI.mouseState == .down {    // That is, we're coming out of down as opposed to drag
                     let setSelection = (sceneUI.primarySelection != sceneUI.upNode!)
                     
-                    deselectAll()
+                    sceneUI.deselectAll()
                     
                     if setSelection {
-                        select(sceneUI.upNode!, primary: true)
+                        sceneUI.select(sceneUI.upNode!, primary: true)
                     }
                 }
             }
@@ -84,15 +84,18 @@ extension AFSceneController {
         override func didEnter(from previousState: GKState?) {
         }
         
-        override func newAgentHasBeenCreated(_ name: String) {
-            let embryo = sceneUI.appData.getAgent(name)
+        override func newAgentHasBeenCreated(_ notification: Notification) {
+            let agent = notification.object as! String
+            let embryo = sceneUI.appData.getAgent(agent)
             let image = sceneUI.ui.agents[AFCore.browserDelegate.agentImageIndex].image
-            _ = AFAgent2D(appData: sceneUI.appData, embryo: embryo, image: image,
+            let afAgent = AFAgent2D(appData: sceneUI.appData, embryo: embryo, image: image,
                           position: sceneUI.currentPosition, scene: sceneUI.gameScene)
+            
+            sceneUI.select(afAgent.name, primary: true)
         }
         
         override func willExit(to nextState: GKState) {
-            deselectAll()
+            sceneUI.deselectAll()
         }
     }
 }

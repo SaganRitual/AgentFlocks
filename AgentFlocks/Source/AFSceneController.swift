@@ -40,30 +40,65 @@ protocol AFSpriteContainerNode {
 // we have to use a broadcast rather than a delegate. But these
 // are the messages you'll get anyway, just in a different form.
 protocol AFSceneControllerDelegate {
-    func hasBeenDeselected()
-    func hasBeenSelected(primary: Bool)
+    func hasBeenDeselected(_ name: String?)
+    func hasBeenSelected(_ name: String, primary: Bool)
 }
 
 struct AFNodeAdapter {
-    let name: String
+    let name: String?
     let node: SKNode
     
-    init(_ node: SKNode) { self.name = node.name!; self.node = node }
-    
-    func getIsClickable() -> Bool {
-        return false
+    init(_ node: SKNode) {
+        // Lots of sprites out there, but we only care about the ones
+        // that have names, and not even all of them.
+        if let nodeName = node.name { self.name = nodeName } else { self.name = nil }
+        self.node = node
     }
     
-    func getOwningAgent() -> AFAgent2D {
-        fatalError()
+    func getIsClickable() -> Bool {
+        return (getUserDataEntry("clickable") as? Bool) ?? false
+    }
+    
+    static func getOwningAgent(for node: SKNode) -> AFAgent2D? {
+        if let userData = node.userData, let value = userData["OwningAgent"] {
+            return value as? AFAgent2D
+        } else {
+            return nil
+        }
+    }
+    
+    func getOwningAgent() -> AFAgent2D? {
+        return AFNodeAdapter.getOwningAgent(for: self.node)
+    }
+    
+    func getUserDataEntry(_ name: String) -> Any? {
+        if let userData = node.userData, let value = userData[name] {
+            return value
+        } else {
+            return nil
+        }
     }
     
     func move(to: CGPoint) {
         
     }
     
+    func setIsClickable(_ set: Bool = true) {
+        setUserDataEntry(key: "clickable", value: set)
+    }
+    
+    func setOwningAgent(_ agent: AFAgent2D) {
+        if let userData = node.userData { userData["OwningAgent"] = agent }
+    }
+    
+    func setUserDataEntry(key: String, value: Any) {
+        if let userData = node.userData {
+            userData[key] = value
+        }
+    }
+    
     func setZPosition(above: Int) {
-        
+        setUserDataEntry(key: "zPosition", value: above)
     }
 }
 
@@ -90,8 +125,7 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     var upNode: SKNode?
 
     enum MouseStates { case down, dragging, rightDown, rightUp, up }
-    enum NotificationType: String { case AppCoreReady = "AppCoreReady", Deselected = "Deselected",
-        Recalled = "Recalled", Selected = "Selected"}
+    enum NotificationType: String { case Deselected = "Deselected", Recalled = "Recalled", Selected = "Selected"}
 
     init(gameScene: GameScene, ui: AppDelegate, contextMenu: AFContextMenu) {
         self.contextMenu = contextMenu
@@ -105,20 +139,20 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
         // Note: we're using the default center here; that's where we all
         // broadcast our ready messages.
         let center = NotificationCenter.default
-        let sceneControllerReady = Notification.Name(rawValue: NotificationType.AppCoreReady.rawValue)
+        let sceneControllerReady = Notification.Name(rawValue: AFDataModel.NotificationType.AppCoreReady.rawValue)
         let selector = #selector(coreReady(notification:))
-        center.addObserver(self, selector: selector, name: nil, object: nil)
+        center.addObserver(self, selector: selector, name: sceneControllerReady, object: nil)
 
         enter(Default.self)
     }
     
     @objc func coreReady(notification: Notification) {
         guard let info = notification.userInfo as? [String : Any] else { return }
-        guard let dataModelEntry = info["DataModel"] else { return }
+        guard let dataModelEntry = info["AFDataModel"] as? AFDataModel else { return }
         
         NotificationCenter.default.removeObserver(self)
 
-        self.appData = info["DataModel"] as! AFDataModel
+        self.appData = dataModelEntry
         self.notificationsReceiver = info["DataNotifications"] as! NotificationCenter
 
         let aNotification = NSNotification.Name(rawValue: AFDataModel.NotificationType.NewAgent.rawValue)
@@ -132,15 +166,15 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     
     func addNodeToPath(at position: CGPoint) { activePath.addGraphNode(at: position) }
     
-    func announceSelect(_ node: SKNode, primary: Bool) {
-        let n = Notification.Name(rawValue: NotificationType.Selected.rawValue)
-        let nn = Notification(name: n, object: (node, primary), userInfo: nil)
-        notificationsSender.post(nn)
-    }
-    
     func announceDeselect(_ node: SKNode?) {
         let n = Notification.Name(rawValue: NotificationType.Deselected.rawValue)
         let nn = Notification(name: n, object: node, userInfo: nil)
+        notificationsSender.post(nn)
+    }
+
+    func announceSelect(_ node: SKNode, primary: Bool) {
+        let n = Notification.Name(rawValue: NotificationType.Selected.rawValue)
+        let nn = Notification(name: n, object: (node, primary), userInfo: nil)
         notificationsSender.post(nn)
     }
 
@@ -244,12 +278,12 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
         downNode = nil
     }
     
-    @objc func newAgentHasBeenCreated(_ name: String) {
-        drone.newAgentHasBeenCreated(name)
+    @objc func newAgentHasBeenCreated(_ notification: Notification) {
+        drone.newAgentHasBeenCreated(notification)
     }
     
-    @objc func newPathHasBeenCreated(_ name: String) {
-        drone.newPathHasBeenCreated(name)
+    @objc func newPathHasBeenCreated(_ notification: Notification) {
+        drone.newPathHasBeenCreated(notification)
     }
     
     func recallAgents() {
@@ -266,6 +300,13 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     func rightMouseUp(_ info: AFSceneInput.InputInfo) {
         upNode = info.node
         mouseState = .rightUp
+    }
+    
+    func select(_ nodeName: String, primary: Bool) {
+        let node = gameScene.nodes(at: currentPosition).filter { $0.name != nil && $0.name! == nodeName }
+        if node.count > 0 {
+            select(node.first!, primary: primary)
+        }
     }
     
     func select(_ node: SKNode, primary: Bool) {

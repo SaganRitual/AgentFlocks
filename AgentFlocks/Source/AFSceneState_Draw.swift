@@ -40,7 +40,7 @@ extension AFSceneController {
                     (flags?.contains(.option) ?? false)) else { return }
             
             // Clicked in the black; add a node
-            deselectAll()
+            sceneUI.deselectAll()
             
             sceneUI.appData.newGraphNode(for: sceneUI.activePath.name)
         }
@@ -67,10 +67,10 @@ extension AFSceneController {
             updateDrawIndicator(position)
         }
         
-        override func newPathHasBeenCreated(_ name: String) {
+        override func newPathHasBeenCreated(_ notification: Notification) {
             guard sceneUI.activePath == nil else { fatalError() }
             
-            let embryo = sceneUI.appData.getPath(name)
+            let embryo = sceneUI.appData.getPath(notification.object as! String)
             sceneUI.activePath = AFPath(appData: sceneUI.appData, embryo: embryo, scene: sceneUI.gameScene)
             
             // With a new path started, no other options are available
@@ -95,7 +95,7 @@ extension AFSceneController {
         
         override func willExit(to nextState: GKState) {
             drawIndicator?.removeFromParent()
-            deselectAll()
+            sceneUI.deselectAll()
         }
     }
 }

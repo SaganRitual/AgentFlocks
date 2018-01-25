@@ -21,6 +21,21 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 //
+import SpriteKit
+
+func Nickname(_ node: SKNode) -> String  {
+    if let name = node.name {
+        return Nickname(name)
+    } else {
+        return "<no name>"
+    }
+}
+
+func Nickname(_ name: String) -> String {
+    let indexStartOfText = name.index(name.startIndex, offsetBy: 0)
+    let indexEndOfText = name.index(name.startIndex, offsetBy: 4)
+    return String(name[indexStartOfText ..< indexEndOfText])
+}
 
 class AFCore {
     static var agentGoalsDelegate: AFAgentGoalsDelegate!
@@ -59,6 +74,8 @@ class AFCore {
         ui.coreItemEditorDelegate = itemEditorDelegate
         ui.coreMenuBarDelegate = menuBarDelegate
         ui.coreTopBarDelegate = topBarDelegate
+        
+        appData.announceCoreReady()
         
         // We don't add this one to AppDelegate, because it's owned by
         // GameScene. We return it so AppDelegate can plug it into

@@ -60,7 +60,7 @@ class AFGraphNode2D: GKGraphNode2D {
         self.familyName = embryo.familyName
         self.name = name
         self.scene = scene
-        self.spriteSet = SpriteSet(name: name, scene: scene, position: position)
+        self.spriteSet = SpriteSet(familyName: familyName, scene: scene, position: position)
         
         super.init(point: position.as_vector_float2())
     }
@@ -70,17 +70,12 @@ class AFGraphNode2D: GKGraphNode2D {
     }
     
     func hasBeenDeleted(_ name: String) {
-        
     }
     
     func hasBeenDeselected(_ name: String) {
-        if name == self.name { self.isSelected = true }
-        spriteSet.hasBeenDeselected()
     }
     
     func hasBeenSelected(_ name: String, primary: Bool) {
-        if name == self.name { self.isSelected = true }
-        spriteSet.hasBeenSelected(primary: primary)
     }
     
     func move(to position: CGPoint) {
@@ -107,26 +102,30 @@ extension AFGraphNode2D {
     }
     
     class SpriteSet: AFSceneControllerDelegate {
-        var isSelected = false
-        let primaryContainer: AFGraphNode2D.SpriteContainerNode
-        unowned let scene: SKScene
-        var selectionIndicator: SKNode
-        let selectionIndicatorRadius: CGFloat = 30
-        let theSprite: SKShapeNode
+        private let familyName: String
+        private var isSelected = false
+        private var primaryContainer: AFGraphNode2D.SpriteContainerNode!
+        private unowned let scene: SKScene
+        private var selectionIndicator: SKNode
+        private let selectionIndicatorRadius: CGFloat = 30
+        private let theSprite: SKShapeNode
+        
+        var name: String { return primaryContainer.name! }
         
         var position: CGPoint {
             get { return primaryContainer.position }
             set { primaryContainer.position = newValue }
         }
         
-        init(name: String, scene: SKScene, position: CGPoint) {
+        init(familyName: String, scene: SKScene, position: CGPoint) {
             (theSprite, selectionIndicator) = SpriteSet.makeMarkerSprite(radius: 30, position: position, selectionIndicatorRadius: 40)
+            
+            self.familyName = familyName
+            self.scene = scene
             
             primaryContainer = AFGraphNode2D.SpriteContainerNode(name: name)
             primaryContainer.position = position
-            
-            self.scene = scene
-            
+
             scene.addChild(primaryContainer)
             primaryContainer.addChild(theSprite)
         }
@@ -135,12 +134,16 @@ extension AFGraphNode2D {
             primaryContainer.removeFromParent()
         }
         
-        func hasBeenDeselected() {
-            isSelected = false
-            selectionIndicator.removeFromParent()
+        func hasBeenDeselected(_ name: String?) {
+            if name == nil || name! == self.name {
+                isSelected = false
+                selectionIndicator.removeFromParent()
+            }
         }
         
-        func hasBeenSelected(primary: Bool) {        // 40 is just a number that makes the rings look about right to me
+        func hasBeenSelected(_ name: String, primary: Bool) {        // 40 is just a number that makes the rings look about right to me
+            guard name == self.name else { return }
+
             isSelected = true
             
             selectionIndicator = AFAgent2D.makeRing(radius: 40, isForSelector: true, primary: primary)

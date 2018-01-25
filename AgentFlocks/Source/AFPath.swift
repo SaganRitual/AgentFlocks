@@ -71,12 +71,20 @@ class AFPath: Equatable {
     
     @objc func graphNodeHasBeenDeleted(_ name: String) { _ = graphNodes.remove(name) }
     
-    @objc func hasBeenSelected(_ name: String, primary: Bool) {
+    @objc func hasBeenDeselected(_ node: SKNode) {
+        // The scene controller just calls out the name of the
+        // node who's been deselected. It's up to the node to
+        // respond only to its own name.
+        guard node.name! == self.name else { return }
+        graphNodes.forEach { $0.hasBeenDeselected(node.name!) }
+    }
+    
+    @objc func hasBeenSelected(_ node: SKNode, primary: Bool) {
         // The scene controller just calls out the name of the
         // node who's been selected. It's up to the node to
         // respond only to its own name.
-        guard name == self.name else { return }
-        graphNodes.forEach { $0.hasBeenSelected(name, primary: primary) }
+        guard node.name! == self.name else { return }
+        graphNodes.forEach { $0.hasBeenSelected(node.name!, primary: primary) }
     }
     
     func move(to position: CGPoint) { spriteSet.move(to: position) }
@@ -137,12 +145,15 @@ extension AFPath {
             return nsImage
         }
 
-        func hasBeenDeselected() {
-            isSelected = false
-            pathHandle.strokeColor = .clear
+        func hasBeenDeselected(_ name: String?) {
+            if name == nil || name! == self.name {
+                isSelected = false
+                pathHandle.strokeColor = .clear
+            }
         }
         
-        func hasBeenSelected(primary: Bool) {
+        func hasBeenSelected(_ name: String, primary: Bool) {
+            guard name == self.name else { return }
             isSelected = true
             pathHandle.strokeColor = .green
         }

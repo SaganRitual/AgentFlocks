@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import SpriteKit
 
 protocol AgentAttributesDelegate {
 	func agent(_ controller: AgentAttributesController, newValue value:Double, ofAttribute:AgentAttributesController.Attribute)
@@ -166,26 +167,26 @@ class AgentAttributesController: NSViewController {
         // Note: we're using the default center here; that's where we all
         // broadcast our ready messages.
         let center = NotificationCenter.default
-        let name = Notification.Name(rawValue: AFSceneController.NotificationType.AppCoreReady.rawValue)
+        let name = Notification.Name(rawValue: AFDataModel.NotificationType.AppCoreReady.rawValue)
         let selector = #selector(coreReady(notification:))
         center.addObserver(self, selector: selector, name: name, object: nil)
 	}
     
     @objc func coreReady(notification: Notification) {
-        if let info = notification.userInfo {
+        if let info = notification.userInfo, let appData = info["AFDataModel"] as? AFDataModel {
             // Come back to this: the ui should be publishing its own notifications--
             // we should be waiting for a shout from the UI to tell us where its
             // personal notification center is.
-            self.appData = info["DataModel"] as! AFDataModel
+            self.appData = appData
             self.uiNotifications = info["UINotifications"] as! NotificationCenter
             self.dataNotifications = info["DataNotifications"] as! NotificationCenter
 
             let aName = Notification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
-            let aSelector = #selector(hasBeenSelected(_:))
+            let aSelector = #selector(hasBeenSelected(notification:))
             self.uiNotifications.addObserver(self, selector: aSelector, name: aName, object: nil)
             
             let bName = Notification.Name(rawValue: AFDataModel.NotificationType.SetAttribute.rawValue)
-            let bSelector = #selector(attributeHasBeenUpdated(_:to:))
+            let bSelector = #selector(attributeHasBeenUpdated(notification:))
             self.dataNotifications.addObserver(self, selector: bSelector, name: bName, object: nil)
         }
         
@@ -196,7 +197,12 @@ class AgentAttributesController: NSViewController {
 		self.init()
 	}
     
-    @objc func attributeHasBeenUpdated(_ attribute: Int, to newValue: Float) {
+    @objc func attributeHasBeenUpdated(notification: Notification) {
+        let (attribute, value, agent) = notification.object as! (Int, Float, String)
+        attributeHasBeenUpdated(attribute, to: value)
+    }
+    
+    func attributeHasBeenUpdated(_ attribute: Int, to newValue: Float) {
         switch AFAgentAttribute(rawValue: attribute)! {
         case .Mass:
             setMass(newValue, fromData: true)
@@ -204,7 +210,12 @@ class AgentAttributesController: NSViewController {
         }
     }
     
-    @objc func hasBeenSelected(_ name: String) {
+    @objc func hasBeenSelected(notification: Notification) {
+        let (node, primary) = notification.object as! (SKNode, Bool)
+        hasBeenSelected(node.name!, primary: primary)
+    }
+    
+    func hasBeenSelected(_ name: String, primary: Bool) {
         let agentData = appData.getAgent(name)
         
         setMass(agentData.attributes[AFAgentAttribute.Mass]!, fromData: true)

@@ -1,237 +1,315 @@
 //
-//  AFAgent2D.swift
-//  AgentFlocks
+// Created by Rob Bishop on 1/22/18
 //
-//  Created by Rob Bishop on 12/18/17.
-//  Copyright © 2017 TriKatz. All rights reserved.
+// Copyright © 2018 Rob Bishop
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
 //
 
 import GameplayKit
-/*
-class AFAgent2D_Script: Codable {
-    let motivator: AFCompositeBehavior_Script!
-    let imageFile: String
-    let position: CGPoint
-    let mass: Float
-    let maxSpeed: Float
-    let maxAcceleration: Float
-    let name: String
-    let radius: Float
-    
-    init(agent: AFAgent2D) {
-        position = CGPoint(agent.position)
-        mass = agent.mass
-        maxSpeed = agent.maxSpeed
-        maxAcceleration = agent.maxAcceleration
-        radius = agent.radius
-        name = agent.name
-        
-        motivator = AFCompositeBehavior_Script(composite: agent.behavior! as! AFCompositeBehavior)
-        
-        imageFile = ""
-    }
+
+enum AFAgentAttribute: Int { case Mass, MaxAcceleration, MaxSpeed, Radius, Scale }
+
+protocol AFAgentDelegate {
+    func newBehavior(for agent: String, weight: Float)
+    func newGoal(for agent: String, parentBehavior: String, weight: Float)
+    func setAttribute(_ attribute: AFAgentAttribute, for agent: String, to value: Float)
 }
 
-class AFAgent2D: GKAgent2D {
-    var isPlaying = true
-    let originalSize: CGSize
-    var radiusIndicator: SKNode?
-    let radiusIndicatorRadius: CGFloat = 100.0
-    var savedBehaviorState: AFCompositeBehavior?
+class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
+    
     var selected = false
-    var selectionIndicator: SKNode?
-    var showingRadius = false
-    let sprite: SKSpriteNode
-    let spriteContainer: SKNode
-
-    static var once: Bool = false
-
-    var name: String { get { return sprite.name! } set { return } }
     
-    var scale: Float {
-        willSet(newValue) {
-            let v = CGFloat(newValue)
-            sprite.scale(to: CGSize(width: originalSize.width * v, height: originalSize.height * v))
-        }
-    }
-    
-    init(scene: GameScene, prototype: AFAgent2D_Script) {
-        scale = 1
-        
-        let (cc, ss) = AFAgent2D.makeSpriteContainer(imageFile: prototype.imageFile, position: prototype.position)
-        spriteContainer = cc
-        sprite = ss
-        
-        sprite.name = prototype.name
-        
-        scene.addChild(spriteContainer)
+    private unowned let appData: AFDataModel
+    private let compositeBehaviorData: AFCompositeBehaviorData
+    let name: String
+    private unowned let dataNotifications: NotificationCenter
+    private var scale: Float
+    private let scene: SKScene
+    private var savedBehaviorState: AFCompositeBehavior?
+    private var sprites: AFAgent2D.SpriteSet!
+    private unowned let uiNotifications: NotificationCenter
 
-        originalSize = sprite.size
-
-        super.init()
-        
-        applyUserData(to: sprite)
-        
-        behavior = AFCompositeBehavior(prototype: prototype.motivator, agent: self)
-        
-        mass = prototype.mass
-        maxSpeed = prototype.maxSpeed
-        maxAcceleration = prototype.maxAcceleration
-        radius = prototype.radius
-    }
-    
-    init(scene: GameScene, copyFrom: AFAgent2D, position: CGPoint) {
-        scale = copyFrom.scale
-        
-        let (cc, ss) = AFAgent2D.makeSpriteContainer(copyFrom: copyFrom, position: position)
-        spriteContainer = cc
-        sprite = ss
-
-        spriteContainer.position = position
-        scene.addChild(spriteContainer)
-
-        originalSize = sprite.size
-        
-        super.init()
-        
-        self.position.x = Float(position.x)
-        self.position.y = Float(position.y)
-        
-        applyUserData(to: sprite)
-
-        behavior = AFCompositeBehavior(copyFrom: (copyFrom.behavior as! AFCompositeBehavior), agent: self)
-        
-        //
-        // This is the first data source for agent attributes
-        //
-        let ac = AFCore.ui.agentEditorController.attributesController
-        
-        mass = Float(ac.defaultMass)
-        maxSpeed = Float(ac.defaultMaxAcceleration)
-        maxAcceleration = Float(ac.defaultMaxSpeed)
-        radius = Float(ac.defaultRadius)
-        scale = Float(ac.defaultScale)
+    var isPaused: Bool {
+        get { return sprites.isPaused }
+        set { sprites.isPaused = newValue }
     }
 
-    init(scene: GameScene, image: NSImage, position: CGPoint) {
-        scale = 1
-        
-        let (cc, ss) = AFAgent2D.makeSpriteContainer(image: image, position: position)
-        spriteContainer = cc
-        sprite = ss
-        
-        spriteContainer.position = position
-        scene.addChild(spriteContainer)
-
-        originalSize = sprite.size
+    override var position: vector_float2 {
+        get { return super.position }
+        set { sprites.primaryContainer.position = CGPoint(newValue); super.position = newValue }
+    }
+    
+    init(appData: AFDataModel, embryo: AFAgentData, image: NSImage, position: CGPoint, scene: SKScene) {
+        self.appData = appData
+        self.compositeBehaviorData = embryo.compositeBehaviorData
+        self.name = embryo.name
+        self.dataNotifications = appData.notifications
+        self.uiNotifications = AFCore.sceneUI.notificationsSender
+        self.scale = embryo.scale
+        self.scene = scene
         
         super.init()
-        
-        applyUserData(to: sprite)
 
-        behavior = AFCompositeBehavior(agent: self)
-        
-        let b = AFBehavior(agent: self)
-        b.weight = 100
-        (behavior as! AFCompositeBehavior).setWeight(100, for: b)
+        self.sprites = AFAgent2D.SpriteSet(owningAgent: self, image: image, name: embryo.name, scale: embryo.scale, scene: scene)
 
-        //
-        // This is the first data source for agent attributes
-        //
-        let ac = AFCore.ui.agentEditorController.attributesController
+        // These notifications come from the data; notice we're listening on dataNotifications
+        let newBehavior = NSNotification.Name(rawValue: AFDataModel.NotificationType.NewBehavior.rawValue)
+        self.dataNotifications.addObserver(self, selector: #selector(newBehavior(notification:)), name: newBehavior, object: appData)
         
-        mass = Float(ac.defaultMass)
-        maxSpeed = Float(ac.defaultMaxAcceleration)
-        maxAcceleration = Float(ac.defaultMaxSpeed)
-        radius = Float(ac.defaultRadius)
-        scale = Float(ac.defaultScale)
+        let newGoal = NSNotification.Name(rawValue: AFDataModel.NotificationType.NewGoal.rawValue)
+        self.dataNotifications.addObserver(self, selector: #selector(newGoal(notification:)), name: newGoal, object: appData)
+        
+        let setAttribute = NSNotification.Name(rawValue: AFDataModel.NotificationType.SetAttribute.rawValue)
+        self.dataNotifications.addObserver(self, selector: #selector(setAttribute(notification:)), name: setAttribute, object: appData)
+        
+        // These notifications come from the UI; notice we're listening on uiNotifications
+        let select = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
+        self.uiNotifications.addObserver(self, selector: #selector(hasBeenSelected(notification:)), name: select, object: nil)
+        
+        let deselect = NSNotification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
+        self.uiNotifications.addObserver(self, selector: #selector(hasBeenDeselected(notification:)), name: deselect, object: nil)
+
+        // Use self here, because we want to set the container position too.
+        // But it has to happen after superclass init, because it talks to the superclass.
+        self.position = position.as_vector_float2()
+        
+        // Talk directly to super for this initial setting; it serves as our
+        // backing store for the agent attributes.
+        super.mass = embryo.attributes[.Mass]!
+        super.maxAcceleration = embryo.attributes[.MaxAcceleration]!
+        super.maxSpeed = embryo.attributes[.MaxSpeed]!
+        super.radius = embryo.attributes[.Radius]!
     }
     
     deinit {
-        spriteContainer.removeFromParent()
+        self.dataNotifications.removeObserver(self)
+        self.uiNotifications.removeObserver(self)
     }
     
+    func enableMotivators(_ on: Bool = true) {
+        if on { behavior = savedBehaviorState; savedBehaviorState = nil }
+        else { savedBehaviorState = behavior as? AFCompositeBehavior; behavior = nil }
+    }
+
+    func getBehavior(_ name: String) -> AFBehavior {
+        let composite = self.behavior as! AFCompositeBehavior
+        for i in 0 ..< composite.behaviorCount {
+            let behavior = composite[i] as! AFBehavior
+            if behavior.name == name { return behavior }
+        }
+        
+        fatalError()
+    }
+    
+    @objc func hasBeenDeselected(notification: Notification) {
+        let node = notification.object as? SKNode
+        hasBeenDeselected(node?.name)
+    }
+    
+    // name == nil means everyone
+    func hasBeenDeselected(_ name: String?) {
+        if name == nil || name! == self.name {
+            sprites.hasBeenDeselected(name)
+        }
+    }
+
+    @objc func hasBeenSelected(notification: Notification) {
+        let (node, primary) = notification.object as! (SKNode, Bool)
+        hasBeenSelected(node.name!, primary: primary)
+    }
+    
+    func hasBeenSelected(_ name: String, primary: Bool) {
+        if name == self.name {
+            sprites.hasBeenSelected(primary: primary)
+        }
+    }
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    func addGoal(_ goal: AFGoal) {
-        // The guys who aren't selected have no control over where their
-        // new group goal goes. Just put everyone's in a new behavior.
-        let b = AFBehavior(agent: self)
-        b.setWeightage(goal.weight, for: goal)
-        (behavior as! AFCompositeBehavior).setWeight(goal.weight, for: b)
-    }
-    
-    func applyUserData(to: SKNode) {
-        AFSceneController.AFNodeAdapter(to).setupUserData(
-            clickable: true, nodeOwner: self, nodeType: "random part of agent entourage",
-            owningAgent: self, selectable: true
-        )
-    }
+}
 
-    func deselect() {
-        selected = false;
-        clearSelectionIndicator()
-    }
-    
-    static func makeSpriteContainer(copyFrom: AFAgent2D, position: CGPoint) -> (SKNode, SKSpriteNode) {
-        let texture = SKTexture(imageNamed: "Herman")
-        let cgImage = texture.cgImage()
-        let nsImage = NSImage(cgImage: cgImage, size: NSSize(width: 50, height: 50))
+// MARK - Sprite central for the agent
+
+extension AFAgent2D {
+    class SpriteContainerNode: SKNode {
+        var agentConnector: NSMutableDictionary { return super.userData! }
         
-        return makeSpriteContainer(image: nsImage, position: position)
-    }
-    
-    static func makeSpriteContainer(image: NSImage, position: CGPoint, _ name: String? = nil) -> (SKNode, SKSpriteNode) {
-        let container = SKNode()
-        container.position = position + AFCore.sceneUI.nodeToMouseOffset
-        container.zPosition = CGFloat(AFCore.sceneUI.getNextZPosition())
-
-        var texture: SKTexture!
-        
-        if image.isValid { texture = SKTexture(image: image) }
-        else { texture = SKTexture(imageNamed: "Herman") }
-        
-        let sprite = SKSpriteNode(texture: texture)
-
-        if let n = name { sprite.name = n }
-        else { sprite.name = NSUUID().uuidString }
-        
-        AFSceneController.AFNodeAdapter(sprite).setupUserData(
-            clickable: true, nodeOwner: self, nodeType: "unspecified agent groupie", selectable: true
-        )
-
-        container.name = sprite.name
-        container.addChild(sprite)
-        return (container, sprite)
-    }
-
-    static func makeSpriteContainer(imageFile: String, position: CGPoint, _ name: String? = nil) -> (SKNode, SKSpriteNode) {
-        let path = Bundle.main.resourcePath!
-        let image = NSImage(byReferencingFile: "\(path)/\(imageFile)")!
-        return makeSpriteContainer(image: image, position: position, name)
-    }
-    
-    func move(to position: CGPoint) {
-        self.position = position.as_vector_float2()
-        spriteContainer.position = position
-    }
-
-    func select(primary: Bool = true) {
-        if let si = selectionIndicator {
-            si.removeFromParent()
+        init(name: String) {
+            super.init()
+            super.name = name
+            super.userData = NSMutableDictionary()
         }
         
-        setSelectionIndicator(primary: primary)
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+    }
+
+    class SpriteSet {
+        var isSelected = false
+        var isShowingRadius = false
+        let primaryContainer: AFAgent2D.SpriteContainerNode
+        var radiusIndicator: SKNode!
+        let radiusIndicatorLength: Float = 100
+        unowned let scene: SKScene
+        var selectionIndicator: SKNode!
+        let theSprite: SKSpriteNode
+        
+        var isPaused: Bool {
+            get { return primaryContainer.isPaused }
+            set { primaryContainer.isPaused = newValue }
+        }
+        
+        var scale_: Float = 1
+        var scale: Float {
+            get { return scale_ }
+            set { primaryContainer.setScale(CGFloat(newValue)) ; scale_ = newValue }
+        }
+
+        init(owningAgent: AFAgent2D, image: NSImage, name: String, scale: Float, scene: SKScene) {
+            self.scale_ = scale
+            self.scene = scene
+
+            // The primaryContainer node is the only component in the
+            // system who is directly aware of the Agent. When we
+            // destruct the sprite, the Agent will destruct too.
+            primaryContainer = AFAgent2D.SpriteContainerNode(name: name)
+            AFNodeAdapter(primaryContainer).setOwningAgent(owningAgent)
+
+            let texture = SKTexture(image: image)
+            theSprite = SKSpriteNode(texture: texture)
+            
+            scene.addChild(primaryContainer)
+            primaryContainer.addChild(theSprite)
+//
+//            let barfNode = SKShapeNode(circleOfRadius: 50)
+//            barfNode.fillColor = .red
+//            scene.addChild(barfNode)
+        }
+        
+        deinit {
+            primaryContainer.removeFromParent()
+        }
+
+        func hasBeenDeselected(_ name: String?) {
+            // nil means everyone has been deselected. Otherwise
+            // it might be someone else being deselected, so I
+            // have to check whose name is being called.
+            if name == nil || name! == primaryContainer.name! {
+                isSelected = false
+                isShowingRadius = false
+                radiusIndicator.removeFromParent()
+                selectionIndicator.removeFromParent()
+            }
+        }
+        
+        func hasBeenSelected(primary: Bool) {
+            isSelected = true
+            isShowingRadius = true
+            
+            // 40 is just a number that makes the rings look about right to me
+            selectionIndicator = AFAgent2D.makeRing(radius: 40, isForSelector: true, primary: primary)
+            primaryContainer.addChild(selectionIndicator)
+            
+            radiusIndicator = AFAgent2D.makeRing(radius: radiusIndicatorLength, isForSelector: false, primary: primary)
+            primaryContainer.addChild(radiusIndicator)
+        }
+    }
+}
+
+// MARK - Callbacks from the core data manager
+
+extension AFAgent2D: AFDataModelDelegate {
+    // We don't register for newagent notifications, but we need this
+    // in order to conform to the delegate protocol.
+    func newAgent(_ name: String) {}
+
+    @objc func newBehavior(notification: Notification) {
+        let (behavior, agent) = notification.object as! (String, String)
+        newBehavior(behavior, for: agent)
+    }
+
+    func newBehavior(_ name: String, for agent: String) {
+        guard agent == self.name else { return }    // Notifier blasts to everyone
+        
+        let (behaviorData, weight) = appData.getBehavior(name, from: agent)
+        
+        (self.behavior as! AFCompositeBehavior).addBehavior(data: behaviorData, scene: self.scene, weight: weight)
     }
     
-    override func update(deltaTime seconds: TimeInterval) {
-        guard isPlaying else { return }
+    @objc func newGoal(notification: Notification) {
+        if let (goal, behavior, agent) = notification.object as? (String, String, String) {
+            newGoal(goal, parentBehavior: behavior, for: agent)
+        }
+    }
+    
+    func newGoal(_ name: String, parentBehavior: String, for agent: String) {
+        guard agent == self.name else { return }    // Notifier blasts to everyone
 
-        super.update(deltaTime: seconds)
-        spriteContainer.position = CGPoint(x: Double(position.x), y: Double(position.y))
-        spriteContainer.zRotation = CGFloat(Double(rotation) - Double.pi / 2.0)
+        let (goalData, weight) = appData.getGoal(name, parentBehavior: parentBehavior, agent: agent)
+        
+        let behavior = getBehavior(parentBehavior)
+        behavior.aGoalWasCreated(embryo: goalData, weight: weight)
+    }
+    
+    @objc func setAttribute(notification: Notification) {
+        if let (attribute, value, agent) = notification.object as? (Int, Float, String) {
+            setAttribute(attribute, to: value, for: agent)
+        }
+    }
+    
+    func setAttribute(_ asInt: Int, to value: Float, for agent: String) {
+        guard agent == self.name else { return }    // Notifier blasts to everyone
+
+        switch AFAgentAttribute(rawValue: asInt)! {
+        case .Mass:            self.mass = value
+        case .MaxAcceleration: self.maxAcceleration = value
+        case .MaxSpeed:        self.maxSpeed = value
+        case .Radius:          self.radius = value
+        case .Scale:           self.scale = value
+        }
+    }
+}
+
+// MARK - most agent attributes talk directly to appData
+
+extension AFAgent2D {
+    override var mass: Float {
+        get { return super.mass }
+        set { appData.setAttribute(.Mass, to: newValue, for: self.name); super.mass = newValue }
+    }
+    
+    override var maxAcceleration: Float {
+        get { return super.maxAcceleration }
+        set { appData.setAttribute(.MaxAcceleration, to: newValue, for: self.name); super.maxAcceleration = newValue }
+    }
+    
+    override var maxSpeed: Float {
+        get { return super.maxSpeed }
+        set { appData.setAttribute(.MaxSpeed, to: newValue, for: self.name); super.maxSpeed = newValue }
+    }
+    
+    override var radius: Float {
+        get { return super.radius }
+        set { appData.setAttribute(.Radius, to: newValue, for: self.name); super.radius = newValue }
     }
 }
 
@@ -275,72 +353,5 @@ extension AFAgent2D {
         
         return ring
     }
-    
-    func setSelectionIndicator(primary: Bool = true) {
-        selected = true;
-
-        // 40 is just a number that makes the rings look about right to me
-        selectionIndicator = AFAgent2D.makeRing(radius: 40, isForSelector: true, primary: primary)
-        spriteContainer.addChild(selectionIndicator!)
-        
-        radiusIndicator = AFAgent2D.makeRing(radius: radius, isForSelector: false, primary: primary)
-        spriteContainer.addChild(radiusIndicator!)
-    }
-
-    func clearSelectionIndicator() {
-        if let si = selectionIndicator {
-            si.removeFromParent()
-            selectionIndicator = nil
-        }
-        
-        if let ri = radiusIndicator {
-            ri.removeFromParent()
-            radiusIndicator = nil
-        }
-    }
 }
 
-// MARK : Behaviors & goals
-
-extension AFAgent2D {
-    func enableMotivators(_ on: Bool = true) {
-        if on {
-            behavior = savedBehaviorState
-            savedBehaviorState = nil
-        } else {
-            savedBehaviorState = behavior as? AFCompositeBehavior
-            behavior = nil
-        }
-    }
-}
-
-// MARK: Basic agent attributes
-
-
-extension AFAgent2D: AgentAttributesDelegate {
-    func agent(_ controller: AgentAttributesController, newValue value: Double, ofAttribute: AgentAttributesController.Attribute) {
-        // This is where we come when the slider is moved around
-        let v = Float(value)
-        switch ofAttribute {
-        case .mass:            mass = v
-        case .maxAcceleration: maxAcceleration = v
-        case .maxSpeed:        maxSpeed = v
-        case .scale:           scale = v
-
-        case .radius:
-            radius = v
-
-            if let r = radiusIndicator { r.removeFromParent() }
-
-            radiusIndicator = AFAgent2D.makeRing(radius: radius, isForSelector: false, primary: false)
-            spriteContainer.addChild(radiusIndicator!)
-            break
-        }
-    }
-    
-    func getPrimarySelectedAgent() -> AFAgent2D {
-        return AFSceneController.AFNodeAdapter(AFCore.sceneUI.primarySelection!).getOwningAgent()!
-    }
-}
-
-*/

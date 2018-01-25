@@ -77,7 +77,7 @@
 		D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561D1FE7A2F000FC454B /* SceneController.swift */; };
 		D44256201FE7A41800FC454B /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561F1FE7A41800FC454B /* GameScene.swift */; };
 		D442562B1FE80FA000FC454B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = D442562A1FE80FA000FC454B /* README.md */; };
-		D442B988201692810072EE5A /* AFAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B987201692810072EE5A /* AFAgent.swift */; };
+		D442B988201692810072EE5A /* AFAgent2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B987201692810072EE5A /* AFAgent2D.swift */; };
 		D442B98E20172AA40072EE5A /* AFSceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B98D20172AA40072EE5A /* AFSceneController.swift */; };
 		D442B990201774570072EE5A /* AFMotivatorsReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B98F201774570072EE5A /* AFMotivatorsReader.swift */; };
 		D44FCF2E1FFF5AA30067258D /* (null) in Resources */ = {isa = PBXBuildFile; };
@@ -175,9 +175,8 @@
 		D44256191FE7A19000FC454B /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		D442561D1FE7A2F000FC454B /* SceneController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneController.swift; sourceTree = "<group>"; };
 		D442561F1FE7A41800FC454B /* GameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
-		D44256261FE804F000FC454B /* AFAgent2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFAgent2D.swift; sourceTree = "<group>"; };
 		D442562A1FE80FA000FC454B /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		D442B987201692810072EE5A /* AFAgent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFAgent.swift; sourceTree = "<group>"; };
+		D442B987201692810072EE5A /* AFAgent2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFAgent2D.swift; sourceTree = "<group>"; };
 		D442B98D20172AA40072EE5A /* AFSceneController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSceneController.swift; sourceTree = "<group>"; };
 		D442B98F201774570072EE5A /* AFMotivatorsReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFMotivatorsReader.swift; sourceTree = "<group>"; };
 		D4506DD41FFE65B50077A42A /* AFPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFPath.swift; sourceTree = "<group>"; };
@@ -342,8 +341,7 @@
 			isa = PBXGroup;
 			children = (
 				D4D16562200D7F880065728D /* Delegates */,
-				D442B987201692810072EE5A /* AFAgent.swift */,
-				D44256261FE804F000FC454B /* AFAgent2D.swift */,
+				D442B987201692810072EE5A /* AFAgent2D.swift */,
 				D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */,
 				D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */,
 				D43A7604200B23330048796D /* AFContextMenu.swift */,
@@ -522,7 +520,7 @@
 				D420D47E2012FC3B004A9B46 /* AFSceneState.swift in Sources */,
 				D442B990201774570072EE5A /* AFMotivatorsReader.swift in Sources */,
 				74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */,
-				D442B988201692810072EE5A /* AFAgent.swift in Sources */,
+				D442B988201692810072EE5A /* AFAgent2D.swift in Sources */,
 				D4D1655B200CA2B60065728D /* AFMenuBarDelegate.swift in Sources */,
 				D43A7605200B23330048796D /* AFContextMenu.swift in Sources */,
 				D4422622200795070013A6E5 /* AFOrderedMap.swift in Sources */,

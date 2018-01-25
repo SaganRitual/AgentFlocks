@@ -30,8 +30,8 @@ protocol AFSceneControllerState {
     func deselectAll()
     func flagsChanged(to newFlags: NSEvent.ModifierFlags)
     func mouseMove(to position: CGPoint)
-    func newAgentHasBeenCreated(_ name: String)
-    func newPathHasBeenCreated(_ name: String)
+    func newAgentHasBeenCreated(_ notification: Notification)
+    func newPathHasBeenCreated(_ notification: Notification)
     func select(_ node: SKNode, primary: Bool)
     func updateDrawIndicator(_ position: CGPoint)
 }
@@ -48,8 +48,8 @@ extension AFSceneController {
         func deselectAll() {}
         func flagsChanged(to newFlags: NSEvent.ModifierFlags) {}
         func mouseMove(to position: CGPoint) {}
-        func newAgentHasBeenCreated(_ name: String) {}
-        func newPathHasBeenCreated(_ name: String) {}
+        func newAgentHasBeenCreated(_ notification: Notification) {}
+        func newPathHasBeenCreated(_ notification: Notification) {}
         func select(_ node: SKNode, primary: Bool) {}
         func updateDrawIndicator(_ position: CGPoint) { }
     }
