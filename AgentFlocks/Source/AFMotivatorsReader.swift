@@ -24,27 +24,27 @@
 
 import GameplayKit
 
-struct AFMotivatorsReader: AgentGoalsDataSource {
-    var agent: String?
-    unowned let appData: AFDataModel
+struct AFMotivatorsReader/*: AgentGoalsDataSource*/ {
+//    var agent: String?
+//    unowned let coreData: AFCoreData
     
-    init(appData: AFDataModel) {
-        self.appData = appData
+    init(coreData: AFCoreData) {
+//        self.coreData = coreData
     }
-    
+/*
     func agentGoals(_ agentGoalsController: AgentGoalsController, numberOfChildrenOfItem item: Any?) -> Int {
         let itemName = item! as! String
-        return appData.getChildCount(for: itemName)
+        return coreData.getChildCount(for: itemName)
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemExpandable item: Any) -> Bool {
         let itemName = item as! String
-        return appData.getChildCount(for: itemName) > 0
+        return coreData.getChildCount(for: itemName) > 0
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, child index: Int, ofItem item: Any?) -> Any {
         let itemName = item! as! String
-        if let children = appData.getChildrenOf(itemName) { return children[index] }
+        if let children = coreData.getChildrenOf(itemName) { return children[index] }
         else { return 0 }
     }
     
@@ -54,11 +54,12 @@ struct AFMotivatorsReader: AgentGoalsDataSource {
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, weightOfItem item: Any) -> Float {
         let itemName = item as! String
-        return appData.getItemWeight(itemName)
+        return coreData.getItemWeight(itemName)
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemEnabled item: Any) -> Bool {
         let itemName = item as! String
-        return appData.getIsItemEnabled(itemName)
+        return coreData.getIsItemEnabled(itemName)
     }
+ */
 }

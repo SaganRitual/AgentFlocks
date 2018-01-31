@@ -36,15 +36,15 @@ class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
     
     var selected = false
     
-    private unowned let appData: AFDataModel
-    private let compositeBehaviorData: AFCompositeBehaviorData
+    private unowned let coreData: AFCoreData
+    private let composite: AFCompositeEditor
     let name: String
-    private unowned let dataNotifications: NotificationCenter
+    private unowned let coreNotifier: NotificationCenter
     private var scale: Float
     private let scene: SKScene
     private var savedBehaviorState: AFCompositeBehavior?
     private var sprites: AFAgent2D.SpriteSet!
-    private unowned let uiNotifications: NotificationCenter
+    private unowned let uiNotifier: NotificationCenter
 
     var isPaused: Bool {
         get { return sprites.isPaused }
@@ -56,51 +56,44 @@ class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
         set { sprites.primaryContainer.position = CGPoint(newValue); super.position = newValue }
     }
     
-    init(appData: AFDataModel, embryo: AFAgentData, image: NSImage, position: CGPoint, scene: SKScene) {
-        self.appData = appData
-        self.compositeBehaviorData = embryo.compositeBehaviorData
-        self.name = embryo.name
-        self.dataNotifications = appData.notifications
-        self.uiNotifications = AFCore.sceneUI.notificationsSender
-        self.scale = embryo.scale
+    init(coreData: AFCoreData, editor: AFAgentEditor, image: NSImage, position: CGPoint, scene: SKScene) {
+        self.coreData = coreData
+        self.composite = editor.coreComposite
+        self.name = editor.name
+        self.coreNotifier = coreData.notifier
+        self.uiNotifier = coreData.core.sceneUI.notificationsSender
+        self.scale = editor.scale
         self.scene = scene
         
         super.init()
 
-        self.sprites = AFAgent2D.SpriteSet(owningAgent: self, image: image, name: embryo.name, scale: embryo.scale, scene: scene)
+        self.sprites = AFAgent2D.SpriteSet(owningAgent: self, image: image, name: editor.name, scale: editor.scale, scene: scene)
 
         // These notifications come from the data; notice we're listening on dataNotifications
-        let newBehavior = NSNotification.Name(rawValue: AFDataModel.NotificationType.NewBehavior.rawValue)
-        self.dataNotifications.addObserver(self, selector: #selector(newBehavior(notification:)), name: newBehavior, object: appData)
+        let newBehavior = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewBehavior.rawValue)
+        self.coreNotifier.addObserver(self, selector: #selector(newBehavior(notification:)), name: newBehavior, object: coreData)
         
-        let newGoal = NSNotification.Name(rawValue: AFDataModel.NotificationType.NewGoal.rawValue)
-        self.dataNotifications.addObserver(self, selector: #selector(newGoal(notification:)), name: newGoal, object: appData)
+        let newGoal = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewGoal.rawValue)
+        self.coreNotifier.addObserver(self, selector: #selector(newGoal(notification:)), name: newGoal, object: coreData)
         
-        let setAttribute = NSNotification.Name(rawValue: AFDataModel.NotificationType.SetAttribute.rawValue)
-        self.dataNotifications.addObserver(self, selector: #selector(setAttribute(notification:)), name: setAttribute, object: appData)
+        let setAttribute = NSNotification.Name(rawValue: AFCoreData.NotificationType.SetAttribute.rawValue)
+        self.coreNotifier.addObserver(self, selector: #selector(setAttribute(notification:)), name: setAttribute, object: coreData)
         
         // These notifications come from the UI; notice we're listening on uiNotifications
         let select = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
-        self.uiNotifications.addObserver(self, selector: #selector(hasBeenSelected(notification:)), name: select, object: nil)
+        self.uiNotifier.addObserver(self, selector: #selector(hasBeenSelected(notification:)), name: select, object: nil)
         
         let deselect = NSNotification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
-        self.uiNotifications.addObserver(self, selector: #selector(hasBeenDeselected(notification:)), name: deselect, object: nil)
+        self.uiNotifier.addObserver(self, selector: #selector(hasBeenDeselected(notification:)), name: deselect, object: nil)
 
         // Use self here, because we want to set the container position too.
         // But it has to happen after superclass init, because it talks to the superclass.
         self.position = position.as_vector_float2()
-        
-        // Talk directly to super for this initial setting; it serves as our
-        // backing store for the agent attributes.
-        super.mass = embryo.attributes[.Mass]!
-        super.maxAcceleration = embryo.attributes[.MaxAcceleration]!
-        super.maxSpeed = embryo.attributes[.MaxSpeed]!
-        super.radius = embryo.attributes[.Radius]!
     }
     
     deinit {
-        self.dataNotifications.removeObserver(self)
-        self.uiNotifications.removeObserver(self)
+        self.coreNotifier.removeObserver(self)
+        self.uiNotifier.removeObserver(self)
     }
     
     func enableMotivators(_ on: Bool = true) {
@@ -243,37 +236,36 @@ extension AFAgent2D {
 
 // MARK - Callbacks from the core data manager
 
-extension AFAgent2D: AFDataModelDelegate {
+extension AFAgent2D {
     // We don't register for newagent notifications, but we need this
     // in order to conform to the delegate protocol.
     func newAgent(_ name: String) {}
 
     @objc func newBehavior(notification: Notification) {
         let (behavior, agent) = notification.object as! (String, String)
-        newBehavior(behavior, for: agent)
+        newBehavior(behavior, weight: 1)
     }
 
-    func newBehavior(_ name: String, for agent: String) {
-        guard agent == self.name else { return }    // Notifier blasts to everyone
+    func newBehavior(_ name: String, weight: Float) {
+        guard name == self.name else { return }    // Notifier blasts to everyone
         
-        let (behaviorData, weight) = appData.getBehavior(name, from: agent)
+//        let (behaviorEditor, _) = composite.createBehavior(weight: weight)
         
-        (self.behavior as! AFCompositeBehavior).addBehavior(data: behaviorData, scene: self.scene, weight: weight)
+//        (self.compositeEditor as! AFCompositeEditor).addBehavior(editor: behaviorEditor, scene: self.scene, weight: weight)
     }
     
     @objc func newGoal(notification: Notification) {
-        if let (goal, behavior, agent) = notification.object as? (String, String, String) {
-            newGoal(goal, parentBehavior: behavior, for: agent)
+        if let (goal, _, _) = notification.object as? (String, String, String) {
+            newGoal(goal, weight: 1)
         }
     }
     
-    func newGoal(_ name: String, parentBehavior: String, for agent: String) {
-        guard agent == self.name else { return }    // Notifier blasts to everyone
-
-        let (goalData, weight) = appData.getGoal(name, parentBehavior: parentBehavior, agent: agent)
-        
-        let behavior = getBehavior(parentBehavior)
-        behavior.aGoalWasCreated(embryo: goalData, weight: weight)
+    func newGoal(_ name: String, weight: Float) {
+//        guard name == self.name else { return }    // Notifier blasts to everyone
+//
+//        let (goalEditor, _) = coreData.core.createGoal(name, weight: weight)
+//        let behavior = getBehavior(goalEditor)
+//        behavior.aGoalWasCreated(editor: goalEditor, weight: weight)
     }
     
     @objc func setAttribute(notification: Notification) {
@@ -295,27 +287,27 @@ extension AFAgent2D: AFDataModelDelegate {
     }
 }
 
-// MARK - most agent attributes talk directly to appData
+// MARK - most agent attributes talk directly to coreData
 
 extension AFAgent2D {
     override var mass: Float {
         get { return super.mass }
-        set { appData.setAttribute(.Mass, to: newValue, for: self.name); super.mass = newValue }
+        set { setAttribute(AFAgentAttribute.Mass.rawValue, to: newValue, for: self.name); super.mass = newValue }
     }
     
-    override var maxAcceleration: Float {
+    override var maxAcceleration: Float { set { super.maxAcceleration = newValue }
         get { return super.maxAcceleration }
-        set { appData.setAttribute(.MaxAcceleration, to: newValue, for: self.name); super.maxAcceleration = newValue }
+//        set { coreData.core.setAttribute(AFAgentAttribute.MaxAcceleration.rawValue, to: newValue, for: self.name); super.maxAcceleration = newValue }
     }
     
-    override var maxSpeed: Float {
+    override var maxSpeed: Float { set { super.maxSpeed = newValue }
         get { return super.maxSpeed }
-        set { appData.setAttribute(.MaxSpeed, to: newValue, for: self.name); super.maxSpeed = newValue }
+//        set { coreData.core.setAttribute(AFAgentAttribute.MaxSpeed.rawValue, to: newValue, for: self.name); super.maxSpeed = newValue }
     }
     
-    override var radius: Float {
+    override var radius: Float { set { super.radius = newValue }
         get { return super.radius }
-        set { appData.setAttribute(.Radius, to: newValue, for: self.name); super.radius = newValue }
+//        set { coreData.core.setAttribute(AFAgentAttribute.Radius.rawValue, to: newValue, for: self.name); super.radius = newValue }
     }
 }
 

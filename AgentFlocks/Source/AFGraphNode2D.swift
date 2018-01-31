@@ -41,7 +41,7 @@ import GameplayKit
 //}
 
 class AFGraphNode2D: GKGraphNode2D {
-    private unowned let appData: AFDataModel
+    private let coreData: AFCoreData
     private let familyName: String
     private let name: String
     private let radius: CGFloat = 5
@@ -54,10 +54,10 @@ class AFGraphNode2D: GKGraphNode2D {
         get { return vector_float2(Float(spriteSet.position.x), Float(spriteSet.position.y)) }
     }
 
-    init(appData: AFDataModel, embryo: AFGraphNodeData, position: CGPoint, scene: SKScene) {
+    init(coreData: AFCoreData, editor: AFGraphNodeEditor, position: CGPoint, scene: SKScene) {
         let name = NSUUID().uuidString
-        self.appData = appData
-        self.familyName = embryo.familyName
+        self.coreData = coreData
+        self.familyName = String()//embryo.familyName
         self.name = name
         self.scene = scene
         self.spriteSet = SpriteSet(familyName: familyName, scene: scene, position: position)
@@ -155,7 +155,7 @@ extension AFGraphNode2D {
             sprite.fillColor = .yellow
             sprite.name = NSUUID().uuidString
             sprite.position = position
-            sprite.zPosition = CGFloat(AFCore.sceneUI.getNextZPosition())
+//            sprite.zPosition = CGFloat(coreData.core.sceneUI.getNextZPosition())
             
             let selectionIndicator = AFAgent2D.makeRing(radius: Float(selectionIndicatorRadius), isForSelector: true, primary: true)
             

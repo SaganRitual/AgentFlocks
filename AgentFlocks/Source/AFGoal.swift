@@ -74,7 +74,7 @@ class AFGoal {
     var name = String()
 //    var path: GKPath!
 //    var pathname: String?
-    private unowned let scene: SKScene
+//    private unowned let scene: SKScene
     var targets: [String]?
     var weight: Float?
     
@@ -83,74 +83,74 @@ class AFGoal {
     var time: TimeInterval?
     var speed: Float?
 
-    init(embryo: AFGoalData, scene: SKScene) {
-        self.agents = embryo.agents
-        self.familyName = embryo.familyName
-        self.goalType = embryo.goalType
-        self.name = NSUUID().uuidString
-//        self.obstacles = embryo.obstacles
-        self.scene = scene
-        self.weight = embryo.weight
-
-        self.angle = embryo.angle
-        self.distance = embryo.distance
-        self.speed = embryo.speed
-        self.time = embryo.time
+    init(editor: AFGoalEditor, scene: SKScene) {
+//        self.agents = embryo.agents
+//        self.familyName = embryo.familyName
+//        self.goalType = embryo.goalType
+//        self.name = NSUUID().uuidString
+////        self.obstacles = embryo.obstacles
+//        self.scene = scene
+//        self.weight = embryo.weight
+//
+//        self.angle = embryo.angle
+//        self.distance = embryo.distance
+//        self.speed = embryo.speed
+//        self.time = embryo.time
         
 //        self.gkGoal = AFGoal.makeGoal(embryo: embryo, scene: scene)
     }
     
-    static func makeGoal(embryo: AFGoalData, scene: SKScene) -> GKGoal {
-        var gkGoal: GKGoal!
-        let gkAgents = [GKAgent]()
-//        let gkTargets = embryo.targets.map { AFCore.appData.getAgent($0[0]) }
-        let gkTargets = [String]()
-
-        let angle = embryo.angle
-        let distance = embryo.distance
-        let speed = embryo.speed
-        let time = embryo.time
-
-        switch embryo.goalType {
-        case .toAlignWith:
-            gkGoal = GKGoal(toAlignWith: gkAgents, maxDistance: distance!, maxAngle: angle!)
-            
-        case .toAvoidAgents:
-            gkGoal = GKGoal(toAvoid: gkAgents, maxPredictionTime: TimeInterval(time!))
-            
-        case .toAvoidObstacles: break
-//            gkGoal = GKGoal(toAvoid: obstacles, maxPredictionTime: TimeInterval(time!))
-            
-        case .toCohereWith:
-            gkGoal = GKGoal(toCohereWith: gkAgents, maxDistance: distance!, maxAngle: angle!)
-            
-        case .toFleeAgent:
-            gkGoal = GKGoal(toFleeAgent: gkAgents[0])
-            
-        case .toFollow: break
-//            gkGoal = GKGoal(toFollow: afPath.gkPath, maxPredictionTime: TimeInterval(!time), forward: forward)
-            
-        case .toInterceptAgent: break
-//            gkGoal = GKGoal(toInterceptAgent: entity.agent, maxPredictionTime: TimeInterval(time!))
-            
-        case .toReachTargetSpeed:
-            gkGoal = GKGoal(toReachTargetSpeed: speed!)
-            
-        case .toSeekAgent: break
-//            gkGoal = GKGoal(toSeekAgent: entity.agent!)
-            
-        case .toSeparateFrom:
-            gkGoal = GKGoal(toSeparateFrom: gkAgents, maxDistance: distance!, maxAngle: angle!)
-            
-        case .toStayOn: break
-//            gkGoal = GKGoal(toStayOn: afPath.gkPath, maxPredictionTime: TimeInterval(time!))
-            
-        case .toWander:
-            gkGoal = GKGoal(toWander: speed!)
-        }
-        
-        return gkGoal!
-    }
+//    static func makeGoal(editor: AFGoalEditor, scene: SKScene) -> GKGoal {
+//        var gkGoal: GKGoal!
+//        let gkAgents = [GKAgent]()
+////        let gkTargets = embryo.targets.map { AFCore.coreData.getAgent($0[0]) }
+//        let gkTargets = [String]()
+//
+//        let angle = embryo.angle
+//        let distance = embryo.distance
+//        let speed = embryo.speed
+//        let time = embryo.time
+//
+//        switch embryo.goalType {
+//        case .toAlignWith:
+//            gkGoal = GKGoal(toAlignWith: gkAgents, maxDistance: distance!, maxAngle: angle!)
+//
+//        case .toAvoidAgents:
+//            gkGoal = GKGoal(toAvoid: gkAgents, maxPredictionTime: TimeInterval(time!))
+//
+//        case .toAvoidObstacles: break
+////            gkGoal = GKGoal(toAvoid: obstacles, maxPredictionTime: TimeInterval(time!))
+//
+//        case .toCohereWith:
+//            gkGoal = GKGoal(toCohereWith: gkAgents, maxDistance: distance!, maxAngle: angle!)
+//
+//        case .toFleeAgent:
+//            gkGoal = GKGoal(toFleeAgent: gkAgents[0])
+//
+//        case .toFollow: break
+////            gkGoal = GKGoal(toFollow: afPath.gkPath, maxPredictionTime: TimeInterval(!time), forward: forward)
+//
+//        case .toInterceptAgent: break
+////            gkGoal = GKGoal(toInterceptAgent: entity.agent, maxPredictionTime: TimeInterval(time!))
+//
+//        case .toReachTargetSpeed:
+//            gkGoal = GKGoal(toReachTargetSpeed: speed!)
+//
+//        case .toSeekAgent: break
+////            gkGoal = GKGoal(toSeekAgent: entity.agent!)
+//
+//        case .toSeparateFrom:
+//            gkGoal = GKGoal(toSeparateFrom: gkAgents, maxDistance: distance!, maxAngle: angle!)
+//
+//        case .toStayOn: break
+////            gkGoal = GKGoal(toStayOn: afPath.gkPath, maxPredictionTime: TimeInterval(time!))
+//
+//        case .toWander:
+//            gkGoal = GKGoal(toWander: speed!)
+//        }
+//
+//        return gkGoal!
+//    }
 
 //    class AFGoal {
 //        let gkGoal: GKGoal!
@@ -303,7 +303,7 @@ class AFGoal {
         self.distance = copyFrom.distance
         self.familyName = copyFrom.familyName
         self.name = NSUUID().uuidString
-        self.scene = scene
+//        self.scene = scene
         self.speed = copyFrom.speed
         self.targets = [String]()
         self.time = copyFrom.time
@@ -312,10 +312,10 @@ class AFGoal {
     }
     
     init(toAlignWith agentNodes: [SKNode], maxDistance: Float, maxAngle: Float, weight: Float, scene: SKScene) {
-        goalType = .toAlignWith
-        
+//        goalType = .toAlignWith
+//        
 //        var gkAgents = [GKAgent]()
-//        for entity in AFCore.appData.entities {
+//        for entity in AFCore.coreData.entities {
 //            if agentNodes.contains(entity.agent.sprite) {
 //                gkAgents.append(entity.agent)
 //            }
@@ -346,7 +346,7 @@ class AFGoal {
         self.distance = 0
         self.familyName = "no family"
         self.name = NSUUID().uuidString
-        self.scene = scene
+//        self.scene = scene
         self.speed = 0//copyFrom.speed
         self.targets = [String]()
         self.time = 0//copyFrom.time
@@ -376,7 +376,7 @@ class AFGoal {
         self.angle = 0
         self.distance = 0
         self.name = NSUUID().uuidString
-        self.scene = scene
+//        self.scene = scene
         self.targets = [String]()
         self.weight = weight
 //        self.name = NSUUID().uuidString

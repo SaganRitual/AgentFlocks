@@ -106,7 +106,7 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     var activePath: AFPath!     // The one we're doing stuff to, whether it's selected or not (like dragging handles)
     let contextMenu: AFContextMenu
     var currentPosition = CGPoint.zero
-    var appData: AFDataModel!
+    var coreData: AFCoreData!
     var downNode: SKNode?
     unowned let gameScene: GameScene
     var goalSetupInputMode = GoalSetupInputMode.NoSelect
@@ -139,7 +139,7 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
         // Note: we're using the default center here; that's where we all
         // broadcast our ready messages.
         let center = NotificationCenter.default
-        let sceneControllerReady = Notification.Name(rawValue: AFDataModel.NotificationType.AppCoreReady.rawValue)
+        let sceneControllerReady = Notification.Name(rawValue: AFCoreData.NotificationType.AppCoreReady.rawValue)
         let selector = #selector(coreReady(notification:))
         center.addObserver(self, selector: selector, name: sceneControllerReady, object: nil)
 
@@ -148,18 +148,18 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     
     @objc func coreReady(notification: Notification) {
         guard let info = notification.userInfo as? [String : Any] else { return }
-        guard let dataModelEntry = info["AFDataModel"] as? AFDataModel else { return }
+        guard let coreDataEntry = info["AFCoreData"] as? AFCoreData else { return }
         
         NotificationCenter.default.removeObserver(self)
 
-        self.appData = dataModelEntry
+        self.coreData = coreDataEntry
         self.notificationsReceiver = info["DataNotifications"] as! NotificationCenter
 
-        let aNotification = NSNotification.Name(rawValue: AFDataModel.NotificationType.NewAgent.rawValue)
+        let aNotification = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewAgent.rawValue)
         let aSelector = #selector(newAgentHasBeenCreated(_:))
         self.notificationsReceiver.addObserver(self, selector: aSelector, name: aNotification, object: nil)
         
-        let bNotification = NSNotification.Name(rawValue: AFDataModel.NotificationType.NewPath.rawValue)
+        let bNotification = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewPath.rawValue)
         let bSelector = #selector(newPathHasBeenCreated(_:))
         self.notificationsReceiver.addObserver(self, selector: bSelector, name: bNotification, object: nil)
     }
@@ -185,7 +185,7 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
    
     func cloneAgent() {
         guard let copyFrom = primarySelection else { return }
-        appData.cloneAgent(copyFrom.name!)
+        coreData.core.sceneUI.cloneAgent()
     }
 
     func compressZOrder() -> Int {
@@ -215,10 +215,10 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     }
 
     func finalizePath(close: Bool) {
-//        appData.newGraphNode(for: <#T##String#>)
+//        coreData.newGraphNode(for: <#T##String#>)
 //        activePath.refresh(final: close) // Auto-add the closing line segment
-//        appData.newPath()
-//        appData.paths.append(key: activePath.name, value: activePath)
+//        coreData.newPath()
+//        coreData.paths.append(key: activePath.name, value: activePath)
         
 //        contextMenu.includeInDisplay(.AddPathToLibrary, false)
 //        contextMenu.includeInDisplay(.Place, true, enable: true)

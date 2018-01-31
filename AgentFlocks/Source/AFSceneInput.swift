@@ -38,15 +38,15 @@ protocol AFSceneInputDelegate {
 
 class AFSceneInput: AFGameSceneDelegate {
     var currentPosition = CGPoint.zero
-    let appData: AFDataModel
+    let coreData: AFCoreData
     var delegate: AFSceneInputDelegate?
     var downNode: SKNode?
     let gameScene: GameScene!
     var touchedNodes = [SKNode]()
     var upNode: SKNode?
     
-    init(appData: AFDataModel, gameScene: GameScene) {
-        self.appData = appData
+    init(coreData: AFCoreData, gameScene: GameScene) {
+        self.coreData = coreData
         self.gameScene = gameScene
     }
 

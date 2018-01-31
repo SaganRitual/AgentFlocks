@@ -46,7 +46,7 @@ class GameScene: SKScene, SKViewDelegate {
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         
         let center = NotificationCenter.default
-        let name = Notification.Name(rawValue: AFDataModel.NotificationType.GameSceneReady.rawValue)
+        let name = Notification.Name(rawValue: AFCoreData.NotificationType.GameSceneReady.rawValue)
         center.post(name: name, object: nil, userInfo: ["GameScene": self])
     }
     

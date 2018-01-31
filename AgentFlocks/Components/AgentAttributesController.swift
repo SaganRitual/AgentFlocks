@@ -29,7 +29,7 @@ class AgentAttributesController: NSViewController {
         } else {
             // Mass is coming from the slider; send it down to the data; it
             // will call us (and everyone else) back after updating the...data
-            AFCore.appData.setAttribute(.Mass, to: mass, for: targetAgent)
+//            AFCore.coreData.setAttribute(.Mass, to: mass, for: targetAgent)
         }
     }
     
@@ -43,7 +43,7 @@ class AgentAttributesController: NSViewController {
         } else {
             // Max accel is coming from the slider; send it down to the data; it
             // will call us (and everyone else) back after updating the...data
-            AFCore.appData.setAttribute(.MaxAcceleration, to: maxAcceleration, for: targetAgent)
+//            AFCore.coreData.setAttribute(.MaxAcceleration, to: maxAcceleration, for: targetAgent)
         }
     }
 
@@ -57,7 +57,7 @@ class AgentAttributesController: NSViewController {
         } else {
             // Max speed is coming from the slider; send it down to the data; it
             // will call us (and everyone else) back after updating the...data
-            AFCore.appData.setAttribute(.MaxSpeed, to: maxSpeed, for: targetAgent)
+//            AFCore.coreData.setAttribute(.MaxSpeed, to: maxSpeed, for: targetAgent)
         }
     }
     
@@ -71,7 +71,7 @@ class AgentAttributesController: NSViewController {
         } else {
             // radius is coming from the slider; send it down to the data; it
             // will call us (and everyone else) back after updating the...data
-            AFCore.appData.setAttribute(.Radius, to: radius, for: targetAgent)
+//            AFCore.coreData.setAttribute(.Radius, to: radius, for: targetAgent)
         }
     }
     
@@ -85,7 +85,7 @@ class AgentAttributesController: NSViewController {
         } else {
             // Scale is coming from the slider; send it down to the data; it
             // will call us (and everyone else) back after updating the...data
-            AFCore.appData.setAttribute(.Scale, to: scale, for: targetAgent)
+//            AFCore.coreData.setAttribute(.Scale, to: scale, for: targetAgent)
         }
     }
 
@@ -154,7 +154,7 @@ class AgentAttributesController: NSViewController {
     
     private var persistentDefaultsLoaded = false
 
-    private var appData: AFDataModel!
+    private var coreData: AFCoreData!
     private var dataNotifications: NotificationCenter!
     private var targetAgent = String()
     private var uiNotifications: NotificationCenter!
@@ -167,17 +167,17 @@ class AgentAttributesController: NSViewController {
         // Note: we're using the default center here; that's where we all
         // broadcast our ready messages.
         let center = NotificationCenter.default
-        let name = Notification.Name(rawValue: AFDataModel.NotificationType.AppCoreReady.rawValue)
+        let name = Notification.Name(rawValue: AFCoreData.NotificationType.AppCoreReady.rawValue)
         let selector = #selector(coreReady(notification:))
         center.addObserver(self, selector: selector, name: name, object: nil)
 	}
     
     @objc func coreReady(notification: Notification) {
-        if let info = notification.userInfo, let appData = info["AFDataModel"] as? AFDataModel {
+        if let info = notification.userInfo, let coreData = info["AFCoreData"] as? AFCoreData {
             // Come back to this: the ui should be publishing its own notifications--
             // we should be waiting for a shout from the UI to tell us where its
             // personal notification center is.
-            self.appData = appData
+            self.coreData = coreData
             self.uiNotifications = info["UINotifications"] as! NotificationCenter
             self.dataNotifications = info["DataNotifications"] as! NotificationCenter
 
@@ -185,7 +185,7 @@ class AgentAttributesController: NSViewController {
             let aSelector = #selector(hasBeenSelected(notification:))
             self.uiNotifications.addObserver(self, selector: aSelector, name: aName, object: nil)
             
-            let bName = Notification.Name(rawValue: AFDataModel.NotificationType.SetAttribute.rawValue)
+            let bName = Notification.Name(rawValue: AFCoreData.NotificationType.SetAttribute.rawValue)
             let bSelector = #selector(attributeHasBeenUpdated(notification:))
             self.dataNotifications.addObserver(self, selector: bSelector, name: bName, object: nil)
         }
@@ -216,13 +216,13 @@ class AgentAttributesController: NSViewController {
     }
     
     func hasBeenSelected(_ name: String, primary: Bool) {
-        let agentData = appData.getAgent(name)
-        
-        setMass(agentData.attributes[AFAgentAttribute.Mass]!, fromData: true)
-        setMaxAcceleration(agentData.attributes[AFAgentAttribute.MaxAcceleration]!, fromData: true)
-        setMaxSpeed(agentData.attributes[AFAgentAttribute.MaxSpeed]!, fromData: true)
-        setRadius(agentData.attributes[AFAgentAttribute.Radius]!, fromData: true)
-        setScale(agentData.attributes[AFAgentAttribute.Scale]!, fromData: true)
+//        let agentData = coreData.getAgent(name)
+//
+//        setMass(agentData.attributes[AFAgentAttribute.Mass]!, fromData: true)
+//        setMaxAcceleration(agentData.attributes[AFAgentAttribute.MaxAcceleration]!, fromData: true)
+//        setMaxSpeed(agentData.attributes[AFAgentAttribute.MaxSpeed]!, fromData: true)
+//        setRadius(agentData.attributes[AFAgentAttribute.Radius]!, fromData: true)
+//        setScale(agentData.attributes[AFAgentAttribute.Scale]!, fromData: true)
     }
 	
     override func viewDidLoad() {

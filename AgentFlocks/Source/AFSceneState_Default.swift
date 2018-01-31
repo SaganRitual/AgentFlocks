@@ -52,7 +52,7 @@ extension AFSceneController {
 //                let imageIndex = AFCore.browserDelegate.agentImageIndex
 //                let image = sceneUI.ui.agents[imageIndex].image
                 
-                sceneUI.appData.newAgent()  // We'll hear back when the low-level data is setup
+//                coreData.core.sceneUI.newAgent()  // We'll hear back when the low-level data is setup
             }
         }
         
@@ -79,19 +79,19 @@ extension AFSceneController {
             }
         }
         
-        func clone(_ node: SKNode, position: CGPoint) { sceneUI.appData.cloneAgent(node.name!) }
+        func clone(_ node: SKNode, position: CGPoint) { /*sceneUI.coreData.cloneAgent(node.name!)*/ }
         
         override func didEnter(from previousState: GKState?) {
         }
         
         override func newAgentHasBeenCreated(_ notification: Notification) {
-            let agent = notification.object as! String
-            let embryo = sceneUI.appData.getAgent(agent)
-            let image = sceneUI.ui.agents[AFCore.browserDelegate.agentImageIndex].image
-            let afAgent = AFAgent2D(appData: sceneUI.appData, embryo: embryo, image: image,
-                          position: sceneUI.currentPosition, scene: sceneUI.gameScene)
-            
-            sceneUI.select(afAgent.name, primary: true)
+//            let agent = notification.object as! String
+//            let embryo = sceneUI.coreData.getAgent(agent)
+//            let image = sceneUI.ui.agents[AFCore.browserDelegate.agentImageIndex].image
+//            let afAgent = AFAgent2D(coreData: sceneUI.coreData, embryo: embryo, image: image,
+//                          position: sceneUI.currentPosition, scene: sceneUI.gameScene)
+//            
+//            sceneUI.select(afAgent.name, primary: true)
         }
         
         override func willExit(to nextState: GKState) {

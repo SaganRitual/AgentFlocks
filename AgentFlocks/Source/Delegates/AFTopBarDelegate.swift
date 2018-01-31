@@ -25,11 +25,11 @@
 import GameplayKit
 
 class AFTopBarDelegate {
-    unowned let appData: AFDataModel
+    unowned let coreData: AFCoreData
     unowned let sceneUI: AFSceneController
     
-    init(appData: AFDataModel, sceneUI: AFSceneController) {
-        self.appData = appData
+    init(coreData: AFCoreData, sceneUI: AFSceneController) {
+        self.coreData = coreData
         self.sceneUI = sceneUI
     }
     
@@ -42,7 +42,7 @@ class AFTopBarDelegate {
     func getActiveAgentImages() -> [NSImage] {
         var agentImages = [NSImage]()
         
-//        appData.entities.forEach {
+//        coreData.entities.forEach {
 //            let sprite = $0.agent.sprite
 //            let cgImage = sprite.texture!.cgImage()
 //            let nsImage = NSImage(cgImage: cgImage, size: sprite.size)
@@ -55,7 +55,7 @@ class AFTopBarDelegate {
     func getActivePathImages() -> [NSImage] {
         var pathImages = [NSImage]()
         
-//        appData.paths.forEach {
+//        coreData.paths.forEach {
 //            let s = CGSize(width: 50, height: 50)
 //            pathImages.append($0.getImageData(size: s))
 //        }

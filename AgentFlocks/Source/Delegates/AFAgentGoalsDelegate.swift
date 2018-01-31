@@ -25,17 +25,17 @@
 import GameplayKit
 
 class AFAgentGoalsDelegate {
-    private unowned let appData: AFDataModel
+    private unowned let coreData: AFCoreData
     private unowned let sceneUI: AFSceneController
     
     var agent: String?
     
-    init(appData: AFDataModel, sceneUI: AFSceneController) {
-        self.appData = appData
-        self.sceneUI = sceneUI
+    init(coreData: AFCoreData, sceneUI: AFSceneController) {
+        self.coreData = coreData
+        self.sceneUI = coreData.core.sceneUI
     }
     
-    func deleteItem(_ item: String) { appData.deleteItem(item) }
+    func deleteItem(_ item: String) { self.deleteItem(item) }
     
     func deselect() { self.agent = nil }
     

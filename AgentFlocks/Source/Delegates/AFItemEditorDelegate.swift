@@ -25,18 +25,18 @@
 import GameplayKit
 
 class AFItemEditorDelegate {
-    unowned let appData: AFDataModel
+    unowned let coreData: AFCoreData
     unowned let sceneUI: AFSceneController
     
-    init(appData: AFDataModel, sceneUI: AFSceneController) {
-        self.appData = appData
+    init(coreData: AFCoreData, sceneUI: AFSceneController) {
+        self.coreData = coreData
         self.sceneUI = sceneUI
     }
     
     private func addMotivator(to agent: String, state: ItemEditorSlidersState) {
         let weight = Float(state.weight.value)
 
-        if state.newItemType == nil { appData.newBehavior(for: agent, weight: weight); return }
+//        if state.newItemType == nil { coreData.newBehavior(for: agent, weight: weight); return }
 
         let type = state.newItemType!
         var goal: AFGoal?
@@ -51,21 +51,21 @@ class AFItemEditorDelegate {
         switch type {
         case .toAlignWith:    fallthrough
         case .toCohereWith:   fallthrough
-        case .toSeparateFrom:
-            appData.newGoal(type, for: [agent], parentBehavior: nil, weight: weight, targets: selectedNames,
-                            angle: angle, distance: distance, speed: speed, time: time, forward: true)
+        case .toSeparateFrom: break
+//            coreData.newGoal(type, for: [agent], parentBehavior: nil, weight: weight, targets: selectedNames,
+//                            angle: angle, distance: distance, speed: speed, time: time, forward: true)
             
         case .toAvoidObstacles:break
-//            appData.newGoal(type, for: nodes, targets: Array(appData.obstacles.keys), parentBehavior: nil, weight: weight)
+//            coreData.newGoal(type, for: nodes, targets: Array(coreData.obstacles.keys), parentBehavior: nil, weight: weight)
 //            goal = AFGoal(toAvoidObstacles: Array(data.obstacles.keys), time: time, weight: weight)
             
         case .toAvoidAgents:
             // Make sure we're not trying to avoid ourselves too
             let sansSelf = selectedNames.filter { $0 != sceneUI.primarySelection!.name }
             
-            appData.newGoal(type, for: sceneUI.primarySelection!.name!, parentBehavior: nil, weight: weight,
-                            targets: sansSelf, angle: angle, distance: distance, speed: speed,
-                            time: time, forward: nil)
+//            coreData.newGoal(type, for: coreData.sceneUI.primarySelection!.name!, parentBehavior: nil, weight: weight,
+//                            targets: sansSelf, angle: angle, distance: distance, speed: speed,
+//                            time: time, forward: nil)
 
         case .toFleeAgent:      fallthrough
         case .toInterceptAgent: fallthrough
@@ -75,26 +75,26 @@ class AFItemEditorDelegate {
             // of the goal from being added to his own goal. But now I'm tired and it's
             // harder to think about it.
             let sansTarget = selectedNames.filter { $0 != primaryNode.name! }
-//            appData.newGoal(type, for: sansTarget, weight, weight, targets: [selectedNames.first!],
+//            coreData.newGoal(type, for: sansTarget, weight, weight, targets: [selectedNames.first!],
 //                            angle: angle, distance: distance, speed: speed,time: time, forward: true)
             
         case .toFollow:  fallthrough
         case .toStayOn:/*
-            appData.newGoal(type, for: primaryNode.name!, targets: [pathName], parentBehavior: nil,
+            coreData.newGoal(type, for: primaryNode.name!, targets: [pathName], parentBehavior: nil,
                             time: Float(time), angle: angle, distance: distance, speed: speed,
                             time: time, weight: weight, forward: state.forward)
             
             let pathIndex = AFCore.sceneUI.pathForNextPathGoal
-            let pathname = appData.paths[pathIndex].name
+            let pathname = coreData.paths[pathIndex].name
             goal = AFGoal(toStayOn: pathname, time: Float(time), weight: weight)
             
             goal!.pathname = pathname*/
             break
             
         case .toReachTargetSpeed:  fallthrough
-        case .toWander:
-            appData.newGoal(type, for: primaryNode.name!, time: time, weight: weight,
-                            angle: angle, distance: distance, speed: speed, forward: true)
+        case .toWander: break
+//            coreData.newGoal(type, for: primaryNode.name!, time: time, weight: weight,
+//                            angle: angle, distance: distance, speed: speed, forward: true)
         }
     }
     

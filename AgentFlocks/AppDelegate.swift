@@ -116,7 +116,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @objc func gameSceneReady(notification: Notification) {
         // Ready to go; create the core
         let gameScene = notification.userInfo!["GameScene"]! as! GameScene
-        gameScene.gameSceneDelegate = AFCore.makeCore(ui: self, gameScene: gameScene)
+        gameScene.gameSceneDelegate = AFCoreData.makeCore(ui: self, gameScene: gameScene)
         NotificationCenter.default.removeObserver(self)
     }
     
@@ -363,7 +363,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         if dialog.runModal() == NSApplication.ModalResponse.OK {
             if let result = dialog.url {
-                AFCore.menuBarDelegate.fileOpen(result)
+//                AFCore.menuBarDelegate.fileOpen(result)
             } else {
                 return
             }
@@ -384,7 +384,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         if dialog.runModal() == NSApplication.ModalResponse.OK {
             if let result = dialog.url {
-                AFCore.menuBarDelegate.fileSave(result)
+                coreMenuBarDelegate.fileSave(result)
             }
         }
 	}

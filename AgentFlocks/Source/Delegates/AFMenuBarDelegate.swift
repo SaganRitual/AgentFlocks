@@ -25,11 +25,11 @@
 import GameplayKit
 
 class AFMenuBarDelegate {
-    unowned let appData: AFDataModel
+    unowned let coreData: AFCoreData
     unowned let sceneUI: AFSceneController
     
-    init(appData: AFDataModel, sceneUI: AFSceneController) {
-        self.appData = appData
+    init(coreData: AFCoreData, sceneUI: AFSceneController) {
+        self.coreData = coreData
         self.sceneUI = sceneUI
     }
 }

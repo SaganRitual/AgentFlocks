@@ -23,11 +23,9 @@
 //
 
 class AFContextMenuDelegate {
-    unowned let appData: AFDataModel
     unowned let sceneUI: AFSceneController
     
-    init(appData: AFDataModel, sceneUI: AFSceneController) {
-        self.appData = appData
+    init(sceneUI: AFSceneController) {
         self.sceneUI = sceneUI
     }
     

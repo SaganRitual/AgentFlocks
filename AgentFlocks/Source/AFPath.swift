@@ -25,7 +25,7 @@
 import GameplayKit
 
 class AFPath: Equatable {
-    private unowned var appData: AFDataModel
+    private var coreData: AFCoreData
     private var finalized = false
     private unowned let scene: SKScene
     private var gkPath: GKPath! = nil
@@ -35,26 +35,26 @@ class AFPath: Equatable {
     private unowned let notifications: NotificationCenter
     private let spriteSet: SpriteSet
     
-    init(appData: AFDataModel, embryo: AFPathData, scene: SKScene) {
+    init(coreData: AFCoreData, editor: AFPathEditor, scene: SKScene) {
         let name = NSUUID().uuidString
         
-        self.appData = appData
+        self.coreData = coreData
         self.name = name
-        self.notifications = appData.notifications
+        self.notifications = coreData.notifier
         self.scene = scene
         self.spriteSet = SpriteSet(name: name, scene: scene)
 
-        let newGraphNode = NSNotification.Name(rawValue: AFDataModel.NotificationType.NewGraphNode.rawValue)
+        let newGraphNode = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewGraphNode.rawValue)
         let aSelector = #selector(newGraphNodeHasBeenCreated(_:))
-        self.notifications.addObserver(self, selector: aSelector, name: newGraphNode, object: appData)
+        self.notifications.addObserver(self, selector: aSelector, name: newGraphNode, object: coreData)
 
         let select = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
         let bSelector = #selector(hasBeenSelected(_:primary:))
-        self.notifications.addObserver(self, selector: bSelector, name: select, object: appData)
+        self.notifications.addObserver(self, selector: bSelector, name: select, object: coreData)
 
-        let deleteGraphNode = NSNotification.Name(rawValue: AFDataModel.NotificationType.DeletedGraphNode.rawValue)
+        let deleteGraphNode = NSNotification.Name(rawValue: AFCoreData.NotificationType.DeletedGraphNode.rawValue)
         let cSelector = #selector(graphNodeHasBeenDeleted(_:))
-        self.notifications.addObserver(self, selector: cSelector, name: deleteGraphNode, object: appData)
+        self.notifications.addObserver(self, selector: cSelector, name: deleteGraphNode, object: coreData)
     }
 
     static func ==(lhs: AFPath, rhs: AFPath) -> Bool {
@@ -62,7 +62,7 @@ class AFPath: Equatable {
     }
 
     func addGraphNode(at point: CGPoint) {
-        appData.newGraphNode(for: self.name)
+//        coreData.newGraphNode(for: self.name)
     }
   
     func getLastHandlePosition() -> CGPoint? {
@@ -90,10 +90,10 @@ class AFPath: Equatable {
     func move(to position: CGPoint) { spriteSet.move(to: position) }
     
     @objc func newGraphNodeHasBeenCreated(_ name: String) {
-        let embryo = appData.getGraphNode(name, parentPath: self.name)
-        let afNode = AFGraphNode2D(appData: appData, embryo: embryo, position: CGPoint.zero, scene: self.scene)
-        self.graphNodes.append(key: name, value: afNode)
-        spriteSet.refresh(self)
+//        let embryo = coreData.getGraphNode(name, parentPath: self.name)
+//        let afNode = AFGraphNode2D(coreData: coreData, embryo: embryo, position: CGPoint.zero, scene: self.scene)
+//        self.graphNodes.append(key: name, value: afNode)
+//        spriteSet.refresh(self)
     }
 
 }

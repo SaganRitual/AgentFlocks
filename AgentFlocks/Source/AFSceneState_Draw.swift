@@ -42,7 +42,7 @@ extension AFSceneController {
             // Clicked in the black; add a node
             sceneUI.deselectAll()
             
-            sceneUI.appData.newGraphNode(for: sceneUI.activePath.name)
+//            sceneUI.coreData.newGraphNode(for: sceneUI.activePath.name)
         }
         
         private func click_node(_ node: SKNode, flags: NSEvent.ModifierFlags?) {
@@ -68,16 +68,16 @@ extension AFSceneController {
         }
         
         override func newPathHasBeenCreated(_ notification: Notification) {
-            guard sceneUI.activePath == nil else { fatalError() }
-            
-            let embryo = sceneUI.appData.getPath(notification.object as! String)
-            sceneUI.activePath = AFPath(appData: sceneUI.appData, embryo: embryo, scene: sceneUI.gameScene)
-            
-            // With a new path started, no other options are available
-            // until the path is finalized. However, the "add path" option
-            // is disabled until there are at least two nodes in the path.
-            sceneUI.contextMenu.reset()
-            sceneUI.contextMenu.includeInDisplay(.AddPathToLibrary, true, enable: false)
+//            guard sceneUI.activePath == nil else { fatalError() }
+//            
+//            let embryo = sceneUI.getPath(notification.object as! String)
+//            sceneUI.activePath = AFPath(coreData: sceneUI.coreData, embryo: embryo, scene: sceneUI.gameScene)
+//            
+//            // With a new path started, no other options are available
+//            // until the path is finalized. However, the "add path" option
+//            // is disabled until there are at least two nodes in the path.
+//            sceneUI.contextMenu.reset()
+//            sceneUI.contextMenu.includeInDisplay(.AddPathToLibrary, true, enable: false)
         }
         
         override func updateDrawIndicator(_ position: CGPoint) {
