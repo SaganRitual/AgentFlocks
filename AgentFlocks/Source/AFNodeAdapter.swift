@@ -49,7 +49,7 @@ struct AFNodeAdapter {
         var isClickable:  Bool { return userData["isClickable"] as! Bool }
         var isPath:       Bool { return userData["isPath"] as! Bool }
         var isPathHandle: Bool { return userData["isPathHandle"] as! Bool }
-        var ownsUserData: Bool { return node?.userData != nil }
+        var name:       String { return getAgent().name }
         var position:  CGPoint { return CGPoint(getAgent().position) }
 
         // These have a default value, because we don't set them right away, because
@@ -74,7 +74,8 @@ struct AFNodeAdapter {
         func select(primary: Bool) {
             setUserData("isSelected", to: true)
             setUserData("isPrimarySelection", to: primary)
-            getAgent().hasBeenSelected(getAgent().name, primary: primary)
+            let nener = getAgent().name
+            getAgent().hasBeenSelected(nener, primary: primary)
         }
         
         func setUserData(_ key: String, to value: Bool) { userData[key] = value }
@@ -82,9 +83,9 @@ struct AFNodeAdapter {
     
     init(scene: SKScene, name: String?) {
         self.name = name
-        guard name != nil else { impl = nil; return }
+        guard let name = name else { impl = nil; return }
 
-        if let node = scene.children.filter({ return AFNodeAdapter_($0).ownsUserData }).first { impl = AFNodeAdapter_(node) }
+        if let node = scene.children.filter({ return AFNodeAdapter_($0).name == name }).first { impl = AFNodeAdapter_(node) }
         else { impl = nil }
     }
     

@@ -31,7 +31,7 @@ extension AFSceneController {
         }
         
         override func click(_ name: String?, flags: NSEvent.ModifierFlags?) {
-            if let name = name { click_node(name, flags: flags) }
+            if let name = name { click_item(name, flags: flags) }
             else { click_black(flags: flags) }
         }
         

@@ -27,8 +27,12 @@ import GameplayKit
 extension AFSceneController {
     class Default: BaseState {
         override func click(_ name: String?, flags: NSEvent.ModifierFlags?) {
-            if let name = name { click_node(name, flags: flags) }
-            else { click_black(flags: flags) }
+            if let name = name {
+                print("fargle")
+                sceneUI.selectionController.click_item(name, flags: flags)
+                print("bargle")
+            }
+            else { print("wtf"); click_black(flags: flags) }
         }
         
         private func click_black(flags: NSEvent.ModifierFlags?) {
@@ -45,11 +49,6 @@ extension AFSceneController {
                 // plain click in the black
                 sceneUI.createAgent()
             }
-        }
-        
-        private func click_node(_ name: String, flags: NSEvent.ModifierFlags?) {
-            // Nothing to do here; only selection changes, and the selection
-            // controller takes care of that.
         }
         
         func clone(_ name: String, position: CGPoint) { /*sceneUI.coreData.cloneAgent(node.name!)*/ }

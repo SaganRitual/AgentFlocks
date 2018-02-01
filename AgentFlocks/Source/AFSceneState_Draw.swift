@@ -29,7 +29,7 @@ extension AFSceneController {
         var drawIndicator: SKNode?
         
         override func click(_ name: String?, flags: NSEvent.ModifierFlags?) {
-            if let name = name { click_node(name, flags: flags) }
+            if let name = name { click_item(name, flags: flags) }
             else { click_black(flags: flags) }
         }
         
@@ -40,13 +40,6 @@ extension AFSceneController {
                     (flags?.contains(.option) ?? false)) else { return }
             
 //            sceneUI.coreData.newGraphNode(for: sceneUI.activePath.name)
-        }
-        
-        private func click_node(_ name: String, flags: NSEvent.ModifierFlags?) {
-            // Ignore all modified clicks on a path node, for now
-            guard !((flags?.contains(.command) ?? false) ||
-                    (flags?.contains(.control) ?? false) ||
-                    (flags?.contains(.option) ?? false)) else { return }
         }
         
         override func didEnter(from previousState: GKState?) {

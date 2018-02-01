@@ -85,7 +85,6 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
         let selector = #selector(coreReady(notification:))
         center.addObserver(self, selector: selector, name: sceneControllerReady, object: nil)
         
-        
         enter(Default.self)
     }
     
@@ -120,13 +119,12 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
         guard let info = notification.userInfo as? [String : Any] else { return }
         guard let coreDataEntry = info["AFCoreData"] as? AFCoreData else { return }
         
-        // Set the input mode and selection state machines
-        enter(Default.self)
-        selectionController.enter(Default.self)
-        
         NotificationCenter.default.removeObserver(self)
         
         self.coreData = coreDataEntry
+        self.startStateMachine()
+        self.coreData.core.sceneUI.startStateMachine()
+
         self.notificationsReceiver = info["DataNotifications"] as! NotificationCenter
         
         let aNotification = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewAgent.rawValue)
@@ -145,6 +143,10 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
         
         let agentEditor = coreData.createAgent(editorType: .createFromScratch)
         activateAgent(agentEditor, image: image, at: currentPosition)
+    }
+    
+    func dragEnd(_ info: AFSceneInputState.InputInfo) {
+        // Nothing to do, I think. Just stop tracking the mouse, which we do elsewhere. I think.
     }
 
     func finalizePath(close: Bool) {
@@ -189,7 +191,9 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     }
     
     func mouseUp(_ info: AFSceneInputState.InputInfo) {
+        print("scene controller drone.click")
         drone.click(info.name, flags: info.flags)
+        print("and it's done")
     }
     
     @objc func newAgentHasBeenCreated(_ notification: Notification) {
@@ -221,4 +225,6 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
 //        newPath.stampObstacle()
 //        data.obstacles[newPath.name] = newPath
     }
+    
+    func startStateMachine() { enter(Default.self) }
 }

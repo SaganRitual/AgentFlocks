@@ -33,15 +33,32 @@ protocol AFSceneControllerState {
 }
 
 extension AFSceneController {
-    var drone: AFSceneControllerState { return currentState! as! AFSceneControllerState }
+    var drone: AFSceneControllerState {
+        if let s = currentState as? AFSceneControllerState {
+            print("droning")
+            return s
+        } else {
+            fatalError()
+        }
+    }
     
     class BaseState: GKState, AFSceneControllerState {
         var sceneUI: AFSceneController { return stateMachine! as! AFSceneController }
         
-        func click(_ name: String?, flags: NSEvent.ModifierFlags?) {}
+        func click(_ name: String?, flags: NSEvent.ModifierFlags?) { }
         func flagsChanged(to newFlags: NSEvent.ModifierFlags) {}
         func mouseMove(to position: CGPoint) {}
         func newAgentHasBeenCreated(_ notification: Notification) {}
         func newPathHasBeenCreated(_ notification: Notification) {}
+
+        func click_item(_ name: String, flags: NSEvent.ModifierFlags?) {
+            print("one")
+            // Ignore all modified clicks on a path node, for now
+            guard !((flags?.contains(.command) ?? false) ||
+                (flags?.contains(.control) ?? false) ||
+                (flags?.contains(.option) ?? false)) else { return }
+            
+            sceneUI.selectionController.click_item(name, flags: flags)
+        }
     }
 }

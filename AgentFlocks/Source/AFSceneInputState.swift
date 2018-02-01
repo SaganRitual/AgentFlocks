@@ -25,6 +25,7 @@
 import GameplayKit
 
 protocol AFSceneInputStateDelegate {
+    func dragEnd(_ info: AFSceneInputState.InputInfo)
     func keyDown(_ info: AFSceneInputState.InputInfo)
     func keyUp(_ info: AFSceneInputState.InputInfo)
     func mouseDown(_ info: AFSceneInputState.InputInfo)
@@ -127,16 +128,15 @@ extension AFSceneInputState {
         }
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == MouseDown.self || stateClass == MouseDragging.self || stateClass == MouseUp.self
+            // MouseDown is disallowed once we start dragging. The only way out
+            // of drag state is a mouse up.
+            return stateClass == MouseDragging.self || stateClass == MouseUp.self
         }
 
     }
     
     class MouseMoving: BaseState {
-        var count = 0
         override func didEnter(from previousState: GKState?) {
-            count += 1
-            
             let info = InputInfo(mousePosition: currentPosition)
             delegate?.mouseMove(info)
 
@@ -144,7 +144,7 @@ extension AFSceneInputState {
         }
 
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
-            return stateClass == MouseDown.self || stateClass == MouseMoving.self || stateClass == MouseUp.self
+            return stateClass == MouseDown.self || stateClass == MouseMoving.self
         }
 
     }
@@ -157,14 +157,16 @@ extension AFSceneInputState {
             guard previousState != nil else { return }
             
             upNode = afStateMachine.getTouchedNode()
-            
-            if previousState == afStateMachine.state(forClass: MouseDown.self) ||     // MouseUp after MouseDown -- a simple click
-                previousState == afStateMachine.state(forClass: MouseDragging.self) { // MouseUp after dragging - a simple end-of-drag
 
-                let info = InputInfo(downNode: downNode, flags: event.modifierFlags,
-                                     mousePosition: currentPosition, name: upNode, upNode: upNode)
-                
+            let info = InputInfo(downNode: downNode, flags: event.modifierFlags, mousePosition: currentPosition,
+                                 name: upNode, previousState: previousState, upNode: upNode)
+
+            if previousState == afStateMachine.state(forClass: MouseDown.self) {
+                // MouseUp after MouseDown -- a simple click
                 delegate?.mouseUp(info)
+            } else if  previousState == afStateMachine.state(forClass: MouseDragging.self) {
+                // MouseUp after dragging - a simple end-of-drag
+                delegate?.dragEnd(info)
             }
         }
         
@@ -215,21 +217,24 @@ extension AFSceneInputState {
         let key: UInt16
         let mousePosition: CGPoint
         let name: String?
+        let previousState: GKState?
         let upNode: String?
         
         init(flags: NSEvent.ModifierFlags, key: UInt16, mousePosition: CGPoint, name: String?) {
+            self.downNode = nil
             self.flags = flags
             self.key = key
             self.mousePosition = mousePosition
             self.name = name
-            self.downNode = nil
+            self.previousState = nil
             self.upNode = nil
         }
         
-        init(downNode: String?, flags: NSEvent.ModifierFlags?, mousePosition: CGPoint, name: String?, upNode: String?) {
+        init(downNode: String?, flags: NSEvent.ModifierFlags?, mousePosition: CGPoint, name: String?, previousState: GKState?, upNode: String?) {
             self.downNode = downNode
             self.mousePosition = mousePosition
             self.name = name
+            self.previousState = previousState
             self.upNode = upNode
             self.flags = flags
             
@@ -243,6 +248,7 @@ extension AFSceneInputState {
             
             self.key = 0
             self.flags = nil
+            self.previousState = nil
             self.upNode = nil
         }
         
@@ -253,6 +259,7 @@ extension AFSceneInputState {
             
             self.downNode = nil
             self.name = nil
+            self.previousState = nil
             self.upNode = nil
         }
         
@@ -261,9 +268,10 @@ extension AFSceneInputState {
             self.flags = flags
             self.mousePosition = mousePosition
             
-            self.name = nil
-            self.upNode = nil
             self.key = 0
+            self.name = nil
+            self.previousState = nil
+            self.upNode = nil
         }
         
         init(downNode: String?, mousePosition: CGPoint) {
@@ -271,9 +279,10 @@ extension AFSceneInputState {
             self.mousePosition = mousePosition
             
             self.flags = nil
+            self.key = 0
+            self.previousState = nil
             self.name = nil
             self.upNode = nil
-            self.key = 0
         }
         
         init(mousePosition: CGPoint) {
@@ -281,9 +290,10 @@ extension AFSceneInputState {
             
             self.downNode = nil
             self.flags = nil
-            self.name = nil
-            self.upNode = nil
             self.key = 0
+            self.name = nil
+            self.previousState = nil
+            self.upNode = nil
         }
     }
 }
