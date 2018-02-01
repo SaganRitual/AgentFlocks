@@ -49,26 +49,42 @@ struct AFNodeAdapter {
         var isClickable:  Bool { return userData["isClickable"] as! Bool }
         var isPath:       Bool { return userData["isPath"] as! Bool }
         var isPathHandle: Bool { return userData["isPathHandle"] as! Bool }
-        var ownsUserData: Bool {
-            print("query", Nickname(node!.name!), "userData", node!.userData ?? "nothing there")
-            return node?.userData != nil
-        }
+        var ownsUserData: Bool { return node?.userData != nil }
+        var position:  CGPoint { return CGPoint(getAgent().position) }
 
         // These have a default value, because we don't set them right away, because
         // they're set and cleared all the time. So we allow for agents and other
         // minions not to have these flags set the first time we see them.
-        var isPrimarySelection: Bool { return userData["isPrimarySelection"] as? Bool ?? false }
-        var isSelected:         Bool { return userData["isSelected"] as? Bool ?? false }
+        var isPrimarySelection: Bool {
+            get { return userData["isPrimarySelection"] as? Bool ?? false }
+            set { setUserData("isPrimarySelection", to: newValue) }
+        }
         
-        func deselect() {}
-        func select(_ name: String, primary: Bool) {}
+        var isSelected: Bool {
+            get { return userData["isSelected"] as? Bool ?? false }
+            set { setUserData("isSelected", to: newValue) }
+        }
+        
+        func deselect() {
+            setUserData("isSelected", to: true)
+            setUserData("isPrimarySelection", to: false)
+            getAgent().hasBeenDeselected(getAgent().name)
+        }
+
+        func select(primary: Bool) {
+            setUserData("isSelected", to: true)
+            setUserData("isPrimarySelection", to: primary)
+            getAgent().hasBeenSelected(getAgent().name, primary: primary)
+        }
+        
+        func setUserData(_ key: String, to value: Bool) { userData[key] = value }
     }
     
     init(scene: SKScene, name: String?) {
         self.name = name
-        guard let name = name else { impl = nil; return }
+        guard name != nil else { impl = nil; return }
 
-        if let node = scene.children.filter({ print("init", $0, AFNodeAdapter_($0).ownsUserData); return AFNodeAdapter_($0).ownsUserData }).first { impl = AFNodeAdapter_(node) }
+        if let node = scene.children.filter({ return AFNodeAdapter_($0).ownsUserData }).first { impl = AFNodeAdapter_(node) }
         else { impl = nil }
     }
     
@@ -78,14 +94,16 @@ struct AFNodeAdapter {
     var isAgent:     Bool { return impl?.isAgent ?? false }
     var isClickable: Bool { return impl?.isClickable ?? false }
     var isPath:      Bool { return impl?.isPath ?? false }
+    
     var isPathHandle:       Bool { return impl?.isPathHandle ?? false }
     var isPrimarySelection: Bool { return impl?.isPrimarySelection ?? false }
     var isSelected:         Bool { return impl?.isSelected ?? false }
     
-    var node: SKNode { return impl!.node! }
+    var node:     SKNode { return impl!.node! }
+    var position: CGPoint? { return impl?.position }
     
     func deselect() { impl?.deselect() }
-    func select(_ name: String, primary: Bool) { impl?.select(name, primary: primary) }
+    func select(primary: Bool) { impl?.select(primary: primary) }
 }
 /*
 struct AFNodeAdapter {

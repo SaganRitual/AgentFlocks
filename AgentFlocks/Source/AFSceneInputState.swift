@@ -56,18 +56,27 @@ class AFSceneInputState: GKStateMachine, AFGameSceneDelegate {
     }
     
     func getTouchedNode() -> String? {
-        let touchedNode = scene.nodes(at: currentPosition).filter({
-            print(Nickname(upNode ?? "??????????"))
-            let clickable = AFNodeAdapter(scene: scene, name: $0.name).isClickable
-            print(Nickname($0.name ?? "?????????"), clickable)
-            return clickable
-        }).first?.name
+        let touchedNode = scene.nodes(at: currentPosition).filter {
+            AFNodeAdapter(scene: scene, name: $0.name).isClickable
+        }.first?.name
         
-        print(Nickname(touchedNode ?? "???????????"))
         return touchedNode
     }
 
     func setNodeToMouseOffset(anchor: CGPoint) { nodeToMouseOffset = anchor - currentPosition }
+    
+    func enter(_ stateClass: AnyClass, with event: NSEvent) {
+        currentPosition = event.location(in: scene)
+        self.event = event
+        enter(stateClass)
+    }
+
+    func mouseDown(with event: NSEvent) { enter(MouseDown.self, with: event) }
+    func mouseDragged(with event: NSEvent) { enter(MouseDragging.self, with: event) }
+    func mouseMoved(with event: NSEvent) { enter(MouseMoving.self, with: event) }
+    func mouseUp(with event: NSEvent) { enter(MouseUp.self, with: event) }
+    func rightMouseDown(with event: NSEvent) { enter(RightMouseDown.self, with: event) }
+    func rightMouseUp(with event: NSEvent) { enter(RightMouseUp.self, with: event) }
 }
 
 extension AFSceneInputState {
@@ -86,10 +95,25 @@ extension AFSceneInputState {
     
     class MouseDown: BaseState {
         override func didEnter(from previousState: GKState?) {
+            downNode = afStateMachine.getTouchedNode()
+
+            if let nodeCenter = AFNodeAdapter(scene: scene, name: downNode).position {
+                afStateMachine.setNodeToMouseOffset(anchor: nodeCenter)
+            }
+            
             let info = InputInfo(downNode: downNode, flags: event.modifierFlags, mousePosition: currentPosition)
             delegate?.mouseDown(info)
             
             upNode = nil
+        }
+        
+        override func isValidNextState(_ stateClass: AnyClass) -> Bool {
+            // If the user is dragging across the black, we refuse to leave
+            // the down state, so we just don't see the drag. We wake up
+            // normally when the mouseUp comes in.
+            if stateClass == MouseDragging.self && downNode == nil { return false }
+            
+            return true
         }
     }
     
@@ -109,8 +133,10 @@ extension AFSceneInputState {
     }
     
     class MouseMoving: BaseState {
-        
+        var count = 0
         override func didEnter(from previousState: GKState?) {
+            count += 1
+            
             let info = InputInfo(mousePosition: currentPosition)
             delegate?.mouseMove(info)
 
@@ -130,19 +156,16 @@ extension AFSceneInputState {
             // we just ignore this first one.
             guard previousState != nil else { return }
             
-            if previousState == afStateMachine.state(forClass: MouseDown.self) {
-                // MouseUp after MouseDown -- a simple click
+            upNode = afStateMachine.getTouchedNode()
+            
+            if previousState == afStateMachine.state(forClass: MouseDown.self) ||     // MouseUp after MouseDown -- a simple click
+                previousState == afStateMachine.state(forClass: MouseDragging.self) { // MouseUp after dragging - a simple end-of-drag
 
                 let info = InputInfo(downNode: downNode, flags: event.modifierFlags,
                                      mousePosition: currentPosition, name: upNode, upNode: upNode)
                 
                 delegate?.mouseUp(info)
-                
-            } else if previousState == afStateMachine.state(forClass: MouseDragging.self) {
-                // MouseUp after dragging - a simple end-of-drag
             }
-            
-            downNode = nil
         }
         
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {

@@ -44,12 +44,11 @@ protocol AFSceneControllerDelegate {
     func hasBeenSelected(_ name: String, primary: Bool)
 }
 
-class AFSceneController: GKStateMachine, AFSceneInputDelegate {
+class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     var activePath: AFPath!     // The one we're doing stuff to, whether it's selected or not (like dragging handles)
     let contextMenu: AFContextMenu
     var currentPosition = CGPoint.zero
     var coreData: AFCoreData!
-    var downNode: String?
     var draggedInTheBlack = false
     unowned let gameScene: GameScene
     var goalSetupInputMode = GoalSetupInputMode.NoSelect
@@ -65,7 +64,6 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     var selectedNodes = Set<String>()
     var selectedPath: AFPath!   // The one that has a visible selection indicator on it, if any
     var ui: AppDelegate
-    var upNode: String?
 
     enum MouseStates { case down, dragging, rightDown, rightUp, up }
     enum NotificationType: String { case Deselected = "Deselected", Recalled = "Recalled", Selected = "Selected"}
@@ -92,7 +90,8 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     }
     
     func activateAgent(_ editor: AFAgentEditor, image: NSImage, at position: CGPoint) {
-        _ = AFAgent2D(coreData: coreData, editor: editor, image: image, position: currentPosition, scene: gameScene)
+        let agent = AFAgent2D(coreData: coreData, editor: editor, image: image, position: currentPosition, scene: gameScene)
+        selectionController.newAgentWasCreated(agent.name)
     }
 
     func addNodeToPath(at position: CGPoint) { activePath.addGraphNode(at: position) }
@@ -167,54 +166,30 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     
     func getNextZPosition() -> Int { return gameScene.children.count }
 
-    func keyDown(_ info: AFSceneInput.InputInfo) {
+    func keyDown(_ info: AFSceneInputState.InputInfo) {
     }
     
-    func keyUp(_ info: AFSceneInput.InputInfo) {
+    func keyUp(_ info: AFSceneInputState.InputInfo) {
     }
     
-    func mouseDown(_ info: AFSceneInput.InputInfo) {
-        downNode = info.name
-        currentPosition = info.mousePosition
-
+    func mouseDown(_ info: AFSceneInputState.InputInfo) {
         if let name = info.name {
             bringToTop(name)
-            
-            let node = AFNodeAdapter(scene: gameScene, name: name).node
-            setNodeToMouseOffset(anchor: node.position)
         }
-
-        print("down")
-        mouseState = .down
-        upNode = nil
     }
     
-    func mouseDrag(_ info: AFSceneInput.InputInfo) {
-        print("dragging", info)
-        
-        if downNode == nil { draggedInTheBlack = true }
-        guard !draggedInTheBlack else { return }
-
-        if let name = info.name, name == downNode { print("d2");  AFNodeAdapter(scene: gameScene, name: name).move(to: info.mousePosition) }
-        print("dragging 3")
-        mouseState = .dragging
+    func mouseDrag(_ info: AFSceneInputState.InputInfo) {
+        if let name = info.name, let downNode = info.downNode, name == downNode {
+            AFNodeAdapter(scene: gameScene, name: name).move(to: info.mousePosition)
+        }
     }
     
-    func mouseMove(_ info: AFSceneInput.InputInfo) {
-        print("moving")
+    func mouseMove(_ info: AFSceneInputState.InputInfo) {
         drone.mouseMove(to: info.mousePosition)
     }
     
-    func mouseUp(_ info: AFSceneInput.InputInfo) {
-        print("<up>", mouseState)
-        upNode = info.name
-        currentPosition = info.mousePosition
-        
-        if !draggedInTheBlack { print("p"); drone.click(info.name, flags: info.flags) }
-        print("q")
-        mouseState = .up
-        downNode = nil
-        draggedInTheBlack = false
+    func mouseUp(_ info: AFSceneInputState.InputInfo) {
+        drone.click(info.name, flags: info.flags)
     }
     
     @objc func newAgentHasBeenCreated(_ notification: Notification) {
@@ -231,24 +206,13 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
         notificationsSender.post(nn)
     }
 
-    func rightMouseDown(_ info: AFSceneInput.InputInfo) {
-        upNode = nil
-        mouseState = .rightDown
-    }
-    
-    func rightMouseUp(_ info: AFSceneInput.InputInfo) {
-        upNode = info.name
-        mouseState = .rightUp
-    }
+    func rightMouseDown(_ info: AFSceneInputState.InputInfo) { }
+    func rightMouseUp(_ info: AFSceneInputState.InputInfo) { }
 
     func setGoalSetupInputMode(_ mode: GoalSetupInputMode) {
         goalSetupInputMode = mode
         enter(GoalSetup.self)
     }
-    
-//    func showFullPathHandle(_ show: Bool = true) {
-//        activePath?.showPathHandle(show)
-//    }
     
     func stampObstacle() {
 //        let offset = currentPosition - CGPoint(activePath.graphNodes[0].position)

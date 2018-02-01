@@ -21,12 +21,12 @@ class WindowContentView: NSView {
     }
 	
 	override func keyDown(with event: NSEvent) {
-        let info = AFSceneInput.InputInfo(flags: event.modifierFlags, key: event.keyCode, mousePosition: CGPoint.zero)
+        let info = AFSceneInputState.InputInfo(flags: event.modifierFlags, key: event.keyCode, mousePosition: CGPoint.zero)
 //        coreData.core.sceneUI.keyDown(info)
 	}
 	
 	override func keyUp(with event: NSEvent) {
-        let info = AFSceneInput.InputInfo(flags: event.modifierFlags, key: event.keyCode, mousePosition: CGPoint.zero)
+        let info = AFSceneInputState.InputInfo(flags: event.modifierFlags, key: event.keyCode, mousePosition: CGPoint.zero)
 //        coreData.core.sceneUI.keyUp(info)
 	}
 	

@@ -37,7 +37,7 @@ class AFCoreData {
         var agentGoalsDelegate: AFAgentGoalsDelegate!
         var browserDelegate: AFBrowserDelegate!
         var contextMenuDelegate: AFContextMenuDelegate!
-        var sceneInput: AFSceneInput!
+        var sceneInputState: AFSceneInputState!
         var sceneUI: AFSceneController!
         var itemEditorDelegate: AFItemEditorDelegate!
         var menuBarDelegate: AFMenuBarDelegate!
@@ -115,8 +115,8 @@ class AFCoreData {
     }
     
     func dump() -> String {
-        if let rs = data.rawString(.utf8, options: .sortedKeys) { print(rs); return rs }
-        else { print("no string?"); return "no string?" }
+        if let rs = data.rawString(.utf8, options: .sortedKeys) { return rs }
+        else { return "no string?" }
     }
     
     func getPathTo(_ nameToSeek: String, pathSoFar: [JSONSubscriptType] = [JSONSubscriptType]()) -> [JSONSubscriptType] {
@@ -139,8 +139,8 @@ class AFCoreData {
         coreData.core.itemEditorDelegate = AFItemEditorDelegate(coreData: coreData, sceneUI: coreData.core.sceneUI)
         coreData.core.menuBarDelegate = AFMenuBarDelegate(coreData: coreData, sceneUI: coreData.core.sceneUI)
         
-        coreData.core.sceneInput = AFSceneInput(coreData: coreData, gameScene: gameScene)
-        coreData.core.sceneInput.delegate = coreData.core.sceneUI
+        coreData.core.sceneInputState = AFSceneInputState(scene: gameScene)
+        coreData.core.sceneInputState.delegate = coreData.core.sceneUI
         
         coreData.core.topBarDelegate = AFTopBarDelegate(coreData: coreData, sceneUI: coreData.core.sceneUI)
         
@@ -158,7 +158,7 @@ class AFCoreData {
         // We don't add this one to AppDelegate, because it's owned by
         // GameScene. We return it so AppDelegate can plug it into
         // GameScene.
-        return coreData.core.sceneInput
+        return coreData.core.sceneInputState
     }
 }
 

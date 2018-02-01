@@ -185,7 +185,7 @@ private extension AFSelectionController {
     
     func deselectAll() { scene.children.forEach { getNodeAdapter($0.name).deselect() } }
     
-    func select(_ name: String, primary: Bool) {}
+    func select(_ name: String, primary: Bool) { getNodeAdapter(name).select(primary: true) }
     
     func toggleSelection(_ name: String) {}
 }

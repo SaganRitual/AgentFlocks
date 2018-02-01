@@ -27,11 +27,6 @@ import GameplayKit
 extension AFSceneController {
     class Default: BaseState {
         override func click(_ name: String?, flags: NSEvent.ModifierFlags?) {
-            // If the user has dragged across the black for no particular reason,
-            // ignore the mouse up; pretend nothing happened
-            print(sceneUI.upNode, sceneUI.mouseState)
-            guard !(sceneUI.upNode == nil && sceneUI.mouseState == .dragging) else { return }
-            
             if let name = name { click_node(name, flags: flags) }
             else { click_black(flags: flags) }
         }

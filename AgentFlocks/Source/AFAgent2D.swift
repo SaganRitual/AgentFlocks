@@ -34,20 +34,17 @@ protocol AFAgentDelegate {
 
 class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
     
-    var selected = false
-    
     private unowned let coreData: AFCoreData
     let name: String
     private unowned let coreNotifier: NotificationCenter
-    private var scale: Float
     private let scene: SKScene
     private var savedBehaviorState: AFCompositeBehavior?
     private var spriteSet: AFAgent2D.SpriteSet!
     private unowned let uiNotifier: NotificationCenter
 
     var isPaused: Bool {
-        get { return spriteSet.isPaused }
-        set { spriteSet.isPaused = newValue }
+        get { return spriteSet.primaryContainer.isPaused }
+        set { spriteSet.primaryContainer.isPaused = newValue }
     }
 
     override var position: vector_float2 {
@@ -60,7 +57,6 @@ class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
         self.name = editor.name
         self.coreNotifier = coreData.notifier
         self.uiNotifier = coreData.core.sceneUI.notificationsSender
-        self.scale = editor.scale
         self.scene = scene
         
         super.init()
@@ -76,14 +72,14 @@ class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
         
         let setAttribute = NSNotification.Name(rawValue: AFCoreData.NotificationType.SetAttribute.rawValue)
         self.coreNotifier.addObserver(self, selector: #selector(setAttribute(notification:)), name: setAttribute, object: coreData)
-        
+/*
         // These notifications come from the UI; notice we're listening on uiNotifications
         let select = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
         self.uiNotifier.addObserver(self, selector: #selector(hasBeenSelected(notification:)), name: select, object: nil)
         
         let deselect = NSNotification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
         self.uiNotifier.addObserver(self, selector: #selector(hasBeenDeselected(notification:)), name: deselect, object: nil)
-
+*/
         // Use self here, because we want to set the container position too.
         // But it has to happen after superclass init, because it talks to the superclass.
         self.position = position.as_vector_float2()
@@ -91,8 +87,7 @@ class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
         // Attach myself to the primary sprite. That's where I'll live;
         // no one but the sprite has a reference to me.
         self.spriteSet.attachToSprite(self)
-
-        let agentAdapter = AFNodeAdapter(scene: self.scene, name: self.name)
+        self.spriteSet.primaryContainer.scale = CGFloat(editor.scale)
     }
     
     deinit {
@@ -155,36 +150,46 @@ extension AFAgent2D {
         init(name: String) {
             super.init()
             super.name = name
+            
+            userData = NSMutableDictionary()
+            
+            // Set these fields directly rather than using an adapter, because
+            // in the adapter, these fields are read-only.
+            userData!["isAgent"] = true
+            userData!["isClickable"] = true
+            userData!["isPath"] = false
+            userData!["isPathHandle"] = false
+            userData!["isPrimarySelection"] = false
+            userData!["isSelected"] = false
+            userData!["isShowingRadius"] = false
+            
+            userData!["scale"] = CGFloat(1.0)
         }
         
+        var isAgent: Bool { return userData!["isAgent"] as! Bool }
+        var isClickable: Bool { return userData!["isClickable"] as! Bool }
+        var isPath: Bool { return userData!["isPath"] as! Bool }
+        var isPathHandle: Bool { return userData!["isPathHandle"] as! Bool }
+        var isPrimarySelection: Bool { get { return userData!["isPrimarySelection"] as! Bool } set { userData!["isPrimarySelection"] = newValue } }
+        var isSelected: Bool { get { return userData!["isSelected"] as! Bool } set { userData!["isSelected"] = newValue } }
+        var isShowingRadius: Bool { get { return userData!["isShowingRadius"] as! Bool } set { userData!["isShowingRadius"] = newValue } }
+        
+        var scale: CGFloat { get { return userData!["scale"] as! CGFloat} set { userData!["scale"] = newValue } }
+
         required init?(coder aDecoder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
         }
     }
 
     class SpriteSet {
-        var isSelected = false
-        var isShowingRadius = false
         let primaryContainer: AFAgent2D.SpriteContainerNode
         var radiusIndicator: SKNode!
         let radiusIndicatorLength: Float = 100
         unowned let scene: SKScene
         var selectionIndicator: SKNode!
         let theSprite: SKSpriteNode
-        
-        var isPaused: Bool {
-            get { return primaryContainer.isPaused }
-            set { primaryContainer.isPaused = newValue }
-        }
-        
-        var scale_: Float = 1
-        var scale: Float {
-            get { return scale_ }
-            set { primaryContainer.setScale(CGFloat(newValue)) ; scale_ = newValue }
-        }
 
         init(owningAgent: AFAgent2D, image: NSImage, name: String, scale: Float, scene: SKScene) {
-            self.scale_ = scale
             self.scene = scene
 
             primaryContainer = AFAgent2D.SpriteContainerNode(name: name)
@@ -192,19 +197,6 @@ extension AFAgent2D {
             let texture = SKTexture(image: image)
             theSprite = SKSpriteNode(texture: texture)
             theSprite.name = name
-            print("Another name for theSprite: ", Nickname(name))
-            
-            primaryContainer.userData = NSMutableDictionary()
-            
-            primaryContainer.userData!["isClickable"] = true
-            primaryContainer.userData!["isAgent"] = true
-            primaryContainer.userData!["isPath"] = false
-            primaryContainer.userData!["isPathHandle"] = false
-            primaryContainer.userData!["isPrimarySelection"] = false
-            primaryContainer.userData!["isSelected"] = false
-
-            primaryContainer.userData!["barf"] = "chunks"
-            print(primaryContainer.userData!["barf"]!)
 
             scene.addChild(primaryContainer)
             primaryContainer.addChild(theSprite)
@@ -223,16 +215,16 @@ extension AFAgent2D {
             // it might be someone else being deselected, so I
             // have to check whose name is being called.
             if name == nil || name! == primaryContainer.name! {
-                isSelected = false
-                isShowingRadius = false
-                radiusIndicator.removeFromParent()
-                selectionIndicator.removeFromParent()
+                primaryContainer.isSelected = false
+                primaryContainer.isShowingRadius = false
+                radiusIndicator?.removeFromParent()
+                selectionIndicator?.removeFromParent()
             }
         }
         
         func hasBeenSelected(primary: Bool) {
-            isSelected = true
-            isShowingRadius = true
+            primaryContainer.isSelected = true
+            primaryContainer.isShowingRadius = true
             
             // 40 is just a number that makes the rings look about right to me
             selectionIndicator = AFAgent2D.makeRing(radius: 40, isForSelector: true, primary: primary)
@@ -296,7 +288,7 @@ extension AFAgent2D {
         case .MaxAcceleration: self.maxAcceleration = value
         case .MaxSpeed:        self.maxSpeed = value
         case .Radius:          self.radius = value
-        case .Scale:           self.scale = value
+        case .Scale:           self.spriteSet.primaryContainer.scale = CGFloat(value)
         }
     }
 }
