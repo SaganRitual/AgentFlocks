@@ -198,7 +198,7 @@ class AgentAttributesController: NSViewController {
 	}
     
     @objc func attributeHasBeenUpdated(notification: Notification) {
-        let (attribute, value, agent) = notification.object as! (Int, Float, String)
+        let (attribute, value, _) = notification.object as! (Int, Float, String)
         attributeHasBeenUpdated(attribute, to: value)
     }
     
@@ -210,19 +210,16 @@ class AgentAttributesController: NSViewController {
         }
     }
     
-    @objc func hasBeenSelected(notification: Notification) {
-        let (node, primary) = notification.object as! (SKNode, Bool)
-        hasBeenSelected(node.name!, primary: primary)
-    }
     
-    func hasBeenSelected(_ name: String, primary: Bool) {
-//        let agentData = coreData.getAgent(name)
-//
-//        setMass(agentData.attributes[AFAgentAttribute.Mass]!, fromData: true)
-//        setMaxAcceleration(agentData.attributes[AFAgentAttribute.MaxAcceleration]!, fromData: true)
-//        setMaxSpeed(agentData.attributes[AFAgentAttribute.MaxSpeed]!, fromData: true)
-//        setRadius(agentData.attributes[AFAgentAttribute.Radius]!, fromData: true)
-//        setScale(agentData.attributes[AFAgentAttribute.Scale]!, fromData: true)
+    @objc func hasBeenSelected(notification: Notification) {
+        let name = notification.object as! String
+        let editor = AFAgentEditor(coreData: coreData, fullPath: coreData.getPathTo(name))
+
+        setMass(editor.mass, fromData: true)
+        setMaxAcceleration(editor.maxAcceleration, fromData: true)
+        setMaxSpeed(editor.maxSpeed, fromData: true)
+        setRadius(editor.radius, fromData: true)
+        setScale(editor.scale, fromData: true)
     }
 	
     override func viewDidLoad() {

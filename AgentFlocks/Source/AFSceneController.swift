@@ -44,70 +44,13 @@ protocol AFSceneControllerDelegate {
     func hasBeenSelected(_ name: String, primary: Bool)
 }
 
-struct AFNodeAdapter {
-    let name: String?
-    let node: SKNode
-    
-    init(_ node: SKNode) {
-        // Lots of sprites out there, but we only care about the ones
-        // that have names, and not even all of them.
-        if let nodeName = node.name { self.name = nodeName } else { self.name = nil }
-        self.node = node
-    }
-    
-    func getIsClickable() -> Bool {
-        return (getUserDataEntry("clickable") as? Bool) ?? false
-    }
-    
-    static func getOwningAgent(for node: SKNode) -> AFAgent2D? {
-        if let userData = node.userData, let value = userData["OwningAgent"] {
-            return value as? AFAgent2D
-        } else {
-            return nil
-        }
-    }
-    
-    func getOwningAgent() -> AFAgent2D? {
-        return AFNodeAdapter.getOwningAgent(for: self.node)
-    }
-    
-    func getUserDataEntry(_ name: String) -> Any? {
-        if let userData = node.userData, let value = userData[name] {
-            return value
-        } else {
-            return nil
-        }
-    }
-    
-    func move(to position: CGPoint) {
-        getOwningAgent()!.move(to: position)
-    }
-    
-    func setIsClickable(_ set: Bool = true) {
-        setUserDataEntry(key: "clickable", value: set)
-    }
-    
-    func setOwningAgent(_ agent: AFAgent2D) {
-        if let userData = node.userData { userData["OwningAgent"] = agent }
-    }
-    
-    func setUserDataEntry(key: String, value: Any) {
-        if let userData = node.userData {
-            userData[key] = value
-        }
-    }
-    
-    func setZPosition(above: Int) {
-        setUserDataEntry(key: "zPosition", value: above)
-    }
-}
-
 class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     var activePath: AFPath!     // The one we're doing stuff to, whether it's selected or not (like dragging handles)
     let contextMenu: AFContextMenu
     var currentPosition = CGPoint.zero
     var coreData: AFCoreData!
-    var downNode: SKNode?
+    var downNode: String?
+    var draggedInTheBlack = false
     unowned let gameScene: GameScene
     var goalSetupInputMode = GoalSetupInputMode.NoSelect
     var mouseState = MouseStates.up
@@ -117,12 +60,12 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     var obstacleCloneStamp = String()
     var parentOfNewMotivator: AFBehavior?
     var pathForNextPathGoal = 0
-    var primaryExclusion: SKNode?
-    var primarySelection: SKNode?
-    var selectedNodes = Set<SKNode>()
+    var primarySelection: String?
+    let selectionController: AFSelectionController
+    var selectedNodes = Set<String>()
     var selectedPath: AFPath!   // The one that has a visible selection indicator on it, if any
     var ui: AppDelegate
-    var upNode: SKNode?
+    var upNode: String?
 
     enum MouseStates { case down, dragging, rightDown, rightUp, up }
     enum NotificationType: String { case Deselected = "Deselected", Recalled = "Recalled", Selected = "Selected"}
@@ -131,6 +74,7 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
         self.contextMenu = contextMenu
         self.gameScene = gameScene
         self.notificationsSender = NotificationCenter()
+        self.selectionController = AFSelectionController(scene: gameScene)
 
         self.ui = ui
 
@@ -142,45 +86,20 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
         let sceneControllerReady = Notification.Name(rawValue: AFCoreData.NotificationType.AppCoreReady.rawValue)
         let selector = #selector(coreReady(notification:))
         center.addObserver(self, selector: selector, name: sceneControllerReady, object: nil)
-
+        
+        
         enter(Default.self)
     }
     
-    @objc func coreReady(notification: Notification) {
-        guard let info = notification.userInfo as? [String : Any] else { return }
-        guard let coreDataEntry = info["AFCoreData"] as? AFCoreData else { return }
-        
-        NotificationCenter.default.removeObserver(self)
-
-        self.coreData = coreDataEntry
-        self.notificationsReceiver = info["DataNotifications"] as! NotificationCenter
-
-        let aNotification = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewAgent.rawValue)
-        let aSelector = #selector(newAgentHasBeenCreated(_:))
-        self.notificationsReceiver.addObserver(self, selector: aSelector, name: aNotification, object: nil)
-        
-        let bNotification = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewPath.rawValue)
-        let bSelector = #selector(newPathHasBeenCreated(_:))
-        self.notificationsReceiver.addObserver(self, selector: bSelector, name: bNotification, object: nil)
+    func activateAgent(_ editor: AFAgentEditor, image: NSImage, at position: CGPoint) {
+        _ = AFAgent2D(coreData: coreData, editor: editor, image: image, position: currentPosition, scene: gameScene)
     }
-    
+
     func addNodeToPath(at position: CGPoint) { activePath.addGraphNode(at: position) }
-    
-    func announceDeselect(_ node: SKNode?) {
-        let n = Notification.Name(rawValue: NotificationType.Deselected.rawValue)
-        let nn = Notification(name: n, object: node, userInfo: nil)
-        notificationsSender.post(nn)
-    }
 
-    func announceSelect(_ node: SKNode, primary: Bool) {
-        let n = Notification.Name(rawValue: NotificationType.Selected.rawValue)
-        let nn = Notification(name: n, object: (node, primary), userInfo: nil)
-        notificationsSender.post(nn)
-    }
-
-    func bringToTop(_ node: SKNode) {
+    func bringToTop(_ name: String) {
         let count = compressZOrder()
-        AFNodeAdapter(node).setZPosition(above: count - 1)
+//        AFNodeAdapter(name).setZPosition(above: count - 1)
     }
    
     func cloneAgent() {
@@ -198,20 +117,35 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
         return zOrderStack.count
     }
     
-    func deselect(_ node: SKNode) {
-        // Seems untidy to leave a node set as the
-        // primary when we're deleting it from the
-        // array of selected nodes.
-        if let p = primarySelection, node == p { primarySelection = nil }
+    @objc func coreReady(notification: Notification) {
+        guard let info = notification.userInfo as? [String : Any] else { return }
+        guard let coreDataEntry = info["AFCoreData"] as? AFCoreData else { return }
         
-        selectedNodes.remove(node)
-        announceDeselect(node)
+        // Set the input mode and selection state machines
+        enter(Default.self)
+        selectionController.enter(Default.self)
+        
+        NotificationCenter.default.removeObserver(self)
+        
+        self.coreData = coreDataEntry
+        self.notificationsReceiver = info["DataNotifications"] as! NotificationCenter
+        
+        let aNotification = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewAgent.rawValue)
+        let aSelector = #selector(newAgentHasBeenCreated(_:))
+        self.notificationsReceiver.addObserver(self, selector: aSelector, name: aNotification, object: nil)
+        
+        let bNotification = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewPath.rawValue)
+        let bSelector = #selector(newPathHasBeenCreated(_:))
+        self.notificationsReceiver.addObserver(self, selector: bSelector, name: bNotification, object: nil)
     }
-    
-    func deselectAll() {
-        primarySelection = nil
-        selectedNodes.removeAll()
-        announceDeselect(nil)
+
+    func createAgent() {
+        // Create a new agent and send it off into the world.
+        let imageIndex = coreData.core.browserDelegate.agentImageIndex
+        let image = ui.agents[imageIndex].image
+        
+        let agentEditor = coreData.createAgent(editorType: .createFromScratch)
+        activateAgent(agentEditor, image: image, at: currentPosition)
     }
 
     func finalizePath(close: Bool) {
@@ -233,12 +167,6 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     
     func getNextZPosition() -> Int { return gameScene.children.count }
 
-    func getNode(named: String?) -> SKNode? {
-        guard let name = named else { return nil }
-        
-        return gameScene.childNode(withName: name)
-    }
-
     func keyDown(_ info: AFSceneInput.InputInfo) {
     }
     
@@ -246,38 +174,47 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     }
     
     func mouseDown(_ info: AFSceneInput.InputInfo) {
-        downNode = info.node
+        downNode = info.name
         currentPosition = info.mousePosition
 
-        if let node = info.node {
-            bringToTop(node)
+        if let name = info.name {
+            bringToTop(name)
+            
+            let node = AFNodeAdapter(scene: gameScene, name: name).node
             setNodeToMouseOffset(anchor: node.position)
         }
 
+        print("down")
         mouseState = .down
         upNode = nil
     }
     
     func mouseDrag(_ info: AFSceneInput.InputInfo) {
-        mouseState = .dragging
+        print("dragging", info)
         
-        if let node = info.node {
-            AFNodeAdapter(node).move(to: info.mousePosition)
-        }
+        if downNode == nil { draggedInTheBlack = true }
+        guard !draggedInTheBlack else { return }
+
+        if let name = info.name, name == downNode { print("d2");  AFNodeAdapter(scene: gameScene, name: name).move(to: info.mousePosition) }
+        print("dragging 3")
+        mouseState = .dragging
     }
     
     func mouseMove(_ info: AFSceneInput.InputInfo) {
+        print("moving")
         drone.mouseMove(to: info.mousePosition)
     }
     
     func mouseUp(_ info: AFSceneInput.InputInfo) {
-        upNode = info.node
+        print("<up>", mouseState)
+        upNode = info.name
         currentPosition = info.mousePosition
         
-        drone.click(info.node, flags: info.flags)
-        
+        if !draggedInTheBlack { print("p"); drone.click(info.name, flags: info.flags) }
+        print("q")
         mouseState = .up
         downNode = nil
+        draggedInTheBlack = false
     }
     
     @objc func newAgentHasBeenCreated(_ notification: Notification) {
@@ -300,43 +237,13 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
     }
     
     func rightMouseUp(_ info: AFSceneInput.InputInfo) {
-        upNode = info.node
+        upNode = info.name
         mouseState = .rightUp
     }
-    
-    func select(_ nodeName: String, primary: Bool) {
-        let node = gameScene.nodes(at: currentPosition).filter { $0.name != nil && $0.name! == nodeName }
-        if node.count > 0 {
-            select(node.first!, primary: primary)
-        }
-    }
-    
-    func select(_ node: SKNode, primary: Bool) {
-        if primary { primarySelection = node }
-        selectedNodes.insert(node)
-        announceSelect(node, primary: primary)
-    }
-    
-    /*
-     if let node = sceneUI.primarySelection {
-     AFCore.ui.agentEditorController.goalsController.dataSource = entity
-     AFCore.ui.agentEditorController.attributesController.delegate = entity.agent
-     
-     sceneUI.primarySelection = node
-     sceneUI.updatePrimarySelectionState(agentNode: node)
-     }
-     
-     sceneUI.contextMenu.includeInDisplay(.CloneAgent, true, enable: true)
- */
 
     func setGoalSetupInputMode(_ mode: GoalSetupInputMode) {
         goalSetupInputMode = mode
         enter(GoalSetup.self)
-    }
-
-    func setNodeToMouseOffset(anchor: CGPoint) {
-        nodeToMouseOffset.x = anchor.x - currentPosition.x
-        nodeToMouseOffset.y = anchor.y - currentPosition.y
     }
     
 //    func showFullPathHandle(_ show: Bool = true) {
@@ -350,14 +257,4 @@ class AFSceneController: GKStateMachine, AFSceneInputDelegate {
 //        newPath.stampObstacle()
 //        data.obstacles[newPath.name] = newPath
     }
-
-    func toggleSelection(_ node: SKNode) {
-        if selectedNodes.contains(node) { deselect(node) }
-        else { select(node, primary: primarySelection == nil) }
-    }
-//
-//    func updatePrimarySelectionState(agentNode: SKNode?) {
-//        let afAgent = AFNodeAdapter(agentNode).getOwningAgent()
-//        ui.changePrimarySelectionState(selectedAgent: afAgent)
-//    }
 }

@@ -25,15 +25,11 @@
 import GameplayKit
 
 protocol AFSceneControllerState {
-    func click(_ node: SKNode?, flags: NSEvent.ModifierFlags?)
-    func deselect(_ node: SKNode)
-    func deselectAll()
+    func click(_ name: String?, flags: NSEvent.ModifierFlags?)
     func flagsChanged(to newFlags: NSEvent.ModifierFlags)
     func mouseMove(to position: CGPoint)
     func newAgentHasBeenCreated(_ notification: Notification)
     func newPathHasBeenCreated(_ notification: Notification)
-    func select(_ node: SKNode, primary: Bool)
-    func updateDrawIndicator(_ position: CGPoint)
 }
 
 extension AFSceneController {
@@ -42,15 +38,10 @@ extension AFSceneController {
     class BaseState: GKState, AFSceneControllerState {
         var sceneUI: AFSceneController { return stateMachine! as! AFSceneController }
         
-        func announceSelect(_ node: SKNode, primary: Bool) {}
-        func click(_ node: SKNode?, flags: NSEvent.ModifierFlags?) {}
-        func deselect(_ node: SKNode) {}
-        func deselectAll() {}
+        func click(_ name: String?, flags: NSEvent.ModifierFlags?) {}
         func flagsChanged(to newFlags: NSEvent.ModifierFlags) {}
         func mouseMove(to position: CGPoint) {}
         func newAgentHasBeenCreated(_ notification: Notification) {}
         func newPathHasBeenCreated(_ notification: Notification) {}
-        func select(_ node: SKNode, primary: Bool) {}
-        func updateDrawIndicator(_ position: CGPoint) { }
     }
 }

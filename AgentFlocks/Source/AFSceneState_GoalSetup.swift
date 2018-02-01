@@ -25,59 +25,21 @@
 import GameplayKit
 
 extension AFSceneController {
-    
     class GoalSetup: BaseState {
         override func didEnter(from previousState: GKState?) {
             // Set selection indicator color to blue
         }
         
-        override func click(_ node: SKNode?, flags: NSEvent.ModifierFlags?) {
-            if let node = node { click_node(node, flags: flags) }
+        override func click(_ name: String?, flags: NSEvent.ModifierFlags?) {
+            if let name = name { click_node(name, flags: flags) }
             else { click_black(flags: flags) }
         }
         
-        private func click_black(flags: NSEvent.ModifierFlags?) {
-            // Ignore all modified clicks in the black, for now
-            guard !((flags?.contains(.command) ?? false) ||
-                (flags?.contains(.control) ?? false) ||
-                (flags?.contains(.option) ?? false)) else { return }
-            
-            deselectAll()
-        }
+        private func click_black(flags: NSEvent.ModifierFlags?) {}
         
         // This looks a lot like Default.click_node()
-        private func click_node(_ node: SKNode, flags: NSEvent.ModifierFlags?) {
-            // opt-click and ctrl-click currently have no meaning when
-            // clicking on a node, so we just ignore them
-            guard !((flags?.contains(.control) ?? false) ||
-                (flags?.contains(.option) ?? false)) else { return }
-            
-            var effectiveFlagState = flags
-            
-            let mode = sceneUI.goalSetupInputMode
-            if mode == .NoSelect { return }
-            
-            // So single-select mode will ignore click modifiers
-            if mode == .SingleSelectAgent || mode == .SingleSelectPath { effectiveFlagState = nil }
-            
-            if effectiveFlagState?.contains(.command) ?? false {
-                if sceneUI.mouseState == .down { // cmd+click on a node
-                    sceneUI.toggleSelection(sceneUI.upNode!)
-                }
-            } else {
-                if sceneUI.mouseState == .down {    // That is, we're coming out of down as opposed to drag
-                    let setSelection = (sceneUI.primarySelection != sceneUI.upNode!)
-                    
-                    deselectAll()
-                    
-                    if setSelection {
-                        select(sceneUI.upNode!, primary: true)
-                    }
-                }
-            }
-        }
+        private func click_node(_ name: String?, flags: NSEvent.ModifierFlags?) { }
 
-        override func flagsChanged(to newFlags: NSEvent.ModifierFlags) {
-        }
+        override func flagsChanged(to newFlags: NSEvent.ModifierFlags) { }
     }
 }

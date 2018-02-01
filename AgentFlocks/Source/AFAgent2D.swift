@@ -37,28 +37,26 @@ class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
     var selected = false
     
     private unowned let coreData: AFCoreData
-    private let composite: AFCompositeEditor
     let name: String
     private unowned let coreNotifier: NotificationCenter
     private var scale: Float
     private let scene: SKScene
     private var savedBehaviorState: AFCompositeBehavior?
-    private var sprites: AFAgent2D.SpriteSet!
+    private var spriteSet: AFAgent2D.SpriteSet!
     private unowned let uiNotifier: NotificationCenter
 
     var isPaused: Bool {
-        get { return sprites.isPaused }
-        set { sprites.isPaused = newValue }
+        get { return spriteSet.isPaused }
+        set { spriteSet.isPaused = newValue }
     }
 
     override var position: vector_float2 {
         get { return super.position }
-        set { sprites.primaryContainer.position = CGPoint(newValue); super.position = newValue }
+        set { spriteSet.primaryContainer.position = CGPoint(newValue); super.position = newValue }
     }
     
     init(coreData: AFCoreData, editor: AFAgentEditor, image: NSImage, position: CGPoint, scene: SKScene) {
         self.coreData = coreData
-        self.composite = editor.coreComposite
         self.name = editor.name
         self.coreNotifier = coreData.notifier
         self.uiNotifier = coreData.core.sceneUI.notificationsSender
@@ -67,7 +65,7 @@ class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
         
         super.init()
 
-        self.sprites = AFAgent2D.SpriteSet(owningAgent: self, image: image, name: editor.name, scale: editor.scale, scene: scene)
+        self.spriteSet = AFAgent2D.SpriteSet(owningAgent: self, image: image, name: editor.name, scale: editor.scale, scene: scene)
 
         // These notifications come from the data; notice we're listening on dataNotifications
         let newBehavior = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewBehavior.rawValue)
@@ -89,6 +87,12 @@ class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
         // Use self here, because we want to set the container position too.
         // But it has to happen after superclass init, because it talks to the superclass.
         self.position = position.as_vector_float2()
+        
+        // Attach myself to the primary sprite. That's where I'll live;
+        // no one but the sprite has a reference to me.
+        self.spriteSet.attachToSprite(self)
+
+        let agentAdapter = AFNodeAdapter(scene: self.scene, name: self.name)
     }
     
     deinit {
@@ -112,31 +116,31 @@ class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
     }
     
     @objc func hasBeenDeselected(notification: Notification) {
-        let node = notification.object as? SKNode
-        hasBeenDeselected(node?.name)
+        let name = notification.object as? String
+        hasBeenDeselected(name)
     }
     
     // name == nil means everyone
     func hasBeenDeselected(_ name: String?) {
         if name == nil || name! == self.name {
-            sprites.hasBeenDeselected(name)
+            spriteSet.hasBeenDeselected(name)
         }
     }
 
     @objc func hasBeenSelected(notification: Notification) {
-        let (node, primary) = notification.object as! (SKNode, Bool)
-        hasBeenSelected(node.name!, primary: primary)
+        let (name, primary) = notification.object as! (String, Bool)
+        hasBeenSelected(name, primary: primary)
     }
     
     func hasBeenSelected(_ name: String, primary: Bool) {
         if name == self.name {
-            sprites.hasBeenSelected(primary: primary)
+            spriteSet.hasBeenSelected(primary: primary)
         }
     }
     
     func move(to position: CGPoint) {
         self.position = position.as_vector_float2()
-        sprites.move(to: position)
+        spriteSet.move(to: position)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -148,12 +152,9 @@ class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
 
 extension AFAgent2D {
     class SpriteContainerNode: SKNode {
-        var agentConnector: NSMutableDictionary { return super.userData! }
-        
         init(name: String) {
             super.init()
             super.name = name
-            super.userData = NSMutableDictionary()
         }
         
         required init?(coder aDecoder: NSCoder) {
@@ -191,10 +192,19 @@ extension AFAgent2D {
             let texture = SKTexture(image: image)
             theSprite = SKSpriteNode(texture: texture)
             theSprite.name = name
+            print("Another name for theSprite: ", Nickname(name))
             
-            theSprite.userData = NSMutableDictionary()
-            AFNodeAdapter(theSprite).setOwningAgent(owningAgent)
-            AFNodeAdapter(theSprite).setIsClickable()
+            primaryContainer.userData = NSMutableDictionary()
+            
+            primaryContainer.userData!["isClickable"] = true
+            primaryContainer.userData!["isAgent"] = true
+            primaryContainer.userData!["isPath"] = false
+            primaryContainer.userData!["isPathHandle"] = false
+            primaryContainer.userData!["isPrimarySelection"] = false
+            primaryContainer.userData!["isSelected"] = false
+
+            primaryContainer.userData!["barf"] = "chunks"
+            print(primaryContainer.userData!["barf"]!)
 
             scene.addChild(primaryContainer)
             primaryContainer.addChild(theSprite)
@@ -202,6 +212,10 @@ extension AFAgent2D {
         
         deinit {
             primaryContainer.removeFromParent()
+        }
+        
+        func attachToSprite(_ agent: AFAgent2D) {
+            primaryContainer.userData!["agent"] = agent
         }
 
         func hasBeenDeselected(_ name: String?) {

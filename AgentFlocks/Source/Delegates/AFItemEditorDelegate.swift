@@ -40,7 +40,7 @@ class AFItemEditorDelegate {
 
         let type = state.newItemType!
         var goal: AFGoal?
-        let selectedNames = Array(sceneUI.selectedNodes).map { $0.name! }
+        let selectedNames = Array(sceneUI.selectedNodes)
         var primaryNode = sceneUI.primarySelection!
         
         let angle = Float(state.angle?.value ?? 0)
@@ -61,7 +61,7 @@ class AFItemEditorDelegate {
             
         case .toAvoidAgents:
             // Make sure we're not trying to avoid ourselves too
-            let sansSelf = selectedNames.filter { $0 != sceneUI.primarySelection!.name }
+            let sansSelf = selectedNames.filter { $0 != sceneUI.primarySelection! }
             
 //            coreData.newGoal(type, for: coreData.sceneUI.primarySelection!.name!, parentBehavior: nil, weight: weight,
 //                            targets: sansSelf, angle: angle, distance: distance, speed: speed,
@@ -74,7 +74,7 @@ class AFItemEditorDelegate {
             // exclude from the selection. I think I was trying to prevent the subject
             // of the goal from being added to his own goal. But now I'm tired and it's
             // harder to think about it.
-            let sansTarget = selectedNames.filter { $0 != primaryNode.name! }
+            let sansTarget = selectedNames.filter { $0 != sceneUI.primarySelection! }
 //            coreData.newGoal(type, for: sansTarget, weight, weight, targets: [selectedNames.first!],
 //                            angle: angle, distance: distance, speed: speed,time: time, forward: true)
             
@@ -157,8 +157,8 @@ class AFItemEditorDelegate {
         let selectedNodes = sceneUI.selectedNodes
         guard selectedNodes.count > 0 else { return }
         
-        let node = sceneUI.primarySelection!
-        let agent = AFNodeAdapter(node).getOwningAgent()!
+        let name = sceneUI.primarySelection!
+        let agent = AFNodeAdapter(scene: sceneUI.gameScene, name: name).getAgent()!
         
         if let behavior = state.editedItem as? AFBehavior {
             refreshBehavior(agent: agent, behavior: behavior, weight: state.weight.value)

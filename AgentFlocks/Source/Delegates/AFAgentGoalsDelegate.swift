@@ -40,9 +40,9 @@ class AFAgentGoalsDelegate {
     func deselect() { self.agent = nil }
     
     func getEditableAttributes(for motivator: Any) -> AFOrderedMap<String, Double> {
-        guard let p = sceneUI.primarySelection else { fatalError() }
+        guard let n = sceneUI.primarySelection else { fatalError() }
 
-        let agent = AFNodeAdapter(p).getOwningAgent()!
+        let agent = AFNodeAdapter(scene: sceneUI.gameScene, name: n).getAgent()!
         let gkGoal = (motivator as? GKGoal) ?? nil
         let composite = agent.behavior as! AFCompositeBehavior
         let behavior = (gkGoal == nil) ? (motivator as! AFBehavior) : composite.findParent(ofGoal: gkGoal!)
@@ -92,9 +92,9 @@ class AFAgentGoalsDelegate {
         if let motivator = item as? AFBehavior {
             sceneUI.parentOfNewMotivator = motivator
         } else if let motivator = item as? GKGoal {
-            guard let p = sceneUI.primarySelection else { fatalError() }
+            guard let n = sceneUI.primarySelection else { fatalError() }
             
-            let agent = AFNodeAdapter(p).getOwningAgent()!
+            let agent = AFNodeAdapter(scene: sceneUI.gameScene, name: n).getAgent()!
             let composite = agent.behavior as! AFCompositeBehavior
 
             sceneUI.parentOfNewMotivator = composite.findParent(ofGoal: motivator)
@@ -103,9 +103,9 @@ class AFAgentGoalsDelegate {
     
     func enableItem(_ item: Any, parent: Any?, on: Bool) -> [Any]? {
         if let behavior = item as? AFBehavior {
-            guard let p = sceneUI.primarySelection else { fatalError() }
+            guard let n = sceneUI.primarySelection else { fatalError() }
 
-            let agent = AFNodeAdapter(p).getOwningAgent()!
+            let agent = AFNodeAdapter(scene: sceneUI.gameScene, name: n).getAgent()!
             let composite = agent.behavior as! AFCompositeBehavior
             
             composite.enableBehavior(behavior, on: on)

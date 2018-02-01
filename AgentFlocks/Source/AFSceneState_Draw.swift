@@ -28,8 +28,8 @@ extension AFSceneController {
     class Draw: BaseState {
         var drawIndicator: SKNode?
         
-        override func click(_ node: SKNode?, flags: NSEvent.ModifierFlags?) {
-            if let node = node { click_node(node, flags: flags) }
+        override func click(_ name: String?, flags: NSEvent.ModifierFlags?) {
+            if let name = name { click_node(name, flags: flags) }
             else { click_black(flags: flags) }
         }
         
@@ -39,19 +39,14 @@ extension AFSceneController {
                     (flags?.contains(.control) ?? false) ||
                     (flags?.contains(.option) ?? false)) else { return }
             
-            // Clicked in the black; add a node
-            sceneUI.deselectAll()
-            
 //            sceneUI.coreData.newGraphNode(for: sceneUI.activePath.name)
         }
         
-        private func click_node(_ node: SKNode, flags: NSEvent.ModifierFlags?) {
+        private func click_node(_ name: String, flags: NSEvent.ModifierFlags?) {
             // Ignore all modified clicks on a path node, for now
             guard !((flags?.contains(.command) ?? false) ||
                     (flags?.contains(.control) ?? false) ||
                     (flags?.contains(.option) ?? false)) else { return }
-            
-            sceneUI.select(node, primary: false)
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -80,7 +75,7 @@ extension AFSceneController {
 //            sceneUI.contextMenu.includeInDisplay(.AddPathToLibrary, true, enable: false)
         }
         
-        override func updateDrawIndicator(_ position: CGPoint) {
+        func updateDrawIndicator(_ position: CGPoint) {
             drawIndicator?.removeFromParent()
             
             if let ap = sceneUI.activePath, let start = ap.getLastHandlePosition() {
@@ -95,7 +90,6 @@ extension AFSceneController {
         
         override func willExit(to nextState: GKState) {
             drawIndicator?.removeFromParent()
-            sceneUI.deselectAll()
         }
     }
 }

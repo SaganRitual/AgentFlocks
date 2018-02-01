@@ -311,7 +311,7 @@ class AFGoal {
 //        self.pathname = copyFrom.pathname
     }
     
-    init(toAlignWith agentNodes: [SKNode], maxDistance: Float, maxAngle: Float, weight: Float, scene: SKScene) {
+    init(toAlignWith agentNodes: [String], maxDistance: Float, maxAngle: Float, weight: Float, scene: SKScene) {
 //        goalType = .toAlignWith
 //        
 //        var gkAgents = [GKAgent]()
@@ -361,7 +361,7 @@ class AFGoal {
 //        gkGoal = GKGoal(toAlignWith: gkAgents, maxDistance: maxDistance, maxAngle: maxAngle)
     }
     
-    init(toAvoidAgents agentNodes: [SKNode], time: TimeInterval, weight: Float, scene: SKScene) {
+    init(toAvoidAgents agentNodes: [String], time: TimeInterval, weight: Float, scene: SKScene) {
         goalType = .toAvoidAgents
         
 //        var gkAgents = [GKAgent]()

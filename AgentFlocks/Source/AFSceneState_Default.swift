@@ -26,18 +26,17 @@ import GameplayKit
 
 extension AFSceneController {
     class Default: BaseState {
-        override func click(_ node: SKNode?, flags: NSEvent.ModifierFlags?) {
+        override func click(_ name: String?, flags: NSEvent.ModifierFlags?) {
             // If the user has dragged across the black for no particular reason,
             // ignore the mouse up; pretend nothing happened
+            print(sceneUI.upNode, sceneUI.mouseState)
             guard !(sceneUI.upNode == nil && sceneUI.mouseState == .dragging) else { return }
             
-            if let node = node { click_node(node, flags: flags) }
+            if let name = name { click_node(name, flags: flags) }
             else { click_black(flags: flags) }
         }
         
         private func click_black(flags: NSEvent.ModifierFlags?) {
-            sceneUI.deselectAll()
-            
             if flags?.contains(.option) ?? false {
                 sceneUI.enter(Draw.self)
                 return
@@ -48,54 +47,22 @@ extension AFSceneController {
                 
                 clone(selected, position: sceneUI.currentPosition)
             } else {
-//                // plain click in the black; create a new agent
-//                let imageIndex = AFCore.browserDelegate.agentImageIndex
-//                let image = sceneUI.ui.agents[imageIndex].image
-                
-//                coreData.core.sceneUI.newAgent()  // We'll hear back when the low-level data is setup
+                // plain click in the black
+                sceneUI.createAgent()
             }
         }
         
-        private func click_node(_ node: SKNode, flags: NSEvent.ModifierFlags?) {
-            // opt-click and ctrl-click currently have no meaning when
-            // clicking on a node, so we just ignore them
-            guard !((flags?.contains(.control) ?? false) ||
-                    (flags?.contains(.option) ?? false)) else { return }
-            
-            if let flags = flags, flags.contains(.command) {
-                if sceneUI.mouseState == .down { // cmd+click on a node
-                    sceneUI.toggleSelection(sceneUI.upNode!)
-                }
-            } else {
-                if sceneUI.mouseState == .down {    // That is, we're coming out of down as opposed to drag
-                    let setSelection = (sceneUI.primarySelection != sceneUI.upNode!)
-                    
-                    sceneUI.deselectAll()
-                    
-                    if setSelection {
-                        sceneUI.select(sceneUI.upNode!, primary: true)
-                    }
-                }
-            }
+        private func click_node(_ name: String, flags: NSEvent.ModifierFlags?) {
+            // Nothing to do here; only selection changes, and the selection
+            // controller takes care of that.
         }
         
-        func clone(_ node: SKNode, position: CGPoint) { /*sceneUI.coreData.cloneAgent(node.name!)*/ }
+        func clone(_ name: String, position: CGPoint) { /*sceneUI.coreData.cloneAgent(node.name!)*/ }
         
         override func didEnter(from previousState: GKState?) {
         }
         
-        override func newAgentHasBeenCreated(_ notification: Notification) {
-//            let agent = notification.object as! String
-//            let embryo = sceneUI.coreData.getAgent(agent)
-//            let image = sceneUI.ui.agents[AFCore.browserDelegate.agentImageIndex].image
-//            let afAgent = AFAgent2D(coreData: sceneUI.coreData, embryo: embryo, image: image,
-//                          position: sceneUI.currentPosition, scene: sceneUI.gameScene)
-//            
-//            sceneUI.select(afAgent.name, primary: true)
-        }
-        
         override func willExit(to nextState: GKState) {
-            sceneUI.deselectAll()
         }
     }
 }

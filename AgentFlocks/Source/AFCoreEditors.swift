@@ -25,7 +25,7 @@
 import GameplayKit
 
 class AFAgentEditor {
-    var coreComposite: AFCompositeEditor!
+    var compositeEditor: AFCompositeEditor!
     private let coreData: AFCoreData
     private let fullPath: [JSONSubscriptType]
     var name = String()
@@ -35,13 +35,13 @@ class AFAgentEditor {
         self.fullPath = toHere
     }
     
-    fileprivate func announceNewComposite(agentName: String) { coreData.announce(event: .NewBehavior, subjectName: agentName) }
+    fileprivate func announceNewCompositeEditor(agentName: String) { coreData.announce(event: .NewBehavior, subjectName: agentName) }
     
     func asJsonString() -> String {
         return ""//coreData.rawString()!
     }
     
-    func createComposite() -> AFCompositeEditor {
+    func createCompositeEditor() -> AFCompositeEditor {
         let hisFullPath = self.fullPath + ["composite"]
         let editor = AFCompositeEditor(coreData: coreData, fullPath: hisFullPath)
         
@@ -49,7 +49,7 @@ class AFAgentEditor {
         let short = Array(hisFullPath.prefix(hisFullPath.count - 1))
         coreData.data[short].dictionaryObject!["composite"] = newCompositeNode
         
-        announceNewComposite(agentName: name)
+        announceNewCompositeEditor(agentName: name)
         
         return editor
     }

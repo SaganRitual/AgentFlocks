@@ -256,7 +256,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let ac = agentEditorController.attributesController
         let gc = agentEditorController.goalsController
         
-        let selectedAgent = AFNodeAdapter(node).getOwningAgent()
+//        let selectedAgent = AFNodeAdapter(node).getOwningAgent()
         
         // When we have the new stuff working, this seems like
         // the most obvious place for assigning the selected

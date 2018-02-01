@@ -24,15 +24,9 @@
 
 import SpriteKit
 
-func Nickname(_ node: SKNode) -> String  {
-    if let name = node.name {
-        return Nickname(name)
-    } else {
-        return "<no name>"
-    }
-}
-
-func Nickname(_ name: String) -> String {
+func Nickname(_ name: String?) -> String {
+    guard let name = name else { return "<no name>" }
+    
     let indexStartOfText = name.index(name.startIndex, offsetBy: 0)
     let indexEndOfText = name.index(name.startIndex, offsetBy: 4)
     return String(name[indexStartOfText ..< indexEndOfText])
@@ -97,7 +91,7 @@ class AFCoreData {
     }
 
     func announceNewAgent(agentName: String) { announce(event: .NewAgent, subjectName: agentName) }
-
+    
     func createAgent(editorType: EditorType) -> AFAgentEditor {
         switch editorType {
         case .createFromScratch:
@@ -125,10 +119,19 @@ class AFCoreData {
         else { print("no string?"); return "no string?" }
     }
     
+    func getPathTo(_ nameToSeek: String, pathSoFar: [JSONSubscriptType] = [JSONSubscriptType]()) -> [JSONSubscriptType] {
+        for (name, _) in data[pathSoFar] {
+            if name == nameToSeek { return pathSoFar + [name] }
+            else { return getPathTo(nameToSeek, pathSoFar: pathSoFar + [name]) }
+        }
+        
+        return pathSoFar
+    }
+    
     static func makeCore(ui: AppDelegate, gameScene: GameScene) -> AFGameSceneDelegate {
-        var coreData = AFCoreData()
+        let coreData = AFCoreData()
 
-        coreData.core.sceneUI = AFSceneController(gameScene: gameScene, ui: coreData.core.ui, contextMenu: AFContextMenu(ui: coreData.core.ui))
+        coreData.core.sceneUI = AFSceneController(gameScene: gameScene, ui: ui, contextMenu: AFContextMenu(ui: ui))
         
         coreData.core.agentGoalsDelegate = AFAgentGoalsDelegate(coreData: coreData, sceneUI: coreData.core.sceneUI)
         coreData.core.browserDelegate = AFBrowserDelegate(coreData.core.sceneUI)
