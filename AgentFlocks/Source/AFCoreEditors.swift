@@ -35,6 +35,12 @@ class AFAgentEditor {
         self.fullPath = toHere
     }
     
+    init(coreData: AFCoreData, name: String) {
+        self.coreData = coreData
+        self.fullPath = coreData.getPathTo(name)
+        self.name = name
+    }
+    
     fileprivate func announceNewCompositeEditor(agentName: String) { coreData.announce(event: .NewBehavior, subjectName: agentName) }
     
     func asJsonString() -> String {
@@ -264,7 +270,7 @@ class AFGoalEditor {
         self.fullPath = toHere
     }
     
-    init(coreData: AFCoreData, editor: AFGoalEditor, scene: SKScene) {
+    init(coreData: AFCoreData, editor: AFGoalEditor, gameScene: SKScene) {
         self.coreData = coreData
         self.fullPath = []
     }

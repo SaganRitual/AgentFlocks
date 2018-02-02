@@ -32,15 +32,14 @@ protocol AFAgentDelegate {
     func setAttribute(_ attribute: AFAgentAttribute, for agent: String, to value: Float)
 }
 
-class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
+class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
     
     private unowned let coreData: AFCoreData
     let name: String
-    private unowned let coreNotifier: NotificationCenter
-    private let scene: SKScene
+    private let gameScene: SKScene
+    private unowned let notifications: NotificationCenter
     private var savedBehaviorState: AFCompositeBehavior?
     private var spriteSet: AFAgent2D.SpriteSet!
-    private unowned let uiNotifier: NotificationCenter
 
     var isPaused: Bool {
         get { return spriteSet.primaryContainer.isPaused }
@@ -52,26 +51,28 @@ class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
         set { spriteSet.primaryContainer.position = CGPoint(newValue); super.position = newValue }
     }
     
-    init(coreData: AFCoreData, editor: AFAgentEditor, image: NSImage, position: CGPoint, scene: SKScene) {
+    init(coreData: AFCoreData, editor: AFAgentEditor, image: NSImage, position: CGPoint, gameScene: SKScene) {
         self.coreData = coreData
         self.name = editor.name
-        self.coreNotifier = coreData.notifier
-        self.uiNotifier = coreData.core.sceneUI.notificationsSender
-        self.scene = scene
+        self.notifications = coreData.notifications
+        self.gameScene = gameScene
         
         super.init()
 
-        self.spriteSet = AFAgent2D.SpriteSet(owningAgent: self, image: image, name: editor.name, scale: editor.scale, scene: scene)
+        self.spriteSet = AFAgent2D.SpriteSet(owningAgent: self, image: image, name: editor.name, scale: editor.scale, gameScene: gameScene)
 
         // These notifications come from the data; notice we're listening on dataNotifications
         let newBehavior = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewBehavior.rawValue)
-        self.coreNotifier.addObserver(self, selector: #selector(newBehavior(notification:)), name: newBehavior, object: coreData)
+        self.notifications.addObserver(self, selector: #selector(newBehavior(notification:)), name: newBehavior, object: coreData)
+        print("Agent2d listens for NewBehavior")
         
         let newGoal = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewGoal.rawValue)
-        self.coreNotifier.addObserver(self, selector: #selector(newGoal(notification:)), name: newGoal, object: coreData)
-        
+        self.notifications.addObserver(self, selector: #selector(newGoal(notification:)), name: newGoal, object: coreData)
+        print("Agent2d listens for NewGoal")
+
         let setAttribute = NSNotification.Name(rawValue: AFCoreData.NotificationType.SetAttribute.rawValue)
-        self.coreNotifier.addObserver(self, selector: #selector(setAttribute(notification:)), name: setAttribute, object: coreData)
+        self.notifications.addObserver(self, selector: #selector(setAttribute(notification:)), name: setAttribute, object: coreData)
+        print("Agent2d listens for SetAttribute")
 /*
         // These notifications come from the UI; notice we're listening on uiNotifications
         let select = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
@@ -91,8 +92,7 @@ class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
     }
     
     deinit {
-        self.coreNotifier.removeObserver(self)
-        self.uiNotifier.removeObserver(self)
+        self.notifications.removeObserver(self)
     }
     
     func enableMotivators(_ on: Bool = true) {
@@ -111,23 +111,27 @@ class AFAgent2D: GKAgent2D, AFSceneControllerDelegate {
     }
     
     @objc func hasBeenDeselected(notification: Notification) {
+        print("Agent2d gets hasBeenDeselected")
         let name = notification.object as? String
         hasBeenDeselected(name)
     }
     
     // name == nil means everyone
     func hasBeenDeselected(_ name: String?) {
+        print("Agent2d gets hasBeenDeselected (2)")
         if name == nil || name! == self.name {
             spriteSet.hasBeenDeselected(name)
         }
     }
 
     @objc func hasBeenSelected(notification: Notification) {
+        print("Agent2d gets hasBeenSelected")
         let (name, primary) = notification.object as! (String, Bool)
         hasBeenSelected(name, primary: primary)
     }
     
     func hasBeenSelected(_ name: String, primary: Bool) {
+        print("Agent2d gets hasBeenSelected (2)")
         if name == self.name {
             spriteSet.hasBeenSelected(primary: primary)
         }
@@ -185,12 +189,12 @@ extension AFAgent2D {
         let primaryContainer: AFAgent2D.SpriteContainerNode
         var radiusIndicator: SKNode!
         let radiusIndicatorLength: Float = 100
-        unowned let scene: SKScene
+        unowned let gameScene: SKScene
         var selectionIndicator: SKNode!
         let theSprite: SKSpriteNode
 
-        init(owningAgent: AFAgent2D, image: NSImage, name: String, scale: Float, scene: SKScene) {
-            self.scene = scene
+        init(owningAgent: AFAgent2D, image: NSImage, name: String, scale: Float, gameScene: SKScene) {
+            self.gameScene = gameScene
 
             primaryContainer = AFAgent2D.SpriteContainerNode(name: name)
 
@@ -198,7 +202,7 @@ extension AFAgent2D {
             theSprite = SKSpriteNode(texture: texture)
             theSprite.name = name
 
-            scene.addChild(primaryContainer)
+            gameScene.addChild(primaryContainer)
             primaryContainer.addChild(theSprite)
         }
         
@@ -248,25 +252,29 @@ extension AFAgent2D {
     func newAgent(_ name: String) {}
 
     @objc func newBehavior(notification: Notification) {
+        print("Agent2d gets newBehavior")
         let (behavior, agent) = notification.object as! (String, String)
         newBehavior(behavior, weight: 1)
     }
 
     func newBehavior(_ name: String, weight: Float) {
+        print("Agent2d gets newBehavior (2)")
         guard name == self.name else { return }    // Notifier blasts to everyone
         
 //        let (behaviorEditor, _) = composite.createBehavior(weight: weight)
         
-//        (self.compositeEditor as! AFCompositeEditor).addBehavior(editor: behaviorEditor, scene: self.scene, weight: weight)
+//        (self.compositeEditor as! AFCompositeEditor).addBehavior(editor: behaviorEditor, gameScene: self.gameScene, weight: weight)
     }
     
     @objc func newGoal(notification: Notification) {
+        print("Agent2d gets newGoal")
         if let (goal, _, _) = notification.object as? (String, String, String) {
             newGoal(goal, weight: 1)
         }
     }
     
     func newGoal(_ name: String, weight: Float) {
+        print("Agent2d gets newGoal (2)")
 //        guard name == self.name else { return }    // Notifier blasts to everyone
 //
 //        let (goalEditor, _) = coreData.core.createGoal(name, weight: weight)
@@ -275,12 +283,14 @@ extension AFAgent2D {
     }
     
     @objc func setAttribute(notification: Notification) {
+        print("Agent2d gets setAttribute")
         if let (attribute, value, agent) = notification.object as? (Int, Float, String) {
             setAttribute(attribute, to: value, for: agent)
         }
     }
     
     func setAttribute(_ asInt: Int, to value: Float, for agent: String) {
+        print("Agent2d gets setAttribute (2)")
         guard agent == self.name else { return }    // Notifier blasts to everyone
 
         switch AFAgentAttribute(rawValue: asInt)! {
@@ -314,6 +324,12 @@ extension AFAgent2D {
     override var radius: Float { set { super.radius = newValue }
         get { return super.radius }
 //        set { coreData.core.setAttribute(AFAgentAttribute.Radius.rawValue, to: newValue, for: self.name); super.radius = newValue }
+    }
+}
+
+extension AFAgent2D {
+    func agent(_ controller: AgentAttributesController, newValue value:Double, ofAttribute:AgentAttributesController.Attribute) {
+        print("callback from AgentAttributesController")
     }
 }
 

@@ -81,11 +81,11 @@ struct AFNodeAdapter {
         func setUserData(_ key: String, to value: Bool) { userData[key] = value }
     }
     
-    init(scene: SKScene, name: String?) {
+    init(gameScene: SKScene, name: String?) {
         self.name = name
         guard let name = name else { impl = nil; return }
 
-        if let node = scene.children.filter({ return AFNodeAdapter_($0).name == name }).first { impl = AFNodeAdapter_(node) }
+        if let node = gameScene.children.filter({ return AFNodeAdapter_($0).name == name }).first { impl = AFNodeAdapter_(node) }
         else { impl = nil }
     }
     
@@ -110,14 +110,14 @@ struct AFNodeAdapter {
 struct AFNodeAdapter {
     let name: String?
     let node: SKNode
-    let scene: SKScene
+    let gameScene: SKScene
     
-    init(_ name: String?, scene: SKScene) {
-        self.scene = scene
+    init(_ name: String?, gameScene: SKScene) {
+        self.gameScene = gameScene
         
         if let name = name {
             self.name = name
-            self.node = scene.children.filter { $0.name != nil && $0.name! == name }.first!
+            self.node = gameScene.children.filter { $0.name != nil && $0.name! == name }.first!
         }
     }
     

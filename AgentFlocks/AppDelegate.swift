@@ -31,7 +31,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	let leftBarWidth:CGFloat = 300.0
 	let rightBarWidth:CGFloat = 300.0
 
-	let sceneController = SceneController()
+    var sceneController = SceneController()
 	
 	// Data
 	typealias AgentGoalType = (name:String, enabled:Bool)
@@ -58,6 +58,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var coreTopBarDelegate: AFTopBarDelegate!
     
     var notificationCenter: NotificationCenter!
+    
+    var gameScene: GameScene!
+    static var me: AppDelegate!
 	
 	func applicationWillFinishLaunching(_ notification: Notification) {
 		
@@ -97,27 +100,58 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         topBarController.obstacleImages = obstacleImages
         
         setupTopBarView()
-        
-        let center = NotificationCenter.default
-        let name = Notification.Name(rawValue: "GameSceneReady")
-        let selector = #selector(gameSceneReady(notification:))
-        center.addObserver(self, selector: selector, name: name, object: nil)
-
-        // This instantiates the GameScene, so we have to do it
-        // AFTER we register to listen for GameSceneReady
         setupSceneView()
 
-        // Create our own notification center instead of using the default.
-        // We had to use default the first time, because we know it's ready;
-        // we can't use this one until everyone is ready.
-        notificationCenter = NotificationCenter()
+        AppDelegate.me = self
+        GameScene.me.gameSceneDelegate = AFCoreData.makeCore(ui: AppDelegate.me, gameScene: GameScene.me)
 	}
+
+    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+        var iStillNeedSomething = false
+        
+        if let gs = injector.gameScene { gameScene = gs }
+        else { injector.someoneStillNeedsSomething = true; iStillNeedSomething = true }
+        
+        if let nf = injector.notifications { self.notificationCenter = nf }
+        else { injector.someoneStillNeedsSomething = true; iStillNeedSomething = true }
+
+
+        // Once we have all our external dependencies setup, we can
+        // take care of our post-init.
+        if !iStillNeedSomething {
+            coreAgentGoalsDelegate = injector.agentGoalsDelegate
+            coreBrowserDelegate = injector.browserDelegate
+            coreContextMenuDelegate = injector.contextMenuDelegate
+            coreItemEditorDelegate = injector.itemEditorDelegate
+            coreMenuBarDelegate = injector.menuBarDelegate
+            coreTopBarDelegate = injector.topBarDelegate
+            
+            let select = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
+            self.notificationCenter.addObserver(self, selector: #selector(itemSelected(notification:)), name: select, object: nil)
+            print("AppDelegate listends for Selected() on \(self.notificationCenter)")
+            
+            let deselect = NSNotification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
+            self.notificationCenter.addObserver(self, selector: #selector(itemDeselected(notification:)), name: deselect, object: nil)
+            print("AppDelegate listends for Deselected()")
+        }
+    }
     
-    @objc func gameSceneReady(notification: Notification) {
-        // Ready to go; create the core
-        let gameScene = notification.userInfo!["GameScene"]! as! GameScene
-        gameScene.gameSceneDelegate = AFCoreData.makeCore(ui: self, gameScene: gameScene)
-        NotificationCenter.default.removeObserver(self)
+    @objc func itemSelected(notification: Notification) {
+        if let name = AFNotification.Decode(notification).name,
+            let isPrimary = AFNotification.Decode(notification).isPrimary, isPrimary == true {
+            
+            let adapter = AFNodeAdapter(gameScene: gameScene, name: name)
+            placeAgentFrames(node: adapter.node)
+        }
+    }
+    
+    @objc func itemDeselected(notification: Notification) {
+        if let name = AFNotification.Decode(notification).name {
+            if AFNodeAdapter(gameScene: gameScene, name: name).isPrimarySelection {
+                agentEditorController.attributesController.resetSliderControllers()
+                removeAgentFrames()
+            }
+        } else { fatalError("Notification missing name field") }
     }
     
     func setupSceneView() {
@@ -237,43 +271,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return foundObstacles
     }
     
-    func changePrimarySelectionState(node: SKNode?) {
-        if let node = node {
-            // Note: this has to happen before the sceneUI can work with
-            // agents. But it doesn't happen until the first click. I'm
-            // not crazy about this setup. Fix it when the time comes.
-            placeAgentFrames(node: node)
-        } else {
-            
-            // Clear out the sliders so they'll recalibrate themselves to the new values
-            agentEditorController.attributesController.resetSliderControllers()
-
-            removeAgentFrames()
-        }
-    }
-    
     func placeAgentFrames(node: SKNode) {
-        let ac = agentEditorController.attributesController
-        let gc = agentEditorController.goalsController
-        
-//        let selectedAgent = AFNodeAdapter(node).getOwningAgent()
-        
-        // When we have the new stuff working, this seems like
-        // the most obvious place for assigning the selected
-        // agent to the sliders.
-//        ac.delegate = selectedAgent
+        agentEditorController.attributesController.connectAgentToCoreData(agentEditorController, agentName: node.name!)
 
-        // Play/pause button image
-//        gc.playButton.image = selectedAgent.isPlaying ? gc.pauseImage : gc.playImage
-
-        // This is where we finally read back out the actual
-        // values from the GKAgent and store them in the attributes controller
-//        ac.mass = Double(selectedAgent.mass)
-//        ac.maxAcceleration = Double(selectedAgent.maxAcceleration)
-//        ac.maxSpeed = Double(selectedAgent.maxSpeed)
-//        ac.radius = Double(selectedAgent.radius)
-//        ac.scale = Double(selectedAgent.scale)
-        
 		settingsView.addSubview(agentEditorController.view)
         agentEditorController.refresh()
 		agentEditorController.view.translatesAutoresizingMaskIntoConstraints = false

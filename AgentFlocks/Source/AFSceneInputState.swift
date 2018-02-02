@@ -43,22 +43,23 @@ class AFSceneInputState: GKStateMachine, AFGameSceneDelegate {
     var downNode: String?
     var event: NSEvent!
     var nodeToMouseOffset = CGPoint.zero
-    let scene: GameScene
+    let gameScene: GameScene
     var upNode: String?
     
-    init(scene: GameScene) {
-        self.scene = scene
+    init(_ injector: AFCoreData.AFDependencyInjector) {
+        self.gameScene = injector.gameScene!
 
         super.init(states: [
             MouseDown(), MouseDragging(), MouseMoving(), MouseUp(), RightMouseDown(), RightMouseUp()
         ])
         
+        injector.sceneInputState = self
         enter(MouseUp.self)
     }
     
     func getTouchedNode() -> String? {
-        let touchedNode = scene.nodes(at: currentPosition).filter {
-            AFNodeAdapter(scene: scene, name: $0.name).isClickable
+        let touchedNode = gameScene.nodes(at: currentPosition).filter {
+            AFNodeAdapter(gameScene: gameScene, name: $0.name).isClickable
         }.first?.name
         
         return touchedNode
@@ -67,7 +68,7 @@ class AFSceneInputState: GKStateMachine, AFGameSceneDelegate {
     func setNodeToMouseOffset(anchor: CGPoint) { nodeToMouseOffset = anchor - currentPosition }
     
     func enter(_ stateClass: AnyClass, with event: NSEvent) {
-        currentPosition = event.location(in: scene)
+        currentPosition = event.location(in: gameScene)
         self.event = event
         enter(stateClass)
     }
@@ -87,7 +88,7 @@ extension AFSceneInputState {
         var currentPosition: CGPoint { return afStateMachine.currentPosition }
         var delegate: AFSceneInputStateDelegate? { return afStateMachine.delegate }
         var event: NSEvent { return afStateMachine.event }
-        var scene: SKScene { return afStateMachine.scene }
+        var gameScene: SKScene { return afStateMachine.gameScene }
 
         // Read-write
         var downNode: String? { get { return afStateMachine.downNode } set { afStateMachine.downNode = newValue } }
@@ -98,7 +99,7 @@ extension AFSceneInputState {
         override func didEnter(from previousState: GKState?) {
             downNode = afStateMachine.getTouchedNode()
 
-            if let nodeCenter = AFNodeAdapter(scene: scene, name: downNode).position {
+            if let nodeCenter = AFNodeAdapter(gameScene: gameScene, name: downNode).position {
                 afStateMachine.setNodeToMouseOffset(anchor: nodeCenter)
             }
             
@@ -191,7 +192,7 @@ extension AFSceneInputState {
 extension AFSceneInputState {
 
     func keyDown(with event: NSEvent) {
-        currentPosition = event.location(in: scene)
+        currentPosition = event.location(in: gameScene)
         downNode = nil
         upNode = nil
         
@@ -200,7 +201,7 @@ extension AFSceneInputState {
     }
     
     func keyUp(with event: NSEvent) {
-        currentPosition = event.location(in: scene)
+        currentPosition = event.location(in: gameScene)
         downNode = nil
         upNode = nil
         

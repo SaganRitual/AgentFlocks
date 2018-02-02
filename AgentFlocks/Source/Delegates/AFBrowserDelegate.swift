@@ -29,10 +29,13 @@ import GameplayKit
 enum AFBrowserType: Int { case SpriteImages = 1, Agents, Paths, LinkedGoals }
 
 class AFBrowserDelegate {
-    let sceneUI: AFSceneController
     var agentImageIndex = 0
+    let afSceneController: AFSceneController
     
-    init(_ sceneUI: AFSceneController) { self.sceneUI = sceneUI }
+    init(_ injector: AFCoreData.AFDependencyInjector) {
+        self.afSceneController = injector.afSceneController!
+        injector.browserDelegate = self
+    }
     
     func imageSelected(controllerIndex: Int, imageIndex: Int) {
         switch AFBrowserType(rawValue: controllerIndex)! {
@@ -41,7 +44,7 @@ class AFBrowserDelegate {
             
         case .Agents: break
 //            self.agentImageIndex = imageIndex
-//            sceneUI.select(imageIndex, primary: true)
+//            sceneController.select(imageIndex, primary: true)
 
         case .Paths:
             break
@@ -52,6 +55,10 @@ class AFBrowserDelegate {
     }
     
     func imageEnabled(controllerIndex: Int, imageIndex: Int, enabled: Bool) {
+        
+    }
+    
+    func inject(_ injector: AFCoreData.AFDependencyInjector) {
         
     }
 

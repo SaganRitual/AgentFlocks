@@ -36,7 +36,7 @@ protocol AFSpriteContainerNode {
     func select(primary: Bool)
 }
 
-// Because there are so many people listening for scene activity,
+// Because there are so many people listening for gameScene activity,
 // we have to use a broadcast rather than a delegate. But these
 // are the messages you'll get anyway, just in a different form.
 protocol AFSceneControllerDelegate {
@@ -46,6 +46,7 @@ protocol AFSceneControllerDelegate {
 
 class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     var activePath: AFPath!     // The one we're doing stuff to, whether it's selected or not (like dragging handles)
+    var browserDelegate: AFBrowserDelegate!
     let contextMenu: AFContextMenu
     var currentPosition = CGPoint.zero
     var coreData: AFCoreData!
@@ -54,13 +55,12 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     var goalSetupInputMode = GoalSetupInputMode.NoSelect
     var mouseState = MouseStates.up
     var nodeToMouseOffset = CGPoint.zero
-    var notificationsReceiver: NotificationCenter!
-    let notificationsSender: NotificationCenter
+    var notifications: NotificationCenter!
     var obstacleCloneStamp = String()
     var parentOfNewMotivator: AFBehavior?
     var pathForNextPathGoal = 0
     var primarySelection: String?
-    let selectionController: AFSelectionController
+    var selectionController: AFSelectionController!
     var selectedNodes = Set<String>()
     var selectedPath: AFPath!   // The one that has a visible selection indicator on it, if any
     var ui: AppDelegate
@@ -71,25 +71,17 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     init(gameScene: GameScene, ui: AppDelegate, contextMenu: AFContextMenu) {
         self.contextMenu = contextMenu
         self.gameScene = gameScene
-        self.notificationsSender = NotificationCenter()
-        self.selectionController = AFSelectionController(scene: gameScene)
+        self.selectionController = AFSelectionController(gameScene: gameScene)
 
         self.ui = ui
 
         super.init(states: [ Draw(), Default(), GoalSetup() ])
-        
-        // Note: we're using the default center here; that's where we all
-        // broadcast our ready messages.
-        let center = NotificationCenter.default
-        let sceneControllerReady = Notification.Name(rawValue: AFCoreData.NotificationType.AppCoreReady.rawValue)
-        let selector = #selector(coreReady(notification:))
-        center.addObserver(self, selector: selector, name: sceneControllerReady, object: nil)
-        
+
         enter(Default.self)
     }
     
     func activateAgent(_ editor: AFAgentEditor, image: NSImage, at position: CGPoint) {
-        let agent = AFAgent2D(coreData: coreData, editor: editor, image: image, position: currentPosition, scene: gameScene)
+        let agent = AFAgent2D(coreData: coreData, editor: editor, image: image, position: currentPosition, gameScene: gameScene)
         selectionController.newAgentWasCreated(agent.name)
     }
 
@@ -102,7 +94,7 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
    
     func cloneAgent() {
         guard let copyFrom = primarySelection else { return }
-        coreData.core.sceneUI.cloneAgent()
+//        coreData.core.sceneController.cloneAgent()
     }
 
     func compressZOrder() -> Int {
@@ -122,23 +114,32 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
         NotificationCenter.default.removeObserver(self)
         
         self.coreData = coreDataEntry
-        self.startStateMachine()
-        self.coreData.core.sceneUI.startStateMachine()
 
-        self.notificationsReceiver = info["DataNotifications"] as! NotificationCenter
+        self.notifications = info["DataNotifications"] as! NotificationCenter
+        
+        print("SceneController gets \(self.notifications) as notificationsReceiver from coreReady")
         
         let aNotification = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewAgent.rawValue)
         let aSelector = #selector(newAgentHasBeenCreated(_:))
-        self.notificationsReceiver.addObserver(self, selector: aSelector, name: aNotification, object: nil)
+        self.notifications.addObserver(self, selector: aSelector, name: aNotification, object: nil)
         
         let bNotification = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewPath.rawValue)
         let bSelector = #selector(newPathHasBeenCreated(_:))
-        self.notificationsReceiver.addObserver(self, selector: bSelector, name: bNotification, object: nil)
+        self.notifications.addObserver(self, selector: bSelector, name: bNotification, object: nil)
+
+        let cNotification = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
+        let cSelector = #selector(hasBeenSelected(notification:))
+        self.notifications.addObserver(self, selector: cSelector, name: cNotification, object: nil)
+
+        let dNotification = NSNotification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
+        let dSelector = #selector(hasBeenDeselected(notification:))
+        self.notifications.addObserver(self, selector: dSelector, name: dNotification, object: nil)
+        print("SceneController listens for NewAgent, NewPath, Selected, Deselected")
     }
 
     func createAgent() {
         // Create a new agent and send it off into the world.
-        let imageIndex = coreData.core.browserDelegate.agentImageIndex
+        let imageIndex = browserDelegate.agentImageIndex
         let image = ui.agents[imageIndex].image
         
         let agentEditor = coreData.createAgent(editorType: .createFromScratch)
@@ -167,6 +168,32 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     }
     
     func getNextZPosition() -> Int { return gameScene.children.count }
+    
+    @objc func hasBeenSelected(notification: Notification) {
+        print("SceneController gets hasBeenSelected()")
+    }
+    
+    @objc func hasBeenDeselected(notification: Notification) {
+        print("SceneController gets hasBeenDeselected()")
+    }
+    
+    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+        var iStillNeedSomething = false
+        
+        if let bd = injector.browserDelegate { browserDelegate = bd }
+        else { iStillNeedSomething = true; injector.someoneStillNeedsSomething = true }
+        
+        if let cd = injector.coreData { self.coreData = cd }
+        else { iStillNeedSomething = true; injector.someoneStillNeedsSomething = true }
+
+        selectionController.inject(injector)
+        
+        if !iStillNeedSomething && !injector.someoneStillNeedsSomething {
+            injector.selectionController = self.selectionController
+            self.startStateMachine()
+            self.selectionController.startStateMachine()
+        }
+    }
 
     func keyDown(_ info: AFSceneInputState.InputInfo) {
     }
@@ -182,7 +209,7 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     
     func mouseDrag(_ info: AFSceneInputState.InputInfo) {
         if let name = info.name, let downNode = info.downNode, name == downNode {
-            AFNodeAdapter(scene: gameScene, name: name).move(to: info.mousePosition)
+            AFNodeAdapter(gameScene: gameScene, name: name).move(to: info.mousePosition)
         }
     }
     
@@ -191,7 +218,7 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     }
     
     func mouseUp(_ info: AFSceneInputState.InputInfo) {
-        print("scene controller drone.click")
+        print("gameScene controller drone.click")
         drone.click(info.name, flags: info.flags)
         print("and it's done")
     }
@@ -207,7 +234,7 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     func recallAgents() {
         let n = Notification.Name(rawValue: NotificationType.Recalled.rawValue)
         let nn = Notification(name: n, object: nil, userInfo: nil)
-        notificationsSender.post(nn)
+        notifications.post(nn)
     }
 
     func rightMouseDown(_ info: AFSceneInputState.InputInfo) { }

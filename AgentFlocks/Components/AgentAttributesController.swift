@@ -155,42 +155,37 @@ class AgentAttributesController: NSViewController {
     private var persistentDefaultsLoaded = false
 
     private var coreData: AFCoreData!
-    private var dataNotifications: NotificationCenter!
+    private var notifications: NotificationCenter!
     private var targetAgent = String()
-    private var uiNotifications: NotificationCenter!
     
 	// MARK: - Initialization
 	
 	init() {
         super.init(nibName: NSNib.Name(rawValue: "AgentAttributesView"), bundle: nil)
-        
-        // Note: we're using the default center here; that's where we all
-        // broadcast our ready messages.
-        let center = NotificationCenter.default
-        let name = Notification.Name(rawValue: AFCoreData.NotificationType.AppCoreReady.rawValue)
-        let selector = #selector(coreReady(notification:))
-        center.addObserver(self, selector: selector, name: name, object: nil)
 	}
     
-    @objc func coreReady(notification: Notification) {
-        if let info = notification.userInfo, let coreData = info["AFCoreData"] as? AFCoreData {
-            // Come back to this: the ui should be publishing its own notifications--
-            // we should be waiting for a shout from the UI to tell us where its
-            // personal notification center is.
-            self.coreData = coreData
-            self.uiNotifications = info["UINotifications"] as! NotificationCenter
-            self.dataNotifications = info["DataNotifications"] as! NotificationCenter
+    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+        var iStillNeedSomething = false
+        
+        if let nf = injector.notifications { self.notifications = nf }
+        else { iStillNeedSomething = true; injector.someoneStillNeedsSomething = true }
+
+        // Once everything is ready, we can start listening for UI activity
+        if !iStillNeedSomething {
+            self.coreData = injector.coreData
 
             let aName = Notification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
             let aSelector = #selector(hasBeenSelected(notification:))
-            self.uiNotifications.addObserver(self, selector: aSelector, name: aName, object: nil)
-            
+            self.notifications.addObserver(self, selector: aSelector, name: aName, object: nil)
+
+            let cName = Notification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
+            let cSelector = #selector(hasBeenDeselected(notification:))
+            self.notifications.addObserver(self, selector: cSelector, name: cName, object: nil)
+
             let bName = Notification.Name(rawValue: AFCoreData.NotificationType.SetAttribute.rawValue)
             let bSelector = #selector(attributeHasBeenUpdated(notification:))
-            self.dataNotifications.addObserver(self, selector: bSelector, name: bName, object: nil)
+            self.notifications.addObserver(self, selector: bSelector, name: bName, object: nil)
         }
-        
-        NotificationCenter.default.removeObserver(self)
     }
 	
 	required convenience init?(coder: NSCoder) {
@@ -198,11 +193,13 @@ class AgentAttributesController: NSViewController {
 	}
     
     @objc func attributeHasBeenUpdated(notification: Notification) {
+        print("AgentAttributesController gets attributeHasBeenUpdated")
         let (attribute, value, _) = notification.object as! (Int, Float, String)
         attributeHasBeenUpdated(attribute, to: value)
     }
     
     func attributeHasBeenUpdated(_ attribute: Int, to newValue: Float) {
+        print("AgentAttributesController gets attributeHasBeenUpdated (2)")
         switch AFAgentAttribute(rawValue: attribute)! {
         case .Mass:
             setMass(newValue, fromData: true)
@@ -210,16 +207,37 @@ class AgentAttributesController: NSViewController {
         }
     }
     
+    func connectAgentToCoreData(_ agentEditorController: AgentEditorController, agentName: String) {
+        let editor = AFAgentEditor(coreData: coreData, name: agentName)
+        
+        // Play/pause button image
+        let gc = agentEditorController.goalsController
+        gc.playButton.image = !editor.isPaused ? gc.pauseImage : gc.playImage
+        
+        connectAgentToCoreData_(agentName, editor: editor)
+    }
     
-    @objc func hasBeenSelected(notification: Notification) {
-        let name = notification.object as! String
-        let editor = AFAgentEditor(coreData: coreData, fullPath: coreData.getPathTo(name))
-
+    func connectAgentToCoreData_(_ name: String, editor: AFAgentEditor) {
+        // This is where we finally read back out the actual
+        // values from coreData and store them in the attributes controller
         setMass(editor.mass, fromData: true)
         setMaxAcceleration(editor.maxAcceleration, fromData: true)
         setMaxSpeed(editor.maxSpeed, fromData: true)
         setRadius(editor.radius, fromData: true)
         setScale(editor.scale, fromData: true)
+    }
+    
+    
+    @objc func hasBeenSelected(notification: Notification) {
+        print("AgentAttributesController gets hasBeenSelected")
+        let name = notification.object as! String
+        let editor = AFAgentEditor(coreData: coreData, fullPath: coreData.getPathTo(name))
+        
+        connectAgentToCoreData_(name, editor: editor)
+    }
+    
+    @objc func hasBeenDeselected(notification: Notification) {
+        print("AgentAttributesController gets hasBeenDeselected")
     }
 	
     override func viewDidLoad() {

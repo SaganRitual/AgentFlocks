@@ -74,7 +74,7 @@ class AFGoal {
     var name = String()
 //    var path: GKPath!
 //    var pathname: String?
-//    private unowned let scene: SKScene
+//    private unowned let gameScene: SKScene
     var targets: [String]?
     var weight: Float?
     
@@ -83,13 +83,13 @@ class AFGoal {
     var time: TimeInterval?
     var speed: Float?
 
-    init(editor: AFGoalEditor, scene: SKScene) {
+    init(editor: AFGoalEditor, gameScene: SKScene) {
 //        self.agents = embryo.agents
 //        self.familyName = embryo.familyName
 //        self.goalType = embryo.goalType
 //        self.name = NSUUID().uuidString
 ////        self.obstacles = embryo.obstacles
-//        self.scene = scene
+//        self.gameScene = gameScene
 //        self.weight = embryo.weight
 //
 //        self.angle = embryo.angle
@@ -97,10 +97,10 @@ class AFGoal {
 //        self.speed = embryo.speed
 //        self.time = embryo.time
         
-//        self.gkGoal = AFGoal.makeGoal(embryo: embryo, scene: scene)
+//        self.gkGoal = AFGoal.makeGoal(embryo: embryo, gameScene: gameScene)
     }
     
-//    static func makeGoal(editor: AFGoalEditor, scene: SKScene) -> GKGoal {
+//    static func makeGoal(editor: AFGoalEditor, gameScene: SKScene) -> GKGoal {
 //        var gkGoal: GKGoal!
 //        let gkAgents = [GKAgent]()
 ////        let gkTargets = embryo.targets.map { AFCore.coreData.getAgent($0[0]) }
@@ -286,7 +286,7 @@ class AFGoal {
      var name = String()
      //    var path: GKPath!
      //    var pathname: String?
-     private unowned let scene: SKScene
+     private unowned let gameScene: SKScene
      var targets: [String]?
      var weight: Float?
      
@@ -295,7 +295,7 @@ class AFGoal {
      var time: TimeInterval?
      var speed: Float?
  */
-    init(copyFrom: AFGoal, scene: GameScene) {
+    init(copyFrom: AFGoal, gameScene: GameScene) {
         goalType = copyFrom.goalType
 
         self.agents = copyFrom.agents
@@ -303,7 +303,7 @@ class AFGoal {
         self.distance = copyFrom.distance
         self.familyName = copyFrom.familyName
         self.name = NSUUID().uuidString
-//        self.scene = scene
+//        self.gameScene = gameScene
         self.speed = copyFrom.speed
         self.targets = [String]()
         self.time = copyFrom.time
@@ -311,7 +311,7 @@ class AFGoal {
 //        self.pathname = copyFrom.pathname
     }
     
-    init(toAlignWith agentNodes: [String], maxDistance: Float, maxAngle: Float, weight: Float, scene: SKScene) {
+    init(toAlignWith agentNodes: [String], maxDistance: Float, maxAngle: Float, weight: Float, gameScene: SKScene) {
 //        goalType = .toAlignWith
 //        
 //        var gkAgents = [GKAgent]()
@@ -332,7 +332,7 @@ class AFGoal {
          var name = String()
          //    var path: GKPath!
          //    var pathname: String?
-         private unowned let scene: SKScene
+         private unowned let gameScene: SKScene
          var targets: [String]?
          var weight: Float?
          
@@ -346,7 +346,7 @@ class AFGoal {
         self.distance = 0
         self.familyName = "no family"
         self.name = NSUUID().uuidString
-//        self.scene = scene
+//        self.gameScene = gameScene
         self.speed = 0//copyFrom.speed
         self.targets = [String]()
         self.time = 0//copyFrom.time
@@ -361,7 +361,7 @@ class AFGoal {
 //        gkGoal = GKGoal(toAlignWith: gkAgents, maxDistance: maxDistance, maxAngle: maxAngle)
     }
     
-    init(toAvoidAgents agentNodes: [String], time: TimeInterval, weight: Float, scene: SKScene) {
+    init(toAvoidAgents agentNodes: [String], time: TimeInterval, weight: Float, gameScene: SKScene) {
         goalType = .toAvoidAgents
         
 //        var gkAgents = [GKAgent]()
@@ -376,7 +376,7 @@ class AFGoal {
         self.angle = 0
         self.distance = 0
         self.name = NSUUID().uuidString
-//        self.scene = scene
+//        self.gameScene = gameScene
         self.targets = [String]()
         self.weight = weight
 //        self.name = NSUUID().uuidString
@@ -450,7 +450,7 @@ class AFGoal {
 ////        self.time = t
 //        self.weight = weight
 //        
-////        let afPath = AFPath(gameScene: AFCore.sceneUI.gameScene, copyFrom: AFCore.data.paths[pathname]!)
+////        let afPath = AFPath(gameScene: AFCore.sceneController.gameScene, copyFrom: AFCore.data.paths[pathname]!)
 ////        gkGoal = GKGoal(toFollow: afPath.asPath()!, maxPredictionTime: TimeInterval(t), forward: forward)
 //    }
 //    
@@ -529,7 +529,7 @@ class AFGoal {
 ////        self.time = t
 //        self.weight = weight
 //        
-////        let afPath = AFPath(gameScene: AFCore.sceneUI.gameScene, copyFrom: AFCore.data.paths[pathname]!)
+////        let afPath = AFPath(gameScene: AFCore.sceneController.gameScene, copyFrom: AFCore.data.paths[pathname]!)
 ////        gkGoal = GKGoal(toStayOn: afPath.gkPath, maxPredictionTime: TimeInterval(t))
 //    }
 //

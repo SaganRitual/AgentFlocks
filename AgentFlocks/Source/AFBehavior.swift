@@ -31,17 +31,17 @@ class AFBehavior: GKBehavior {
     private var goalsMap = [GKGoal: AFGoal]()
     let name: String
     private var savedState: (weight: Float, goal: AFGoal)?
-    private unowned let scene: SKScene
+    private unowned let gameScene: SKScene
     
-    init(coreData: AFCoreData, editor: AFBehaviorEditor, scene: SKScene) {
+    init(coreData: AFCoreData, editor: AFBehaviorEditor, gameScene: SKScene) {
         self.coreData = coreData
         self.familyName = "Corlione"
         self.name = NSUUID().uuidString
-        self.scene = scene
+        self.gameScene = gameScene
     }
     
     func aGoalWasCreated(coreData: AFCoreData, editor: AFGoalEditor, weight: Float) {
-        let newGoal = AFGoalEditor(coreData: coreData, editor: editor, scene: scene)
+        let newGoal = AFGoalEditor(coreData: coreData, editor: editor, gameScene: gameScene)
         setWeight(weight, for: newGoal)
     }
     

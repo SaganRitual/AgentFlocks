@@ -43,7 +43,7 @@ extension AFSceneController {
     }
     
     class BaseState: GKState, AFSceneControllerState {
-        var sceneUI: AFSceneController { return stateMachine! as! AFSceneController }
+        var afSceneController: AFSceneController { return stateMachine! as! AFSceneController }
         
         func click(_ name: String?, flags: NSEvent.ModifierFlags?) { }
         func flagsChanged(to newFlags: NSEvent.ModifierFlags) {}
@@ -58,7 +58,7 @@ extension AFSceneController {
                 (flags?.contains(.control) ?? false) ||
                 (flags?.contains(.option) ?? false)) else { return }
             
-            sceneUI.selectionController.click_item(name, flags: flags)
+            afSceneController.selectionController.click_item(name, flags: flags)
         }
     }
 }

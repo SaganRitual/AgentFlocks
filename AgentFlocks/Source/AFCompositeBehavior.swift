@@ -28,8 +28,8 @@ class AFCompositeBehavior: GKCompositeBehavior {
     var savedState: (weight: Float, behavior: GKBehavior)?
     var saveMap = [AFBehavior: Float]()
 
-    func addBehavior(coreData: AFCoreData, scene: SKScene, weight: Float) {
-//        let newBehavior = AFBehavior(coreData: coreData, embryo: data, scene: scene)
+    func addBehavior(coreData: AFCoreData, gameScene: SKScene, weight: Float) {
+//        let newBehavior = AFBehavior(coreData: coreData, embryo: data, gameScene: gameScene)
 //        setWeight(weight, for: newBehavior)
     }
 }

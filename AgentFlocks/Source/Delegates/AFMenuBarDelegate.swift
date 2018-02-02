@@ -26,11 +26,11 @@ import GameplayKit
 
 class AFMenuBarDelegate {
     unowned let coreData: AFCoreData
-    unowned let sceneUI: AFSceneController
+    unowned let afSceneController: AFSceneController
     
-    init(coreData: AFCoreData, sceneUI: AFSceneController) {
-        self.coreData = coreData
-        self.sceneUI = sceneUI
+    init(_ injector: AFCoreData.AFDependencyInjector) {
+        self.coreData = injector.coreData!
+        self.afSceneController = injector.afSceneController!
     }
 }
 
@@ -45,18 +45,18 @@ extension AFMenuBarDelegate {
 //
 //            for i in 0 ..< input.paths.keys.count {
 //                let path_ = input.paths.keys[i]
-//                let path = sceneUI.makePath(prototype: input.paths.map[path_]!)
+//                let path = sceneController.makePath(prototype: input.paths.map[path_]!)
 //
 //                self.data.paths.append(key: path.name, value: path)
 //            }
 //
 //            for (key, value) in input.obstacles {
-//                let path = sceneUI.makePath(prototype: value)
+//                let path = sceneController.makePath(prototype: value)
 //                self.data.obstacles[key] = path
 //            }
 //
 //            for entity_ in input.entities {
-//                let entity = sceneUI.makeEntity(prototype: entity_)
+//                let entity = sceneController.makeEntity(prototype: entity_)
 //                self.data.entities.append(key: entity.name, value: entity)
 //            }
 //        } catch { print(error) }
@@ -74,14 +74,20 @@ extension AFMenuBarDelegate {
     }
 }
 
+// MARK: Internal setup
+
+extension AFMenuBarDelegate {
+    func inject(_ injector: AFCoreData.AFDependencyInjector) {}
+}
+
 // MARK: Temp menu
 
 extension AFMenuBarDelegate {
     func tempRegisterPath() {
-        sceneUI.finalizePath(close: false)
+        afSceneController.finalizePath(close: false)
     }
     
     func tempSelectPath(ix: Int) {
-        sceneUI.pathForNextPathGoal = ix
+        afSceneController.pathForNextPathGoal = ix
     }
 }

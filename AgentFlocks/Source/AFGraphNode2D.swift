@@ -45,7 +45,7 @@ class AFGraphNode2D: GKGraphNode2D {
     private let familyName: String
     private let name: String
     private let radius: CGFloat = 5
-    private let scene: SKScene
+    private let gameScene: SKScene
     private var isSelected = false
     private var spriteSet: SpriteSet
     
@@ -54,13 +54,13 @@ class AFGraphNode2D: GKGraphNode2D {
         get { return vector_float2(Float(spriteSet.position.x), Float(spriteSet.position.y)) }
     }
 
-    init(coreData: AFCoreData, editor: AFGraphNodeEditor, position: CGPoint, scene: SKScene) {
+    init(coreData: AFCoreData, editor: AFGraphNodeEditor, position: CGPoint, gameScene: SKScene) {
         let name = NSUUID().uuidString
         self.coreData = coreData
         self.familyName = String()//embryo.familyName
         self.name = name
-        self.scene = scene
-        self.spriteSet = SpriteSet(familyName: familyName, scene: scene, position: position)
+        self.gameScene = gameScene
+        self.spriteSet = SpriteSet(familyName: familyName, gameScene: gameScene, position: position)
         
         super.init(point: position.as_vector_float2())
     }
@@ -105,7 +105,7 @@ extension AFGraphNode2D {
         private let familyName: String
         private var isSelected = false
         private var primaryContainer: AFGraphNode2D.SpriteContainerNode!
-        private unowned let scene: SKScene
+        private unowned let gameScene: SKScene
         private var selectionIndicator: SKNode
         private let selectionIndicatorRadius: CGFloat = 30
         private let theSprite: SKShapeNode
@@ -117,16 +117,16 @@ extension AFGraphNode2D {
             set { primaryContainer.position = newValue }
         }
         
-        init(familyName: String, scene: SKScene, position: CGPoint) {
+        init(familyName: String, gameScene: SKScene, position: CGPoint) {
             (theSprite, selectionIndicator) = SpriteSet.makeMarkerSprite(radius: 30, position: position, selectionIndicatorRadius: 40)
             
             self.familyName = familyName
-            self.scene = scene
+            self.gameScene = gameScene
             
             primaryContainer = AFGraphNode2D.SpriteContainerNode(name: name)
             primaryContainer.position = position
 
-            scene.addChild(primaryContainer)
+            gameScene.addChild(primaryContainer)
             primaryContainer.addChild(theSprite)
         }
         
@@ -155,7 +155,7 @@ extension AFGraphNode2D {
             sprite.fillColor = .yellow
             sprite.name = NSUUID().uuidString
             sprite.position = position
-//            sprite.zPosition = CGFloat(coreData.core.sceneUI.getNextZPosition())
+//            sprite.zPosition = CGFloat(coreData.core.sceneController.getNextZPosition())
             
             let selectionIndicator = AFAgent2D.makeRing(radius: Float(selectionIndicatorRadius), isForSelector: true, primary: true)
             

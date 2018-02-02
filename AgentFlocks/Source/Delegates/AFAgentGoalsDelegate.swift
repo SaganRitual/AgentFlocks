@@ -25,14 +25,15 @@
 import GameplayKit
 
 class AFAgentGoalsDelegate {
+    private unowned let afSceneController: AFSceneController
     private unowned let coreData: AFCoreData
-    private unowned let sceneUI: AFSceneController
+    private var gameScene: GameScene!
     
     var agent: String?
     
-    init(coreData: AFCoreData, sceneUI: AFSceneController) {
-        self.coreData = coreData
-        self.sceneUI = coreData.core.sceneUI
+    init(_ injector: AFCoreData.AFDependencyInjector) {
+        self.coreData = injector.coreData!
+        self.afSceneController = injector.afSceneController!
     }
     
     func deleteItem(_ item: String) { self.deleteItem(item) }
@@ -40,9 +41,9 @@ class AFAgentGoalsDelegate {
     func deselect() { self.agent = nil }
     
     func getEditableAttributes(for motivator: Any) -> AFOrderedMap<String, Double> {
-        guard let n = sceneUI.primarySelection else { fatalError() }
+        guard let n = afSceneController.primarySelection else { fatalError() }
 
-        let agent = AFNodeAdapter(scene: sceneUI.gameScene, name: n).getAgent()!
+        let agent = AFNodeAdapter(gameScene: afSceneController.gameScene, name: n).getAgent()!
         let gkGoal = (motivator as? GKGoal) ?? nil
         let composite = agent.behavior as! AFCompositeBehavior
         let behavior = (gkGoal == nil) ? (motivator as! AFBehavior) : composite.findParent(ofGoal: gkGoal!)
@@ -88,24 +89,35 @@ class AFAgentGoalsDelegate {
         return attributes
     }
     
+    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+        var iStillNeedSomething = false
+        
+        if let gs = injector.gameScene { self.gameScene = gs }
+        else { iStillNeedSomething = true; injector.someoneStillNeedsSomething = true }
+        
+        if !iStillNeedSomething {
+            injector.agentGoalsDelegate = self
+        }
+    }
+    
     func itemClicked(_ item: Any) {
         if let motivator = item as? AFBehavior {
-            sceneUI.parentOfNewMotivator = motivator
+            afSceneController.parentOfNewMotivator = motivator
         } else if let motivator = item as? GKGoal {
-            guard let n = sceneUI.primarySelection else { fatalError() }
+            guard let n = afSceneController.primarySelection else { fatalError() }
             
-            let agent = AFNodeAdapter(scene: sceneUI.gameScene, name: n).getAgent()!
+            let agent = AFNodeAdapter(gameScene: self.gameScene, name: n).getAgent()!
             let composite = agent.behavior as! AFCompositeBehavior
 
-            sceneUI.parentOfNewMotivator = composite.findParent(ofGoal: motivator)
+            afSceneController.parentOfNewMotivator = composite.findParent(ofGoal: motivator)
         }
     }
     
     func enableItem(_ item: Any, parent: Any?, on: Bool) -> [Any]? {
         if let behavior = item as? AFBehavior {
-            guard let n = sceneUI.primarySelection else { fatalError() }
+            guard let n = afSceneController.primarySelection else { fatalError() }
 
-            let agent = AFNodeAdapter(scene: sceneUI.gameScene, name: n).getAgent()!
+            let agent = AFNodeAdapter(gameScene: afSceneController.gameScene, name: n).getAgent()!
             let composite = agent.behavior as! AFCompositeBehavior
             
             composite.enableBehavior(behavior, on: on)
@@ -128,7 +140,7 @@ class AFAgentGoalsDelegate {
     }
     
     func play(_ yesno: Bool) {
-//        guard let agent = AFSceneController.AFNodeAdapter(sceneUI.primarySelection).getOwningAgent() else { return }
+//        guard let agent = AFSceneController.AFNodeAdapter(sceneController.primarySelection).getOwningAgent() else { return }
 //        agent.isPlaying = yesno
     }
     

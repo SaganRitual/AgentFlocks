@@ -39,7 +39,7 @@ extension AFSceneController {
                     (flags?.contains(.control) ?? false) ||
                     (flags?.contains(.option) ?? false)) else { return }
             
-//            sceneUI.coreData.newGraphNode(for: sceneUI.activePath.name)
+//            afSceneController.coreData.newGraphNode(for: afSceneController.activePath.name)
         }
         
         override func didEnter(from previousState: GKState?) {
@@ -48,7 +48,7 @@ extension AFSceneController {
 
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             // Can't leave draw state until the active path is closed
-            return sceneUI.activePath == nil
+            return afSceneController.activePath == nil
         }
         
         override func mouseMove(to position: CGPoint) {
@@ -56,28 +56,28 @@ extension AFSceneController {
         }
         
         override func newPathHasBeenCreated(_ notification: Notification) {
-//            guard sceneUI.activePath == nil else { fatalError() }
+//            guard afSceneController.activePath == nil else { fatalError() }
 //            
-//            let embryo = sceneUI.getPath(notification.object as! String)
-//            sceneUI.activePath = AFPath(coreData: sceneUI.coreData, embryo: embryo, scene: sceneUI.gameScene)
+//            let embryo = afSceneController.getPath(notification.object as! String)
+//            afSceneController.activePath = AFPath(coreData: afSceneController.coreData, embryo: embryo, gameScene: afSceneController.gameScene)
 //            
 //            // With a new path started, no other options are available
 //            // until the path is finalized. However, the "add path" option
 //            // is disabled until there are at least two nodes in the path.
-//            sceneUI.contextMenu.reset()
-//            sceneUI.contextMenu.includeInDisplay(.AddPathToLibrary, true, enable: false)
+//            afSceneController.contextMenu.reset()
+//            afSceneController.contextMenu.includeInDisplay(.AddPathToLibrary, true, enable: false)
         }
         
         func updateDrawIndicator(_ position: CGPoint) {
             drawIndicator?.removeFromParent()
             
-            if let ap = sceneUI.activePath, let start = ap.getLastHandlePosition() {
+            if let ap = afSceneController.activePath, let start = ap.getLastHandlePosition() {
                 let linePath = CGMutablePath()
                 linePath.move(to: start)
                 linePath.addLine(to: position)
                 
                 drawIndicator = SKShapeNode(path: linePath)
-                sceneUI.gameScene.addChild(drawIndicator!)
+                afSceneController.gameScene.addChild(drawIndicator!)
             }
         }
         

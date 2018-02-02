@@ -25,12 +25,13 @@
 import GameplayKit
 
 class AFTopBarDelegate {
+    unowned let afSceneController: AFSceneController
     unowned let coreData: AFCoreData
-    unowned let sceneUI: AFSceneController
+    var gameScene: GameScene!
     
-    init(coreData: AFCoreData, sceneUI: AFSceneController) {
-        self.coreData = coreData
-        self.sceneUI = sceneUI
+    init(_ injector: AFCoreData.AFDependencyInjector) {
+        self.afSceneController = injector.afSceneController!
+        self.coreData = injector.coreData!
     }
     
     func actionPlace() {
@@ -63,14 +64,23 @@ class AFTopBarDelegate {
         return pathImages
     }
     
+    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+        var iStillNeedSomething = false
+        
+        if let gs = injector.gameScene { self.gameScene = gs }
+        else { iStillNeedSomething = true; injector.someoneStillNeedsSomething = true }
+        
+        if !iStillNeedSomething { injector.topBarDelegate = self }
+    }
+
     func obstacleRadioButton() {
         // Probably will do away with the radio buttons
     }
     
-    func pause() { sceneUI.gameScene.pause() }
-    func play() { sceneUI.gameScene.play() }
+    func pause() { gameScene.pause() }
+    func play() { gameScene.play() }
     
-    func recallAgents() { sceneUI.recallAgents() }
+    func recallAgents() { afSceneController.recallAgents() }
     
     func setSpeed(_ speed: Double) {
         print("setSpeed() not implemented yet")

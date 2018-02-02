@@ -32,7 +32,8 @@ enum AFKeyCodes: UInt {
 }
 
 class GameScene: SKScene, SKViewDelegate {
-    var sceneUI: AFSceneController!
+    static var me: GameScene!
+    var sceneController: AFSceneController!
 
     var lastUpdateTime: TimeInterval = 0
     
@@ -42,12 +43,9 @@ class GameScene: SKScene, SKViewDelegate {
     func play() { isPaused = false; lastUpdateTime = 0 }
 
     override func sceneDidLoad() {
+        GameScene.me = self
         self.lastUpdateTime = 0
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        
-        let center = NotificationCenter.default
-        let name = Notification.Name(rawValue: AFCoreData.NotificationType.GameSceneReady.rawValue)
-        center.post(name: name, object: nil, userInfo: ["GameScene": self])
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -62,7 +60,7 @@ class GameScene: SKScene, SKViewDelegate {
         let dt = currentTime - self.lastUpdateTime
         
         // Update core
-        gameSceneDelegate.update(deltaTime: dt)
+        gameSceneDelegate?.update(deltaTime: dt)
         
         self.lastUpdateTime = currentTime
     }

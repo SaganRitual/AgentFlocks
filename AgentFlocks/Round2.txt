@@ -14,7 +14,7 @@ DONE:
 
 DONE:
 	3. I'd like for keyboard input to be passed to my SKScene by default. As it is now,
-	I have to click the scene with the mouse to direct keyboard input to it
+	I have to click the gameScene with the mouse to direct keyboard input to it
 
 DONE:
 	- I need File-> open & save connected. I will do the file processing, of course, but as I told you before,
@@ -57,7 +57,7 @@ Similarly, if the user chooses to add "To cohere", then he can select any number
 to cohere with before clicking "Apply".
 
 I mention this because the attribute editor dialogs auto-dismiss when I click anywhere outside
-their boundaries. I need them to persist while the user clicks around in the scene. I suppose this
+their boundaries. I need them to persist while the user clicks around in the gameScene. I suppose this
 also means that we'll need a "cancel" button on those views. Or maybe an "x" in the corner?
 
 Agent Attributes [DONE]
@@ -110,7 +110,7 @@ used it for a while.
 To place items of any kind, the user should select "place", then select
 the kind of item he wants -- agent, path, or obstacle -- then select an
 image from a list. With those selections in place, he can click
-arbitrarily in the scene area. On each click, a copy of the selected agent
+arbitrarily in the gameScene area. On each click, a copy of the selected agent
 will be created.
 
 Agents can't be drawn. When draw is selected, only paths and obstacles are enabled. The
@@ -119,7 +119,7 @@ in a catalog that is displayed in one of the "paths library"-style scrollers. I'
 to save much of this information to persistent storage, either as part of the app state, or
 perhaps as a certain kind of setup file that the user can save and load on demand.
 
-In edit mode the user will be interacting with the live objects in the scene, using the
+In edit mode the user will be interacting with the live objects in the gameScene, using the
 various editing panels
 
 One final note. From this experience, I have learned immensely about the culture of Swift

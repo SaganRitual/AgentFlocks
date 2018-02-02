@@ -25,7 +25,6 @@
 import AppKit
 
 protocol AFGameSceneDelegate {
-    func update(deltaTime dt: TimeInterval)
     func keyDown(with event: NSEvent)
     func keyUp(with event: NSEvent)
     func mouseDown(with event: NSEvent)
@@ -34,4 +33,5 @@ protocol AFGameSceneDelegate {
     func mouseUp(with event: NSEvent)
     func rightMouseUp(with event: NSEvent)
     func rightMouseDown(with event: NSEvent)
+    func update(deltaTime dt: TimeInterval)
 }

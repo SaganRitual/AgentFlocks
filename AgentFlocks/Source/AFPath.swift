@@ -27,7 +27,7 @@ import GameplayKit
 class AFPath: Equatable {
     private var coreData: AFCoreData
     private var finalized = false
-    private unowned let scene: SKScene
+    private unowned let gameScene: SKScene
     private var gkPath: GKPath! = nil
     private var graphNodes = AFOrderedMap<String, AFGraphNode2D>()
     private static let handleOffset = CGPoint(x: 0, y: 15)
@@ -35,14 +35,14 @@ class AFPath: Equatable {
     private unowned let notifications: NotificationCenter
     private let spriteSet: SpriteSet
     
-    init(coreData: AFCoreData, editor: AFPathEditor, scene: SKScene) {
+    init(coreData: AFCoreData, editor: AFPathEditor, gameScene: SKScene) {
         let name = NSUUID().uuidString
         
         self.coreData = coreData
         self.name = name
-        self.notifications = coreData.notifier
-        self.scene = scene
-        self.spriteSet = SpriteSet(name: name, scene: scene)
+        self.notifications = coreData.notifications
+        self.gameScene = gameScene
+        self.spriteSet = SpriteSet(name: name, gameScene: gameScene)
 
         let newGraphNode = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewGraphNode.rawValue)
         let aSelector = #selector(newGraphNodeHasBeenCreated(_:))
@@ -72,7 +72,7 @@ class AFPath: Equatable {
     @objc func graphNodeHasBeenDeleted(_ name: String) { _ = graphNodes.remove(name) }
     
     @objc func hasBeenDeselected(_ node: SKNode) {
-        // The scene controller just calls out the name of the
+        // The gameScene controller just calls out the name of the
         // node who's been deselected. It's up to the node to
         // respond only to its own name.
         guard node.name! == self.name else { return }
@@ -80,7 +80,7 @@ class AFPath: Equatable {
     }
     
     @objc func hasBeenSelected(_ node: SKNode, primary: Bool) {
-        // The scene controller just calls out the name of the
+        // The gameScene controller just calls out the name of the
         // node who's been selected. It's up to the node to
         // respond only to its own name.
         guard node.name! == self.name else { return }
@@ -91,7 +91,7 @@ class AFPath: Equatable {
     
     @objc func newGraphNodeHasBeenCreated(_ name: String) {
 //        let embryo = coreData.getGraphNode(name, parentPath: self.name)
-//        let afNode = AFGraphNode2D(coreData: coreData, embryo: embryo, position: CGPoint.zero, scene: self.scene)
+//        let afNode = AFGraphNode2D(coreData: coreData, embryo: embryo, position: CGPoint.zero, gameScene: self.gameScene)
 //        self.graphNodes.append(key: name, value: afNode)
 //        spriteSet.refresh(self)
     }
@@ -118,19 +118,19 @@ extension AFPath {
         private var name: String
         private var pathHandle: SKShapeNode!
         private var primaryContainer: AFPath.SpriteContainerNode
-        private unowned let scene: SKScene
+        private unowned let gameScene: SKScene
         private var visualPathNode: SKShapeNode!
 
-        init(name: String, scene: SKScene) {
+        init(name: String, gameScene: SKScene) {
             self.name = name
-            self.scene = scene
+            self.gameScene = gameScene
             self.visualPathNode = nil
 
             primaryContainer = AFPath.SpriteContainerNode(name: name)
             pathHandle = SKShapeNode(circleOfRadius: 15)
             
             primaryContainer.addChild(pathHandle)
-            scene.addChild(primaryContainer)
+            gameScene.addChild(primaryContainer)
         }
         
         deinit {
@@ -138,7 +138,7 @@ extension AFPath {
         }
         
         func getImageData(size: CGSize) -> NSImage {
-            let texture = scene.view!.texture(from: visualPathNode!)!
+            let texture = gameScene.view!.texture(from: visualPathNode!)!
             let cgImage = texture.cgImage()
             let nsImage = NSImage(cgImage: cgImage, size: size)
             
@@ -192,7 +192,7 @@ extension AFPath {
             visualPathNode!.name = name
             
             primaryContainer.addChild(visualPathNode!)
-            scene.addChild(primaryContainer)
+            gameScene.addChild(primaryContainer)
         }
         
         func reset() {

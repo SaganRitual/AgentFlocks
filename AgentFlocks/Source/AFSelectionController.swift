@@ -26,10 +26,9 @@ import GameplayKit
 
 class AFSelectionController: GKStateMachine {
     enum MouseState { case down, dragging, rightDown, rightUp, up }
-    enum NotificationType: String { case Deselected = "Deselected", Recalled = "Recalled", Selected = "Selected"}
 
-    private let notifications: NotificationCenter
-    private unowned let scene: GameScene
+    var notifications: NotificationCenter!
+    private unowned let gameScene: GameScene
     
     private var drone: AFSelectionState_Base? {
         print("gninord", currentState)
@@ -38,18 +37,13 @@ class AFSelectionController: GKStateMachine {
         return currentState as? AFSelectionState_Base
     }
 
-    init(scene: GameScene) {
-        self.notifications = NotificationCenter()
-        self.scene = scene
+    init(gameScene: GameScene) {
+        self.gameScene = gameScene
         
-        super.init(states: [AFSelectionState_Default(scene), AFSelectionState_Draw(scene),
-                            AFSelectionState_AgentsGoal(scene), AFSelectionState_PathsGoal(scene)])
+        super.init(states: [AFSelectionState_Default(gameScene), AFSelectionState_Draw(gameScene),
+                            AFSelectionState_AgentsGoal(gameScene), AFSelectionState_PathsGoal(gameScene)])
         
-        print("setting state")
         enter(AFSelectionState_Default.self)
-        print("how about now", drone)
-        drone?.click_item("fart", leavingMouseState: .down, flags: nil)
-        print("now?")
     }
 }
 
@@ -83,16 +77,27 @@ extension AFSelectionController {
         // Nothing to do after a drag
     }
 
-    func getNodeAdapter(_ name: String?) -> AFNodeAdapter { return AFNodeAdapter(scene: scene, name: name) }
+    func getNodeAdapter(_ name: String?) -> AFNodeAdapter { return AFNodeAdapter(gameScene: gameScene, name: name) }
 
     func getSelection() -> ([String]?, String?) {
         var selection = [String]()
         
-        scene.children.forEach { if getNodeAdapter($0.name).isSelected { selection.append($0.name!) } }
+        gameScene.children.forEach { if getNodeAdapter($0.name).isSelected { selection.append($0.name!) } }
         
-        let primary = scene.children.filter { return getNodeAdapter($0.name).isPrimarySelection }
+        let primary = gameScene.children.filter { return getNodeAdapter($0.name).isPrimarySelection }
         
         if selection.count > 0 { return (selection, primary.first!.name!) } else { return (nil, nil) }
+    }
+    
+    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+        var iStillNeedSomething = false
+        
+        if let nf = injector.notifications { self.notifications = nf }
+        else { iStillNeedSomething = true; injector.someoneStillNeedsSomething = true }
+        
+        if !iStillNeedSomething {
+            injector.selectionController = self
+        }
     }
     
     func isNodeSelected(_ name: String) -> (isSelected: Bool, isPrimary: Bool) {
@@ -139,19 +144,19 @@ extension AFSelectionController {
  func announceDeselect(_ node: SKNode?) {
  let n = Notification.Name(rawValue: NotificationType.Deselected.rawValue)
  let nn = Notification(name: n, object: node, userInfo: nil)
- notificationsSender.post(nn)
+ notifications.post(nn)
  }
  
  func announceSelect(_ name: String, primary: Bool) {
  let n = Notification.Name(rawValue: NotificationType.Selected.rawValue)
  let nn = Notification(name: n, object: (name, primary), userInfo: nil)
- notificationsSender.post(nn)
+ notifications.post(nn)
  }
  
  func announceSelect(_ node: SKNode, primary: Bool) {
  let n = Notification.Name(rawValue: NotificationType.Selected.rawValue)
  let nn = Notification(name: n, object: (node, primary), userInfo: nil)
- notificationsSender.post(nn)
+ notifications.post(nn)
  }
  
  func deselect(_ node: SKNode) {
@@ -186,15 +191,15 @@ extension AFSelectionController {
 
  
  /*
- if let node = sceneUI.primarySelection {
+ if let node = sceneController.primarySelection {
  AFCore.ui.agentEditorController.goalsController.dataSource = entity
  AFCore.ui.agentEditorController.attributesController.delegate = entity.agent
  
- sceneUI.primarySelection = node
- sceneUI.updatePrimarySelectionState(agentNode: node)
+ sceneController.primarySelection = node
+ sceneController.updatePrimarySelectionState(agentNode: node)
  }
  
- sceneUI.contextMenu.includeInDisplay(.CloneAgent, true, enable: true)
+ sceneController.contextMenu.includeInDisplay(.CloneAgent, true, enable: true)
 
  func toggleSelection(_ node: SKNode) {
  if selectedNodes.contains(node) { deselect(node) }
@@ -213,25 +218,31 @@ extension AFSelectionController {
 private extension AFSelectionController {
 
     func announceDeselect(_ name: String) {
-        let n = Notification.Name(rawValue: NotificationType.Deselected.rawValue)
-        let nn = Notification(name: n, object: name, userInfo: nil)
+        print("Selection controller announces deselect")
+        let e = AFNotification.Encode(name)
+        let n = Notification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
+        let nn = Notification(name: n, object: nil, userInfo: e.encode())
         notifications.post(nn)
     }
     
     func announceSelect(_ name: String, primary: Bool) {
-        let n = Notification.Name(rawValue: NotificationType.Selected.rawValue)
-        let nn = Notification(name: n, object: name, userInfo: nil)
+        print("Selection controller announces select on \(notifications) for \(name)")
+        let e = AFNotification.Encode(name)
+        let n = Notification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
+        let nn = Notification(name: n, object: nil, userInfo: e.encode())
         notifications.post(nn)
     }
 
-    func deselect(_ name: String, primary: Bool) { getNodeAdapter(name).deselect() }
+    func deselect(_ name: String, primary: Bool) { getNodeAdapter(name).deselect(); announceDeselect(name) }
     
-    func deselectAll() { scene.children.forEach { getNodeAdapter($0.name).deselect() } }
+    func deselectAll() { gameScene.children.forEach { getNodeAdapter($0.name).deselect(); announceDeselect($0.name!) } }
     
-    func select(_ name: String, primary: Bool) { getNodeAdapter(name).select(primary: true) }
+    func select(_ name: String, primary: Bool) { getNodeAdapter(name).select(primary: primary); announceSelect(name, primary: primary) }
     
     func toggleSelection(_ name: String) {}
 }
+
+// MARK: Miscellaney
 
 fileprivate extension AFSelectionController {
     func isItemInCurrentlySelectedPath(_ name: String) -> Bool {
@@ -243,8 +254,8 @@ fileprivate extension AFSelectionController {
         if let selectedItems = selectedItems {
             if selectedItems.count == 0 { return true }
             
-            let candidate = AFNodeAdapter(scene: scene, name: name)
-            let standard = AFNodeAdapter(scene: scene, name: selectedItems.first!)
+            let candidate = AFNodeAdapter(gameScene: gameScene, name: name)
+            let standard = AFNodeAdapter(gameScene: gameScene, name: selectedItems.first!)
 
             if standard.isAgent { return candidate.isAgent }
             if standard.isPath { return candidate.isPath }
@@ -253,17 +264,22 @@ fileprivate extension AFSelectionController {
 
         return true
     }
+    
+    @objc func postInit(notification: Notification) {
+        let info = notification.userInfo as! [String : Any]
+        self.notifications = info["DataNotifications"] as! NotificationCenter
+    }
 }
 
 // MARK: States for the state machine - base state
 
 fileprivate class AFSelectionState_Base: GKState {
-    unowned let scene: GameScene
+    unowned let gameScene: GameScene
     
     var afStateMachine: AFSelectionController? { return stateMachine as? AFSelectionController }
 
-    init(_ scene: GameScene) {
-        self.scene = scene
+    init(_ gameScene: GameScene) {
+        self.gameScene = gameScene
     }
 
     func click_black(flags: NSEvent.ModifierFlags?) {}
@@ -317,8 +333,8 @@ fileprivate class AFSelectionState_Draw: AFSelectionState_Base {
                                                                     // Ignore clicks on sprites, or other paths
         guard (afStateMachine?.isItemInCurrentlySelectedPath(name) ?? false) else { return }
         
-        guard !AFNodeAdapter(scene: scene, name: name).isPathHandle else { return }      // Ignore click on path handle
-        guard !AFNodeAdapter(scene: scene, name: name).isSelected else { return }        // Ignore click on vertex handle already selected
+        guard !AFNodeAdapter(gameScene: gameScene, name: name).isPathHandle else { return }      // Ignore click on path handle
+        guard !AFNodeAdapter(gameScene: gameScene, name: name).isSelected else { return }        // Ignore click on vertex handle already selected
         
         afStateMachine?.deselectAll()
         afStateMachine?.select(name, primary: true)
@@ -331,11 +347,11 @@ fileprivate class AFSelectionState_AgentsGoal: AFSelectionState_Base {
         guard !(flags?.contains(.control) ?? false) else { return } // Ignore ctrl+click
         guard !(flags?.contains(.option) ?? false) else { return }  // Ignore opt+click
         guard leavingMouseState == .down else { return }            // Ignore mouse up after dragging in the black
-        guard AFNodeAdapter(scene: scene, name: name).isAgent else { return }           // Ignore clicks on paths or handles
+        guard AFNodeAdapter(gameScene: gameScene, name: name).isAgent else { return }           // Ignore clicks on paths or handles
         
         if flags?.contains(.command) ?? false {
             afStateMachine?.toggleSelection(name)
-        } else if !AFNodeAdapter(scene: scene, name: name).isSelected && !AFNodeAdapter(scene: scene, name: name).isPrimarySelection {
+        } else if !AFNodeAdapter(gameScene: gameScene, name: name).isSelected && !AFNodeAdapter(gameScene: gameScene, name: name).isPrimarySelection {
             // We ignore plain click on someone already selected. Note that isPrimarySelection
             // implies isSelected, but I want to think of them separately, because we ignore
             // the click for different reasons in each case. Ignoring a click on a non-primary
@@ -355,11 +371,11 @@ fileprivate class AFSelectionState_PathsGoal: AFSelectionState_Base {
         guard !(flags?.contains(.control) ?? false) else { return } // Ignore ctrl+click
         guard !(flags?.contains(.option) ?? false) else { return }  // Ignore opt+click
         guard leavingMouseState == .down else { return }            // Ignore mouse up after dragging in the black
-        guard AFNodeAdapter(scene: scene, name: name).isPath else { return } // Ignore clicks on agents or vertex handles
+        guard AFNodeAdapter(gameScene: gameScene, name: name).isPath else { return } // Ignore clicks on agents or vertex handles
         
         if flags?.contains(.command) ?? false {
             afStateMachine?.toggleSelection(name)
-        } else if !AFNodeAdapter(scene: scene, name: name).isSelected {
+        } else if !AFNodeAdapter(gameScene: gameScene, name: name).isSelected {
             // We ignore plain click on someone already selected
             afStateMachine?.deselectAll()
             afStateMachine?.select(name, primary: false)

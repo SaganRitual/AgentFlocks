@@ -19,7 +19,7 @@ class SceneController: NSViewController {
 	// MARK: - Attributes (public)
 	
     var sceneNode: GameScene!
-    var scene: GKScene!
+    var gameScene: GKScene!
 	
 	// MARK: - Attributes (private)
 	
@@ -38,8 +38,8 @@ class SceneController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        scene = GKScene(fileNamed: "GameScene")
-        sceneNode = scene.rootNode as! GameScene?
+        gameScene = GKScene(fileNamed: "GameScene")
+        sceneNode = gameScene.rootNode as! GameScene?
 		
 		if let sceneView = view as? SKView {
 			// Add SpriteKit root node to sceneView (SKView)

@@ -23,22 +23,27 @@
 //
 
 class AFContextMenuDelegate {
-    unowned let sceneUI: AFSceneController
+    unowned let afSceneController: AFSceneController
     
-    init(sceneUI: AFSceneController) {
-        self.sceneUI = sceneUI
+    init(_ injector: AFCoreData.AFDependencyInjector) {
+        self.afSceneController = injector.afSceneController!
+        injector.contextMenuDelegate = self
     }
     
+    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+        
+    }
+
     func itemCloneAgent() {
-        sceneUI.cloneAgent()
+        afSceneController.cloneAgent()
     }
     
     func itemAddPathToLibrary() {
-        sceneUI.finalizePath(close: true)
+        afSceneController.finalizePath(close: true)
     }
     
     func itemStampObstacle() {
-        sceneUI.stampObstacle()
+        afSceneController.stampObstacle()
     }
 }
 

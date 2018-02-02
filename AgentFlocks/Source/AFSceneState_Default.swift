@@ -29,7 +29,7 @@ extension AFSceneController {
         override func click(_ name: String?, flags: NSEvent.ModifierFlags?) {
             if let name = name {
                 print("fargle")
-                sceneUI.selectionController.click_item(name, flags: flags)
+                afSceneController.selectionController.click_item(name, flags: flags)
                 print("bargle")
             }
             else { print("wtf"); click_black(flags: flags) }
@@ -37,21 +37,21 @@ extension AFSceneController {
         
         private func click_black(flags: NSEvent.ModifierFlags?) {
             if flags?.contains(.option) ?? false {
-                sceneUI.enter(Draw.self)
+                afSceneController.enter(Draw.self)
                 return
             } else if flags?.contains(.control) ?? false {
                 // ctrl-click gives a clone of the selected guy, goals and all.
                 // If no one is selected, we don't do anything.
-                guard let selected = sceneUI.primarySelection else { return }
+                guard let selected = afSceneController.primarySelection else { return }
                 
-                clone(selected, position: sceneUI.currentPosition)
+                clone(selected, position: afSceneController.currentPosition)
             } else {
                 // plain click in the black
-                sceneUI.createAgent()
+                afSceneController.createAgent()
             }
         }
         
-        func clone(_ name: String, position: CGPoint) { /*sceneUI.coreData.cloneAgent(node.name!)*/ }
+        func clone(_ name: String, position: CGPoint) { /*sceneController.coreData.cloneAgent(node.name!)*/ }
         
         override func didEnter(from previousState: GKState?) {
         }

@@ -17,17 +17,17 @@ class WindowContentView: NSView {
 	}
     
     override func flagsChanged(with event: NSEvent) {
-//        coreData.core.sceneUI.flagsChanged(to: event.modifierFlags)
+//        coreData.core.sceneController.flagsChanged(to: event.modifierFlags)
     }
 	
 	override func keyDown(with event: NSEvent) {
         let info = AFSceneInputState.InputInfo(flags: event.modifierFlags, key: event.keyCode, mousePosition: CGPoint.zero)
-//        coreData.core.sceneUI.keyDown(info)
+//        coreData.core.sceneController.keyDown(info)
 	}
 	
 	override func keyUp(with event: NSEvent) {
         let info = AFSceneInputState.InputInfo(flags: event.modifierFlags, key: event.keyCode, mousePosition: CGPoint.zero)
-//        coreData.core.sceneUI.keyUp(info)
+//        coreData.core.sceneController.keyUp(info)
 	}
 	
 }

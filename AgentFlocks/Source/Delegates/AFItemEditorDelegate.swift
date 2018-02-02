@@ -26,11 +26,12 @@ import GameplayKit
 
 class AFItemEditorDelegate {
     unowned let coreData: AFCoreData
-    unowned let sceneUI: AFSceneController
+    unowned let afSceneController: AFSceneController
     
-    init(coreData: AFCoreData, sceneUI: AFSceneController) {
-        self.coreData = coreData
-        self.sceneUI = sceneUI
+    init(_ injector: AFCoreData.AFDependencyInjector) {
+        self.coreData = injector.coreData!
+        self.afSceneController = injector.afSceneController!
+        injector.itemEditorDelegate = self
     }
     
     private func addMotivator(to agent: String, state: ItemEditorSlidersState) {
@@ -40,8 +41,8 @@ class AFItemEditorDelegate {
 
         let type = state.newItemType!
         var goal: AFGoal?
-        let selectedNames = Array(sceneUI.selectedNodes)
-        var primaryNode = sceneUI.primarySelection!
+        let selectedNames = Array(afSceneController.selectedNodes)
+        var primaryNode = afSceneController.primarySelection!
         
         let angle = Float(state.angle?.value ?? 0)
         let distance = Float(state.distance?.value ?? 0)
@@ -61,9 +62,9 @@ class AFItemEditorDelegate {
             
         case .toAvoidAgents:
             // Make sure we're not trying to avoid ourselves too
-            let sansSelf = selectedNames.filter { $0 != sceneUI.primarySelection! }
+            let sansSelf = selectedNames.filter { $0 != afSceneController.primarySelection! }
             
-//            coreData.newGoal(type, for: coreData.sceneUI.primarySelection!.name!, parentBehavior: nil, weight: weight,
+//            coreData.newGoal(type, for: coreData.afSceneController.primarySelection!.name!, parentBehavior: nil, weight: weight,
 //                            targets: sansSelf, angle: angle, distance: distance, speed: speed,
 //                            time: time, forward: nil)
 
@@ -74,7 +75,7 @@ class AFItemEditorDelegate {
             // exclude from the selection. I think I was trying to prevent the subject
             // of the goal from being added to his own goal. But now I'm tired and it's
             // harder to think about it.
-            let sansTarget = selectedNames.filter { $0 != sceneUI.primarySelection! }
+            let sansTarget = selectedNames.filter { $0 != afSceneController.primarySelection! }
 //            coreData.newGoal(type, for: sansTarget, weight, weight, targets: [selectedNames.first!],
 //                            angle: angle, distance: distance, speed: speed,time: time, forward: true)
             
@@ -84,7 +85,7 @@ class AFItemEditorDelegate {
                             time: Float(time), angle: angle, distance: distance, speed: speed,
                             time: time, weight: weight, forward: state.forward)
             
-            let pathIndex = AFCore.sceneUI.pathForNextPathGoal
+            let pathIndex = AFCore.afSceneController.pathForNextPathGoal
             let pathname = coreData.paths[pathIndex].name
             goal = AFGoal(toStayOn: pathname, time: Float(time), weight: weight)
             
@@ -98,6 +99,10 @@ class AFItemEditorDelegate {
         }
     }
     
+    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+        
+    }
+
     func itemEditorActivated(goalType: AFGoalType?) {
         guard let goalType = goalType else { return }
         
@@ -105,19 +110,19 @@ class AFItemEditorDelegate {
         case .toAlignWith:        fallthrough
         case .toAvoidAgents:      fallthrough
         case .toCohereWith:       fallthrough
-        case .toSeparateFrom:     sceneUI.setGoalSetupInputMode(.MultiSelectAgents)
+        case .toSeparateFrom:     afSceneController.setGoalSetupInputMode(.MultiSelectAgents)
 
-        case .toAvoidObstacles:   sceneUI.setGoalSetupInputMode(.MultiSelectObstacles)
+        case .toAvoidObstacles:   afSceneController.setGoalSetupInputMode(.MultiSelectObstacles)
             
         case .toFleeAgent:        fallthrough
         case .toInterceptAgent:   fallthrough
-        case .toSeekAgent:        sceneUI.setGoalSetupInputMode(.SingleSelectAgent)
+        case .toSeekAgent:        afSceneController.setGoalSetupInputMode(.SingleSelectAgent)
             
         case .toFollow:           fallthrough
-        case .toStayOn:           sceneUI.setGoalSetupInputMode(.SingleSelectPath)
+        case .toStayOn:           afSceneController.setGoalSetupInputMode(.SingleSelectPath)
 
         case .toReachTargetSpeed: fallthrough
-        case .toWander:           sceneUI.setGoalSetupInputMode(.NoSelect)
+        case .toWander:           afSceneController.setGoalSetupInputMode(.NoSelect)
         }
     }
     
@@ -131,7 +136,7 @@ class AFItemEditorDelegate {
     }
     
     private func refreshGoal(gkGoal: GKGoal, state: ItemEditorSlidersState) {
-//        let afGoal = sceneUI.parentOfNewMotivator!.goalsMap[gkGoal]!
+//        let afGoal = afSceneController.parentOfNewMotivator!.goalsMap[gkGoal]!
         
         // Edit existing goal -- note AFBehavior doesn't give us a way
         // to update the goal. If we want to assign any new values to
@@ -149,16 +154,16 @@ class AFItemEditorDelegate {
 //        if replacementGoalRequired {
 //            retransmitGoal(afGoal: afGoal, state: state)
 //        } else {
-//            sceneUI.parentOfNewMotivator!.setWeight(Float(state.weight.value), for: afGoal)
+//            afSceneController.parentOfNewMotivator!.setWeight(Float(state.weight.value), for: afGoal)
 //        }
     }
     
     func refreshMotivators(state: ItemEditorSlidersState) {
-        let selectedNodes = sceneUI.selectedNodes
+        let selectedNodes = afSceneController.selectedNodes
         guard selectedNodes.count > 0 else { return }
         
-        let name = sceneUI.primarySelection!
-        let agent = AFNodeAdapter(scene: sceneUI.gameScene, name: name).getAgent()!
+        let name = afSceneController.primarySelection!
+        let agent = AFNodeAdapter(gameScene: afSceneController.gameScene, name: name).getAgent()!
         
         if let behavior = state.editedItem as? AFBehavior {
             refreshBehavior(agent: agent, behavior: behavior, weight: state.weight.value)
@@ -182,8 +187,8 @@ class AFItemEditorDelegate {
 //        
 //        newGoal.weight = weight
 //        
-////        sceneUI.parentOfNewMotivator!.remove(afGoal)
-//        sceneUI.parentOfNewMotivator!.setWeightage(weight, for: newGoal)
+////        afSceneController.parentOfNewMotivator!.remove(afGoal)
+//        afSceneController.parentOfNewMotivator!.setWeightage(weight, for: newGoal)
     }
     
     func sliderChanged(state: ItemEditorSlidersState) {
