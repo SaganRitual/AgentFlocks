@@ -64,23 +64,13 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
         // These notifications come from the data; notice we're listening on dataNotifications
         let newBehavior = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewBehavior.rawValue)
         self.notifications.addObserver(self, selector: #selector(newBehavior(notification:)), name: newBehavior, object: coreData)
-        print("Agent2d listens for NewBehavior")
         
         let newGoal = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewGoal.rawValue)
         self.notifications.addObserver(self, selector: #selector(newGoal(notification:)), name: newGoal, object: coreData)
-        print("Agent2d listens for NewGoal")
 
         let setAttribute = NSNotification.Name(rawValue: AFCoreData.NotificationType.SetAttribute.rawValue)
         self.notifications.addObserver(self, selector: #selector(setAttribute(notification:)), name: setAttribute, object: coreData)
-        print("Agent2d listens for SetAttribute")
-/*
-        // These notifications come from the UI; notice we're listening on uiNotifications
-        let select = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
-        self.uiNotifier.addObserver(self, selector: #selector(hasBeenSelected(notification:)), name: select, object: nil)
-        
-        let deselect = NSNotification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
-        self.uiNotifier.addObserver(self, selector: #selector(hasBeenDeselected(notification:)), name: deselect, object: nil)
-*/
+
         // Use self here, because we want to set the container position too.
         // But it has to happen after superclass init, because it talks to the superclass.
         self.position = position.as_vector_float2()
@@ -111,27 +101,23 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
     }
     
     @objc func hasBeenDeselected(notification: Notification) {
-        print("Agent2d gets hasBeenDeselected")
         let name = notification.object as? String
         hasBeenDeselected(name)
     }
     
     // name == nil means everyone
     func hasBeenDeselected(_ name: String?) {
-        print("Agent2d gets hasBeenDeselected (2)")
         if name == nil || name! == self.name {
             spriteSet.hasBeenDeselected(name)
         }
     }
 
     @objc func hasBeenSelected(notification: Notification) {
-        print("Agent2d gets hasBeenSelected")
         let (name, primary) = notification.object as! (String, Bool)
         hasBeenSelected(name, primary: primary)
     }
     
     func hasBeenSelected(_ name: String, primary: Bool) {
-        print("Agent2d gets hasBeenSelected (2)")
         if name == self.name {
             spriteSet.hasBeenSelected(primary: primary)
         }
@@ -252,13 +238,11 @@ extension AFAgent2D {
     func newAgent(_ name: String) {}
 
     @objc func newBehavior(notification: Notification) {
-        print("Agent2d gets newBehavior")
         let (behavior, agent) = notification.object as! (String, String)
         newBehavior(behavior, weight: 1)
     }
 
     func newBehavior(_ name: String, weight: Float) {
-        print("Agent2d gets newBehavior (2)")
         guard name == self.name else { return }    // Notifier blasts to everyone
         
 //        let (behaviorEditor, _) = composite.createBehavior(weight: weight)
@@ -267,14 +251,12 @@ extension AFAgent2D {
     }
     
     @objc func newGoal(notification: Notification) {
-        print("Agent2d gets newGoal")
         if let (goal, _, _) = notification.object as? (String, String, String) {
             newGoal(goal, weight: 1)
         }
     }
     
     func newGoal(_ name: String, weight: Float) {
-        print("Agent2d gets newGoal (2)")
 //        guard name == self.name else { return }    // Notifier blasts to everyone
 //
 //        let (goalEditor, _) = coreData.core.createGoal(name, weight: weight)
@@ -283,14 +265,12 @@ extension AFAgent2D {
     }
     
     @objc func setAttribute(notification: Notification) {
-        print("Agent2d gets setAttribute")
         if let (attribute, value, agent) = notification.object as? (Int, Float, String) {
             setAttribute(attribute, to: value, for: agent)
         }
     }
     
     func setAttribute(_ asInt: Int, to value: Float, for agent: String) {
-        print("Agent2d gets setAttribute (2)")
         guard agent == self.name else { return }    // Notifier blasts to everyone
 
         switch AFAgentAttribute(rawValue: asInt)! {

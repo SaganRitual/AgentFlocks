@@ -104,7 +104,6 @@ class AFCoreData {
 //    fileprivate func setAttribute(attributeName: String) { announce(event: .SetAttribute, subjectName: attributeName) }
 
     func announce(event: NotificationType, subjectName: String) {
-        print("Core announces \(subjectName) on \(notifications))")
         let n = Notification.Name(rawValue: event.rawValue)
         let nn = Notification(name: n, object: subjectName, userInfo: nil)
         notifications.post(nn)

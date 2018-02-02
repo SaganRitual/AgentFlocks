@@ -117,8 +117,6 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
 
         self.notifications = info["DataNotifications"] as! NotificationCenter
         
-        print("SceneController gets \(self.notifications) as notificationsReceiver from coreReady")
-        
         let aNotification = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewAgent.rawValue)
         let aSelector = #selector(newAgentHasBeenCreated(_:))
         self.notifications.addObserver(self, selector: aSelector, name: aNotification, object: nil)
@@ -134,7 +132,6 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
         let dNotification = NSNotification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
         let dSelector = #selector(hasBeenDeselected(notification:))
         self.notifications.addObserver(self, selector: dSelector, name: dNotification, object: nil)
-        print("SceneController listens for NewAgent, NewPath, Selected, Deselected")
     }
 
     func createAgent() {
@@ -218,9 +215,7 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     }
     
     func mouseUp(_ info: AFSceneInputState.InputInfo) {
-        print("gameScene controller drone.click")
         drone.click(info.name, flags: info.flags)
-        print("and it's done")
     }
     
     @objc func newAgentHasBeenCreated(_ notification: Notification) {

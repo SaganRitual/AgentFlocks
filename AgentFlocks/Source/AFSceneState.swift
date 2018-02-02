@@ -33,14 +33,7 @@ protocol AFSceneControllerState {
 }
 
 extension AFSceneController {
-    var drone: AFSceneControllerState {
-        if let s = currentState as? AFSceneControllerState {
-            print("droning")
-            return s
-        } else {
-            fatalError()
-        }
-    }
+    var drone: AFSceneControllerState { return currentState as! AFSceneControllerState }
     
     class BaseState: GKState, AFSceneControllerState {
         var afSceneController: AFSceneController { return stateMachine! as! AFSceneController }
@@ -52,7 +45,6 @@ extension AFSceneController {
         func newPathHasBeenCreated(_ notification: Notification) {}
 
         func click_item(_ name: String, flags: NSEvent.ModifierFlags?) {
-            print("one")
             // Ignore all modified clicks on a path node, for now
             guard !((flags?.contains(.command) ?? false) ||
                 (flags?.contains(.control) ?? false) ||

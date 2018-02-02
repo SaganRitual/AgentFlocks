@@ -28,11 +28,10 @@ extension AFSceneController {
     class Default: BaseState {
         override func click(_ name: String?, flags: NSEvent.ModifierFlags?) {
             if let name = name {
-                print("fargle")
                 afSceneController.selectionController.click_item(name, flags: flags)
-                print("bargle")
+            } else {
+                click_black(flags: flags)
             }
-            else { print("wtf"); click_black(flags: flags) }
         }
         
         private func click_black(flags: NSEvent.ModifierFlags?) {

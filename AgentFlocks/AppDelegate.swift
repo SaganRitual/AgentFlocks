@@ -129,11 +129,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             
             let select = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
             self.notificationCenter.addObserver(self, selector: #selector(itemSelected(notification:)), name: select, object: nil)
-            print("AppDelegate listends for Selected() on \(self.notificationCenter)")
             
             let deselect = NSNotification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
             self.notificationCenter.addObserver(self, selector: #selector(itemDeselected(notification:)), name: deselect, object: nil)
-            print("AppDelegate listends for Deselected()")
+
+            // Strange, I had to paste this line from removeAgentFrames() in order to
+            // get the agent editing panels to display. I could take some guesses
+            // about what difference this makes, but I'll just wait to ask Gergely
+            // next time I talk to him.
+            agentEditorController.view.translatesAutoresizingMaskIntoConstraints = true
         }
     }
     

@@ -195,13 +195,11 @@ class AgentAttributesController: NSViewController {
 	}
     
     @objc func attributeHasBeenUpdated(notification: Notification) {
-        print("AgentAttributesController gets attributeHasBeenUpdated")
         let (attribute, value, _) = notification.object as! (Int, Float, String)
         attributeHasBeenUpdated(attribute, to: value)
     }
     
     func attributeHasBeenUpdated(_ attribute: Int, to newValue: Float) {
-        print("AgentAttributesController gets attributeHasBeenUpdated (2)")
         switch AFAgentAttribute(rawValue: attribute)! {
         case .Mass:
             setMass(newValue, fromData: true)
@@ -230,8 +228,6 @@ class AgentAttributesController: NSViewController {
     }
     
     @objc func hasBeenSelected(notification: Notification) {
-        print("AgentAttributesController gets hasBeenSelected")
-        
         if let name = AFNotification.Decode(notification).name {
             let editor = AFAgentEditor(coreData: coreData, fullPath: coreData.getPathTo(name))
             connectAgentToCoreData_(name, editor: editor)

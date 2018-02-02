@@ -30,12 +30,7 @@ class AFSelectionController: GKStateMachine {
     var notifications: NotificationCenter!
     private unowned let gameScene: GameScene
     
-    private var drone: AFSelectionState_Base? {
-        print("gninord", currentState)
-        print(currentState as? AFSelectionState_Base)
-        
-        return currentState as? AFSelectionState_Base
-    }
+    private var drone: AFSelectionState_Base? { return currentState as? AFSelectionState_Base }
 
     init(gameScene: GameScene) {
         self.gameScene = gameScene
@@ -58,9 +53,7 @@ extension AFSelectionController {
     func click_black() { deselectAll() }
     
     func click_item(name: String, leavingMouseState: MouseState, flags: NSEvent.ModifierFlags) {
-        print("because I'm totally flummoxed", drone)
         drone?.click_item(name, leavingMouseState: leavingMouseState, flags: flags)
-        print("and graffled")
     }
 
     func click_item(_ name: String, flags: NSEvent.ModifierFlags?) {
@@ -68,9 +61,7 @@ extension AFSelectionController {
         // know anything about mouse states. We'll assume that if
         // it was good enough to call a click, it came from a nice
         // clean .down state.
-        print("and glummoxed")
         click_item(name: name, leavingMouseState: .down, flags: flags!)
-        print("and baffled")
     }
     
     func dragEnd(flags: NSEvent.ModifierFlags?) {
@@ -218,7 +209,6 @@ extension AFSelectionController {
 private extension AFSelectionController {
 
     func announceDeselect(_ name: String) {
-        print("Selection controller announces deselect")
         let e = AFNotification.Encode(name)
         let n = Notification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
         let nn = Notification(name: n, object: nil, userInfo: e.encode())
@@ -226,7 +216,6 @@ private extension AFSelectionController {
     }
     
     func announceSelect(_ name: String, primary: Bool) {
-        print("Selection controller announces select on \(notifications) for \(name)")
         let e = AFNotification.Encode(name, isPrimary: primary)
         let n = Notification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
         let nn = Notification(name: n, object: nil, userInfo: e.encode())
@@ -283,49 +272,34 @@ fileprivate class AFSelectionState_Base: GKState {
     }
 
     func click_black(flags: NSEvent.ModifierFlags?) {}
-    func click_item(_ name: String, leavingMouseState: AFSelectionController.MouseState, flags: NSEvent.ModifierFlags?) {
-        print("base")
-    }
+    func click_item(_ name: String, leavingMouseState: AFSelectionController.MouseState, flags: NSEvent.ModifierFlags?) { }
 }
 
 // MARK: States for the state machine
 
 fileprivate class AFSelectionState_Default: AFSelectionState_Base {
     override func click_item(_ name: String, leavingMouseState: AFSelectionController.MouseState, flags: NSEvent.ModifierFlags?) {
-        print("default")
         guard !(flags?.contains(.control) ?? false) else { return } // Ignore ctrl+click
-        print("one")
         guard !(flags?.contains(.option) ?? false) else { return }  // Ignore opt+click
-        print("two")
         
         // Ignore click on sprite if path selected, vice-versa
         guard (afStateMachine?.isTypeCompatibleWithCurrentSelection(name) ?? false) else { return }
-        print("four")
 
         if (flags?.contains(.command) ?? false) && (afStateMachine?.isTypeCompatibleWithCurrentSelection(name) ?? false) {
-            print("five")
             afStateMachine?.toggleSelection(name)         // cmd+click on a node
-            print("six")
         } else {
-            print("seven")
             let (wasSelected, _) = afStateMachine!.isNodeSelected(name)
             afStateMachine?.deselectAll()                 // plain click on a node
-            print("eight")
 
             // If it was selected, leave it deselected. If it was not
             // selected, it's now the primary
-            if !wasSelected {
-                print("nine")
-                afStateMachine?.select(name, primary: true)
-            }
-            print("_")
+            if !wasSelected { afStateMachine?.select(name, primary: true) }
         }
     }
 }
 
 fileprivate class AFSelectionState_Draw: AFSelectionState_Base {
     override func click_item(_ name: String, leavingMouseState: AFSelectionController.MouseState, flags: NSEvent.ModifierFlags?) {
-        print("draw")
         guard !(flags?.contains(.control) ?? false) else { return } // Ignore ctrl+click
         guard !(flags?.contains(.option) ?? false) else { return }  // Ignore opt+click
         guard !(flags?.contains(.command) ?? false) else { return } // Ignore prop+click
@@ -343,7 +317,6 @@ fileprivate class AFSelectionState_Draw: AFSelectionState_Base {
 
 fileprivate class AFSelectionState_AgentsGoal: AFSelectionState_Base {
     override func click_item(_ name: String, leavingMouseState: AFSelectionController.MouseState, flags: NSEvent.ModifierFlags?) {
-        print("agent goals")
         guard !(flags?.contains(.control) ?? false) else { return } // Ignore ctrl+click
         guard !(flags?.contains(.option) ?? false) else { return }  // Ignore opt+click
         guard leavingMouseState == .down else { return }            // Ignore mouse up after dragging in the black
@@ -367,7 +340,6 @@ fileprivate class AFSelectionState_AgentsGoal: AFSelectionState_Base {
 
 fileprivate class AFSelectionState_PathsGoal: AFSelectionState_Base {
     override func click_item(_ name: String, leavingMouseState: AFSelectionController.MouseState, flags: NSEvent.ModifierFlags?) {
-        print("paths goal")
         guard !(flags?.contains(.control) ?? false) else { return } // Ignore ctrl+click
         guard !(flags?.contains(.option) ?? false) else { return }  // Ignore opt+click
         guard leavingMouseState == .down else { return }            // Ignore mouse up after dragging in the black
