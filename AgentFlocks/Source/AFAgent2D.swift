@@ -24,12 +24,12 @@
 
 import GameplayKit
 
-enum AFAgentAttribute: Int { case Mass, MaxAcceleration, MaxSpeed, Radius, Scale }
+enum AFAgentAttribute: String { case Mass, MaxAcceleration, MaxSpeed, Radius, Scale }
 
 protocol AFAgentDelegate {
     func newBehavior(for agent: String, weight: Float)
     func newGoal(for agent: String, parentBehavior: String, weight: Float)
-    func setAttribute(_ attribute: AFAgentAttribute, for agent: String, to value: Float)
+    func setAttribute(_ attribute: AFAgentAttribute, to value: Float, for agent: String)
 }
 
 class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
@@ -265,15 +265,15 @@ extension AFAgent2D {
     }
     
     @objc func setAttribute(notification: Notification) {
-        if let (attribute, value, agent) = notification.object as? (Int, Float, String) {
+        if let (attribute, value, agent) = notification.object as? (String, Float, String) {
             setAttribute(attribute, to: value, for: agent)
         }
     }
     
-    func setAttribute(_ asInt: Int, to value: Float, for agent: String) {
+    func setAttribute(_ asString: String, to value: Float, for agent: String) {
         guard agent == self.name else { return }    // Notifier blasts to everyone
 
-        switch AFAgentAttribute(rawValue: asInt)! {
+        switch AFAgentAttribute(rawValue: asString)! {
         case .Mass:            self.mass = value
         case .MaxAcceleration: self.maxAcceleration = value
         case .MaxSpeed:        self.maxSpeed = value
@@ -291,19 +291,19 @@ extension AFAgent2D {
         set { setAttribute(AFAgentAttribute.Mass.rawValue, to: newValue, for: self.name); super.mass = newValue }
     }
     
-    override var maxAcceleration: Float { set { super.maxAcceleration = newValue }
+    override var maxAcceleration: Float {
         get { return super.maxAcceleration }
-//        set { coreData.core.setAttribute(AFAgentAttribute.MaxAcceleration.rawValue, to: newValue, for: self.name); super.maxAcceleration = newValue }
+        set { setAttribute(AFAgentAttribute.MaxAcceleration.rawValue, to: newValue, for: self.name); super.maxAcceleration = newValue }
     }
     
-    override var maxSpeed: Float { set { super.maxSpeed = newValue }
+    override var maxSpeed: Float {
         get { return super.maxSpeed }
-//        set { coreData.core.setAttribute(AFAgentAttribute.MaxSpeed.rawValue, to: newValue, for: self.name); super.maxSpeed = newValue }
+        set { setAttribute(AFAgentAttribute.MaxSpeed.rawValue, to: newValue, for: self.name); super.maxSpeed = newValue }
     }
     
-    override var radius: Float { set { super.radius = newValue }
+    override var radius: Float {
         get { return super.radius }
-//        set { coreData.core.setAttribute(AFAgentAttribute.Radius.rawValue, to: newValue, for: self.name); super.radius = newValue }
+        set { setAttribute(AFAgentAttribute.Radius.rawValue, to: newValue, for: self.name); super.radius = newValue }
     }
 }
 

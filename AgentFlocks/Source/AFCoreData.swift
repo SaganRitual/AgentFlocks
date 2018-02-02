@@ -34,30 +34,49 @@ func Nickname(_ name: String?) -> String {
 
 struct AFNotification {
     struct Encode {
-        let isPrimary: Bool
-        let name: String
+        var attribute: AFAgentAttribute?
+        var isPrimary: Bool?
+        var name: String?
+        var value: Any?
         
         init(_ name: String, isPrimary: Bool = false) {
             self.isPrimary = isPrimary
             self.name = name
         }
         
+        init(_ name: String, attribute: AFAgentAttribute, value: Any) {
+            self.attribute = attribute
+            self.name = name
+            self.value = value
+        }
+        
         func encode() -> [String : Any] {
-            return ["isPrimary" : self.isPrimary, "name" : self.name]
+            return ["attribute" : attribute ?? "",
+                    "isPrimary" : self.isPrimary ?? false,
+                    "name" : self.name ?? "",
+                    "value" : self.value ?? "<missing value>"]
         }
     }
     
     struct Decode {
-        let macNotification: Notification
+        var attribute: AFAgentAttribute? { return getField("attribute") as? AFAgentAttribute }
         var isPrimary: Bool? { return getField("isPrimary") as? Bool }
+        let macNotification: Notification
         var name: String? { return getField("name") as? String }
-        
-        init(_ macNotification: Notification) {
-            self.macNotification = macNotification
-        }
-        
+        var value: Any? { return getField("value") }
+
+        init(_ macNotification: Notification) { self.macNotification = macNotification }
         func getField(_ key: String) -> Any? {
-            return macNotification.userInfo?[key]
+            let wtf = macNotification.userInfo?[key]
+            print(key, wtf)
+            return wtf
+        }
+
+        func getBool(_ key: String) -> Bool { return getField(key)! as! Bool }
+        func getFloat(_ key: String) -> Float {
+            let ugh = getField(key)
+            let bugh = ugh as! Float
+            return bugh
         }
     }
 }
@@ -99,9 +118,21 @@ class AFCoreData {
     init() {
     }
     
+    func setAttribute(_ attribute: AFAgentAttribute, to value: Float, for name: String) {
+        let pathToAgent = getPathTo(name)
+        data[pathToAgent][attribute.rawValue] = JSON(value)
+        announceAttributeChange(attribute: attribute, agentName: name, newValue: value)
+    }
+    
 //    fileprivate func announceNewGraphNode(graphNodeName: String) { announce(event: .NewGraphNode, subjectName: graphNodeName) }
 //    fileprivate func announceNewPath(pathName: String) { announce(event: .NewPath, subjectName: pathName) }
-//    fileprivate func setAttribute(attributeName: String) { announce(event: .SetAttribute, subjectName: attributeName) }
+    func announceAttributeChange(attribute: AFAgentAttribute, agentName: String, newValue: Float) {
+        let n = Notification.Name(rawValue: AFCoreData.NotificationType.SetAttribute.rawValue)
+        let e = AFNotification.Encode("", attribute: attribute, value: newValue)
+        print(e)
+        let nn = Notification(name: n, object: nil, userInfo: e.encode())
+        notifications.post(nn)
+    }
 
     func announce(event: NotificationType, subjectName: String) {
         let n = Notification.Name(rawValue: event.rawValue)

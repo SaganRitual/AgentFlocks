@@ -119,7 +119,7 @@ class LogSliderController: NSViewController {
 	// Maximum allowed value (its maximum value and one unit when changed by stepper)
 	private(set) var incrementValue:Double = 0.4
 
-	var delegate:LogSliderDelegate?
+    var delegate:LogSliderDelegate?
 	
 	// MARK: - Attributes (private)
 	

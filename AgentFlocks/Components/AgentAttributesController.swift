@@ -23,13 +23,15 @@ class AgentAttributesController: NSViewController {
 	
     func setMass(_ mass: Float, fromData: Bool) {
         if fromData {
+            print("new mass from data")
             // Mass is coming straight from the data, so just set it in the
             // slider; no need for the slider to relay the message further
             massSliderController.value = Double(mass)
         } else {
+            print("new mass from slider")
             // Mass is coming from the slider; send it down to the data; it
             // will call us (and everyone else) back after updating the...data
-//            AFCore.coreData.setAttribute(.Mass, to: mass, for: targetAgent)
+            coreData.setAttribute(.Mass, to: mass, for: targetAgent)
         }
     }
     
@@ -195,12 +197,14 @@ class AgentAttributesController: NSViewController {
 	}
     
     @objc func attributeHasBeenUpdated(notification: Notification) {
-        let (attribute, value, _) = notification.object as! (Int, Float, String)
-        attributeHasBeenUpdated(attribute, to: value)
+        let d = AFNotification.Decode(notification)
+        print(d)
+        let a = d.attribute!.rawValue
+        attributeHasBeenUpdated(AFAgentAttribute(rawValue: a)!, to: d.getFloat("value"))
     }
     
-    func attributeHasBeenUpdated(_ attribute: Int, to newValue: Float) {
-        switch AFAgentAttribute(rawValue: attribute)! {
+    func attributeHasBeenUpdated(_ attribute: AFAgentAttribute, to newValue: Float) {
+        switch attribute {
         case .Mass:
             setMass(newValue, fromData: true)
         default: break
@@ -229,6 +233,7 @@ class AgentAttributesController: NSViewController {
     
     @objc func hasBeenSelected(notification: Notification) {
         if let name = AFNotification.Decode(notification).name {
+            targetAgent = name
             let editor = AFAgentEditor(coreData: coreData, fullPath: coreData.getPathTo(name))
             connectAgentToCoreData_(name, editor: editor)
         } else {

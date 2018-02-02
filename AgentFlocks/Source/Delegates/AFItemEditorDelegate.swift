@@ -131,7 +131,7 @@ class AFItemEditorDelegate {
     }
     
     private func refreshBehavior(agent: AFAgent2D, behavior: AFBehavior, weight: Double) {
-//        behavior.weight = Float(weight)
+        print("i don't know")
 //        (agent.behavior! as! AFCompositeBehavior).setWeight(behavior.weight, for: behavior)
     }
     
