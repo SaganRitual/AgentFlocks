@@ -56,8 +56,8 @@ struct AFNotification {
             self.macNotification = macNotification
         }
         
-        func getField(_ name: String) -> Any? {
-            return macNotification.userInfo?["name"]
+        func getField(_ key: String) -> Any? {
+            return macNotification.userInfo?[key]
         }
     }
 }

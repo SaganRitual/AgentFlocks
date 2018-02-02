@@ -164,9 +164,9 @@ class AgentAttributesController: NSViewController {
         super.init(nibName: NSNib.Name(rawValue: "AgentAttributesView"), bundle: nil)
 	}
     
-    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+    func inject(_ injector: AFCoreData.AFDependencyInjector) -> Bool {
         var iStillNeedSomething = false
-        
+
         if let nf = injector.notifications { self.notifications = nf }
         else { iStillNeedSomething = true; injector.someoneStillNeedsSomething = true }
 
@@ -186,6 +186,8 @@ class AgentAttributesController: NSViewController {
             let bSelector = #selector(attributeHasBeenUpdated(notification:))
             self.notifications.addObserver(self, selector: bSelector, name: bName, object: nil)
         }
+        
+        return iStillNeedSomething
     }
 	
 	required convenience init?(coder: NSCoder) {
@@ -227,13 +229,15 @@ class AgentAttributesController: NSViewController {
         setScale(editor.scale, fromData: true)
     }
     
-    
     @objc func hasBeenSelected(notification: Notification) {
         print("AgentAttributesController gets hasBeenSelected")
-        let name = notification.object as! String
-        let editor = AFAgentEditor(coreData: coreData, fullPath: coreData.getPathTo(name))
         
-        connectAgentToCoreData_(name, editor: editor)
+        if let name = AFNotification.Decode(notification).name {
+            let editor = AFAgentEditor(coreData: coreData, fullPath: coreData.getPathTo(name))
+            connectAgentToCoreData_(name, editor: editor)
+        } else {
+            fatalError("Seems like this shouldn't fail")
+        }
     }
     
     @objc func hasBeenDeselected(notification: Notification) {

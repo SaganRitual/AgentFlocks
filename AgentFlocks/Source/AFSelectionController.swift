@@ -227,7 +227,7 @@ private extension AFSelectionController {
     
     func announceSelect(_ name: String, primary: Bool) {
         print("Selection controller announces select on \(notifications) for \(name)")
-        let e = AFNotification.Encode(name)
+        let e = AFNotification.Encode(name, isPrimary: primary)
         let n = Notification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
         let nn = Notification(name: n, object: nil, userInfo: e.encode())
         notifications.post(nn)

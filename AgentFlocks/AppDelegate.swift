@@ -114,8 +114,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         if let nf = injector.notifications { self.notificationCenter = nf }
         else { injector.someoneStillNeedsSomething = true; iStillNeedSomething = true }
-
-
+        
+        iStillNeedSomething = agentEditorController.attributesController.inject(injector) || iStillNeedSomething
+        
         // Once we have all our external dependencies setup, we can
         // take care of our post-init.
         if !iStillNeedSomething {
