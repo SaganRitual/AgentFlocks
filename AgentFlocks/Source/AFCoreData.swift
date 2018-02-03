@@ -66,18 +66,10 @@ struct AFNotification {
         var value: Any? { return getField("value") }
 
         init(_ macNotification: Notification) { self.macNotification = macNotification }
-        func getField(_ key: String) -> Any? {
-            let wtf = macNotification.userInfo?[key]
-            print(key, wtf)
-            return wtf
-        }
+        func getField(_ key: String) -> Any? { return macNotification.userInfo?[key] }
 
         func getBool(_ key: String) -> Bool { return getField(key)! as! Bool }
-        func getFloat(_ key: String) -> Float {
-            let ugh = getField(key)
-            let bugh = ugh as! Float
-            return bugh
-        }
+        func getFloat(_ key: String) -> Float { return getField(key)! as! Float }
     }
 }
 
@@ -110,7 +102,16 @@ class AFCoreData {
     let agentsPath: [JSONSubscriptType] = ["agents"]
     let pathsPath: [JSONSubscriptType] = ["paths"]
     
-    var data: JSON = [ "agents": [], "paths": [] ]
+    var data: JSON = [
+        "agents": [
+            [ "name" : "aB73E5CF-14EF-4AAF-B443-E9E0D2510A84"],
+            [ "name" : "bB73E5CF-14EF-4AAF-B443-E9E0D2510A84"],
+            [ "name" : "cB73E5CF-14EF-4AAF-B443-E9E0D2510A84"],
+            [ "name" : "dB73E5CF-14EF-4AAF-B443-E9E0D2510A84"]
+        ],
+        "paths": []
+    ]
+    
     var notifications = NotificationCenter()
     
     var postInitData: [String : Any] = [:]
@@ -119,8 +120,9 @@ class AFCoreData {
     }
     
     func setAttribute(_ attribute: AFAgentAttribute, to value: Float, for name: String) {
-        let pathToAgent = getPathTo(name)
+        let pathToAgent = getPathTo(name)!
         data[pathToAgent][attribute.rawValue] = JSON(value)
+        print("CoreData.setAttribute()", pathToAgent, attribute.rawValue)
         announceAttributeChange(attribute: attribute, agentName: name, newValue: value)
     }
     
@@ -128,8 +130,7 @@ class AFCoreData {
 //    fileprivate func announceNewPath(pathName: String) { announce(event: .NewPath, subjectName: pathName) }
     func announceAttributeChange(attribute: AFAgentAttribute, agentName: String, newValue: Float) {
         let n = Notification.Name(rawValue: AFCoreData.NotificationType.SetAttribute.rawValue)
-        let e = AFNotification.Encode("", attribute: attribute, value: newValue)
-        print(e)
+        let e = AFNotification.Encode(agentName, attribute: attribute, value: newValue)
         let nn = Notification(name: n, object: nil, userInfo: e.encode())
         notifications.post(nn)
     }
@@ -169,13 +170,26 @@ class AFCoreData {
         else { return "no string?" }
     }
     
-    func getPathTo(_ nameToSeek: String, pathSoFar: [JSONSubscriptType] = [JSONSubscriptType]()) -> [JSONSubscriptType] {
-        for (name, _) in data[pathSoFar] {
-            if name == nameToSeek { return pathSoFar + [name] }
-            else { return getPathTo(nameToSeek, pathSoFar: pathSoFar + [name]) }
+    static var gptCount = 0
+    
+    func getPathTo(_ nameToSeek: String, pathSoFar: [JSONSubscriptType] = [JSONSubscriptType]()) -> [JSONSubscriptType]? {
+        for (key_, value) in data[pathSoFar] {
+            // Couldn't believe this trick worked, but I couldn't believe that
+            // it was necessary. SwiftyJSON would see my key as a string, and
+            // wouldn't index properly into a normal array. So I have to forcibly
+            // make it an integer if it looks like one.
+            let s = Int(key_)
+            let key: JSONSubscriptType = (s == nil) ? key_ : s!
+
+            if value.stringValue == nameToSeek { return pathSoFar }
+            else {
+                if let p = getPathTo(nameToSeek, pathSoFar: pathSoFar + [key]) {
+                    return p            // Say that we dug deeper
+                }
+            }
         }
         
-        return pathSoFar
+        return nil
     }
     
     class AFDependencyInjector {

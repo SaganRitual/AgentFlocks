@@ -278,7 +278,9 @@ extension AFAgent2D {
         case .MaxAcceleration: self.maxAcceleration = value
         case .MaxSpeed:        self.maxSpeed = value
         case .Radius:          self.radius = value
-        case .Scale:           self.spriteSet.primaryContainer.scale = CGFloat(value)
+        case .Scale:           self.spriteSet.primaryContainer.scale = CGFloat(value);
+            self.spriteSet.primaryContainer.setScale(CGFloat(value))
+            print("scale")
         }
     }
 }

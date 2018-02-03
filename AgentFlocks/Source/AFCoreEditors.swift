@@ -37,7 +37,7 @@ class AFAgentEditor {
     
     init(coreData: AFCoreData, name: String) {
         self.coreData = coreData
-        self.fullPath = coreData.getPathTo(name)
+        self.fullPath = coreData.getPathTo(name)!
         self.name = name
     }
     
@@ -68,8 +68,15 @@ extension AFAgentEditor {
     }
     
     var mass: Float {
-        get { return JSON(coreData.data[fullPath]["mass"]).floatValue }
-        set { coreData.data[fullPath]["mass"] = JSON(newValue) }
+        get {
+            let r = JSON(coreData.data[fullPath]["mass"]).floatValue
+            print(fullPath, "get mass", r)
+            return r
+        }
+        set {
+            coreData.data[fullPath]["mass"] = JSON(newValue)
+            print(fullPath, "set mass", newValue)
+        }
     }
     
     var maxAcceleration: Float {
