@@ -48,22 +48,23 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     var activePath: AFPath!     // The one we're doing stuff to, whether it's selected or not (like dragging handles)
     var browserDelegate: AFBrowserDelegate!
     let contextMenu: AFContextMenu
-    var currentPosition = CGPoint.zero
     var coreData: AFCoreData!
     var draggedInTheBlack = false
     unowned let gameScene: GameScene
     var goalSetupInputMode = GoalSetupInputMode.NoSelect
     var mouseState = MouseStates.up
-    var nodeToMouseOffset = CGPoint.zero
     var notifications: NotificationCenter!
     var obstacleCloneStamp = String()
     var parentOfNewMotivator: AFBehavior?
     var pathForNextPathGoal = 0
     var primarySelection: String?
+    var sceneInputState: AFSceneInputState!
     var selectionController: AFSelectionController!
     var selectedNodes = Set<String>()
     var selectedPath: AFPath!   // The one that has a visible selection indicator on it, if any
     var ui: AppDelegate
+    
+    var currentPosition: CGPoint { return sceneInputState.currentPosition }
 
     enum MouseStates { case down, dragging, rightDown, rightUp, up }
     enum NotificationType: String { case Deselected = "Deselected", Recalled = "Recalled", Selected = "Selected"}
@@ -182,6 +183,9 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
         
         if let cd = injector.coreData { self.coreData = cd }
         else { iStillNeedSomething = true; injector.someoneStillNeedsSomething = true }
+        
+        if let si = injector.sceneInputState { self.sceneInputState = si }
+        else { iStillNeedSomething = true; injector.someoneStillNeedsSomething = true }
 
         selectionController.inject(injector)
         
@@ -206,7 +210,7 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     
     func mouseDrag(_ info: AFSceneInputState.InputInfo) {
         if let name = info.name, let downNode = info.downNode, name == downNode {
-            AFNodeAdapter(gameScene: gameScene, name: name).move(to: info.mousePosition)
+            AFNodeAdapter(gameScene: gameScene, name: name).move(to: info.mousePosition + sceneInputState.nodeToMouseOffset)
         }
     }
     

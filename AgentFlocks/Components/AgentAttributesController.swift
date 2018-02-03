@@ -25,8 +25,6 @@ class AgentAttributesController: NSViewController {
         guard massReentrancy == false else { return }
         massReentrancy = true
         
-        print("aac setMass()")
-
         if fromData { massSliderController.value = Double(mass) }
         else { coreData.setAttribute(.mass, to: mass, for: targetAgent) }
         
@@ -95,8 +93,6 @@ class AgentAttributesController: NSViewController {
     func setScale(_ scale: Float, fromData: Bool) {
         guard scaleReentrancy == false else { return }
         scaleReentrancy = true
-        
-        print("setScale")
         
         if fromData { scaleSliderController.value = Double(scale) }
         else { coreData.setAttribute(.scale, to: scale, for: targetAgent) }
@@ -217,7 +213,6 @@ class AgentAttributesController: NSViewController {
     
     @objc func attributeHasBeenUpdated(notification: Notification) {
         let d = AFNotification.Decode(notification)
-        print("attributeHasBeenUpdated", d.getFloat("value"))
         attributeHasBeenUpdated(d.attribute!, to: d.getFloat("value"))
     }
     
@@ -242,7 +237,6 @@ class AgentAttributesController: NSViewController {
     }
     
     func connectAgentToCoreData_(_ name: String, editor: AFAgentEditor) {
-        print("connecting", name)
         // This is where we finally read back out the actual
         // values from coreData and store them in the attributes controller
         setMass(editor.mass, fromData: true)
@@ -256,7 +250,6 @@ class AgentAttributesController: NSViewController {
         if let name = AFNotification.Decode(notification).name {
             targetAgent = name
             let editor = AFAgentEditor(coreData: coreData, fullPath: coreData.getPathTo(name)!)
-            print("mass is", editor.mass, "for", name)
             connectAgentToCoreData_(name, editor: editor)
         } else {
             fatalError("Seems like this shouldn't fail")

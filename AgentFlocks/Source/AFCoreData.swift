@@ -117,7 +117,6 @@ class AFCoreData {
     func setAttribute(_ attribute: AFAgentAttribute, to value: Float, for name: String) {
         let pathToAgent = getPathTo(name)!
         data[pathToAgent][attribute.rawValue] = JSON(value)
-        print("CoreData.setAttribute()", pathToAgent, attribute.rawValue)
         announceAttributeChange(attribute: attribute, agentName: name, newValue: value)
     }
     

@@ -68,15 +68,8 @@ extension AFAgentEditor {
     }
     
     var mass: Float {
-        get {
-            let r = JSON(coreData.data[fullPath]["mass"]).floatValue
-            print(fullPath, "get mass", r)
-            return r
-        }
-        set {
-            coreData.data[fullPath]["mass"] = JSON(newValue)
-            print(fullPath, "set mass", newValue)
-        }
+        get { return JSON(coreData.data[fullPath]["mass"]).floatValue }
+        set { coreData.data[fullPath]["mass"] = JSON(newValue) }
     }
     
     var maxAcceleration: Float {
