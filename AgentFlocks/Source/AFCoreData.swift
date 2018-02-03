@@ -103,12 +103,7 @@ class AFCoreData {
     let pathsPath: [JSONSubscriptType] = ["paths"]
     
     var data: JSON = [
-        "agents": [
-            [ "name" : "aB73E5CF-14EF-4AAF-B443-E9E0D2510A84"],
-            [ "name" : "bB73E5CF-14EF-4AAF-B443-E9E0D2510A84"],
-            [ "name" : "cB73E5CF-14EF-4AAF-B443-E9E0D2510A84"],
-            [ "name" : "dB73E5CF-14EF-4AAF-B443-E9E0D2510A84"]
-        ],
+        "agents": [],
         "paths": []
     ]
     
@@ -169,8 +164,6 @@ class AFCoreData {
         if let rs = data.rawString(.utf8, options: .sortedKeys) { return rs }
         else { return "no string?" }
     }
-    
-    static var gptCount = 0
     
     func getPathTo(_ nameToSeek: String, pathSoFar: [JSONSubscriptType] = [JSONSubscriptType]()) -> [JSONSubscriptType]? {
         for (key_, value) in data[pathSoFar] {

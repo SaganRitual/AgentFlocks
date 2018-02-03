@@ -28,7 +28,7 @@ class AgentAttributesController: NSViewController {
         print("aac setMass()")
 
         if fromData { massSliderController.value = Double(mass) }
-        else { coreData.setAttribute(.Mass, to: mass, for: targetAgent) }
+        else { coreData.setAttribute(.mass, to: mass, for: targetAgent) }
         
         massReentrancy = false
     }
@@ -46,7 +46,7 @@ class AgentAttributesController: NSViewController {
         } else {
             // Max accel is coming from the slider; send it down to the data; it
             // will call us (and everyone else) back after updating the...data
-            coreData.setAttribute(.MaxAcceleration, to: maxAcceleration, for: targetAgent)
+            coreData.setAttribute(.maxAcceleration, to: maxAcceleration, for: targetAgent)
         }
         
         maxAccelerationReentrancy = false
@@ -65,7 +65,7 @@ class AgentAttributesController: NSViewController {
         } else {
             // Max speed is coming from the slider; send it down to the data; it
             // will call us (and everyone else) back after updating the...data
-            coreData.setAttribute(.MaxSpeed, to: maxSpeed, for: targetAgent)
+            coreData.setAttribute(.maxSpeed, to: maxSpeed, for: targetAgent)
         }
         
         maxSpeedReentrancy = false
@@ -84,7 +84,7 @@ class AgentAttributesController: NSViewController {
         } else {
             // radius is coming from the slider; send it down to the data; it
             // will call us (and everyone else) back after updating the...data
-            coreData.setAttribute(.Radius, to: radius, for: targetAgent)
+            coreData.setAttribute(.radius, to: radius, for: targetAgent)
         }
         
         radiusReentrancy = false
@@ -99,7 +99,7 @@ class AgentAttributesController: NSViewController {
         print("setScale")
         
         if fromData { scaleSliderController.value = Double(scale) }
-        else { coreData.setAttribute(.Scale, to: scale, for: targetAgent) }
+        else { coreData.setAttribute(.scale, to: scale, for: targetAgent) }
         
         scaleReentrancy = false
     }
@@ -223,11 +223,11 @@ class AgentAttributesController: NSViewController {
     
     func attributeHasBeenUpdated(_ attribute: AFAgentAttribute, to newValue: Float) {
         switch attribute {
-        case .Mass:            setMass(newValue, fromData: true)
-        case .MaxAcceleration: setMaxAcceleration(newValue, fromData: true)
-        case .MaxSpeed:        setMaxSpeed(newValue, fromData: true)
-        case .Radius:          setRadius(newValue, fromData: true)
-        case .Scale:           setScale(newValue, fromData: true)
+        case .mass:            setMass(newValue, fromData: true)
+        case .maxAcceleration: setMaxAcceleration(newValue, fromData: true)
+        case .maxSpeed:        setMaxSpeed(newValue, fromData: true)
+        case .radius:          setRadius(newValue, fromData: true)
+        case .scale:           setScale(newValue, fromData: true)
         }
     }
     

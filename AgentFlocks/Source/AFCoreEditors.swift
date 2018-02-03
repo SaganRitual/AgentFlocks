@@ -100,7 +100,7 @@ extension AFAgentEditor {
     }
 }
 
-enum AFAgentAttributeType: String { case IsPaused, Mass, MaxAcceleration, MaxSpeed, Radius, Scale }
+enum AFAgentAttributeType: String { case isPaused, mass, maxAcceleration, maxSpeed, radius, scale }
 
 class AFBehaviorEditor {
     let coreData: AFCoreData
