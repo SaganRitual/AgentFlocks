@@ -44,22 +44,21 @@ class AFAgentGoalsDelegate {
         guard let n = afSceneController.primarySelection else { fatalError() }
 
         let agent = AFNodeAdapter(gameScene: afSceneController.gameScene, name: n).getAgent()!
-        let gkGoal = (motivator as? GKGoal) ?? nil
+        let gkGoal: GKGoal? = motivator as? GKGoal
         let composite = agent.behavior as! AFCompositeBehavior
         let behavior = (gkGoal == nil) ? (motivator as! AFBehavior) : composite.findParent(ofGoal: gkGoal!)
-//        let afGoal_: AFGoal? = (gkGoal == nil) ? nil : behavior!.goalsMap[gkGoal!]
-        let afGoal_: AFGoal? = nil
+        let afGoal_: AFGoal? = behavior!.getAFGoalForGKGoal(gkGoal)
         
         var attributes_ = AFOrderedMap<String, Double>()
         var attributes = AFOrderedMap<String, Double>()
 
         if let afGoal = afGoal_ {
-//            attributes_.append(key: "Angle", value: Double(afGoal.angle))
-//            attributes_.append(key: "Distance", value: Double(afGoal.distance))
-//            attributes_.append(key: "Speed", value: Double(afGoal.speed))
-//            attributes_.append(key: "Time", value: Double(afGoal.time))
-////            attributes_.append(key: "Weight", value: Double(afGoal.weight))
-//
+            attributes_.append(key: "Angle", value: Double(afGoal.angle ?? 0))
+            attributes_.append(key: "Distance", value: Double(afGoal.distance ?? 0))
+            attributes_.append(key: "Speed", value: Double(afGoal.speed ?? 0))
+            attributes_.append(key: "Time", value: Double(afGoal.time ?? 0))
+            attributes_.append(key: "Weight", value: Double(afGoal.weight ?? 0))
+
             switch afGoal.goalType {
             default: break
 //            case .toAlignWith:        fallthrough

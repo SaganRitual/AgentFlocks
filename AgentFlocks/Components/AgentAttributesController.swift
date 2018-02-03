@@ -6,7 +6,6 @@
 //  Copyright © 2017 TriKatz. All rights reserved.
 //
 
-import Cocoa
 import SpriteKit
 
 protocol AgentAttributesDelegate {

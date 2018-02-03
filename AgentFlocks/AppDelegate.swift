@@ -6,8 +6,6 @@
 //  Copyright © 2017 TriKatz. All rights reserved.
 //
 
-import Cocoa
-import Foundation
 import GameplayKit
 
 @NSApplicationMain

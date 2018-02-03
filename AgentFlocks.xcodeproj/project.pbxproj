@@ -80,7 +80,6 @@
 		D442B988201692810072EE5A /* AFAgent2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B987201692810072EE5A /* AFAgent2D.swift */; };
 		D442B98E20172AA40072EE5A /* AFSceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B98D20172AA40072EE5A /* AFSceneController.swift */; };
 		D442B990201774570072EE5A /* AFMotivatorsReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B98F201774570072EE5A /* AFMotivatorsReader.swift */; };
-		D44FCF2E1FFF5AA30067258D /* (null) in Resources */ = {isa = PBXBuildFile; };
 		D4506DD51FFE65B50077A42A /* AFPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4506DD41FFE65B50077A42A /* AFPath.swift */; };
 		D472A3711FFFD6860030ACA8 /* LogSliderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D472A36F1FFFD6850030ACA8 /* LogSliderController.swift */; };
 		D472A3721FFFD6860030ACA8 /* LogSliderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D472A3701FFFD6860030ACA8 /* LogSliderView.xib */; };
@@ -490,7 +489,6 @@
 				74ECDF711F9C8ED40096468F /* Objects.txt in Resources */,
 				745F8F441F929AB4006B08AF /* Obstacle11.png in Resources */,
 				745F8F411F929AB4006B08AF /* Obstacle08.png in Resources */,
-				D44FCF2E1FFF5AA30067258D /* (null) in Resources */,
 				745F8F501F929AB4006B08AF /* Obstacle23.png in Resources */,
 				745F8F561F929AB4006B08AF /* Obstacle29.png in Resources */,
 				745F8F4E1F929AB4006B08AF /* Obstacle21.png in Resources */,
@@ -621,6 +619,7 @@
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -670,6 +669,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};

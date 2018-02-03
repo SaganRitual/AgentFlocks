@@ -22,7 +22,6 @@
 // IN THE SOFTWARE.
 //
 
-import SpriteKit
 import GameplayKit
 
 enum AFKeyCodes: UInt {

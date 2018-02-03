@@ -45,6 +45,14 @@ class AFBehavior: GKBehavior {
         setWeight(weight, for: newGoal)
     }
     
+    func getAFGoalForGKGoal(_ gkGoal: GKGoal?) -> AFGoal? {
+        if let gg = gkGoal {
+            return goalsMap[gg]
+        } else {
+            return nil
+        }
+    }
+    
     func setWeight(_ weight: Float, for goal: AFGoalEditor) {
 //        super.setWeight(weight, for: goal.gkGoal)
     }

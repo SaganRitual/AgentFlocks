@@ -35,15 +35,19 @@ class AFAgentEditor {
     init(coreData: AFCoreData, fullPath toHere: [JSONSubscriptType]) {
         self.coreData = coreData
         self.fullPath = toHere
+        
+        self.compositeEditor = createCompositeEditor()
     }
     
     init(coreData: AFCoreData, name: String) {
         self.coreData = coreData
         self.fullPath = coreData.getPathTo(name)!
         self.name = name
+        
+        self.compositeEditor = createCompositeEditor()
     }
     
-    fileprivate func announceNewCompositeEditor(agentName: String) { coreData.announce(event: .NewBehavior, subjectName: agentName) }
+//    fileprivate func announceNewCompositeEditor(agentName: String) { coreData.announce(event: .NewBehavior, subjectName: agentName) }
     
     func asJsonString() -> String {
         return ""//coreData.rawString()!
@@ -56,8 +60,6 @@ class AFAgentEditor {
         let newCompositeNode: JSON = []
         let short = Array(hisFullPath.prefix(hisFullPath.count - 1))
         coreData.data[short].dictionaryObject!["composite"] = newCompositeNode
-        
-        announceNewCompositeEditor(agentName: name)
         
         return editor
     }
