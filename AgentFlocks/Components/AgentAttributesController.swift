@@ -19,6 +19,18 @@ class AgentAttributesController: NSViewController {
 	
 	// MARK: - Attributes (public)
     
+    func getIsPaused() -> Bool { return false }
+    
+    func setIsPaused(_ isPaused: Bool, fromData: Bool) {
+        guard isPausedReentrancy == false else { return }
+        isPausedReentrancy = true
+        
+        if fromData { /*isPausedSliderController.value = isPaused*/ }
+        else { coreData.setAttribute(.isPaused, to: isPaused == false ? 0 : 1, for: targetAgent) }
+        
+        isPausedReentrancy = false
+    }
+
     func getMass() -> Float { return Float(massSliderController.value) }
 	
     func setMass(_ mass: Float, fromData: Bool) {
@@ -163,6 +175,7 @@ class AgentAttributesController: NSViewController {
     private let radiusSliderController = LogSliderController()
     private let scaleSliderController = LogSliderController()
     
+    private var isPausedReentrancy = false
     private var massReentrancy = false
     private var maxAccelerationReentrancy = false
     private var maxSpeedReentrancy = false
@@ -218,6 +231,7 @@ class AgentAttributesController: NSViewController {
     
     func attributeHasBeenUpdated(_ attribute: AFAgentAttribute, to newValue: Float) {
         switch attribute {
+        case .isPaused:        setIsPaused(newValue != 0, fromData: true)
         case .mass:            setMass(newValue, fromData: true)
         case .maxAcceleration: setMaxAcceleration(newValue, fromData: true)
         case .maxSpeed:        setMaxSpeed(newValue, fromData: true)
@@ -277,17 +291,6 @@ class AgentAttributesController: NSViewController {
             s.controller.delegate = self
 			s.controller.addToView(s.container!)
         }
-
-        if !persistentDefaultsLoaded {
-            persistentDefaultsLoaded = true
-            defaultMass = 0.1
-            defaultMaxAcceleration = 100
-            defaultMaxSpeed = 100
-            defaultRadius = 25
-            defaultScale = 1
-        }
-        
-        
     }
     
 	override func viewWillAppear() {

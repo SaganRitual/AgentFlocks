@@ -24,8 +24,6 @@
 
 import GameplayKit
 
-enum AFAgentAttribute: String { case mass, maxAcceleration, maxSpeed, radius, scale }
-
 protocol AFAgentDelegate {
     func newBehavior(for agent: String, weight: Float)
     func newGoal(for agent: String, parentBehavior: String, weight: Float)
@@ -56,7 +54,7 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
         self.name = editor.name
         self.notifications = coreData.notifications
         self.gameScene = gameScene
-        
+
         super.init()
 
         self.spriteSet = AFAgent2D.SpriteSet(owningAgent: self, image: image, name: editor.name, scale: editor.scale, gameScene: gameScene)
@@ -69,7 +67,7 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
         self.notifications.addObserver(self, selector: #selector(newGoal(notification:)), name: newGoal, object: coreData)
 
         let setAttribute = NSNotification.Name(rawValue: AFCoreData.NotificationType.SetAttribute.rawValue)
-        self.notifications.addObserver(self, selector: #selector(setAttribute(notification:)), name: setAttribute, object: coreData)
+        self.notifications.addObserver(self, selector: #selector(anAttributeWasChanged(notification:)), name: setAttribute, object: coreData)
 
         // Use self here, because we want to set the container position too.
         // But it has to happen after superclass init, because it talks to the superclass.
@@ -79,6 +77,13 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
         // no one but the sprite has a reference to me.
         self.spriteSet.attachToSprite(self)
         self.spriteSet.primaryContainer.scale = CGFloat(editor.scale)
+        
+        // Hack in some defaults for now. I'll come back to this
+        // when I feel like torturing myself with more json.
+        mass = 0.1
+        maxAcceleration = 100
+        maxSpeed = 100
+        radius = 25
     }
     
     deinit {
@@ -264,16 +269,17 @@ extension AFAgent2D {
 //        behavior.aGoalWasCreated(editor: goalEditor, weight: weight)
     }
     
-    @objc func setAttribute(notification: Notification) {
+    @objc func anAttributeWasChanged(notification: Notification) {
         if let (attribute, value, agent) = notification.object as? (String, Float, String) {
-            setAttribute(attribute, to: value, for: agent)
+            anAttributeWasChanged(attribute, to: value, for: agent)
         }
     }
     
-    func setAttribute(_ asString: String, to value: Float, for agent: String) {
+    func anAttributeWasChanged(_ asString: String, to value: Float, for agent: String) {
         guard agent == self.name else { return }    // Notifier blasts to everyone
 
         switch AFAgentAttribute(rawValue: asString)! {
+        case .isPaused:        break
         case .mass:            self.mass = value
         case .maxAcceleration: self.maxAcceleration = value
         case .maxSpeed:        self.maxSpeed = value
@@ -288,22 +294,22 @@ extension AFAgent2D {
 extension AFAgent2D {
     override var mass: Float {
         get { return super.mass }
-        set { setAttribute(AFAgentAttribute.mass.rawValue, to: newValue, for: self.name); super.mass = newValue }
+        set { coreData.setAttribute(.mass, to: newValue, for: self.name); super.mass = newValue }
     }
     
     override var maxAcceleration: Float {
         get { return super.maxAcceleration }
-        set { setAttribute(AFAgentAttribute.maxAcceleration.rawValue, to: newValue, for: self.name); super.maxAcceleration = newValue }
+        set { coreData.setAttribute(.maxAcceleration, to: newValue, for: self.name); super.maxAcceleration = newValue }
     }
     
     override var maxSpeed: Float {
         get { return super.maxSpeed }
-        set { setAttribute(AFAgentAttribute.maxSpeed.rawValue, to: newValue, for: self.name); super.maxSpeed = newValue }
+        set { coreData.setAttribute(.maxSpeed, to: newValue, for: self.name); super.maxSpeed = newValue }
     }
     
     override var radius: Float {
         get { return super.radius }
-        set { setAttribute(AFAgentAttribute.radius.rawValue, to: newValue, for: self.name); super.radius = newValue }
+        set { coreData.setAttribute(.radius, to: newValue, for: self.name); super.radius = newValue }
     }
 }
 

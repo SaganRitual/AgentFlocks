@@ -24,6 +24,8 @@
 
 import GameplayKit
 
+enum AFAgentAttribute: String { case isPaused, mass, maxAcceleration, maxSpeed, radius, scale }
+
 class AFAgentEditor {
     var compositeEditor: AFCompositeEditor!
     private let coreData: AFCoreData
@@ -63,6 +65,93 @@ class AFAgentEditor {
 
 extension AFAgentEditor {
     var isPaused: Bool {
+        get {
+            let i: JSONSubscriptType = AFAgentAttribute.isPaused.rawValue
+            return JSON(coreData.data[fullPath][i]).boolValue
+        }
+        set {
+            let i: JSONSubscriptType = AFAgentAttribute.isPaused.rawValue
+            coreData.data[fullPath][i] = JSON(newValue)
+        }
+    }
+    
+    var mass: Float {
+        get {
+            let m: JSONSubscriptType = AFAgentAttribute.mass.rawValue
+            return JSON(coreData.data[fullPath][m]).floatValue
+        }
+        set {
+            let m: JSONSubscriptType = AFAgentAttribute.mass.rawValue
+            coreData.data[fullPath][m] = JSON(newValue)
+        }
+    }
+    
+    var maxAcceleration: Float {
+        get {
+            let m: JSONSubscriptType = AFAgentAttribute.maxAcceleration.rawValue
+            return JSON(coreData.data[fullPath][m]).floatValue
+        }
+        set {
+            let m: JSONSubscriptType = AFAgentAttribute.maxAcceleration.rawValue
+            coreData.data[fullPath][m] = JSON(newValue)
+        }
+    }
+    
+    var maxSpeed: Float {
+        get {
+            let m: JSONSubscriptType = AFAgentAttribute.maxSpeed.rawValue
+            return JSON(coreData.data[fullPath][m]).floatValue
+        }
+        set {
+            let m: JSONSubscriptType = AFAgentAttribute.maxSpeed.rawValue
+            coreData.data[fullPath][m] = JSON(newValue)
+        }
+    }
+    
+    var radius: Float {
+        get {
+            let r: JSONSubscriptType = AFAgentAttribute.radius.rawValue
+            return JSON(coreData.data[fullPath][r]).floatValue
+        }
+        set {
+            let r: JSONSubscriptType = AFAgentAttribute.radius.rawValue
+            coreData.data[fullPath][r] = JSON(newValue)
+        }
+    }
+    
+    var scale: Float {
+        get {
+            let s: JSONSubscriptType = AFAgentAttribute.scale.rawValue
+            return JSON(coreData.data[fullPath][s]).floatValue
+        }
+        set {
+            let s: JSONSubscriptType = AFAgentAttribute.scale.rawValue
+            coreData.data[fullPath][s] = JSON(newValue)
+        }
+    }
+}
+
+/*
+struct AFAgentAttributesEditor {
+    private let agentName: String
+    private unowned var coreData: AFCoreData
+    private let fullPath: [JSONSubscriptType]
+    private unowned let notifications: NotificationCenter
+
+    init(agentName: String, coreData: AFCoreData, fullPath: [JSONSubscriptType], notifications: NotificationCenter) {
+        self.coreData = coreData;
+        self.fullPath = fullPath;
+        self.agentName = agentName
+    }
+ 
+    func announceChanges(attribute: ) {
+        let n = Notification.Name(rawValue: AFCoreData.NotificationType.SetAttribute.rawValue)
+        let e = AFNotification.Encode(agentName, attribute: attribute, value: newValue)
+        let nn = Notification(name: n, object: nil, userInfo: e.encode())
+        notifications.post(nn)
+    }
+
+    var isPaused: Bool {
         get { return JSON(coreData.data[fullPath]["isPaused"]).boolValue }
         set { coreData.data[fullPath]["isPaused"] = JSON(newValue) }
     }
@@ -93,7 +182,14 @@ extension AFAgentEditor {
     }
 }
 
-enum AFAgentAttributeType: String { case isPaused, mass, maxAcceleration, maxSpeed, radius, scale }
+extension AFAgentEditor {
+    var isPaused:          Bool  { get { return attributesEditor.isPaused }        set { attributesEditor.isPaused = newValue } }
+    var maxAcceleration:   Float { get { return attributesEditor.maxAcceleration } set { attributesEditor.maxAcceleration = newValue } }
+    var maxSpeed:          Float { get { return attributesEditor.maxSpeed }        set { attributesEditor.maxSpeed = newValue } }
+    var radius:            Float { get { return attributesEditor.radius }          set { attributesEditor.radius = newValue } }
+    var scale:             Float { get { return attributesEditor.scale }           set { attributesEditor.scale = newValue } }
+}
+*/
 
 class AFBehaviorEditor {
     let coreData: AFCoreData
