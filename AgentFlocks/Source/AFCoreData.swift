@@ -35,35 +35,49 @@ func Nickname(_ name: String?) -> String {
 struct AFNotification {
     struct Encode {
         var attribute: AFAgentAttribute?
+        var coreData: AFCoreData?
+        var editor: AFEditor?
+        var gameScene: GameScene?
         var isPrimary: Bool?
         var name: String?
         var value: Any?
+        var weight: Float?
         
-        init(_ name: String, isPrimary: Bool = false) {
+        init(_ name: String, attribute: AFAgentAttribute? = nil, coreData: AFCoreData? = nil,
+             editor: AFEditor? = nil, gameScene: GameScene? = nil, isPrimary: Bool? = nil, value: Any? = nil,
+             weight: Float? = nil) {
+            self.attribute = attribute
+            self.coreData = coreData
+            self.editor = editor
+            self.gameScene = gameScene
             self.isPrimary = isPrimary
             self.name = name
-        }
-        
-        init(_ name: String, attribute: AFAgentAttribute, value: Any) {
-            self.attribute = attribute
-            self.name = name
             self.value = value
+            self.weight = weight
         }
         
         func encode() -> [String : Any] {
             return ["attribute" : attribute ?? "",
+                    "coreData"  : coreData as Any,
+                    "editor"    : editor as Any,
+                    "gameScene" : gameScene as Any,
                     "isPrimary" : self.isPrimary ?? false,
-                    "name" : self.name ?? "",
-                    "value" : self.value ?? "<missing value>"]
+                    "name"      : self.name ?? "",
+                    "value"     : self.value ?? "<missing value>",
+                    "weight"    : self.weight ?? "<missing weight>" ]
         }
     }
     
     struct Decode {
         var attribute: AFAgentAttribute? { return getField("attribute") as? AFAgentAttribute }
-        var isPrimary: Bool? { return getField("isPrimary") as? Bool }
+        var coreData: AFCoreData? { return getField("coreData") as? AFCoreData }
+        var editor: AFEditor? { return getField("editor") as? AFEditor }
+        var gameScene: GameScene? { return getField("gameScene") as? GameScene }
+        var isPrimary: Bool? { return getBool("isPrimary") }
         let macNotification: Notification
         var name: String? { return getField("name") as? String }
         var value: Any? { return getField("value") }
+        var weight: Float? { return getFloat("weight") }
 
         init(_ macNotification: Notification) { self.macNotification = macNotification }
         func getField(_ key: String) -> Any? { return macNotification.userInfo?[key] }
@@ -71,6 +85,10 @@ struct AFNotification {
         func getBool(_ key: String) -> Bool { return getField(key)! as! Bool }
         func getFloat(_ key: String) -> Float { return getField(key)! as! Float }
     }
+}
+
+protocol AFEditor {
+    
 }
 
 class AFCoreData {
@@ -95,7 +113,7 @@ class AFCoreData {
     enum NotificationType: String { case AppCoreReady = "AppCoreReady", DeletedAgent = "DeletedAgent",
         DeletedBehavior = "DeletedBehavior", DeletedGoal = "DeletedGoal",
         DeletedGraphNode = "DeletedGraphNode", DeletedPath = "DeletedPath", GameSceneReady = "GameSceneReady",
-        NewAgent = "NewAgent", NewBehavior = "NewBehavior", NewGoal = "NewGoal",
+        NewAgent = "NewAgent", NewComposite = "NewComposite", NewBehavior = "NewBehavior", NewGoal = "NewGoal",
         NewGraphNode = "NewGraphNode", NewPath = "NewPath", PostInit = "PostInit", SceneControllerReady = "SceneControllerReady",
         SetAttribute = "SetAttribute" }
 
@@ -120,6 +138,9 @@ class AFCoreData {
         announceAttributeChange(attribute: attribute, agentName: name, newValue: value)
     }
     
+    // Reuse the notification we got--send it back out as our own message to the world
+    func announce(mac notification: Notification) { notifications.post(notification) }
+    
 //    fileprivate func announceNewGraphNode(graphNodeName: String) { announce(event: .NewGraphNode, subjectName: graphNodeName) }
 //    fileprivate func announceNewPath(pathName: String) { announce(event: .NewPath, subjectName: pathName) }
     func announceAttributeChange(attribute: AFAgentAttribute, agentName: String, newValue: Float) {
@@ -130,12 +151,15 @@ class AFCoreData {
     }
 
     func announce(event: NotificationType, subjectName: String) {
+        let e = AFNotification.Encode(subjectName, coreData: self)
         let n = Notification.Name(rawValue: event.rawValue)
-        let nn = Notification(name: n, object: subjectName, userInfo: nil)
+        let nn = Notification(name: n, object: nil, userInfo: e.encode())
         notifications.post(nn)
     }
 
-    func announceNewAgent(agentName: String) { announce(event: .NewAgent, subjectName: agentName) }
+    func announceNewAgent(agentName: String) {
+        announce(event: .NewAgent, subjectName: agentName)
+    }
     
     func createAgent(editorType: EditorType) -> AFAgentEditor {
         switch editorType {

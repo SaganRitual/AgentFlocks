@@ -24,6 +24,18 @@
 
 import GameplayKit
 
+protocol AFGameSceneDelegate {
+    func keyDown(with event: NSEvent)
+    func keyUp(with event: NSEvent)
+    func mouseDown(with event: NSEvent)
+    func mouseDragged(with event: NSEvent)
+    func mouseMoved(with event: NSEvent)
+    func mouseUp(with event: NSEvent)
+    func rightMouseUp(with event: NSEvent)
+    func rightMouseDown(with event: NSEvent)
+    func update(deltaTime dt: TimeInterval)
+}
+
 class AFAgentGoalsDelegate {
     private unowned let afSceneController: AFSceneController
     private unowned let coreData: AFCoreData
@@ -46,7 +58,7 @@ class AFAgentGoalsDelegate {
         let agent = AFNodeAdapter(gameScene: afSceneController.gameScene, name: n).getAgent()!
         let gkGoal: GKGoal? = motivator as? GKGoal
         let composite = agent.behavior as! AFCompositeBehavior
-        let behavior = (gkGoal == nil) ? (motivator as! AFBehavior) : composite.findParent(ofGoal: gkGoal!)
+        let behavior = (gkGoal == nil) ? (motivator as! AFBehavior) : composite.findParent(of: gkGoal!)
         let afGoal_: AFGoal? = behavior!.getAFGoalForGKGoal(gkGoal)
         
         var attributes_ = AFOrderedMap<String, Double>()
@@ -108,7 +120,7 @@ class AFAgentGoalsDelegate {
             let agent = AFNodeAdapter(gameScene: self.gameScene, name: n).getAgent()!
             let composite = agent.behavior as! AFCompositeBehavior
 
-            afSceneController.parentOfNewMotivator = composite.findParent(ofGoal: motivator)
+//            afSceneController.parentOfNewMotivator = composite.findParent(ofGoal: motivator)
         }
     }
     

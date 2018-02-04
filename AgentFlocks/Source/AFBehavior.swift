@@ -30,6 +30,7 @@ class AFBehavior: GKBehavior {
     private let familyName: String
     private var goalsMap = [GKGoal: AFGoal]()
     let name: String
+    private unowned let notifications: NotificationCenter
     private var savedState: (weight: Float, goal: AFGoal)?
     private unowned let gameScene: SKScene
     
@@ -38,19 +39,23 @@ class AFBehavior: GKBehavior {
         self.familyName = "Corlione"
         self.name = NSUUID().uuidString
         self.gameScene = gameScene
+        self.notifications = coreData.notifications
+        
+        super.init()
+        
+        let n = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewGoal.rawValue)
+        self.notifications.addObserver(self, selector: #selector(aGoalHasBeenCreated(notification:)), name: n, object: nil)
     }
     
-    func aGoalWasCreated(coreData: AFCoreData, editor: AFGoalEditor, weight: Float) {
-        let newGoal = AFGoalEditor(coreData: coreData, editor: editor, gameScene: gameScene)
-        setWeight(weight, for: newGoal)
+    @objc func aGoalHasBeenCreated(notification: Notification) {
+        let d = AFNotification.Decode(notification)
+        let newGoal = AFGoalEditor(coreData: coreData, editor: d.editor! as! AFGoalEditor, gameScene: d.gameScene!)
+        setWeight(d.weight!, for: newGoal)
     }
     
     func getAFGoalForGKGoal(_ gkGoal: GKGoal?) -> AFGoal? {
-        if let gg = gkGoal {
-            return goalsMap[gg]
-        } else {
-            return nil
-        }
+        if let gg = gkGoal { return goalsMap[gg] }
+        else { return nil }
     }
     
     func setWeight(_ weight: Float, for goal: AFGoalEditor) {
@@ -59,23 +64,6 @@ class AFBehavior: GKBehavior {
 }
 
 /*
-class AFBehavior_Script: Codable {
-    var enabled = true
-    var goals: [AFGoal_Script]
-    var weight: Float
-    
-    init(behavior: AFBehavior) {
-        enabled = behavior.enabled
-        weight = behavior.weight
-        goals = [AFGoal_Script]()
-        
-        for i in 0 ..< behavior.goalCount {
-            let afGoal_real = behavior.getChild(at: i)
-            let afGoal_script = AFGoal_Script(goal: afGoal_real)
-            goals.append(afGoal_script)
-        }
-    }
-}
 
 class AFBehavior: GKBehavior {
     let agent: AFAgent2D

@@ -59,15 +59,12 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
 
         self.spriteSet = AFAgent2D.SpriteSet(owningAgent: self, image: image, name: editor.name, scale: editor.scale, gameScene: gameScene)
 
-        // These notifications come from the data; notice we're listening on dataNotifications
-        let newBehavior = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewBehavior.rawValue)
-        self.notifications.addObserver(self, selector: #selector(newBehavior(notification:)), name: newBehavior, object: coreData)
-        
-        let newGoal = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewGoal.rawValue)
-        self.notifications.addObserver(self, selector: #selector(newGoal(notification:)), name: newGoal, object: coreData)
+        // These notifications come from the data
+        let n = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewComposite.rawValue)
+        self.notifications.addObserver(self, selector: #selector(aCompositeHasBeenCreated(notification:)), name: n, object: coreData)
 
-        let setAttribute = NSNotification.Name(rawValue: AFCoreData.NotificationType.SetAttribute.rawValue)
-        self.notifications.addObserver(self, selector: #selector(anAttributeWasChanged(notification:)), name: setAttribute, object: coreData)
+        let s = NSNotification.Name(rawValue: AFCoreData.NotificationType.SetAttribute.rawValue)
+        self.notifications.addObserver(self, selector: #selector(anAttributeHasChanged(notification:)), name: s, object: coreData)
 
         // Use self here, because we want to set the container position too.
         // But it has to happen after superclass init, because it talks to the superclass.
@@ -242,40 +239,18 @@ extension AFAgent2D {
     // in order to conform to the delegate protocol.
     func newAgent(_ name: String) {}
 
-    @objc func newBehavior(notification: Notification) {
-        let (behavior, agent) = notification.object as! (String, String)
-        newBehavior(behavior, weight: 1)
-    }
-
-    func newBehavior(_ name: String, weight: Float) {
-        guard name == self.name else { return }    // Notifier blasts to everyone
-        
-//        let (behaviorEditor, _) = composite.createBehavior(weight: weight)
-        
-//        (self.compositeEditor as! AFCompositeEditor).addBehavior(editor: behaviorEditor, gameScene: self.gameScene, weight: weight)
+    @objc func aCompositeHasBeenCreated(notification: Notification) {
+        let editor = AFNotification.Decode(notification).editor as! AFCompositeEditor
+        self.behavior = AFCompositeBehavior(coreData: coreData, editor: editor)
     }
     
-    @objc func newGoal(notification: Notification) {
-        if let (goal, _, _) = notification.object as? (String, String, String) {
-            newGoal(goal, weight: 1)
-        }
-    }
-    
-    func newGoal(_ name: String, weight: Float) {
-//        guard name == self.name else { return }    // Notifier blasts to everyone
-//
-//        let (goalEditor, _) = coreData.core.createGoal(name, weight: weight)
-//        let behavior = getBehavior(goalEditor)
-//        behavior.aGoalWasCreated(editor: goalEditor, weight: weight)
-    }
-    
-    @objc func anAttributeWasChanged(notification: Notification) {
+    @objc func anAttributeHasChanged(notification: Notification) {
         if let (attribute, value, agent) = notification.object as? (String, Float, String) {
-            anAttributeWasChanged(attribute, to: value, for: agent)
+            anAttributeHasChanged(attribute, to: value, for: agent)
         }
     }
     
-    func anAttributeWasChanged(_ asString: String, to value: Float, for agent: String) {
+    func anAttributeHasChanged(_ asString: String, to value: Float, for agent: String) {
         guard agent == self.name else { return }    // Notifier blasts to everyone
 
         switch AFAgentAttribute(rawValue: asString)! {

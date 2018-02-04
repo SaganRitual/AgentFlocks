@@ -26,11 +26,12 @@ import GameplayKit
 
 enum AFAgentAttribute: String { case isPaused, mass, maxAcceleration, maxSpeed, radius, scale }
 
-class AFAgentEditor {
+class AFAgentEditor: AFEditor {
     var compositeEditor: AFCompositeEditor!
     private let coreData: AFCoreData
     private let fullPath: [JSONSubscriptType]
     var name = String()
+    private var notifications: NotificationCenter!
     
     init(coreData: AFCoreData, fullPath toHere: [JSONSubscriptType]) {
         self.coreData = coreData
@@ -47,7 +48,12 @@ class AFAgentEditor {
         self.compositeEditor = createCompositeEditor()
     }
     
-//    fileprivate func announceNewCompositeEditor(agentName: String) { coreData.announce(event: .NewBehavior, subjectName: agentName) }
+    fileprivate func announceNewCompositeEditor(agentName: String) {
+        let e = AFNotification.Encode(agentName, editor: self)
+        let n = Notification.Name(rawValue: AFCoreData.NotificationType.NewComposite.rawValue)
+        let nn = Notification(name: n, object: nil, userInfo: e.encode())
+        coreData.announce(mac: nn)
+    }
     
     func asJsonString() -> String {
         return ""//coreData.rawString()!
@@ -55,11 +61,14 @@ class AFAgentEditor {
     
     func createCompositeEditor() -> AFCompositeEditor {
         let hisFullPath = self.fullPath + ["composite"]
+        print("createComposite \(hisFullPath)")
         let editor = AFCompositeEditor(coreData: coreData, fullPath: hisFullPath)
         
         let newCompositeNode: JSON = []
         let short = Array(hisFullPath.prefix(hisFullPath.count - 1))
         coreData.data[short].dictionaryObject!["composite"] = newCompositeNode
+        
+        announceNewCompositeEditor(agentName: name)
         
         return editor
     }
@@ -193,7 +202,7 @@ extension AFAgentEditor {
 }
 */
 
-class AFBehaviorEditor {
+class AFBehaviorEditor: AFEditor {
     let coreData: AFCoreData
     let fullPath: [JSONSubscriptType]
     var goals = [(AFGoalEditor, Float)]()
@@ -268,7 +277,7 @@ class AFBehaviorEditor {
     }
 }
 
-class AFCompositeEditor {
+class AFCompositeEditor: AFEditor {
     let coreData: AFCoreData
     var behaviors = [(behavior: AFBehaviorEditor, weight: Float)]()
     let fullPath: [JSONSubscriptType]
@@ -307,14 +316,11 @@ class AFCompositeEditor {
         return editor
     }
     
-    func getBehavior(name: String) -> (behavior: AFBehaviorEditor, weight: Float) {
-        let behaviors_ = JSON(coreData.data[fullPath]["behaviors"]).arrayObject!
-        let behaviors = behaviors_ as! [(AFBehaviorEditor, Float)]
-        for (behavior, weight) in behaviors {
-            if behavior.name == name { return (behavior, weight) }
-        }
+    func reloadBehavior(name: String) {
+        let path = coreData.getPathTo(name)!
+        let editor = AFBehaviorEditor(coreData: coreData, fullPath: path)
         
-        fatalError()
+        announceNewBehavior(behaviorName: editor.name)
     }
     
     func getIsEnabled(behavior: String) -> Bool {
@@ -322,7 +328,8 @@ class AFCompositeEditor {
     }
     
     func getWeight(forBehavior name: String) -> Float {
-        return getBehavior(name: name).weight
+        let w: JSONSubscriptType = "weight"
+        return coreData.data[coreData.getPathTo(name)!][w].floatValue
     }
     
     func setWeight(forBehavior name: String, to: Float) {
@@ -333,7 +340,7 @@ class AFCompositeEditor {
     }
 }
 
-class AFGoalEditor {
+class AFGoalEditor: AFEditor {
     var angle: Float?
     let coreData: AFCoreData
     var distance: Float?

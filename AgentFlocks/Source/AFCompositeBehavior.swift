@@ -24,113 +24,62 @@
 
 import GameplayKit
 
-class AFCompositeBehavior: GKCompositeBehavior {
+class AFCompositeBehavior: GKCompositeBehavior, AFEditor {
+    unowned let coreData: AFCoreData
+    var editor: AFCompositeEditor!
+    unowned let notifications: NotificationCenter
     var savedState: (weight: Float, behavior: GKBehavior)?
     var saveMap = [AFBehavior: Float]()
-
-    func addBehavior(coreData: AFCoreData, gameScene: SKScene, weight: Float) {
-//        let newBehavior = AFBehavior(coreData: coreData, embryo: data, gameScene: gameScene)
-//        setWeight(weight, for: newBehavior)
-    }
-}
-
-/*
-
-class AFCompositeBehavior_Script: Codable {
-    var behaviors: [AFBehavior_Script]
     
-    init(composite: AFCompositeBehavior) {
-        behaviors = [AFBehavior_Script]()
-        
-        for i in 0 ..< composite.behaviorCount {
-            let behavior_real = composite.getChild(at: i)
-            let behavior = AFBehavior_Script(behavior: behavior_real)
-            behaviors.append(behavior)
-        }
-    }
-}
-*/
-extension AFCompositeBehavior {/*
-    var savedState: (weight: Float, behavior: GKBehavior)?
-    
-    init(prototype: AFCompositeBehavior_Script, agent: AFAgent2D) {
+    init(coreData: AFCoreData, editor: AFCompositeEditor) {
+        self.coreData = coreData
+        self.notifications = coreData.notifications
         
         super.init()
         
-        for protoBehavior in prototype.behaviors {
-            let newBehavior = AFBehavior(prototype: protoBehavior, agent: agent)
-            
-            // Note: attaches new behavior to the composite
-            setWeight(newBehavior.weight, for: newBehavior)
-        }
+        let n = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewBehavior.rawValue)
+        self.notifications.addObserver(self, selector: #selector(aBehaviorHasBeenCreated(notification:)), name: n, object: coreData)
     }
     
-    init(copyFrom: AFCompositeBehavior, agent: AFAgent2D) {
-        super.init()
-        
-        for i in 0 ..< copyFrom.behaviorCount {
-            let hisKid = copyFrom.getChild(at: i)
-            let myKid = AFBehavior(agent: agent, copyFrom: hisKid)
-            setWeight(hisKid.weight, for: myKid)
-        }
+    @objc func aBehaviorHasBeenCreated(notification: Notification) {
+        let info = AFNotification.Decode(notification)
+        let behavior = AFBehavior(coreData: coreData, editor: info.editor! as! AFBehaviorEditor, gameScene: info.gameScene!)
+        setWeight(info.weight!, for: behavior)   // Sets the weight while adding the behavior to the group
     }
-    
-    init(agent: AFAgent2D) {
-    }
-    
-    func addBehavior(_ newBehavior: AFBehavior) {
-        setWeight(newBehavior.weight, for: newBehavior)
-    }
-    */
-    
+}
+
+extension AFCompositeBehavior {
+
     func enableBehavior(_ behavior: AFBehavior, on: Bool = true) {
         if on {
-//            behavior.enabled = true
-            
-            let weight = saveMap[behavior]!
-            setWeight(weight, for: behavior)
-
-            saveMap.removeValue(forKey: behavior)
+            // Although we're simply reloading data from the core json, the load function
+            // will announce the rejuvenated editor as though it's a new behavior, so as
+            // to be picked up by the regular notification mechanism.
+            self.editor.reloadBehavior(name: behavior.name)
         } else {
-//            behavior.enabled = false
-            
-            let weight = self.weight(for: behavior)
-            saveMap[behavior] = weight
-            
+            // We don't have to save our own state; the behavior is still there in the
+            // core json. So we just have to turn it off in the behaviors mechanism.
             remove(behavior)
+            
+            // Do we need to announce the removal? I think we do.
         }
     }
-  
-    func findParent(ofGoal: GKGoal) -> AFBehavior? {
+
+    func findParent(of theGoal: GKGoal) -> AFBehavior? {
+        
         for i in 0 ..< behaviorCount {
             let behavior = self[i] as! AFBehavior
-            
-//            if behavior.goalsMap[ofGoal] != nil {
-//                return behavior
-//            }
+            if behavior.getAFGoalForGKGoal(theGoal) != nil {
+                return behavior
+            }
         }
         
         return nil
     }
-    /*
-    func getChild(at index: Int) -> AFBehavior {
-        return self[index] as! AFBehavior
-    }
-    
-    func hasChildren() -> Bool {
-        return behaviorCount > 0
-    }
-    
-    func howManyChildren() -> Int {
-        return behaviorCount
-    }
-     */
-    
-    /*
-    
-    func toString() -> String {
-        return "You've found a bug"
-    }
- */
+
+    func getChild(at index: Int) -> AFBehavior { return self[index] as! AFBehavior }
+    func hasChildren() -> Bool { return behaviorCount > 0 }
+    func howManyChildren() -> Int { return behaviorCount }
+    func toString() -> String { return "toString() not implemented for AFCompositeBehavior. Sue me." }
 }
 
