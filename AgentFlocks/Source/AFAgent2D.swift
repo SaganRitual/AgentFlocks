@@ -61,10 +61,10 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
 
         // These notifications come from the data
         let n = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewComposite.rawValue)
-        self.notifications.addObserver(self, selector: #selector(aCompositeHasBeenCreated(notification:)), name: n, object: coreData)
+        self.notifications.addObserver(self, selector: #selector(aCompositeHasBeenCreated(notification:)), name: n, object: nil)
 
         let s = NSNotification.Name(rawValue: AFCoreData.NotificationType.SetAttribute.rawValue)
-        self.notifications.addObserver(self, selector: #selector(anAttributeHasChanged(notification:)), name: s, object: coreData)
+        self.notifications.addObserver(self, selector: #selector(anAttributeHasChanged(notification:)), name: s, object: nil)
 
         // Use self here, because we want to set the container position too.
         // But it has to happen after superclass init, because it talks to the superclass.
@@ -240,8 +240,10 @@ extension AFAgent2D {
     func newAgent(_ name: String) {}
 
     @objc func aCompositeHasBeenCreated(notification: Notification) {
-        let editor = AFNotification.Decode(notification).editor as! AFCompositeEditor
-        self.behavior = AFCompositeBehavior(coreData: coreData, editor: editor)
+        let d = AFNotification.Decode(notification)
+        let editor = d.editor
+        let feditor = editor as! AFCompositeEditor
+        self.behavior = AFCompositeBehavior(coreData: coreData, editor: feditor)
     }
     
     @objc func anAttributeHasChanged(notification: Notification) {

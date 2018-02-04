@@ -225,7 +225,7 @@ class AgentAttributesController: NSViewController {
     
     @objc func attributeHasBeenUpdated(notification: Notification) {
         let d = AFNotification.Decode(notification)
-        attributeHasBeenUpdated(d.attribute!, to: d.getFloat("value"))
+        attributeHasBeenUpdated(d.attribute!, to: d.getFloat("value")!)
     }
     
     func attributeHasBeenUpdated(_ attribute: AFAgentAttribute, to newValue: Float) {
@@ -262,7 +262,7 @@ class AgentAttributesController: NSViewController {
     @objc func hasBeenSelected(notification: Notification) {
         if let name = AFNotification.Decode(notification).name {
             targetAgent = name
-            let editor = AFAgentEditor(coreData: coreData, fullPath: coreData.getPathTo(name)!)
+            let editor = AFAgentEditor(coreData: coreData, fullPath: coreData.getPathTo(name)!, name: name)
             connectAgentToCoreData_(name, editor: editor)
         } else {
             fatalError("Seems like this shouldn't fail")

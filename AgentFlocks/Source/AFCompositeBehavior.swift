@@ -24,7 +24,7 @@
 
 import GameplayKit
 
-class AFCompositeBehavior: GKCompositeBehavior, AFEditor {
+class AFCompositeBehavior: GKCompositeBehavior {
     unowned let coreData: AFCoreData
     var editor: AFCompositeEditor!
     unowned let notifications: NotificationCenter

@@ -33,9 +33,11 @@ class AFAgentEditor: AFEditor {
     var name = String()
     private var notifications: NotificationCenter!
     
-    init(coreData: AFCoreData, fullPath toHere: [JSONSubscriptType]) {
+    init(coreData: AFCoreData, fullPath toHere: [JSONSubscriptType], name: String? = nil) {
         self.coreData = coreData
         self.fullPath = toHere
+        
+        if let name = name { self.name = name }
         
         self.compositeEditor = createCompositeEditor()
     }
@@ -48,8 +50,8 @@ class AFAgentEditor: AFEditor {
         self.compositeEditor = createCompositeEditor()
     }
     
-    fileprivate func announceNewCompositeEditor(agentName: String) {
-        let e = AFNotification.Encode(agentName, editor: self)
+    fileprivate func announceNewCompositeEditor(agentName: String, editor: AFCompositeEditor) {
+        let e = AFNotification.Encode(agentName, editor: editor)
         let n = Notification.Name(rawValue: AFCoreData.NotificationType.NewComposite.rawValue)
         let nn = Notification(name: n, object: nil, userInfo: e.encode())
         coreData.announce(mac: nn)
@@ -61,14 +63,13 @@ class AFAgentEditor: AFEditor {
     
     func createCompositeEditor() -> AFCompositeEditor {
         let hisFullPath = self.fullPath + ["composite"]
-        print("createComposite \(hisFullPath)")
         let editor = AFCompositeEditor(coreData: coreData, fullPath: hisFullPath)
         
         let newCompositeNode: JSON = []
         let short = Array(hisFullPath.prefix(hisFullPath.count - 1))
         coreData.data[short].dictionaryObject!["composite"] = newCompositeNode
         
-        announceNewCompositeEditor(agentName: name)
+        announceNewCompositeEditor(agentName: name, editor: editor)
         
         return editor
     }

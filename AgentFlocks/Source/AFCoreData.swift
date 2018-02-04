@@ -57,12 +57,12 @@ struct AFNotification {
         }
         
         func encode() -> [String : Any] {
-            return ["attribute" : attribute ?? "",
-                    "coreData"  : coreData as Any,
-                    "editor"    : editor as Any,
-                    "gameScene" : gameScene as Any,
-                    "isPrimary" : self.isPrimary ?? false,
-                    "name"      : self.name ?? "",
+            return ["attribute" : attribute ?? "<no attributes>",
+                    "coreData"  : coreData ?? "<no core data>",
+                    "editor"    : editor ?? "<no editor>",
+                    "gameScene" : gameScene ?? "<no game scene>",
+                    "isPrimary" : self.isPrimary ?? "<no primary selection indicator>",
+                    "name"      : self.name ?? "<missing name>",
                     "value"     : self.value ?? "<missing value>",
                     "weight"    : self.weight ?? "<missing weight>" ]
         }
@@ -80,10 +80,10 @@ struct AFNotification {
         var weight: Float? { return getFloat("weight") }
 
         init(_ macNotification: Notification) { self.macNotification = macNotification }
-        func getField(_ key: String) -> Any? { return macNotification.userInfo?[key] }
+        func getField(_ key: String) -> Any? { return macNotification.userInfo![key] }
 
-        func getBool(_ key: String) -> Bool { return getField(key)! as! Bool }
-        func getFloat(_ key: String) -> Float { return getField(key)! as! Float }
+        func getBool(_ key: String) -> Bool? { return getField(key) as? Bool }
+        func getFloat(_ key: String) -> Float? { return getField(key) as? Float }
     }
 }
 
@@ -169,12 +169,12 @@ class AFCoreData {
             let newAgentNode: JSON = [:]
             data[agentsPath].arrayObject!.append(newAgentNode)
 
-            let editor = AFAgentEditor(coreData: self, fullPath: agentsPath + [nextSlot])
+            let name = NSUUID().uuidString
+            let editor = AFAgentEditor(coreData: self, fullPath: agentsPath + [nextSlot], name: name)
         
-            editor.name = NSUUID().uuidString
-            data[agentsPath + [nextSlot]]["name"] = JSON(editor.name)
+            data[agentsPath + [nextSlot]]["name"] = JSON(name)
             
-            announceNewAgent(agentName: editor.name)
+            announceNewAgent(agentName: name)
 
             return editor
             
