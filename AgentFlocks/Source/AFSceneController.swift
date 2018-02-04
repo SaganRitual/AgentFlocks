@@ -141,6 +141,8 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
         let image = ui.agents[imageIndex].image
         
         let agentEditor = coreData.createAgent(editorType: .createFromScratch)
+        agentEditor.postInit()
+
         activateAgent(agentEditor, image: image, at: currentPosition)
     }
     

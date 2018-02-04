@@ -93,6 +93,7 @@ protocol AFEditor {
 
 class AFCoreData {
     struct Core {
+        var agentGoalsDataSource: AFMotivatorsReader!
         var agentGoalsDelegate: AFAgentGoalsDelegate!
         var browserDelegate: AFBrowserDelegate!
         var contextMenuDelegate: AFContextMenuDelegate!
@@ -132,12 +133,6 @@ class AFCoreData {
     init() {
     }
     
-    func setAttribute(_ attribute: AFAgentAttribute, to value: Float, for name: String) {
-        let pathToAgent = getPathTo(name)!
-        data[pathToAgent][attribute.rawValue] = JSON(value)
-        announceAttributeChange(attribute: attribute, agentName: name, newValue: value)
-    }
-    
     // Reuse the notification we got--send it back out as our own message to the world
     func announce(mac notification: Notification) { notifications.post(notification) }
     
@@ -171,7 +166,7 @@ class AFCoreData {
 
             let name = NSUUID().uuidString
             let editor = AFAgentEditor(coreData: self, fullPath: agentsPath + [nextSlot], name: name)
-        
+
             data[agentsPath + [nextSlot]]["name"] = JSON(name)
             
             announceNewAgent(agentName: name)
@@ -186,6 +181,27 @@ class AFCoreData {
     func dump() -> String {
         if let rs = data.rawString(.utf8, options: .sortedKeys) { return rs }
         else { return "no string?" }
+    }
+    
+    func getChildCount(for nodeName: String) -> Int {
+        if let path = getPathTo(nodeName) { print("data", path, nodeName, data[path][nodeName].count, data); return data[path][nodeName].count }
+        else { fatalError() }
+    }
+    
+    func getChildren(of nodeName: String) -> [JSON]? {
+        if let path = getPathTo(nodeName) {
+            return data[path][nodeName].arrayObject as? [JSON]
+        }
+        
+        return nil
+    }
+    
+    func getIsItemEnabled(_ nodeName: String) -> Bool {
+        if let path = getPathTo(nodeName), data[path][nodeName]["isEnabled"].exists() {
+            return data[path][nodeName]["isEnabled"].boolValue
+        }
+        
+        return false
     }
     
     func getPathTo(_ nameToSeek: String, pathSoFar: [JSONSubscriptType] = [JSONSubscriptType]()) -> [JSONSubscriptType]? {
@@ -210,6 +226,8 @@ class AFCoreData {
     
     class AFDependencyInjector {
         var afSceneController: AFSceneController?
+        var agentGoalsController: AgentGoalsController?
+        var agentGoalsDataSource: AFMotivatorsReader?
         var agentGoalsDelegate: AFAgentGoalsDelegate?
         var browserDelegate: AFBrowserDelegate?
         var contextMenuDelegate: AFContextMenuDelegate?
@@ -242,6 +260,7 @@ class AFCoreData {
                                             gameScene: gameScene, notifications: coreData.notifications)
         
         c.agentGoalsDelegate = AFAgentGoalsDelegate(injector)
+        c.agentGoalsDataSource = AFMotivatorsReader(injector)
         c.browserDelegate = AFBrowserDelegate(injector)
         c.contextMenuDelegate = AFContextMenuDelegate(injector)
         c.itemEditorDelegate = AFItemEditorDelegate(injector)
@@ -257,6 +276,7 @@ class AFCoreData {
 
             ui.inject(injector)
 
+            c.agentGoalsDataSource.inject(injector)
             c.agentGoalsDelegate.inject(injector)
             c.browserDelegate.inject(injector)
             c.contextMenuDelegate.inject(injector)
@@ -282,6 +302,12 @@ class AFCoreData {
         // Note that we post the core-ready message to the default notification
         // center, not our app-specific one.
         NotificationCenter.default.post(nn)
+    }
+    
+    func setAttribute(_ attribute: AFAgentAttribute, to value: Float, for name: String) {
+        let pathToAgent = getPathTo(name)!
+        data[pathToAgent][attribute.rawValue] = JSON(value)
+        announceAttributeChange(attribute: attribute, agentName: name, newValue: value)
     }
 }
 

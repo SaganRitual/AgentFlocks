@@ -57,6 +57,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     var notificationCenter: NotificationCenter!
     
+    var agentGoalsDataSource: AgentGoalsDataSource!
     var gameScene: GameScene!
     static var me: AppDelegate!
 	
@@ -113,6 +114,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let nf = injector.notifications { self.notificationCenter = nf }
         else { injector.someoneStillNeedsSomething = true; iStillNeedSomething = true }
         
+        if let mr = injector.agentGoalsDataSource { self.agentEditorController.goalsController.dataSource = mr }
+        else { injector.someoneStillNeedsSomething = true; iStillNeedSomething = true }
+
         iStillNeedSomething = agentEditorController.attributesController.inject(injector) || iStillNeedSomething
         
         // Once we have all our external dependencies setup, we can

@@ -38,16 +38,22 @@ class AFAgentEditor: AFEditor {
         self.fullPath = toHere
         
         if let name = name { self.name = name }
-        
-        self.compositeEditor = createCompositeEditor()
     }
     
     init(coreData: AFCoreData, name: String) {
         self.coreData = coreData
         self.fullPath = coreData.getPathTo(name)!
         self.name = name
-        
-        self.compositeEditor = createCompositeEditor()
+    }
+    
+    init(coreData: AFCoreData, loadAgent named: String) {
+        let path = coreData.getPathTo(named)!
+        self.fullPath = path
+        self.name = named
+        self.coreData = coreData
+
+        let compositeIndex: JSONSubscriptType = "composite"
+        self.compositeEditor = AFCompositeEditor(coreData: coreData, loadFrom: path + [compositeIndex])
     }
     
     fileprivate func announceNewCompositeEditor(agentName: String, editor: AFCompositeEditor) {
@@ -64,14 +70,20 @@ class AFAgentEditor: AFEditor {
     func createCompositeEditor() -> AFCompositeEditor {
         let hisFullPath = self.fullPath + ["composite"]
         let editor = AFCompositeEditor(coreData: coreData, fullPath: hisFullPath)
-        
+
         let newCompositeNode: JSON = []
         let short = Array(hisFullPath.prefix(hisFullPath.count - 1))
         coreData.data[short].dictionaryObject!["composite"] = newCompositeNode
-        
+
+        _ = editor.createBehavior(weight: 1)
         announceNewCompositeEditor(agentName: name, editor: editor)
         
         return editor
+    }
+    
+    func postInit() {
+        let ed = createCompositeEditor()
+        ed.postInit()
     }
 }
 
@@ -214,6 +226,17 @@ class AFBehaviorEditor: AFEditor {
         self.fullPath = toHere
     }
     
+    init(coreData: AFCoreData, loadFrom path: [JSONSubscriptType]) {
+        self.coreData = coreData
+        self.fullPath = path + ["behavior"]
+        
+        for (key, _) in coreData.data[self.fullPath] {
+            let node: JSONSubscriptType = key
+            let goal = AFGoalEditor(coreData: coreData, loadFrom: self.fullPath + [node])
+            goals.append((goal, 42))
+        }
+    }
+    
     fileprivate func announceNewGoal(goalName: String) { coreData.announce(event: .NewGoal, subjectName: goalName) }
     
     func createGoal(type: AFGoalEditor.AFGoalType, weight: Float,
@@ -289,6 +312,17 @@ class AFCompositeEditor: AFEditor {
         self.fullPath = toHere
     }
     
+    init(coreData: AFCoreData, loadFrom path: [JSONSubscriptType]) {
+        self.coreData = coreData
+        self.fullPath = path
+        
+        for (key, _) in coreData.data[path] {
+            let node: JSONSubscriptType = key
+            let behavior = AFBehaviorEditor(coreData: coreData, loadFrom: path + [node])
+            behaviors.append((behavior, 43))
+        }
+    }
+    
     func asJsonString() -> String {
         return ""//String(describing: coreData[fullPath])
     }
@@ -300,6 +334,7 @@ class AFCompositeEditor: AFEditor {
         let arrayPath = self.fullPath + [index]
         let newBehaviorNode: JSON = [:]
         
+        print(coreData.data)
         coreData.data[self.fullPath].arrayObject!.append(newBehaviorNode)
         let editor = AFBehaviorEditor(coreData: coreData, fullPath: arrayPath)
         
@@ -315,6 +350,11 @@ class AFCompositeEditor: AFEditor {
         announceNewBehavior(behaviorName: editor.name)
         
         return editor
+    }
+    
+    func postInit() {
+        let initialBehavior = createBehavior(weight: 1)
+        behaviors.append((initialBehavior, 1))
     }
     
     func reloadBehavior(name: String) {
@@ -374,6 +414,13 @@ class AFGoalEditor: AFEditor {
     init(coreData: AFCoreData, fullPath toHere: [JSONSubscriptType]) {
         self.coreData = coreData
         self.fullPath = toHere
+    }
+    
+    init(coreData: AFCoreData, loadFrom path: [JSONSubscriptType]) {
+        self.coreData = coreData
+        self.fullPath = path
+        
+        print("lots o work to do here")
     }
     
     init(coreData: AFCoreData, editor: AFGoalEditor, gameScene: SKScene) {
