@@ -80,13 +80,10 @@
 		D442B988201692810072EE5A /* AFAgent2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B987201692810072EE5A /* AFAgent2D.swift */; };
 		D442B98E20172AA40072EE5A /* AFSceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B98D20172AA40072EE5A /* AFSceneController.swift */; };
 		D442B990201774570072EE5A /* AFMotivatorsReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B98F201774570072EE5A /* AFMotivatorsReader.swift */; };
-		D4506DD51FFE65B50077A42A /* AFPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4506DD41FFE65B50077A42A /* AFPath.swift */; };
 		D472A3711FFFD6860030ACA8 /* LogSliderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D472A36F1FFFD6850030ACA8 /* LogSliderController.swift */; };
 		D472A3721FFFD6860030ACA8 /* LogSliderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D472A3701FFFD6860030ACA8 /* LogSliderView.xib */; };
 		D47BC1F41FECCFE600B3CE6B /* Round2.txt in Resources */ = {isa = PBXBuildFile; fileRef = D47BC1F31FECCFE600B3CE6B /* Round2.txt */; };
-		D49AD3C72020F1C200ACFA65 /* AFCoreData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49AD3C62020F1C200ACFA65 /* AFCoreData.swift */; };
 		D49AD3C92020F21200ACFA65 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49AD3C82020F21200ACFA65 /* SwiftyJSON.swift */; };
-		D49AD3CB2020F33900ACFA65 /* AFCoreEditors.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49AD3CA2020F33900ACFA65 /* AFCoreEditors.swift */; };
 		D4AEE5F9200FD19400933852 /* AFContextMenuDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4AEE5F8200FD19400933852 /* AFContextMenuDelegate.swift */; };
 		D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */; };
 		D4C7EADF1FFD04730008FBCD /* AFBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */; };
@@ -100,6 +97,14 @@
 		D4E144162021953000F6F59D /* AFSelectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E144152021952F00F6F59D /* AFSelectionController.swift */; };
 		D4E1441A2021F17A00F6F59D /* AFNodeAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E144192021F17A00F6F59D /* AFNodeAdapter.swift */; };
 		D4E1441C20229BE800F6F59D /* AFSceneInputState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E1441B20229BE800F6F59D /* AFSceneInputState.swift */; };
+		D4F10925202C511D00342A79 /* AFBehaviorEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F10921202C511D00342A79 /* AFBehaviorEditor.swift */; };
+		D4F10926202C511D00342A79 /* AFCompositeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F10922202C511D00342A79 /* AFCompositeEditor.swift */; };
+		D4F10927202C511D00342A79 /* AFGoalEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F10923202C511D00342A79 /* AFGoalEditor.swift */; };
+		D4F10928202C511D00342A79 /* AFAgentEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F10924202C511D00342A79 /* AFAgentEditor.swift */; };
+		D4F1092B202C519F00342A79 /* AFCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F10929202C519F00342A79 /* AFCore.swift */; };
+		D4F1092C202C519F00342A79 /* AFData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F1092A202C519F00342A79 /* AFData.swift */; };
+		D4F1092E202C5B2300342A79 /* AFPathEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F1092D202C5B2300342A79 /* AFPathEditor.swift */; };
+		D4F10930202C5C0C00342A79 /* AFGraphNodeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F1092F202C5C0C00342A79 /* AFGraphNodeEditor.swift */; };
 		D4F779E320087057005179BA /* AFGraphNode2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F779E220087057005179BA /* AFGraphNode2D.swift */; };
 /* End PBXBuildFile section */
 
@@ -184,9 +189,7 @@
 		D472A36F1FFFD6850030ACA8 /* LogSliderController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogSliderController.swift; sourceTree = "<group>"; };
 		D472A3701FFFD6860030ACA8 /* LogSliderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LogSliderView.xib; sourceTree = "<group>"; };
 		D47BC1F31FECCFE600B3CE6B /* Round2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Round2.txt; sourceTree = "<group>"; };
-		D49AD3C62020F1C200ACFA65 /* AFCoreData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFCoreData.swift; sourceTree = "<group>"; };
 		D49AD3C82020F21200ACFA65 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
-		D49AD3CA2020F33900ACFA65 /* AFCoreEditors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFCoreEditors.swift; sourceTree = "<group>"; };
 		D4AEE5F8200FD19400933852 /* AFContextMenuDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFContextMenuDelegate.swift; sourceTree = "<group>"; };
 		D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFCompositeBehavior.swift; sourceTree = "<group>"; };
 		D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFBehavior.swift; sourceTree = "<group>"; };
@@ -200,6 +203,14 @@
 		D4E144152021952F00F6F59D /* AFSelectionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSelectionController.swift; sourceTree = "<group>"; };
 		D4E144192021F17A00F6F59D /* AFNodeAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFNodeAdapter.swift; sourceTree = "<group>"; };
 		D4E1441B20229BE800F6F59D /* AFSceneInputState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFSceneInputState.swift; sourceTree = "<group>"; };
+		D4F10921202C511D00342A79 /* AFBehaviorEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFBehaviorEditor.swift; sourceTree = "<group>"; };
+		D4F10922202C511D00342A79 /* AFCompositeEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFCompositeEditor.swift; sourceTree = "<group>"; };
+		D4F10923202C511D00342A79 /* AFGoalEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFGoalEditor.swift; sourceTree = "<group>"; };
+		D4F10924202C511D00342A79 /* AFAgentEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFAgentEditor.swift; sourceTree = "<group>"; };
+		D4F10929202C519F00342A79 /* AFCore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFCore.swift; sourceTree = "<group>"; };
+		D4F1092A202C519F00342A79 /* AFData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFData.swift; sourceTree = "<group>"; };
+		D4F1092D202C5B2300342A79 /* AFPathEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFPathEditor.swift; sourceTree = "<group>"; };
+		D4F1092F202C5C0C00342A79 /* AFGraphNodeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFGraphNodeEditor.swift; sourceTree = "<group>"; };
 		D4F779E220087057005179BA /* AFGraphNode2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFGraphNode2D.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -344,13 +355,14 @@
 		D44256211FE7F9DE00FC454B /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				D4F1091E202C50BA00342A79 /* Editors */,
 				D4D16562200D7F880065728D /* Delegates */,
 				D442B987201692810072EE5A /* AFAgent2D.swift */,
 				D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */,
 				D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */,
 				D43A7604200B23330048796D /* AFContextMenu.swift */,
-				D49AD3C62020F1C200ACFA65 /* AFCoreData.swift */,
-				D49AD3CA2020F33900ACFA65 /* AFCoreEditors.swift */,
+				D4F10929202C519F00342A79 /* AFCore.swift */,
+				D4F1092A202C519F00342A79 /* AFData.swift */,
 				D4C7EAE01FFD06EE0008FBCD /* AFGoal.swift */,
 				D4F779E220087057005179BA /* AFGraphNode2D.swift */,
 				D442B98F201774570072EE5A /* AFMotivatorsReader.swift */,
@@ -379,6 +391,19 @@
 				D4D1655C200D401E0065728D /* AFTopBarDelegate.swift */,
 			);
 			path = Delegates;
+			sourceTree = "<group>";
+		};
+		D4F1091E202C50BA00342A79 /* Editors */ = {
+			isa = PBXGroup;
+			children = (
+				D4F10924202C511D00342A79 /* AFAgentEditor.swift */,
+				D4F10921202C511D00342A79 /* AFBehaviorEditor.swift */,
+				D4F10922202C511D00342A79 /* AFCompositeEditor.swift */,
+				D4F10923202C511D00342A79 /* AFGoalEditor.swift */,
+				D4F1092F202C5C0C00342A79 /* AFGraphNodeEditor.swift */,
+				D4F1092D202C5B2300342A79 /* AFPathEditor.swift */,
+			);
+			path = Editors;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -510,7 +535,9 @@
 				D40E7E722013E0B500FD953C /* AFSceneState_Draw.swift in Sources */,
 				D4C7EADF1FFD04730008FBCD /* AFBehavior.swift in Sources */,
 				D4D16561200D61040065728D /* AFItemEditorDelegate.swift in Sources */,
+				D4F10930202C5C0C00342A79 /* AFGraphNodeEditor.swift in Sources */,
 				744D8F241F91E38300D4B048 /* AppDelegate.swift in Sources */,
+				D4F10926202C511D00342A79 /* AFCompositeEditor.swift in Sources */,
 				D40E7E742013E0F300FD953C /* AFSceneState_GoalSetup.swift in Sources */,
 				D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */,
 				D4E1441320218F5900F6F59D /* AFGoal.swift in Sources */,
@@ -524,26 +551,29 @@
 				7493863B200145C700BAAF8E /* ActiveImageView.swift in Sources */,
 				D420D47E2012FC3B004A9B46 /* AFSceneState.swift in Sources */,
 				D442B990201774570072EE5A /* AFMotivatorsReader.swift in Sources */,
+				D4F10928202C511D00342A79 /* AFAgentEditor.swift in Sources */,
 				74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */,
 				D442B988201692810072EE5A /* AFAgent2D.swift in Sources */,
 				D4D1655B200CA2B60065728D /* AFMenuBarDelegate.swift in Sources */,
 				D43A7605200B23330048796D /* AFContextMenu.swift in Sources */,
 				D4422622200795070013A6E5 /* AFOrderedMap.swift in Sources */,
 				74ECDF6A1F9B1C630096468F /* AgentEditorController.swift in Sources */,
-				D49AD3C72020F1C200ACFA65 /* AFCoreData.swift in Sources */,
 				7493863D20052B3900BAAF8E /* CursorView.swift in Sources */,
+				D4F1092B202C519F00342A79 /* AFCore.swift in Sources */,
 				D472A3711FFFD6860030ACA8 /* LogSliderController.swift in Sources */,
 				D4D1655D200D401E0065728D /* AFTopBarDelegate.swift in Sources */,
 				D49AD3C92020F21200ACFA65 /* SwiftyJSON.swift in Sources */,
 				74938643200AAAA000BAAF8E /* FlippedClipView.swift in Sources */,
+				D4F1092C202C519F00342A79 /* AFData.swift in Sources */,
 				749386381FFFECC300BAAF8E /* PreferencesController.swift in Sources */,
-				D49AD3CB2020F33900ACFA65 /* AFCoreEditors.swift in Sources */,
 				D4C942D9200C39CD00A85BCB /* AFBrowserDelegate.swift in Sources */,
+				D4F1092E202C5B2300342A79 /* AFPathEditor.swift in Sources */,
+				D4F10927202C511D00342A79 /* AFGoalEditor.swift in Sources */,
 				D442B98E20172AA40072EE5A /* AFSceneController.swift in Sources */,
+				D4F10925202C511D00342A79 /* AFBehaviorEditor.swift in Sources */,
 				D4E1441A2021F17A00F6F59D /* AFNodeAdapter.swift in Sources */,
 				D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */,
 				744D8F341F91E53A00D4B048 /* TopBarController.swift in Sources */,
-				D4506DD51FFE65B50077A42A /* AFPath.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

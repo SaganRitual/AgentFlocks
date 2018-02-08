@@ -25,12 +25,12 @@
 import GameplayKit
 
 class AFMotivatorsReader: AgentGoalsDataSource {
-    let coreData: AFCoreData
+    let core: AFCore
     let notifications: NotificationCenter
     var selectedAgent: String?
     
-    init(_ injector: AFCoreData.AFDependencyInjector) {
-        self.coreData = injector.coreData!
+    init(_ injector: AFCore.AFDependencyInjector) {
+        self.core = injector.core!
         self.notifications = injector.notifications!
         
         let s1 = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
@@ -48,70 +48,68 @@ class AFMotivatorsReader: AgentGoalsDataSource {
         // appears on the screen. That's UI stuff for you.
         if selectedAgent == nil { return 0 }
 
-        if let itemName = item as? String {
-            print("1", coreData.getChildCount(for: itemName))
-            return coreData.getChildCount(for: itemName)
-        } else {
-            let editor = AFAgentEditor(coreData: coreData, loadAgent: selectedAgent!)
-            print("2", editor.compositeEditor.behaviors.count, editor.name, coreData.data)
-            return editor.compositeEditor.behaviors.count
-        }
+//        if let itemName = item as? String {
+//            print("1", coreData.getChildCount(for: itemName))
+//            return coreData.getChildCount(for: itemName)
+//        } else {
+//            let editor = AFAgentEditor(core: core, loadAgent: selectedAgent!)
+//            print("2", editor.compositeEditor.behaviors.count, editor.name, coreData.data)
+//            return editor.compositeEditor.behaviors.count
+//        }
+        return 0
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemExpandable item: Any) -> Bool {
-        if let itemName = item as? String {
-            return coreData.getChildCount(for: itemName) > 0
-        } else { return false }
+        return false
+//        if let itemName = item as? String {
+//            return coreData.getChildCount(for: itemName) > 0
+//        } else { return false }
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, child index: Int, ofItem item: Any?) -> Any {
-        if let itemName = item as? String, let children = coreData.getChildren(of: itemName) { return children[index] }
-            
-        // From the doc: The child item at index of item. If item is nil, returns the appropriate
-        // child item of the root object. That's the composite.
-        else {
-            let editor = AFAgentEditor(coreData: coreData, loadAgent: selectedAgent!)
-            return editor.compositeEditor.behaviors[index]
-        }
+        return false
+//        if let itemName = item as? String, let children = coreData.getChildren(of: itemName) { return children[index] }
+//
+//        // From the doc: The child item at index of item. If item is nil, returns the appropriate
+//        // child item of the root object. That's the composite.
+//        else {
+//            let editor = AFAgentEditor(core: core, loadAgent: selectedAgent!)
+//            return editor.compositeEditor.behaviors[index]
+//        }
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, labelOfItem item: Any) -> String {
-        if let item = item as? String {
-            return "Behavior \(Nickname(item))"
-        } else {
-            return "Who the fuck knows"
-        }
+//        if let item = item as? String {
+//            return "Behavior \(Nickname(item))"
+//        } else {
+//            return "Who the fuck knows"
+//        }
+        return "false"
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, weightOfItem item: Any) -> Float {
-        if let itemName = item as? String, let path = coreData.getPathTo(itemName) {
-            if coreData.data[path][itemName].dictionaryValue["weight"]?.exists() ?? false {
-                return coreData.data[path][itemName]["weight"].floatValue
-            }
-        }
+//        if let itemName = item as? String, let path = coreData.getPathTo(itemName) {
+//            if coreData.data[path][itemName].dictionaryValue["weight"]?.exists() ?? false {
+//                return coreData.data[path][itemName]["weight"].floatValue
+//            }
+//        }
         
         return 0    // Not sure why I get nil items in this function
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemEnabled item: Any) -> Bool {
-        if let itemName = item as? String { return coreData.getIsItemEnabled(itemName) }
-        else { return false }
+//        if let itemName = item as? String { return coreData.getIsItemEnabled(itemName) }
+//        else { return false }
+        return false
     }
     
     @objc func dataSourceHasBeenSelected(notification: Notification) {
-        self.selectedAgent = AFNotification.Decode(notification).name!
     }
     
     @objc func dataSourceHasBeenDeselected(notification: Notification) {
-        guard let current = self.selectedAgent else { return }
-
-        if let incoming = AFNotification.Decode(notification).name, incoming == current {
-            // If this is the one to be deselected, go ahead. If it's not us, ignore it.
-            self.selectedAgent = nil
-        }
     }
 
-    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+    func inject(_ injector: AFCore.AFDependencyInjector) {
         let iStillNeedSomething = false
         
         if !iStillNeedSomething {

@@ -46,7 +46,7 @@ class AFSceneInputState: GKStateMachine, AFGameSceneDelegate {
     let gameScene: GameScene
     var upNode: String?
     
-    init(_ injector: AFCoreData.AFDependencyInjector) {
+    init(_ injector: AFCore.AFDependencyInjector) {
         self.gameScene = injector.gameScene!
 
         super.init(states: [

@@ -26,12 +26,12 @@ import GameplayKit
 
 class AFTopBarDelegate {
     unowned let afSceneController: AFSceneController
-    unowned let coreData: AFCoreData
+    unowned let core: AFCore
     var gameScene: GameScene!
     
-    init(_ injector: AFCoreData.AFDependencyInjector) {
+    init(_ injector: AFCore.AFDependencyInjector) {
         self.afSceneController = injector.afSceneController!
-        self.coreData = injector.coreData!
+        self.core = injector.core!
     }
     
     func actionPlace() {
@@ -64,7 +64,7 @@ class AFTopBarDelegate {
         return pathImages
     }
     
-    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+    func inject(_ injector: AFCore.AFDependencyInjector) {
         var iStillNeedSomething = false
         
         if let gs = injector.gameScene { self.gameScene = gs }

@@ -25,7 +25,7 @@
 import GameplayKit
 
 class AFBehavior: GKBehavior {
-    private unowned let coreData: AFCoreData
+    private unowned let core: AFCore
     private var enabled = true
     private let familyName: String
     private var goalsMap = [GKGoal: AFGoal]()
@@ -34,23 +34,20 @@ class AFBehavior: GKBehavior {
     private var savedState: (weight: Float, goal: AFGoal)?
     private unowned let gameScene: SKScene
     
-    init(coreData: AFCoreData, editor: AFBehaviorEditor, gameScene: SKScene) {
-        self.coreData = coreData
+    init(core: AFCore, editor: AFBehaviorEditor, gameScene: SKScene) {
+        self.core = core
         self.familyName = "Corlione"
         self.name = NSUUID().uuidString
         self.gameScene = gameScene
-        self.notifications = coreData.notifications
+        self.notifications = core.bigData.notifications
         
         super.init()
         
-        let n = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewGoal.rawValue)
+        let n = NSNotification.Name(rawValue: AFCore.NotificationType.NewGoal.rawValue)
         self.notifications.addObserver(self, selector: #selector(aGoalHasBeenCreated(notification:)), name: n, object: nil)
     }
     
     @objc func aGoalHasBeenCreated(notification: Notification) {
-        let d = AFNotification.Decode(notification)
-        let newGoal = AFGoalEditor(coreData: coreData, editor: d.editor! as! AFGoalEditor, gameScene: d.gameScene!)
-        setWeight(d.weight!, for: newGoal)
     }
     
     func getAFGoalForGKGoal(_ gkGoal: GKGoal?) -> AFGoal? {

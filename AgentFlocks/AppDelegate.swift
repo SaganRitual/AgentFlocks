@@ -102,10 +102,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         setupSceneView()
 
         AppDelegate.me = self
-        GameScene.me.gameSceneDelegate = AFCoreData.makeCore(ui: AppDelegate.me, gameScene: GameScene.me)
+        GameScene.me.gameSceneDelegate = AFCore.makeCore(ui: AppDelegate.me, gameScene: GameScene.me)
 	}
 
-    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+    func inject(_ injector: AFCore.AFDependencyInjector) {
         var iStillNeedSomething = false
         
         if let gs = injector.gameScene { gameScene = gs }
@@ -144,21 +144,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc func itemSelected(notification: Notification) {
-        if let name = AFNotification.Decode(notification).name,
-            let isPrimary = AFNotification.Decode(notification).isPrimary, isPrimary == true {
-            
-            let adapter = AFNodeAdapter(gameScene: gameScene, name: name)
-            placeAgentFrames(node: adapter.node)
-        }
     }
     
     @objc func itemDeselected(notification: Notification) {
-        if let name = AFNotification.Decode(notification).name {
-            if AFNodeAdapter(gameScene: gameScene, name: name).isPrimarySelection {
-                agentEditorController.attributesController.resetSliderControllers()
-                removeAgentFrames()
-            }
-        } else { fatalError("Notification missing name field") }
     }
     
     func setupSceneView() {

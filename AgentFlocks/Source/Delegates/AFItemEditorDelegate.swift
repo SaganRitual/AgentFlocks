@@ -25,11 +25,11 @@
 import GameplayKit
 
 class AFItemEditorDelegate {
-    unowned let coreData: AFCoreData
+    unowned let core: AFCore
     unowned let afSceneController: AFSceneController
     
-    init(_ injector: AFCoreData.AFDependencyInjector) {
-        self.coreData = injector.coreData!
+    init(_ injector: AFCore.AFDependencyInjector) {
+        self.core = injector.core!
         self.afSceneController = injector.afSceneController!
         injector.itemEditorDelegate = self
     }
@@ -99,7 +99,7 @@ class AFItemEditorDelegate {
         }
     }
     
-    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+    func inject(_ injector: AFCore.AFDependencyInjector) {
         
     }
 

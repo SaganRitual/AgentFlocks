@@ -25,26 +25,23 @@
 import GameplayKit
 
 class AFCompositeBehavior: GKCompositeBehavior {
-    unowned let coreData: AFCoreData
+    unowned let core: AFCore
     var editor: AFCompositeEditor!
     unowned let notifications: NotificationCenter
     var savedState: (weight: Float, behavior: GKBehavior)?
     var saveMap = [AFBehavior: Float]()
     
-    init(coreData: AFCoreData, editor: AFCompositeEditor) {
-        self.coreData = coreData
-        self.notifications = coreData.notifications
+    init(core: AFCore, editor: AFCompositeEditor) {
+        self.core = core
+        self.notifications = core.bigData.notifications
         
         super.init()
         
-        let n = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewBehavior.rawValue)
-        self.notifications.addObserver(self, selector: #selector(aBehaviorHasBeenCreated(notification:)), name: n, object: coreData)
+        let n = NSNotification.Name(rawValue: AFCore.NotificationType.NewBehavior.rawValue)
+        self.notifications.addObserver(self, selector: #selector(aBehaviorHasBeenCreated(notification:)), name: n, object: core)
     }
     
     @objc func aBehaviorHasBeenCreated(notification: Notification) {
-        let info = AFNotification.Decode(notification)
-        let behavior = AFBehavior(coreData: coreData, editor: info.editor! as! AFBehaviorEditor, gameScene: info.gameScene!)
-        setWeight(info.weight!, for: behavior)   // Sets the weight while adding the behavior to the group
     }
 }
 
@@ -55,7 +52,7 @@ extension AFCompositeBehavior {
             // Although we're simply reloading data from the core json, the load function
             // will announce the rejuvenated editor as though it's a new behavior, so as
             // to be picked up by the regular notification mechanism.
-            self.editor.reloadBehavior(name: behavior.name)
+//            self.editor.reloadBehavior(name: behavior.name)
         } else {
             // We don't have to save our own state; the behavior is still there in the
             // core json. So we just have to turn it off in the behaviors mechanism.

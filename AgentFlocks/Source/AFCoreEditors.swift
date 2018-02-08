@@ -80,11 +80,6 @@ class AFAgentEditor: AFEditor {
         
         return editor
     }
-    
-    func postInit() {
-        let ed = createCompositeEditor()
-        ed.postInit()
-    }
 }
 
 extension AFAgentEditor {
@@ -350,11 +345,6 @@ class AFCompositeEditor: AFEditor {
         announceNewBehavior(behaviorName: editor.name)
         
         return editor
-    }
-    
-    func postInit() {
-        let initialBehavior = createBehavior(weight: 1)
-        behaviors.append((initialBehavior, 1))
     }
     
     func reloadBehavior(name: String) {

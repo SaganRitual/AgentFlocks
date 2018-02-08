@@ -24,6 +24,16 @@
 
 import GameplayKit
 
+extension CGPoint {
+    init(_ position: vector_float2) { self.x = CGFloat(position.x); self.y = CGFloat(position.y) }
+    
+    func as_vector_float2() -> vector_float2 { return [Float(x), Float(y)] }
+    
+    static func +=(lhs : inout CGPoint, rhs : CGPoint) { lhs.x += rhs.x; lhs.y += rhs.y }
+    static func +(lhs : CGPoint, rhs : CGPoint) -> CGPoint { return CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y) }
+    static func -(lhs : CGPoint, rhs : CGPoint) -> CGPoint { return CGPoint(x: lhs.x - rhs.x, y: lhs.y - rhs.y) }
+}
+
 enum GoalSetupInputMode {
     case MultiSelectAgents, MultiSelectObstacles, NoSelect, SingleSelectAgent, SingleSelectPath
 }
@@ -45,10 +55,10 @@ protocol AFSceneControllerDelegate {
 }
 
 class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
-    var activePath: AFPath!     // The one we're doing stuff to, whether it's selected or not (like dragging handles)
+//    var activePath: AFPath!     // The one we're doing stuff to, whether it's selected or not (like dragging handles)
     var browserDelegate: AFBrowserDelegate!
     let contextMenu: AFContextMenu
-    var coreData: AFCoreData!
+    var core: AFCore!
     var draggedInTheBlack = false
     unowned let gameScene: GameScene
     var goalSetupInputMode = GoalSetupInputMode.NoSelect
@@ -61,7 +71,7 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     var sceneInputState: AFSceneInputState!
     var selectionController: AFSelectionController!
     var selectedNodes = Set<String>()
-    var selectedPath: AFPath!   // The one that has a visible selection indicator on it, if any
+//    var selectedPath: AFPath!   // The one that has a visible selection indicator on it, if any
     var ui: AppDelegate
     
     var currentPosition: CGPoint { return sceneInputState.currentPosition }
@@ -80,13 +90,8 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
 
         enter(Default.self)
     }
-    
-    func activateAgent(_ editor: AFAgentEditor, image: NSImage, at position: CGPoint) {
-        let agent = AFAgent2D(coreData: coreData, editor: editor, image: image, position: currentPosition, gameScene: gameScene)
-        selectionController.newAgentWasCreated(agent.name)
-    }
 
-    func addNodeToPath(at position: CGPoint) { activePath.addGraphNode(at: position) }
+//    func addNodeToPath(at position: CGPoint) { activePath.addGraphNode(at: position) }
 
     func bringToTop(_ name: String) {
         let count = compressZOrder()
@@ -110,19 +115,19 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     
     @objc func coreReady(notification: Notification) {
         guard let info = notification.userInfo as? [String : Any] else { return }
-        guard let coreDataEntry = info["AFCoreData"] as? AFCoreData else { return }
+        guard let coreDataEntry = info["AFCore"] as? AFCore else { return }
         
         NotificationCenter.default.removeObserver(self)
         
-        self.coreData = coreDataEntry
+        self.core = coreDataEntry
 
         self.notifications = info["DataNotifications"] as! NotificationCenter
         
-        let aNotification = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewAgent.rawValue)
+        let aNotification = NSNotification.Name(rawValue: AFCore.NotificationType.NewAgent.rawValue)
         let aSelector = #selector(newAgentHasBeenCreated(_:))
         self.notifications.addObserver(self, selector: aSelector, name: aNotification, object: nil)
         
-        let bNotification = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewPath.rawValue)
+        let bNotification = NSNotification.Name(rawValue: AFCore.NotificationType.NewPath.rawValue)
         let bSelector = #selector(newPathHasBeenCreated(_:))
         self.notifications.addObserver(self, selector: bSelector, name: bNotification, object: nil)
 
@@ -139,11 +144,9 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
         // Create a new agent and send it off into the world.
         let imageIndex = browserDelegate.agentImageIndex
         let image = ui.agents[imageIndex].image
-        
-        let agentEditor = coreData.createAgent(editorType: .createFromScratch)
-        agentEditor.postInit()
-
-        activateAgent(agentEditor, image: image, at: currentPosition)
+        let agentEditor = core.createAgent()
+        let agent = AFAgent2D(core: core, editor: agentEditor, image: image, position: currentPosition, gameScene: gameScene)
+        selectionController.newAgentWasCreated(agent.name)
     }
     
     func dragEnd(_ info: AFSceneInputState.InputInfo) {
@@ -177,13 +180,13 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
         print("SceneController gets hasBeenDeselected()")
     }
     
-    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+    func inject(_ injector: AFCore.AFDependencyInjector) {
         var iStillNeedSomething = false
         
         if let bd = injector.browserDelegate { browserDelegate = bd }
         else { iStillNeedSomething = true; injector.someoneStillNeedsSomething = true }
         
-        if let cd = injector.coreData { self.coreData = cd }
+        if let cd = injector.core { self.core = cd }
         else { iStillNeedSomething = true; injector.someoneStillNeedsSomething = true }
         
         if let si = injector.sceneInputState { self.sceneInputState = si }

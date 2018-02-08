@@ -130,6 +130,34 @@ class AFCoreData {
     
     var postInitData: [String : Any] = [:]
 
+    class NodeWriter {
+        let bigData: AFData
+        var key: JSONSubscriptType?
+        let pathToParent: [JSONSubscriptType]
+        
+        init(_ pathToParent: [JSONSubscriptType], core: AFCore) {
+            self.bigData = core.bigData
+            self.pathToParent = pathToParent
+        }
+        
+        deinit {
+            if let key = key {    // That is, if we actually wrote something
+                bigData.announce(path: pathToParent + [key])
+            }
+        }
+        
+        func write(this value: JSON, to key: JSONSubscriptType) {
+            self.key = key
+            bigData.data[pathToParent][key] = value
+        }
+        
+        // Non-functional ugliness. I'm ashamed to have written it. But
+        // it makes the JSON more readable.
+        func write(this value: JSON, to key: JSONSubscriptType, under: JSONSubscriptType) {
+            bigData.data[pathToParent][key][under] = value
+        }
+    }
+
     init() {
     }
     
@@ -156,26 +184,15 @@ class AFCoreData {
         announce(event: .NewAgent, subjectName: agentName)
     }
     
-    func createAgent(editorType: EditorType) -> AFAgentEditor {
-        switch editorType {
-        case .createFromScratch:
-            let nextSlot: JSONSubscriptType = data[agentsPath].count
+    func createAgent() -> AFAgentEditor {
+        let agents: JSONSubscriptType = "agents"
+        let newAgentName: JSONSubscriptType = NSUUID().uuidString
+        let pathToHere = [agents]
+        let pathToNewAgent = pathToHere + [newAgentName]
         
-            let newAgentNode: JSON = [:]
-            data[agentsPath].arrayObject!.append(newAgentNode)
-
-            let name = NSUUID().uuidString
-            let editor = AFAgentEditor(coreData: self, fullPath: agentsPath + [nextSlot], name: name)
-
-            data[agentsPath + [nextSlot]]["name"] = JSON(name)
-            
-            announceNewAgent(agentName: name)
-
-            return editor
-            
-        default:
-            fatalError()
-        }
+        getNodeWriter(pathToHere).write(this: JSON([:]), to: newAgentName)
+        
+        return AFAgentEditor(pathToNewAgent, core: self)
     }
     
     func dump() -> String {
@@ -204,6 +221,10 @@ class AFCoreData {
         return false
     }
     
+    func getNodeWriter(_ pathToParent: [JSONSubscriptType]) -> NodeWriter {
+        return NodeWriter(pathToParent, core: self)
+    }
+
     func getPathTo(_ nameToSeek: String, pathSoFar: [JSONSubscriptType] = [JSONSubscriptType]()) -> [JSONSubscriptType]? {
         for (key_, value) in data[pathSoFar] {
             // Couldn't believe this trick worked, but I couldn't believe that

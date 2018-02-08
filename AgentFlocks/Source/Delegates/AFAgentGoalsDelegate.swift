@@ -38,13 +38,13 @@ protocol AFGameSceneDelegate {
 
 class AFAgentGoalsDelegate {
     private unowned let afSceneController: AFSceneController
-    private unowned let coreData: AFCoreData
+    private unowned let core: AFCore
     private var gameScene: GameScene!
     
     var agent: String?
     
-    init(_ injector: AFCoreData.AFDependencyInjector) {
-        self.coreData = injector.coreData!
+    init(_ injector: AFCore.AFDependencyInjector) {
+        self.core = injector.core!
         self.afSceneController = injector.afSceneController!
     }
     
@@ -100,7 +100,7 @@ class AFAgentGoalsDelegate {
         return attributes
     }
     
-    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+    func inject(_ injector: AFCore.AFDependencyInjector) {
         var iStillNeedSomething = false
         
         if let gs = injector.gameScene { self.gameScene = gs }

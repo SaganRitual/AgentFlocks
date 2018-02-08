@@ -32,7 +32,7 @@ class AFBrowserDelegate {
     var agentImageIndex = 0
     let afSceneController: AFSceneController
     
-    init(_ injector: AFCoreData.AFDependencyInjector) {
+    init(_ injector: AFCore.AFDependencyInjector) {
         self.afSceneController = injector.afSceneController!
         injector.browserDelegate = self
     }
@@ -58,7 +58,7 @@ class AFBrowserDelegate {
         
     }
     
-    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+    func inject(_ injector: AFCore.AFDependencyInjector) {
         
     }
 

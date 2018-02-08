@@ -25,11 +25,11 @@
 import GameplayKit
 
 class AFMenuBarDelegate {
-    unowned let coreData: AFCoreData
+    unowned let core: AFCore
     unowned let afSceneController: AFSceneController
     
-    init(_ injector: AFCoreData.AFDependencyInjector) {
-        self.coreData = injector.coreData!
+    init(_ injector: AFCore.AFDependencyInjector) {
+        self.core = injector.core!
         self.afSceneController = injector.afSceneController!
     }
 }
@@ -77,7 +77,7 @@ extension AFMenuBarDelegate {
 // MARK: Internal setup
 
 extension AFMenuBarDelegate {
-    func inject(_ injector: AFCoreData.AFDependencyInjector) {}
+    func inject(_ injector: AFCore.AFDependencyInjector) {}
 }
 
 // MARK: Temp menu

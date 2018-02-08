@@ -48,7 +48,8 @@ extension AFSceneController {
 
         override func isValidNextState(_ stateClass: AnyClass) -> Bool {
             // Can't leave draw state until the active path is closed
-            return afSceneController.activePath == nil
+//            return afSceneController.activePath == nil
+            return false
         }
         
         override func mouseMove(to position: CGPoint) {
@@ -71,14 +72,14 @@ extension AFSceneController {
         func updateDrawIndicator(_ position: CGPoint) {
             drawIndicator?.removeFromParent()
             
-            if let ap = afSceneController.activePath, let start = ap.getLastHandlePosition() {
-                let linePath = CGMutablePath()
-                linePath.move(to: start)
-                linePath.addLine(to: position)
-                
-                drawIndicator = SKShapeNode(path: linePath)
-                afSceneController.gameScene.addChild(drawIndicator!)
-            }
+//            if let ap = afSceneController.activePath, let start = ap.getLastHandlePosition() {
+//                let linePath = CGMutablePath()
+//                linePath.move(to: start)
+//                linePath.addLine(to: position)
+//                
+//                drawIndicator = SKShapeNode(path: linePath)
+//                afSceneController.gameScene.addChild(drawIndicator!)
+//            }
         }
         
         override func willExit(to nextState: GKState) {

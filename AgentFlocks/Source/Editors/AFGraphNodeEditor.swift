@@ -1,5 +1,5 @@
 //
-// Created by Rob Bishop on 1/17/18
+// Created by Rob Bishop on 2/8/18
 //
 // Copyright © 2018 Rob Bishop
 //
@@ -22,28 +22,18 @@
 // IN THE SOFTWARE.
 //
 
-class AFContextMenuDelegate {
-    unowned let afSceneController: AFSceneController
-    
-    init(_ injector: AFCore.AFDependencyInjector) {
-        self.afSceneController = injector.afSceneController!
-        injector.contextMenuDelegate = self
-    }
-    
-    func inject(_ injector: AFCore.AFDependencyInjector) {
-        
-    }
+import Foundation
 
-    func itemCloneAgent() {
-        afSceneController.cloneAgent()
-    }
+class AFGraphNodeEditor {
+    unowned var core: AFCore
+    var pathToHere: [JSONSubscriptType]
     
-    func itemAddPathToLibrary() {
-        afSceneController.finalizePath(close: true)
-    }
-    
-    func itemStampObstacle() {
-        afSceneController.stampObstacle()
+    // Create a new, empty graph node slot in the data tree.
+    init(_ pathToHere: [JSONSubscriptType], core: AFCore) {
+        self.core  = core
+        self.pathToHere = pathToHere
     }
 }
+
+
 

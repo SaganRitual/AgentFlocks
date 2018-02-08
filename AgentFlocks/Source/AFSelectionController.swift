@@ -80,7 +80,7 @@ extension AFSelectionController {
         if selection.count > 0 { return (selection, primary.first!.name!) } else { return (nil, nil) }
     }
     
-    func inject(_ injector: AFCoreData.AFDependencyInjector) {
+    func inject(_ injector: AFCore.AFDependencyInjector) {
         var iStillNeedSomething = false
         
         if let nf = injector.notifications { self.notifications = nf }
@@ -209,17 +209,9 @@ extension AFSelectionController {
 private extension AFSelectionController {
 
     func announceDeselect(_ name: String) {
-        let e = AFNotification.Encode(name)
-        let n = Notification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
-        let nn = Notification(name: n, object: nil, userInfo: e.encode())
-        notifications.post(nn)
     }
     
     func announceSelect(_ name: String, primary: Bool) {
-        let e = AFNotification.Encode(name, isPrimary: primary)
-        let n = Notification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
-        let nn = Notification(name: n, object: nil, userInfo: e.encode())
-        notifications.post(nn)
     }
 
     func deselect(_ name: String, primary: Bool) { getNodeAdapter(name).deselect(); announceDeselect(name) }
@@ -252,11 +244,6 @@ fileprivate extension AFSelectionController {
         }
 
         return true
-    }
-    
-    @objc func postInit(notification: Notification) {
-        let info = notification.userInfo as! [String : Any]
-        self.notifications = info["DataNotifications"] as! NotificationCenter
     }
 }
 

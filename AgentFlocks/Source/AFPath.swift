@@ -25,7 +25,7 @@
 import GameplayKit
 
 class AFPath: Equatable {
-    private var coreData: AFCoreData
+    private var core: AFCore
     private var finalized = false
     private unowned let gameScene: SKScene
     private var gkPath: GKPath! = nil
@@ -35,10 +35,10 @@ class AFPath: Equatable {
     private unowned let notifications: NotificationCenter
     private let spriteSet: SpriteSet
     
-    init(coreData: AFCoreData, editor: AFPathEditor, gameScene: SKScene) {
+    init(core: AFCore, editor: AFPathEditor, gameScene: SKScene) {
         let name = NSUUID().uuidString
         
-        self.coreData = coreData
+        self.core = core
         self.name = name
         self.notifications = coreData.notifications
         self.gameScene = gameScene
@@ -91,7 +91,7 @@ class AFPath: Equatable {
     
     @objc func newGraphNodeHasBeenCreated(_ name: String) {
 //        let embryo = coreData.getGraphNode(name, parentPath: self.name)
-//        let afNode = AFGraphNode2D(coreData: coreData, embryo: embryo, position: CGPoint.zero, gameScene: self.gameScene)
+//        let afNode = AFGraphNode2D(core: core, embryo: embryo, position: CGPoint.zero, gameScene: self.gameScene)
 //        self.graphNodes.append(key: name, value: afNode)
 //        spriteSet.refresh(self)
     }

@@ -41,7 +41,7 @@ import GameplayKit
 //}
 
 class AFGraphNode2D: GKGraphNode2D {
-    private let coreData: AFCoreData
+    private let core: AFCore
     private let familyName: String
     private let name: String
     private let radius: CGFloat = 5
@@ -54,9 +54,9 @@ class AFGraphNode2D: GKGraphNode2D {
         get { return vector_float2(Float(spriteSet.position.x), Float(spriteSet.position.y)) }
     }
 
-    init(coreData: AFCoreData, editor: AFGraphNodeEditor, position: CGPoint, gameScene: SKScene) {
+    init(core: AFCore, editor: AFGraphNodeEditor, position: CGPoint, gameScene: SKScene) {
         let name = NSUUID().uuidString
-        self.coreData = coreData
+        self.core = core
         self.familyName = String()//embryo.familyName
         self.name = name
         self.gameScene = gameScene
