@@ -256,7 +256,7 @@ extension TopBarController: LogSliderDelegate {
 
 extension TopBarController: NSPopoverDelegate {
 	
-	func popoverDidClose(_ notification: Notification) {
+	func popoverDidClose(_ notification: Foundation.Notification) {
 		activePopover = nil
 	}
 	

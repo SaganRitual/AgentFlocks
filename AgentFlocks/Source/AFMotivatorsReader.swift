@@ -25,20 +25,11 @@
 import GameplayKit
 
 class AFMotivatorsReader: AgentGoalsDataSource {
-    let core: AFCore
-    let notifications: NotificationCenter
+    var core: AFCore!
+    var uiNotifications: Foundation.NotificationCenter!
     var selectedAgent: String?
     
-    init(_ injector: AFCore.AFDependencyInjector) {
-        self.core = injector.core!
-        self.notifications = injector.notifications!
-        
-        let s1 = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
-        self.notifications.addObserver(self, selector: #selector(dataSourceHasBeenSelected(notification:)), name: s1, object: nil)
-        
-        let s2 = NSNotification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
-        self.notifications.addObserver(self, selector: #selector(dataSourceHasBeenDeselected(notification:)), name: s2, object: nil)
-    }
+    init(_ injector: AFCore.AFDependencyInjector) { }
 
     // From the doc: The number of child items encompassed by item. ***If item is nil, this method should
     // return the number of children for the top-level item.***
@@ -103,17 +94,31 @@ class AFMotivatorsReader: AgentGoalsDataSource {
         return false
     }
     
-    @objc func dataSourceHasBeenSelected(notification: Notification) {
+    @objc func dataSourceHasBeenSelected(notification: Foundation.Notification) {
     }
     
-    @objc func dataSourceHasBeenDeselected(notification: Notification) {
+    @objc func dataSourceHasBeenDeselected(notification: Foundation.Notification) {
     }
-
+    
     func inject(_ injector: AFCore.AFDependencyInjector) {
-        let iStillNeedSomething = false
+        var iStillNeedSomething = false
+        
+        self.core = injector.core!
+        self.uiNotifications = injector.uiNotifications!
+        
+        if let un = injector.uiNotifications { self.uiNotifications = un }
+        else { injector.someoneStillNeedsSomething = true; iStillNeedSomething = true }
         
         if !iStillNeedSomething {
             injector.agentGoalsDataSource = self
+            
+            let s1 = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
+            let ss1 = #selector(dataSourceHasBeenSelected(notification:))
+            self.uiNotifications.addObserver(self, selector: ss1, name: s1, object: nil)
+            
+            let s2 = NSNotification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
+            let ss2 = #selector(dataSourceHasBeenDeselected(notification:))
+            self.uiNotifications.addObserver(self, selector: ss2, name: s2, object: nil)
         }
     }
 

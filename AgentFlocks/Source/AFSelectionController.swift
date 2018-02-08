@@ -27,7 +27,7 @@ import GameplayKit
 class AFSelectionController: GKStateMachine {
     enum MouseState { case down, dragging, rightDown, rightUp, up }
 
-    var notifications: NotificationCenter!
+    var uiNotifications: Foundation.NotificationCenter!
     private unowned let gameScene: GameScene
     
     private var drone: AFSelectionState_Base? { return currentState as? AFSelectionState_Base }
@@ -83,9 +83,9 @@ extension AFSelectionController {
     func inject(_ injector: AFCore.AFDependencyInjector) {
         var iStillNeedSomething = false
         
-        if let nf = injector.notifications { self.notifications = nf }
-        else { iStillNeedSomething = true; injector.someoneStillNeedsSomething = true }
-        
+        if let un = injector.uiNotifications { self.uiNotifications = un }
+        else { injector.someoneStillNeedsSomething = true; iStillNeedSomething = true }
+
         if !iStillNeedSomething {
             injector.selectionController = self
         }
@@ -207,11 +207,18 @@ extension AFSelectionController {
 // MARK: Private methods
 
 private extension AFSelectionController {
-
     func announceDeselect(_ name: String) {
+        let e = AFSceneController.Notification.Encode(name)
+        let n = Foundation.Notification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
+        let nn = Foundation.Notification(name: n, object: nil, userInfo: e.encode())
+        uiNotifications.post(nn)
     }
     
     func announceSelect(_ name: String, primary: Bool) {
+        let e = AFSceneController.Notification.Encode(name, isPrimary: primary)
+        let n = Foundation.Notification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
+        let nn = Foundation.Notification(name: n, object: nil, userInfo: e.encode())
+        uiNotifications.post(nn)
     }
 
     func deselect(_ name: String, primary: Bool) { getNodeAdapter(name).deselect(); announceDeselect(name) }

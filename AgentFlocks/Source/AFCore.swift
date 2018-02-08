@@ -59,9 +59,9 @@ class AFCore {
         return AFAgentEditor(pathToNewAgent, core: self)
     }
     
-//
-//    func getAgentEditor(for name: JSON) -> AFAgentEditor {
-//        return AFAgentEditor(name, core: self)
+    func getAgentEditor(for name: JSON) -> AFAgentEditor {
+        return AFAgentEditor(getPathTo(name.stringValue)!, core: self)
+    }
     
     func getPathTo(_ nameToSeek: String, pathSoFar: [JSONSubscriptType] = [JSONSubscriptType]()) -> [JSONSubscriptType]? {
         for (key_, value) in bigData.data[pathSoFar] {
@@ -89,7 +89,8 @@ class AFCore {
         c.sceneController = AFSceneController(gameScene: gameScene, ui: ui, contextMenu: AFContextMenu(ui: ui))
         
         let injector = AFDependencyInjector(afSceneController: c.sceneController, core: c,
-                                            gameScene: gameScene, notifications: c.bigData.notifications)
+                                            dataNotifications: c.bigData.notifier,
+                                            gameScene: gameScene, uiNotifications: ui.uiNotifications)
         
         c.agentGoalsDelegate = AFAgentGoalsDelegate(injector)
         c.agentGoalsDataSource = AFMotivatorsReader(injector)
@@ -143,21 +144,24 @@ extension AFCore {
         var browserDelegate: AFBrowserDelegate?
         var contextMenuDelegate: AFContextMenuDelegate?
         var core: AFCore?
+        var dataNotifications: Foundation.NotificationCenter?
         var gameScene: GameScene?
-        var notifications: NotificationCenter?
         var sceneInputState: AFSceneInputState?
         var selectionController: AFSelectionController?
         var itemEditorDelegate: AFItemEditorDelegate?
         var menuBarDelegate: AFMenuBarDelegate?
         var topBarDelegate: AFTopBarDelegate?
-        
+        var uiNotifications: Foundation.NotificationCenter?
+
         var someoneStillNeedsSomething = true
-        
-        init(afSceneController: AFSceneController, core: AFCore, gameScene: GameScene, notifications: NotificationCenter) {
+
+        init(afSceneController: AFSceneController, core: AFCore,
+             dataNotifications: Foundation.NotificationCenter, gameScene: GameScene, uiNotifications: Foundation.NotificationCenter) {
             self.afSceneController = afSceneController
             self.core = core
+            self.dataNotifications = dataNotifications
             self.gameScene = gameScene
-            self.notifications = notifications
+            self.uiNotifications = uiNotifications
         }
     }
 }

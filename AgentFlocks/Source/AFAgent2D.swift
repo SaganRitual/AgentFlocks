@@ -35,7 +35,7 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
     private unowned let core: AFCore
     let name: String
     private let gameScene: SKScene
-    private unowned let notifications: NotificationCenter
+    private unowned let notifications: Foundation.NotificationCenter
     private var savedBehaviorState: AFCompositeBehavior?
     private var spriteSet: AFAgent2D.SpriteSet!
 
@@ -51,14 +51,13 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
     
     init(core: AFCore, editor: AFAgentEditor, image: NSImage, position: CGPoint, gameScene: SKScene) {
         self.core = core
-//        self.name = editor.name
-        self.name = "Flamboozle"
-        self.notifications = core.bigData.notifications
+        self.name = editor.name
+        self.notifications = core.bigData.notifier
         self.gameScene = gameScene
 
         super.init()
 
-        self.spriteSet = AFAgent2D.SpriteSet(owningAgent: self, image: image, name: "Flamboozle"/*editor.name*/, scale: editor.scale, gameScene: gameScene)
+        self.spriteSet = AFAgent2D.SpriteSet(owningAgent: self, image: image, name: editor.name, scale: editor.scale, gameScene: gameScene)
 
         // These notifications come from the data
         let n = NSNotification.Name(rawValue: AFCore.NotificationType.NewComposite.rawValue)
@@ -75,13 +74,6 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
         // no one but the sprite has a reference to me.
         self.spriteSet.attachToSprite(self)
         self.spriteSet.primaryContainer.scale = CGFloat(editor.scale)
-        
-        // Hack in some defaults for now. I'll come back to this
-        // when I feel like torturing myself with more json.
-        mass = 0.1
-        maxAcceleration = 100
-        maxSpeed = 100
-        radius = 25
     }
     
     deinit {
@@ -103,7 +95,7 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
         fatalError()
     }
     
-    @objc func hasBeenDeselected(notification: Notification) {
+    @objc func hasBeenDeselected(notification: Foundation.Notification) {
         let name = notification.object as? String
         hasBeenDeselected(name)
     }
@@ -115,7 +107,7 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
         }
     }
 
-    @objc func hasBeenSelected(notification: Notification) {
+    @objc func hasBeenSelected(notification: Foundation.Notification) {
         let (name, primary) = notification.object as! (String, Bool)
         hasBeenSelected(name, primary: primary)
     }
@@ -240,10 +232,10 @@ extension AFAgent2D {
     // in order to conform to the delegate protocol.
     func newAgent(_ name: String) {}
 
-    @objc func aCompositeHasBeenCreated(notification: Notification) {
+    @objc func aCompositeHasBeenCreated(notification: Foundation.Notification) {
     }
     
-    @objc func anAttributeHasChanged(notification: Notification) {
+    @objc func anAttributeHasChanged(notification: Foundation.Notification) {
     }
     
     func anAttributeHasChanged(_ asString: String, to value: Float, for agent: String) {

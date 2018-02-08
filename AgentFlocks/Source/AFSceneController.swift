@@ -63,7 +63,7 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     unowned let gameScene: GameScene
     var goalSetupInputMode = GoalSetupInputMode.NoSelect
     var mouseState = MouseStates.up
-    var notifications: NotificationCenter!
+    var uiNotifications: Foundation.NotificationCenter!
     var obstacleCloneStamp = String()
     var parentOfNewMotivator: AFBehavior?
     var pathForNextPathGoal = 0
@@ -100,7 +100,7 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
    
     func cloneAgent() {
         guard let copyFrom = primarySelection else { return }
-//        coreData.core.sceneController.cloneAgent()
+//        core.core.sceneController.cloneAgent()
     }
 
     func compressZOrder() -> Int {
@@ -111,33 +111,6 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
         zOrderStack.enumerated().forEach {  $1.zPosition = ($1.name == nil) ? -1 : CGFloat($0) }
         
         return zOrderStack.count
-    }
-    
-    @objc func coreReady(notification: Notification) {
-        guard let info = notification.userInfo as? [String : Any] else { return }
-        guard let coreDataEntry = info["AFCore"] as? AFCore else { return }
-        
-        NotificationCenter.default.removeObserver(self)
-        
-        self.core = coreDataEntry
-
-        self.notifications = info["DataNotifications"] as! NotificationCenter
-        
-        let aNotification = NSNotification.Name(rawValue: AFCore.NotificationType.NewAgent.rawValue)
-        let aSelector = #selector(newAgentHasBeenCreated(_:))
-        self.notifications.addObserver(self, selector: aSelector, name: aNotification, object: nil)
-        
-        let bNotification = NSNotification.Name(rawValue: AFCore.NotificationType.NewPath.rawValue)
-        let bSelector = #selector(newPathHasBeenCreated(_:))
-        self.notifications.addObserver(self, selector: bSelector, name: bNotification, object: nil)
-
-        let cNotification = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
-        let cSelector = #selector(hasBeenSelected(notification:))
-        self.notifications.addObserver(self, selector: cSelector, name: cNotification, object: nil)
-
-        let dNotification = NSNotification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
-        let dSelector = #selector(hasBeenDeselected(notification:))
-        self.notifications.addObserver(self, selector: dSelector, name: dNotification, object: nil)
     }
 
     func createAgent() {
@@ -154,10 +127,10 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     }
 
     func finalizePath(close: Bool) {
-//        coreData.newGraphNode(for: <#T##String#>)
+//        core.newGraphNode(for: <#T##String#>)
 //        activePath.refresh(final: close) // Auto-add the closing line segment
-//        coreData.newPath()
-//        coreData.paths.append(key: activePath.name, value: activePath)
+//        core.newPath()
+//        core.paths.append(key: activePath.name, value: activePath)
         
 //        contextMenu.includeInDisplay(.AddPathToLibrary, false)
 //        contextMenu.includeInDisplay(.Place, true, enable: true)
@@ -172,11 +145,11 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     
     func getNextZPosition() -> Int { return gameScene.children.count }
     
-    @objc func hasBeenSelected(notification: Notification) {
+    @objc func hasBeenSelected(notification: Foundation.Notification) {
         print("SceneController gets hasBeenSelected()")
     }
     
-    @objc func hasBeenDeselected(notification: Notification) {
+    @objc func hasBeenDeselected(notification: Foundation.Notification) {
         print("SceneController gets hasBeenDeselected()")
     }
     
@@ -227,18 +200,18 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
         drone.click(info.name, flags: info.flags)
     }
     
-    @objc func newAgentHasBeenCreated(_ notification: Notification) {
+    @objc func newAgentHasBeenCreated(_ notification: Foundation.Notification) {
         drone.newAgentHasBeenCreated(notification)
     }
     
-    @objc func newPathHasBeenCreated(_ notification: Notification) {
+    @objc func newPathHasBeenCreated(_ notification: Foundation.Notification) {
         drone.newPathHasBeenCreated(notification)
     }
     
     func recallAgents() {
-        let n = Notification.Name(rawValue: NotificationType.Recalled.rawValue)
-        let nn = Notification(name: n, object: nil, userInfo: nil)
-        notifications.post(nn)
+        let n = Foundation.Notification.Name(rawValue: NotificationType.Recalled.rawValue)
+        let nn = Foundation.Notification(name: n, object: nil, userInfo: nil)
+        uiNotifications.post(nn)
     }
 
     func rightMouseDown(_ info: AFSceneInputState.InputInfo) { }
@@ -258,4 +231,87 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     }
     
     func startStateMachine() { enter(Default.self) }
+}
+
+protocol AFEditor { }
+
+extension AFSceneController {
+    func getCoreAgentEditor(notification: Foundation.Notification) -> AFAgentEditor? {
+        var editor: AFAgentEditor?
+        
+        guard AFData.Notifier.isDataNotifier(notification) else {
+            return AFSceneController.Notification.Decode(notification).editor as? AFAgentEditor
+        }
+        
+        let n = AFData.Notifier(notification)
+        let c = n.pathToNode.count
+        
+        // We'll need the editor, which is two nodes up from the attributes
+        // we're being notified about. If our notification path isn't at least
+        // that long, the notification has nothing to do with us.
+        guard c > 2 else { return nil }
+        
+        let thisNode = String(describing: n.pathToNode[c - 1])
+        guard AFAgentAttribute(rawValue: thisNode) != nil else { fatalError() }
+        
+        let pathToEditor = Array(n.pathToNode.prefix(upTo: c - 1))
+        editor = AFAgentEditor(pathToEditor, core: core)
+        
+        return editor
+    }
+
+    struct Notification {
+        struct Encode {
+            var attribute: AFAgentAttribute?
+            var core: AFCore?
+            var editor: AFEditor?
+            var gameScene: GameScene?
+            var isPrimary: Bool?
+            var name: String?
+            var value: Any?
+            var weight: Float?
+            
+            init(_ name: String, attribute: AFAgentAttribute? = nil, core: AFCore? = nil,
+                 editor: AFEditor? = nil, gameScene: GameScene? = nil, isPrimary: Bool? = nil, value: Any? = nil,
+                 weight: Float? = nil) {
+                self.attribute = attribute
+                self.core = core
+                self.editor = editor
+                self.gameScene = gameScene
+                self.isPrimary = isPrimary
+                self.name = name
+                self.value = value
+                self.weight = weight
+            }
+            
+            func encode() -> [String : Any] {
+                return ["attribute" : attribute ?? "<no attributes>",
+                        "core"      : core ?? "<no core>",
+                        "editor"    : editor ?? "<no editor>",
+                        "gameScene" : gameScene ?? "<no game scene>",
+                        "isPrimary" : self.isPrimary ?? "<no primary selection indicator>",
+                        "name"      : self.name ?? "<missing name>",
+                        "value"     : self.value ?? "<missing value>",
+                        "weight"    : self.weight ?? "<missing weight>" ]
+            }
+        }
+        
+        struct Decode {
+            var attribute: AFAgentAttribute? { return getField("attribute") as? AFAgentAttribute }
+            var core: AFCore? { return getField("core") as? AFCore }
+            var editor: AFEditor? { return getField("editor") as? AFEditor }
+            var gameScene: GameScene? { return getField("gameScene") as? GameScene }
+            var isPrimary: Bool? { return getBool("isPrimary") }
+            let foundationNotification: Foundation.Notification
+            var name: String? { return getField("name") as? String }
+            var value: Any? { return getField("value") }
+            var weight: Float? { return getFloat("weight") }
+            
+            init(_ foundationNotification: Foundation.Notification) { self.foundationNotification = foundationNotification }
+            func getField(_ key: String) -> Any? { return foundationNotification.userInfo![key] }
+            
+            func getBool(_ key: String) -> Bool? { return getField(key) as? Bool }
+            func getFloat(_ key: String) -> Float? { return getField(key) as? Float }
+        }
+    }
 }

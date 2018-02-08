@@ -27,13 +27,13 @@ import GameplayKit
 class AFCompositeBehavior: GKCompositeBehavior {
     unowned let core: AFCore
     var editor: AFCompositeEditor!
-    unowned let notifications: NotificationCenter
+    unowned let notifications: Foundation.NotificationCenter
     var savedState: (weight: Float, behavior: GKBehavior)?
     var saveMap = [AFBehavior: Float]()
     
     init(core: AFCore, editor: AFCompositeEditor) {
         self.core = core
-        self.notifications = core.bigData.notifications
+        self.notifications = core.bigData.notifier
         
         super.init()
         
@@ -41,7 +41,7 @@ class AFCompositeBehavior: GKCompositeBehavior {
         self.notifications.addObserver(self, selector: #selector(aBehaviorHasBeenCreated(notification:)), name: n, object: core)
     }
     
-    @objc func aBehaviorHasBeenCreated(notification: Notification) {
+    @objc func aBehaviorHasBeenCreated(notification: Foundation.Notification) {
     }
 }
 

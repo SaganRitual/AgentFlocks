@@ -24,7 +24,7 @@
 
 import Foundation
 
-class AFGoalEditor {
+class AFGoalEditor: AFEditor {
 //    var angle: Float?
 //    var distance: Float?
 //    var forward: Bool?

@@ -24,8 +24,8 @@ class AgentAttributesController: NSViewController {
 //        guard isPausedReentrancy == false else { return }
 //        isPausedReentrancy = true
 //
-//        if fromData { /*isPausedSliderController.value = isPaused*/ }
-//        else { coreData.setAttribute(.isPaused, to: isPaused == false ? 0 : 1, for: targetAgent) }
+//        if fromData { isPausedSliderController.value = isPaused }
+//        else { AFAgentEditor(core.getPathTo(targetAgent!)!, core: core).isPaused = isPaused }
 //
 //        isPausedReentrancy = false
     }
@@ -33,13 +33,21 @@ class AgentAttributesController: NSViewController {
     func getMass() -> Float { return Float(massSliderController.value) }
 	
     func setMass(_ mass: Float, fromData: Bool) {
-//        guard massReentrancy == false else { return }
-//        massReentrancy = true
-//
-//        if fromData { massSliderController.value = Double(mass) }
-//        else { coreData.setAttribute(.mass, to: mass, for: targetAgent) }
-//
-//        massReentrancy = false
+        guard massReentrancy == false else { return }
+        massReentrancy = true
+
+        if fromData {
+            // Max accel is coming straight from the data, so just set it in the
+            // slider; no need for the slider to relay the message further
+            massSliderController.value = Double(mass)
+        } else {
+            // Max accel is coming from the slider; send it down to the data; it
+            // will call us (and everyone else) back after updating the...data
+            let t = targetAgent!
+            AFAgentEditor(core.getPathTo(t)!, core: core).mass = mass
+        }
+
+        massReentrancy = false
     }
     
     func getMaxAcceleration() -> Float { return Float(maxAccelerationSliderController.value) }
@@ -48,15 +56,16 @@ class AgentAttributesController: NSViewController {
         guard maxAccelerationReentrancy == false else { return }
         maxAccelerationReentrancy = true
         
-//        if fromData {
-//            // Max accel is coming straight from the data, so just set it in the
-//            // slider; no need for the slider to relay the message further
-//            maxAccelerationSliderController.value = Double(maxAcceleration)
-//        } else {
-//            // Max accel is coming from the slider; send it down to the data; it
-//            // will call us (and everyone else) back after updating the...data
-//            coreData.setAttribute(.maxAcceleration, to: maxAcceleration, for: targetAgent)
-//        }
+        if fromData {
+            // Max accel is coming straight from the data, so just set it in the
+            // slider; no need for the slider to relay the message further
+            maxAccelerationSliderController.value = Double(maxAcceleration)
+        } else {
+            // Max accel is coming from the slider; send it down to the data; it
+            // will call us (and everyone else) back after updating the...data
+            let t = targetAgent!
+            AFAgentEditor(core.getPathTo(t)!, core: core).maxAcceleration = maxAcceleration
+        }
         
         maxAccelerationReentrancy = false
     }
@@ -67,15 +76,16 @@ class AgentAttributesController: NSViewController {
         guard maxSpeedReentrancy == false else { return }
         maxSpeedReentrancy = true
         
-//        if fromData {
-//            // Max speed is coming straight from the data, so just set it in the
-//            // slider; no need for the slider to relay the message further
-//            maxSpeedSliderController.value = Double(maxSpeed)
-//        } else {
-//            // Max speed is coming from the slider; send it down to the data; it
-//            // will call us (and everyone else) back after updating the...data
-//            coreData.setAttribute(.maxSpeed, to: maxSpeed, for: targetAgent)
-//        }
+        if fromData {
+            // Max speed is coming straight from the data, so just set it in the
+            // slider; no need for the slider to relay the message further
+            maxSpeedSliderController.value = Double(maxSpeed)
+        } else {
+            // Max speed is coming from the slider; send it down to the data; it
+            // will call us (and everyone else) back after updating the...data
+            let t = targetAgent!
+            AFAgentEditor(core.getPathTo(t)!, core: core).maxSpeed = maxSpeed
+        }
         
         maxSpeedReentrancy = false
     }
@@ -86,15 +96,16 @@ class AgentAttributesController: NSViewController {
         guard radiusReentrancy == false else { return }
         radiusReentrancy = true
         
-//        if fromData {
-//            // Mass is coming straight from the data, so just set it in the
-//            // slider; no need for the slider to relay the message further
-//            radiusSliderController.value = Double(radius)
-//        } else {
-//            // radius is coming from the slider; send it down to the data; it
-//            // will call us (and everyone else) back after updating the...data
-//            coreData.setAttribute(.radius, to: radius, for: targetAgent)
-//        }
+        if fromData {
+            // Mass is coming straight from the data, so just set it in the
+            // slider; no need for the slider to relay the message further
+            radiusSliderController.value = Double(radius)
+        } else {
+            // radius is coming from the slider; send it down to the data; it
+            // will call us (and everyone else) back after updating the...data
+            let t = targetAgent!
+            AFAgentEditor(core.getPathTo(t)!, core: core).radius = radius
+        }
         
         radiusReentrancy = false
     }
@@ -105,9 +116,17 @@ class AgentAttributesController: NSViewController {
         guard scaleReentrancy == false else { return }
         scaleReentrancy = true
         
-//        if fromData { scaleSliderController.value = Double(scale) }
-//        else { coreData.setAttribute(.scale, to: scale, for: targetAgent) }
-        
+        if fromData {
+            // Mass is coming straight from the data, so just set it in the
+            // slider; no need for the slider to relay the message further
+            scaleSliderController.value = Double(scale)
+        } else {
+            // radius is coming from the slider; send it down to the data; it
+            // will call us (and everyone else) back after updating the...data
+            let t = targetAgent!
+            AFAgentEditor(core.getPathTo(t)!, core: core).scale = scale
+        }
+
         scaleReentrancy = false
     }
 
@@ -184,9 +203,10 @@ class AgentAttributesController: NSViewController {
     private var persistentDefaultsLoaded = false
 
     private var core: AFCore!
-    private var notifications: NotificationCenter!
-    private var targetAgent = String()
-    
+    private var dataNotifications: Foundation.NotificationCenter!
+    private var targetAgent: String?
+    private var uiNotifications: Foundation.NotificationCenter!
+
 	// MARK: - Initialization
 	
 	init() {
@@ -195,25 +215,29 @@ class AgentAttributesController: NSViewController {
     
     func inject(_ injector: AFCore.AFDependencyInjector) -> Bool {
         var iStillNeedSomething = false
-
-        if let nf = injector.notifications { self.notifications = nf }
-        else { iStillNeedSomething = true; injector.someoneStillNeedsSomething = true }
+        
+        if let un = injector.uiNotifications { self.uiNotifications = un }
+        else { injector.someoneStillNeedsSomething = true; iStillNeedSomething = true }
+        
+        if let cn = injector.dataNotifications { self.dataNotifications = cn }
+        else { injector.someoneStillNeedsSomething = true; iStillNeedSomething = true }
 
         // Once everything is ready, we can start listening for UI activity
         if !iStillNeedSomething {
             self.core = injector.core
 
-            let aName = Notification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
+            let aName = Foundation.Notification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
             let aSelector = #selector(hasBeenSelected(notification:))
-            self.notifications.addObserver(self, selector: aSelector, name: aName, object: nil)
+            self.uiNotifications.addObserver(self, selector: aSelector, name: aName, object: nil)
 
-            let cName = Notification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
+            let cName = Foundation.Notification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
             let cSelector = #selector(hasBeenDeselected(notification:))
-            self.notifications.addObserver(self, selector: cSelector, name: cName, object: nil)
+            self.uiNotifications.addObserver(self, selector: cSelector, name: cName, object: nil)
 
-//            let bName = Notification.Name(rawValue: AFCoreData.NotificationType.SetAttribute.rawValue)
-//            let bSelector = #selector(attributeHasBeenUpdated(notification:))
-//            self.notifications.addObserver(self, selector: bSelector, name: bName, object: nil)
+            // Data notifier
+            let bName = NSNotification.Name(rawValue: "ThereCanBeOnlyOne")
+            let bSelector = #selector(nodeChanged(notification:))
+            self.dataNotifications.addObserver(self, selector: bSelector, name: bName, object: nil)
         }
         
         return iStillNeedSomething
@@ -222,45 +246,66 @@ class AgentAttributesController: NSViewController {
 	required convenience init?(coder: NSCoder) {
 		self.init()
 	}
-    
-    @objc func attributeHasBeenUpdated(notification: Notification) {
+
+    private func getCoreAgentEditor(notification: Foundation.Notification) -> AFAgentEditor? {
+        var editor: AFAgentEditor?
+
+        guard AFData.Notifier.isDataNotifier(notification) else {
+            return AFSceneController.Notification.Decode(notification).editor as? AFAgentEditor
+        }
+        
+        let n = AFData.Notifier(notification)
+        let c = n.pathToNode.count
+        
+        // We'll need the editor, which is two nodes up from the attributes
+        // we're being notified about. If our notification path isn't at least
+        // that long, the notification has nothing to do with us.
+        guard c > 2 else { return nil }
+        
+        let thisNode = String(describing: n.pathToNode[c - 1])
+        guard AFAgentAttribute(rawValue: thisNode) != nil else { fatalError() }
+        
+        let pathToEditor = Array(n.pathToNode.prefix(upTo: c - 1))
+        editor = AFAgentEditor(pathToEditor, core: core)
+        
+        return editor
     }
     
-    func attributeHasBeenUpdated(_ attribute: AFAgentAttribute, to newValue: Float) {
+    @objc func nodeChanged(notification: Foundation.Notification) {
+        guard targetAgent != nil else { return }    // If it's about another agent, don't bother
+        guard let editor = getCoreAgentEditor(notification: notification) else { fatalError() }
+
+        let n = AFData.Notifier(notification)
+        let c = n.pathToNode.count
+
+        // If we don't recognize the attribute name, throw a spanner in it
+        let thisNode = String(describing: n.pathToNode[c - 1])
+        guard let attribute = AFAgentAttribute(rawValue: thisNode) else { fatalError() }
+        
+        loadAttribute(attribute, from: editor)
+    }
+    
+    func loadAttribute(_ attribute: AFAgentAttribute, from editor: AFAgentEditor) {
         switch attribute {
-        case .isPaused:        setIsPaused(newValue != 0, fromData: true)
-        case .mass:            setMass(newValue, fromData: true)
-        case .maxAcceleration: setMaxAcceleration(newValue, fromData: true)
-        case .maxSpeed:        setMaxSpeed(newValue, fromData: true)
-        case .radius:          setRadius(newValue, fromData: true)
-        case .scale:           setScale(newValue, fromData: true)
+        case .isPaused:        setIsPaused(editor.isPaused, fromData: true)
+        case .mass:            setMass(editor.mass, fromData: true)
+        case .maxAcceleration: setMaxAcceleration(editor.maxAcceleration, fromData: true)
+        case .maxSpeed:        setMaxSpeed(editor.maxSpeed, fromData: true)
+        case .radius:          setRadius(editor.radius, fromData: true)
+        case .scale:           setScale(editor.scale, fromData: true)
         }
     }
     
-    func connectAgentToCoreData(_ agentEditorController: AgentEditorController, agentName: String) {
-//        let editor = AFAgentEditor(core: core, name: agentName)
-//
-//        // Play/pause button image
-//        let gc = agentEditorController.goalsController
-//        gc.playButton.image = !editor.isPaused ? gc.pauseImage : gc.playImage
-//
-//        connectAgentToCoreData_(agentName, editor: editor)
+    @objc func hasBeenSelected(notification: Foundation.Notification) {
+        guard let name = AFSceneController.Notification.Decode(notification).name else { fatalError() }
+        
+        let editor = core.getAgentEditor(for: JSON(name))
+        Array<AFAgentAttribute>([.isPaused, .mass, .maxAcceleration, .maxSpeed, .radius, .scale]).forEach {
+            loadAttribute($0, from: editor)
+        }
     }
     
-    func connectAgentToCoreData_(_ name: String, editor: AFAgentEditor) {
-        // This is where we finally read back out the actual
-        // values from coreData and store them in the attributes controller
-        setMass(editor.mass, fromData: true)
-        setMaxAcceleration(editor.maxAcceleration, fromData: true)
-        setMaxSpeed(editor.maxSpeed, fromData: true)
-        setRadius(editor.radius, fromData: true)
-        setScale(editor.scale, fromData: true)
-    }
-    
-    @objc func hasBeenSelected(notification: Notification) {
-    }
-    
-    @objc func hasBeenDeselected(notification: Notification) {
+    @objc func hasBeenDeselected(notification: Foundation.Notification) {
         print("AgentAttributesController gets hasBeenDeselected")
     }
 	

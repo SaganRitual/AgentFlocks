@@ -24,7 +24,7 @@
 
 import Foundation
 
-class AFBehaviorEditor {
+class AFBehaviorEditor: AFEditor {
     unowned var core: AFCore
     var pathToHere: [JSONSubscriptType]
     

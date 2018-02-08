@@ -24,7 +24,7 @@
 
 import Foundation
 
-class AFGraphNodeEditor {
+class AFGraphNodeEditor: AFEditor {
     unowned var core: AFCore
     var pathToHere: [JSONSubscriptType]
     

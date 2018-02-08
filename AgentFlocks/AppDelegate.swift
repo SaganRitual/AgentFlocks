@@ -55,20 +55,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var coreMenuBarDelegate: AFMenuBarDelegate!
     var coreTopBarDelegate: AFTopBarDelegate!
     
-    var notificationCenter: NotificationCenter!
+    var uiNotifications = Foundation.NotificationCenter()
     
     var agentGoalsDataSource: AgentGoalsDataSource!
     var gameScene: GameScene!
     static var me: AppDelegate!
 	
-	func applicationWillFinishLaunching(_ notification: Notification) {
+	func applicationWillFinishLaunching(_ notification: Foundation.Notification) {
 		
 		if let screenFrame = NSScreen.main?.frame {
 			self.window.setFrame(screenFrame, display: true)
 		}
 	}
 	
-	func applicationDidFinishLaunching(_ aNotification: Notification) {
+	func applicationDidFinishLaunching(_ aNotification: Foundation.Notification) {
 		
 		#if DEBUG
 		// Visualise constraints when something is wrong
@@ -111,9 +111,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let gs = injector.gameScene { gameScene = gs }
         else { injector.someoneStillNeedsSomething = true; iStillNeedSomething = true }
         
-        if let nf = injector.notifications { self.notificationCenter = nf }
-        else { injector.someoneStillNeedsSomething = true; iStillNeedSomething = true }
-        
         if let mr = injector.agentGoalsDataSource { self.agentEditorController.goalsController.dataSource = mr }
         else { injector.someoneStillNeedsSomething = true; iStillNeedSomething = true }
 
@@ -122,6 +119,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Once we have all our external dependencies setup, we can
         // take care of our post-init.
         if !iStillNeedSomething {
+            injector.uiNotifications = self.uiNotifications
+            
             coreAgentGoalsDelegate = injector.agentGoalsDelegate
             coreBrowserDelegate = injector.browserDelegate
             coreContextMenuDelegate = injector.contextMenuDelegate
@@ -130,10 +129,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             coreTopBarDelegate = injector.topBarDelegate
             
             let select = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
-            self.notificationCenter.addObserver(self, selector: #selector(itemSelected(notification:)), name: select, object: nil)
+            self.uiNotifications.addObserver(self, selector: #selector(itemSelected(notification:)), name: select, object: nil)
             
             let deselect = NSNotification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
-            self.notificationCenter.addObserver(self, selector: #selector(itemDeselected(notification:)), name: deselect, object: nil)
+            self.uiNotifications.addObserver(self, selector: #selector(itemDeselected(notification:)), name: deselect, object: nil)
 
             // Strange, I had to paste this line from removeAgentFrames() in order to
             // get the agent editing panels to display. I could take some guesses
@@ -143,10 +142,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    @objc func itemSelected(notification: Notification) {
+    @objc func itemSelected(notification: Foundation.Notification) {
+        if let name = AFSceneController.Notification.Decode(notification).name,
+            let isPrimary = AFSceneController.Notification.Decode(notification).isPrimary,
+            isPrimary == true {
+
+            let adapter = AFNodeAdapter(gameScene: gameScene, name: name)
+            placeAgentFrames(node: adapter.node)
+        }
     }
     
-    @objc func itemDeselected(notification: Notification) {
+    @objc func itemDeselected(notification: Foundation.Notification) {
+        if let name = AFSceneController.Notification.Decode(notification).name {
+            if AFNodeAdapter(gameScene: gameScene, name: name).isPrimarySelection {
+                agentEditorController.attributesController.resetSliderControllers()
+                removeAgentFrames()
+            }
+        } else { fatalError("Notification missing name field") }
     }
     
     func setupSceneView() {
@@ -220,7 +232,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                            constant: topBarControllerPadding).isActive = true
     }
 	
-	func applicationWillTerminate(_ aNotification: Notification) {
+	func applicationWillTerminate(_ aNotification: Foundation.Notification) {
 	}
 	
 	func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
@@ -267,7 +279,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func placeAgentFrames(node: SKNode) {
-        agentEditorController.attributesController.connectAgentToCoreData(agentEditorController, agentName: node.name!)
+        
+        // agentframes!
+//        agentEditorController.attributesController.connectAgentToCoreData(agentEditorController, agentName: node.name!)
 
 		settingsView.addSubview(agentEditorController.view)
         agentEditorController.refresh()
@@ -733,7 +747,7 @@ extension AppDelegate: LogSliderDelegate {
 
 extension AppDelegate: NSPopoverDelegate {
 	
-	func popoverDidClose(_ notification: Notification) {
+	func popoverDidClose(_ notification: Foundation.Notification) {
 		activePopover = nil
 	}
 	

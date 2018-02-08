@@ -24,7 +24,7 @@
 
 import Foundation
 
-class AFCompositeEditor {
+class AFCompositeEditor: AFEditor {
     unowned var core: AFCore
     var pathToHere: [JSONSubscriptType]
     

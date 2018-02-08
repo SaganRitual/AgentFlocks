@@ -24,7 +24,7 @@
 
 import Foundation
 
-class AFPathEditor {
+class AFPathEditor: AFEditor {
     unowned var core: AFCore
     var pathToHere: [JSONSubscriptType]
     

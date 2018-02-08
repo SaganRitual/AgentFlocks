@@ -28,8 +28,8 @@ protocol AFSceneControllerState {
     func click(_ name: String?, flags: NSEvent.ModifierFlags?)
     func flagsChanged(to newFlags: NSEvent.ModifierFlags)
     func mouseMove(to position: CGPoint)
-    func newAgentHasBeenCreated(_ notification: Notification)
-    func newPathHasBeenCreated(_ notification: Notification)
+    func newAgentHasBeenCreated(_ notification: Foundation.Notification)
+    func newPathHasBeenCreated(_ notification: Foundation.Notification)
 }
 
 extension AFSceneController {
@@ -41,8 +41,8 @@ extension AFSceneController {
         func click(_ name: String?, flags: NSEvent.ModifierFlags?) { }
         func flagsChanged(to newFlags: NSEvent.ModifierFlags) {}
         func mouseMove(to position: CGPoint) {}
-        func newAgentHasBeenCreated(_ notification: Notification) {}
-        func newPathHasBeenCreated(_ notification: Notification) {}
+        func newAgentHasBeenCreated(_ notification: Foundation.Notification) {}
+        func newPathHasBeenCreated(_ notification: Foundation.Notification) {}
 
         func click_item(_ name: String, flags: NSEvent.ModifierFlags?) {
             // Ignore all modified clicks on a path node, for now

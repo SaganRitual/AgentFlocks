@@ -22,7 +22,7 @@
 // IN THE SOFTWARE.
 //
 
-class AFAgentEditor {
+class AFAgentEditor: AFEditor {
     unowned var core: AFCore
     var pathToHere: [JSONSubscriptType]
     
@@ -33,12 +33,22 @@ class AFAgentEditor {
 
         // If there's no name here, it's because we're starting from
         // scratch, as opposed to attaching to existing data. Write
-        // our name, and we're ready.
+        // our name, and we're ready. If there's a name, then we're
+        // already there.
         let agent: JSON = core.bigData.data[pathToHere]
         let nameEntry: JSONSubscriptType = "name"
         if !agent[nameEntry].exists() {
             let name = JSON(pathToHere.last!).stringValue
             getNodeWriter(pathToHere).write(this: JSON(name), to: nameEntry)
+            
+            // Hack in some defaults for now. Still haven't worked out
+            // a good way to set defaults.
+            isPaused = false
+            mass = 0.1
+            maxAcceleration = 100
+            maxSpeed = 100
+            radius = 25
+            scale = 1
         }
     }
     
@@ -103,6 +113,17 @@ extension AFAgentEditor {
         }
     }
     
+    var name: String {
+        get {
+            let j: JSONSubscriptType = "name"
+            return JSON(core.bigData.data[pathToHere][j]).stringValue
+        }
+        set {
+            let j: JSONSubscriptType = "name"
+            getNodeWriter(pathToHere).write(this: JSON(newValue), to: j)
+        }
+    }
+
     var radius: Float {
         get {
             let r: JSONSubscriptType = AFAgentAttribute.radius.rawValue

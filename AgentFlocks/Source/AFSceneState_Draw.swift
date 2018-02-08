@@ -56,7 +56,7 @@ extension AFSceneController {
             updateDrawIndicator(position)
         }
         
-        override func newPathHasBeenCreated(_ notification: Notification) {
+        override func newPathHasBeenCreated(_ notification: Foundation.Notification) {
 //            guard afSceneController.activePath == nil else { fatalError() }
 //            
 //            let embryo = afSceneController.getPath(notification.object as! String)

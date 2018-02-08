@@ -30,7 +30,7 @@ class AFBehavior: GKBehavior {
     private let familyName: String
     private var goalsMap = [GKGoal: AFGoal]()
     let name: String
-    private unowned let notifications: NotificationCenter
+    private unowned let notifications: Foundation.NotificationCenter
     private var savedState: (weight: Float, goal: AFGoal)?
     private unowned let gameScene: SKScene
     
@@ -39,7 +39,7 @@ class AFBehavior: GKBehavior {
         self.familyName = "Corlione"
         self.name = NSUUID().uuidString
         self.gameScene = gameScene
-        self.notifications = core.bigData.notifications
+        self.notifications = core.bigData.notifier
         
         super.init()
         
@@ -47,7 +47,7 @@ class AFBehavior: GKBehavior {
         self.notifications.addObserver(self, selector: #selector(aGoalHasBeenCreated(notification:)), name: n, object: nil)
     }
     
-    @objc func aGoalHasBeenCreated(notification: Notification) {
+    @objc func aGoalHasBeenCreated(notification: Foundation.Notification) {
     }
     
     func getAFGoalForGKGoal(_ gkGoal: GKGoal?) -> AFGoal? {

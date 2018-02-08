@@ -41,7 +41,7 @@ class NodeWriter {
     }
     
     func write(this value: JSON, to key: JSONSubscriptType) {
-        self.key = key
+        self.key = key  // Remember that we wrote something so we'll announce to listeners
         bigData.data[pathToParent][key] = value
     }
     
@@ -56,15 +56,39 @@ class AFData {
     var core: AFCore!
     var data: JSON = [ "agents": [:], "paths": [:] ]
 
-    var notifications = NotificationCenter()
+    var notifier = Foundation.NotificationCenter()
     
     init() {  }
     
+    struct Notifier {
+        let core: AFCore
+        let pathToNode: [JSONSubscriptType]
+        
+        init(_ core: AFCore, _ pathToNode: [JSONSubscriptType]) {
+            self.core = core
+            self.pathToNode = pathToNode
+        }
+        
+        init(_ notification: Foundation.Notification) {
+            let userInfo = notification.userInfo!
+            self.core = userInfo["core"] as! AFCore
+            self.pathToNode = userInfo["pathToNode"] as! [JSONSubscriptType]
+        }
+        
+        func encode() -> [String : Any] { return ["type": "data", "core": core, "pathToNode": pathToNode] }
+        
+        static func isDataNotifier(_ notifier: Foundation.Notification) -> Bool {
+            if let userInfo = notifier.userInfo, let type = userInfo["type"] as? String {
+                return type == "data"
+            } else { return false }
+        }
+    }
+    
     func announce(path toNode: [JSONSubscriptType]) {
-        let u: [String : Any] = ["core": core, "path": toNode]
-        let n = Notification.Name(rawValue: "ThereCanBeOnlyOne")
-        let nn = Notification(name: n, object: nil, userInfo: u)
-        notifications.post(nn)
+        let u = AFData.Notifier(core, toNode).encode()
+        let n = Foundation.Notification.Name(rawValue: "ThereCanBeOnlyOne")
+        let nn = Foundation.Notification(name: n, object: nil, userInfo: u)
+        notifier.post(nn)
     }
 
     func dump() -> String {
@@ -76,3 +100,4 @@ class AFData {
         return NodeWriter(path, core: core)
     }
 }
+

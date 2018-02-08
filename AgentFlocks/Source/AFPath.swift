@@ -32,7 +32,7 @@ class AFPath: Equatable {
     private var graphNodes = AFOrderedMap<String, AFGraphNode2D>()
     private static let handleOffset = CGPoint(x: 0, y: 15)
     let name: String
-    private unowned let notifications: NotificationCenter
+    private unowned let notifications: Foundation.NotificationCenter
     private let spriteSet: SpriteSet
     
     init(core: AFCore, editor: AFPathEditor, gameScene: SKScene) {
