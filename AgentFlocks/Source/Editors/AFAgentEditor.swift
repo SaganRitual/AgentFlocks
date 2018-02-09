@@ -38,6 +38,7 @@ class AFAgentEditor: AFEditor {
         let agent: JSON = core.bigData.data[pathToHere]
         let nameEntry: JSONSubscriptType = "name"
         if !agent[nameEntry].exists() {
+            
             let name = JSON(pathToHere.last!).stringValue
             getNodeWriter(pathToHere).write(this: JSON(name), to: nameEntry)
             

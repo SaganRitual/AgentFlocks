@@ -64,17 +64,18 @@ class AFCore {
     }
     
     func getPathTo(_ nameToSeek: String, pathSoFar: [JSONSubscriptType] = [JSONSubscriptType]()) -> [JSONSubscriptType]? {
-        for (key_, value) in bigData.data[pathSoFar] {
+        for (key_, _) in bigData.data[pathSoFar] {
             // Couldn't believe this trick worked, but I couldn't believe that
             // it was necessary. SwiftyJSON would see my key as a string, and
             // wouldn't index properly into a normal array. So I have to forcibly
             // make it an integer if it looks like one.
             let s = Int(key_)
             let key: JSONSubscriptType = (s == nil) ? key_ : s!
+            let nextLevelDown = pathSoFar + [key]
             
-            if value.stringValue == nameToSeek { return pathSoFar }
+            if JSON(key).stringValue == nameToSeek { return nextLevelDown }
             else {
-                if let p = getPathTo(nameToSeek, pathSoFar: pathSoFar + [key]) {
+                if let p = getPathTo(nameToSeek, pathSoFar: nextLevelDown) {
                     return p            // Say that we dug deeper
                 }
             }

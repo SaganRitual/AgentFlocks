@@ -26,17 +26,11 @@ import Foundation
 
 class AFBehaviorEditor: AFEditor {
     unowned var core: AFCore
-    let indexSimulator: Int
-    static var indexSimulator_ = 0
     var pathToHere: [JSONSubscriptType]
     
-    // Create a new, empty behavior slot in the data tree.
     init(_ pathToHere: [JSONSubscriptType], core: AFCore) {
         self.core  = core
-        self.indexSimulator = AFBehaviorEditor.indexSimulator_
         self.pathToHere = pathToHere
-        
-        AFBehaviorEditor.indexSimulator_ += 1
     }
     
     func createGoal() -> AFGoalEditor {
@@ -52,6 +46,17 @@ class AFBehaviorEditor: AFEditor {
 
     func getNodeWriter(_ pathToParent: [JSONSubscriptType]) -> NodeWriter {
         return NodeWriter(pathToParent, core: core)
+    }
+
+    // Some of the UI views need us to preserve the order -- or at least appear
+    // to preserve the order -- of behaviors & goals. Our data is all tree-oriented,
+    // so we have to do some juggling to keep the UI's desired order.
+    subscript(_ ix: Int) -> String {
+        let goals = core.bigData.data[pathToHere].sorted(by: {
+            $0.1["serialNumber"].intValue < $1.1["serialNumber"].intValue
+        })
+        
+        return goals[ix].0  // .0 is the name of the goal node
     }
 
     /*

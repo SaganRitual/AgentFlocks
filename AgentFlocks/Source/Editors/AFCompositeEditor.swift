@@ -27,7 +27,9 @@ import Foundation
 class AFCompositeEditor: AFEditor {
     unowned var core: AFCore
     var pathToHere: [JSONSubscriptType]
-    
+
+    var count: Int { get { return core.bigData.data[pathToHere].count } }
+
     // Create a new, empty composite slot in the data tree.
     init(_ pathToHere: [JSONSubscriptType], core: AFCore) {
         self.core  = core
@@ -53,6 +55,14 @@ class AFCompositeEditor: AFEditor {
 
     func getNodeWriter(_ pathToParent: [JSONSubscriptType]) -> NodeWriter {
         return NodeWriter(pathToParent, core: core)
+    }
+
+    subscript(_ ix: Int) -> String {
+        let behaviors = core.bigData.data[pathToHere].sorted(by: {
+            $0.1["serialNumber"].intValue < $1.1["serialNumber"].intValue
+        })
+        
+        return behaviors[ix].0  // .0 is the name of the behavior node
     }
 
     

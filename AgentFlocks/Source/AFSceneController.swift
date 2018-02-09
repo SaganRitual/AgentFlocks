@@ -118,6 +118,10 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
         let imageIndex = browserDelegate.agentImageIndex
         let image = ui.agents[imageIndex].image
         let agentEditor = core.createAgent()
+        
+        let c = agentEditor.createComposite()   // Add a complimentary behavior before we
+        _ = c.createBehavior()                  // send the new agent on his way
+
         let agent = AFAgent2D(core: core, editor: agentEditor, image: image, position: currentPosition, gameScene: gameScene)
         selectionController.newAgentWasCreated(agent.name)
     }

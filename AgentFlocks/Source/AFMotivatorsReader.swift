@@ -25,12 +25,14 @@
 import GameplayKit
 
 class AFMotivatorsReader: AgentGoalsDataSource {
+    var arrayizer = 0   // For simulating array behavior with certain nodes in the data
     var core: AFCore!
-    var uiNotifications: Foundation.NotificationCenter!
+    var dataNotifications: Foundation.NotificationCenter!
     var selectedAgent: String?
-    
-    init(_ injector: AFCore.AFDependencyInjector) { }
-    
+    var uiNotifications: Foundation.NotificationCenter!
+
+    init(_ injector: AFCore.AFDependencyInjector) {}
+
     private struct EditorWithIndexSimulator {
         unowned let core: AFCore
         let fullPath: [JSONSubscriptType]
@@ -80,6 +82,7 @@ class AFMotivatorsReader: AgentGoalsDataSource {
         
         init(_ nodeName: JSONSubscriptType, core: AFCore) {
             self.core = core
+            print(core.bigData.data)
             fullPath = core.getPathTo(JSON(nodeName).stringValue)!
         }
         
@@ -100,8 +103,9 @@ class AFMotivatorsReader: AgentGoalsDataSource {
         if let itemName = item as? String {
             return core.bigData.getChildCount(for: itemName)
         } else {
-            let editor = AFAgentEditor(core.getPathTo(selectedAgent!)!, core; core)
-            return editor.
+            let pathToBehaviors = core.getPathTo(selectedAgent!)! + ["behaviors"]
+            let behaviors = AFCompositeEditor(pathToBehaviors, core: core)
+            return behaviors.count
         }
     }
     
@@ -115,14 +119,22 @@ class AFMotivatorsReader: AgentGoalsDataSource {
     // child item of the root object. That's the composite, ie, the agent's behaviors dictionary.
     // We can also come here for goals, hence using the mini-editor for access to the fake index.
     func agentGoals(_ agentGoalsController: AgentGoalsController, child index: Int, ofItem item: Any?) -> Any {
-        let itemName = item as? String ?? "behaviors"
-        
-        if let children = core.bigData.getChildren(of: itemName, under: selectedAgent!)?.sorted(by: {
-            let lhs = EditorWithIndexSimulator($0.stringValue, core: core).indexSimulator
-            let rhs = EditorWithIndexSimulator($1.stringValue, core: core).indexSimulator
-            return lhs < rhs}) {
-            
-            return children[index]
+        if item == nil {
+            let pathToComposite: [JSONSubscriptType] = ["agents", selectedAgent!, "behaviors"]
+            let behaviors = AFCompositeEditor(pathToComposite, core: core)
+            return behaviors[index]
+        } else if let itemName = item as? String {
+            let pathToItem = core.getPathTo(itemName)!
+            let pathToDictionary = Array(pathToItem.prefix(pathToItem.count))
+            if pathToDictionary.contains(where: { String(describing: $0) == "behaviors" }) {
+                // A kludgey way of determining whether we're talking to a
+                // behavior or a goal. Figure out a better way.
+                let goals = AFBehaviorEditor(pathToDictionary, core: core)
+                return goals[index]
+            } else {
+                let behaviors = AFCompositeEditor(pathToDictionary, core: core)
+                return behaviors[index]
+            }
         }
         
         fatalError()
@@ -153,6 +165,26 @@ class AFMotivatorsReader: AgentGoalsDataSource {
         return false
     }
     
+    // The motivators reader has to make a couple of tree nodes look like arrays. For
+    // this, we need an ascending id number on every node we'll ever care about. At this
+    // moment, that means behaviors and goals. So whenever a behavior or goal is created,
+    // we grab it as it goes by and stamp the number on it.
+    @objc func coreDataChanged(notification: Foundation.Notification) {
+        let pathToChangedNode = AFData.Notifier(notification).pathToNode
+        let changedNode = pathToChangedNode.last!
+        let pathToParent = Array(pathToChangedNode.prefix(upTo: pathToChangedNode.count))
+        let parentNode = String(describing: pathToParent.last!)
+        
+        guard parentNode == "behaviors" || parentNode == "goals" else { return }
+
+        // Grab the behavior or goal, whichever it is at this level, and attach an
+        // ascending number to it. This allows us to maintain the order of behaviors
+        // and goals in the views.
+        core.getNodeWriter(pathToParent).write(this: JSON(["serialNumber" : arrayizer]), to: changedNode)
+        
+        arrayizer += 1
+    }
+    
     @objc func dataSourceHasBeenSelected(notification: Foundation.Notification) {
         selectedAgent = AFSceneController.Notification.Decode(notification).name
     }
@@ -165,21 +197,27 @@ class AFMotivatorsReader: AgentGoalsDataSource {
         var iStillNeedSomething = false
         
         self.core = injector.core!
-        self.uiNotifications = injector.uiNotifications!
         
+        if let dn = injector.dataNotifications { self.dataNotifications = dn }
+        else { injector.someoneStillNeedsSomething = true; iStillNeedSomething = true }
+
         if let un = injector.uiNotifications { self.uiNotifications = un }
         else { injector.someoneStillNeedsSomething = true; iStillNeedSomething = true }
         
         if !iStillNeedSomething {
             injector.agentGoalsDataSource = self
             
-            let s1 = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
+            let s1 = Foundation.Notification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
             let ss1 = #selector(dataSourceHasBeenSelected(notification:))
             self.uiNotifications.addObserver(self, selector: ss1, name: s1, object: nil)
             
-            let s2 = NSNotification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
+            let s2 = Foundation.Notification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
             let ss2 = #selector(dataSourceHasBeenDeselected(notification:))
             self.uiNotifications.addObserver(self, selector: ss2, name: s2, object: nil)
+            
+            let s3 = Foundation.Notification.Name(rawValue: "ThereCanBeOnlyOne")
+            let ss3 = #selector(coreDataChanged(notification:))
+            self.uiNotifications.addObserver(self, selector: ss3, name: s3, object: nil)
         }
     }
 
