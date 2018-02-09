@@ -142,9 +142,18 @@ class AFMotivatorsReader: AgentGoalsDataSource {
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, labelOfItem item: Any) -> String {
         if let item = item as? String {
-            return "Behavior/goal \(core.nickname(item))"
+            let fullPath = core.getPathTo(item)!
+            let c = fullPath.count
+            let parent = String(describing: fullPath[c - 2])
+            if parent == "behaviors" {
+                return "Behavior \(core.nickname(item))"
+            } else if parent == "goals" {
+                return "Goal \(core.nickname(item))"
+            } else {
+                return "The agent goals controller is a noisy contraption. Ignore stuff like this."
+            }
         } else {
-            return "Who the fuck knows"
+            return "And this."
         }
     }
     
@@ -172,7 +181,7 @@ class AFMotivatorsReader: AgentGoalsDataSource {
     @objc func coreDataChanged(notification: Foundation.Notification) {
         let pathToChangedNode = AFData.Notifier(notification).pathToNode
         let changedNode = pathToChangedNode.last!
-        let pathToParent = Array(pathToChangedNode.prefix(upTo: pathToChangedNode.count))
+        let pathToParent = Array(pathToChangedNode.prefix(upTo: pathToChangedNode.count - 1))
         let parentNode = String(describing: pathToParent.last!)
         
         guard parentNode == "behaviors" || parentNode == "goals" else { return }
@@ -180,7 +189,16 @@ class AFMotivatorsReader: AgentGoalsDataSource {
         // Grab the behavior or goal, whichever it is at this level, and attach an
         // ascending number to it. This allows us to maintain the order of behaviors
         // and goals in the views.
-        core.getNodeWriter(pathToParent).write(this: JSON(["serialNumber" : arrayizer]), to: changedNode)
+        //
+        // Not sure whether this is good design or a hack. Turn off notifications for this
+        // write. My hypothesis is that this is not actual project data, just temp stuff
+        // to enable the UI to operate properly. But then, it seems that it shouldn't hurt
+        // to have notifications here. It does, because I'm changing the tree here. So
+        // we get another notification before we can exit deinit. Seems like we generally
+        // shouldn't be writing to the tree from within a notification. This seems the only
+        // reasonable place to do this one, and the notifications are spurious anyway. Thus,
+        // I give myself permission to consider this good design.
+        core.getNodeWriter(pathToParent).suppressNotifications().write(this: JSON(["serialNumber" : arrayizer]), to: changedNode)
         
         arrayizer += 1
     }
@@ -217,7 +235,7 @@ class AFMotivatorsReader: AgentGoalsDataSource {
             
             let s3 = Foundation.Notification.Name(rawValue: "ThereCanBeOnlyOne")
             let ss3 = #selector(coreDataChanged(notification:))
-            self.uiNotifications.addObserver(self, selector: ss3, name: s3, object: nil)
+            self.dataNotifications.addObserver(self, selector: ss3, name: s3, object: nil)
         }
     }
 

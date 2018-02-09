@@ -28,6 +28,7 @@ class NodeWriter {
     let bigData: AFData
     var key: JSONSubscriptType?
     let pathToParent: [JSONSubscriptType]
+    private var suppressNotifications_: Bool?
     
     init(_ pathToParent: [JSONSubscriptType], core: AFCore) {
         self.bigData = core.bigData
@@ -35,9 +36,22 @@ class NodeWriter {
     }
     
     deinit {
+        guard suppressNotifications_ == nil else {
+            if suppressNotifications_! == false { fatalError() }
+            return
+        }
+        
         if let key = key {    // That is, if we actually wrote something
             bigData.announce(path: pathToParent + [key])
         }
+    }
+    
+    // Making it really stand out when we need to suppress notifications, so I don't
+    // overlook it while chasing down bugs.
+    func suppressNotifications() -> NodeWriter {
+        guard suppressNotifications_ == nil else { fatalError("Reentering suppressNotifications") }
+        suppressNotifications_ = true
+        return self
     }
     
     func write(this value: JSON, to key: JSONSubscriptType) {
