@@ -26,12 +26,17 @@ import Foundation
 
 class AFBehaviorEditor: AFEditor {
     unowned var core: AFCore
+    let indexSimulator: Int
+    static var indexSimulator_ = 0
     var pathToHere: [JSONSubscriptType]
     
     // Create a new, empty behavior slot in the data tree.
     init(_ pathToHere: [JSONSubscriptType], core: AFCore) {
         self.core  = core
+        self.indexSimulator = AFBehaviorEditor.indexSimulator_
         self.pathToHere = pathToHere
+        
+        AFBehaviorEditor.indexSimulator_ += 1
     }
     
     func createGoal() -> AFGoalEditor {

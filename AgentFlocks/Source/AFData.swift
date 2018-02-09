@@ -95,6 +95,30 @@ class AFData {
         if let rs = data.rawString(.utf8, options: .sortedKeys) { return rs }
         else { return "no string?" }
     }
+    
+    func getChildCount(for nodeName: String) -> Int {
+        if let path = core.getPathTo(nodeName) { return data[path][nodeName].count }
+        else { fatalError() }
+    }
+    
+    func getChildren(of nodeName: String) -> [JSON]? {
+        if let path = core.getPathTo(nodeName) {
+            return data[path][nodeName].arrayObject as? [JSON]
+        }
+        
+        return nil
+    }
+    
+    // Here, nodeName will be "behaviors" or "goals". We need to figure
+    // out the full path to those containers. Will have to come back to this
+    // to get goals working. Right now just trying to get past the smoke test.
+    func getChildren(of nodeName: String, under agent: String) -> [JSON]? {
+        if let path = core.getPathTo(nodeName, pathSoFar: ["agents", agent]) {
+            return data[path][nodeName].arrayObject as? [JSON]
+        }
+        
+        return nil
+    }
 
     func getNodeWriter(for path: [JSONSubscriptType]) -> NodeWriter {
         return NodeWriter(path, core: core)

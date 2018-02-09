@@ -125,6 +125,14 @@ class AFCore {
         // GameScene.
         return c.sceneInputState
     }
+
+    func nickname(_ name: String?) -> String {
+        guard let name = name else { return "<no name>" }
+        
+        let indexStartOfText = name.index(name.startIndex, offsetBy: 0)
+        let indexEndOfText = name.index(name.startIndex, offsetBy: 4)
+        return String(name[indexStartOfText ..< indexEndOfText])
+    }
 }
 
 extension AFCore {

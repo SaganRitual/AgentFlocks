@@ -279,9 +279,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func placeAgentFrames(node: SKNode) {
-        
-        // agentframes!
-//        agentEditorController.attributesController.connectAgentToCoreData(agentEditorController, agentName: node.name!)
 
 		settingsView.addSubview(agentEditorController.view)
         agentEditorController.refresh()
