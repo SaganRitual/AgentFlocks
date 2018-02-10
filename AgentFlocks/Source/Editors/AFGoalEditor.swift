@@ -62,7 +62,7 @@ extension AFGoalEditor {
     func composeGoal_toWander(speed: Float)             { _composeGoal_speed(.toWander, speed: speed) }
     func composeGoal_toReachTargetSpeed(_ speed: Float) { _composeGoal_speed(.toReachTargetSpeed, speed: speed) }
     
-    func _composeGoal_speed(_ type: AFGoalType, speed: Float) {
+    private func _composeGoal_speed(_ type: AFGoalType, speed: Float) {
         guard self.type == nil else { fatalError() }
         self.type = type
         self.speed = speed
@@ -76,7 +76,7 @@ extension AFGoalEditor {
         _composeGoal_path(.toStayOn, path: path, time: time)
     }
 
-    func _composeGoal_path(_ type: AFGoalType, path: String, time: TimeInterval, forward: Bool? = nil) {
+    private func _composeGoal_path(_ type: AFGoalType, path: String, time: TimeInterval, forward: Bool? = nil) {
         guard self.type == nil else { fatalError() }
         self.type = type
         self.path = path
@@ -106,7 +106,7 @@ extension AFGoalEditor {
         _composeGoal_flock(.toSeparateFrom, agents: agents, angle: angle, distance: distance)
     }
 
-    func _composeGoal_flock(_ type: AFGoalType, agents: [String], angle: Float, distance: Float) {
+    private func _composeGoal_flock(_ type: AFGoalType, agents: [String], angle: Float, distance: Float) {
         guard self.type == nil else { fatalError() }
         self.type = type
         self.agents = agents

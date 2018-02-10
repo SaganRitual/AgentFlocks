@@ -257,7 +257,7 @@ class AgentAttributesController: NSViewController {
         let n = AFData.Notifier(notification)
         let c = n.pathToNode.count
         
-        // We'll need the editor, which is two nodes up from the attributes
+        // We'll need the editor, which is one node up from the attribute
         // we're being notified about. If our notification path isn't at least
         // that long, the notification has nothing to do with us.
         guard c > 2 else { return nil }
@@ -272,13 +272,21 @@ class AgentAttributesController: NSViewController {
     }
     
     @objc func nodeChanged(notification: Foundation.Notification) {
-        guard targetAgent != nil else { return }    // If it's about another agent, don't bother
+        // Ignore the various notifications that we don't care about.
+        
+        // No agent selected
+        guard let targetAgent = self.targetAgent else { return }
+        
+        // If I (the agent) am not mentioned in the change path, then the notification
+        // has nothing to do with me. Just ignore it.
+        let n = AFData.Notifier(notification)
+        guard n.pathToNode.contains(where: { JSON($0).stringValue == targetAgent }) else { return }
+
+        // It involves me. I might still not care; let the editor chew on it
         guard let editor = getCoreAgentEditor(notification: notification) else { fatalError() }
 
-        let n = AFData.Notifier(notification)
-        let c = n.pathToNode.count
-
         // If we don't recognize the attribute name, throw a spanner in it
+        let c = n.pathToNode.count
         let thisNode = String(describing: n.pathToNode[c - 1])
         guard let attribute = AFAgentAttribute(rawValue: thisNode) else { fatalError() }
         
@@ -298,6 +306,7 @@ class AgentAttributesController: NSViewController {
     
     @objc func hasBeenSelected(notification: Foundation.Notification) {
         guard let name = AFSceneController.Notification.Decode(notification).name else { fatalError() }
+        targetAgent = name
         
         let editor = core.getAgentEditor(for: JSON(name))
         Array<AFAgentAttribute>([.isPaused, .mass, .maxAcceleration, .maxSpeed, .radius, .scale]).forEach {
@@ -307,6 +316,7 @@ class AgentAttributesController: NSViewController {
     
     @objc func hasBeenDeselected(notification: Foundation.Notification) {
         print("AgentAttributesController gets hasBeenDeselected")
+        targetAgent = nil
     }
 	
     override func viewDidLoad() {
