@@ -73,7 +73,7 @@ extension AFGoalEditor {
     }
     
     func composeGoal_toStayOn(_ path: String, time: TimeInterval) {
-        _composeGoal_path(.toFollow, path: path, time: time)
+        _composeGoal_path(.toStayOn, path: path, time: time)
     }
 
     func _composeGoal_path(_ type: AFGoalType, path: String, time: TimeInterval, forward: Bool? = nil) {
@@ -267,7 +267,7 @@ extension AFGoalEditor {
         set {
             let ix: JSONSubscriptType = GoalAttributes.type.rawValue
             if let newValue = newValue {
-                getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
+                getNodeWriter(pathToHere).write(this: JSON(newValue.rawValue), to: ix)
             } else {
                 fatalError()
             }
