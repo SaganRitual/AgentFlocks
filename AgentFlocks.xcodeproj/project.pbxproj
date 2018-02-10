@@ -83,6 +83,21 @@
 		D472A3711FFFD6860030ACA8 /* LogSliderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D472A36F1FFFD6850030ACA8 /* LogSliderController.swift */; };
 		D472A3721FFFD6860030ACA8 /* LogSliderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = D472A3701FFFD6860030ACA8 /* LogSliderView.xib */; };
 		D47BC1F41FECCFE600B3CE6B /* Round2.txt in Resources */ = {isa = PBXBuildFile; fileRef = D47BC1F31FECCFE600B3CE6B /* Round2.txt */; };
+		D489FEFB202E1DD3004273FB /* AFBehaviorEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D489FEFA202E1DD3004273FB /* AFBehaviorEditor.swift */; };
+		D489FF03202F2771004273FB /* AgentFlocksCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D489FF02202F2771004273FB /* AgentFlocksCoreTests.swift */; };
+		D489FF0A202F27EE004273FB /* AFCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F10929202C519F00342A79 /* AFCore.swift */; };
+		D489FF0B202F2811004273FB /* AFData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F1092A202C519F00342A79 /* AFData.swift */; };
+		D489FF0C202F281F004273FB /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49AD3C82020F21200ACFA65 /* SwiftyJSON.swift */; };
+		D489FF0D202F28FC004273FB /* AFAgentGoalsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D1655E200D45A40065728D /* AFAgentGoalsDelegate.swift */; };
+		D489FF0E202F28FC004273FB /* AFBrowserDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C942D8200C39CD00A85BCB /* AFBrowserDelegate.swift */; };
+		D489FF0F202F28FC004273FB /* AFContextMenuDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4AEE5F8200FD19400933852 /* AFContextMenuDelegate.swift */; };
+		D489FF10202F28FC004273FB /* AFItemEditorDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D16560200D61040065728D /* AFItemEditorDelegate.swift */; };
+		D489FF11202F28FC004273FB /* AFMenuBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D1655A200CA2B60065728D /* AFMenuBarDelegate.swift */; };
+		D489FF12202F28FC004273FB /* AFTopBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D1655C200D401E0065728D /* AFTopBarDelegate.swift */; };
+		D489FF14202F2909004273FB /* AFMotivatorsReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B98F201774570072EE5A /* AFMotivatorsReader.swift */; };
+		D489FF15202F2910004273FB /* AFOrderedMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4422621200795070013A6E5 /* AFOrderedMap.swift */; };
+		D489FF16202F2923004273FB /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561F1FE7A41800FC454B /* GameScene.swift */; };
+		D489FF17202F2950004273FB /* AFSceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B98D20172AA40072EE5A /* AFSceneController.swift */; };
 		D49AD3C92020F21200ACFA65 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49AD3C82020F21200ACFA65 /* SwiftyJSON.swift */; };
 		D4AEE5F9200FD19400933852 /* AFContextMenuDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4AEE5F8200FD19400933852 /* AFContextMenuDelegate.swift */; };
 		D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */; };
@@ -97,7 +112,6 @@
 		D4E144162021953000F6F59D /* AFSelectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E144152021952F00F6F59D /* AFSelectionController.swift */; };
 		D4E1441A2021F17A00F6F59D /* AFNodeAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E144192021F17A00F6F59D /* AFNodeAdapter.swift */; };
 		D4E1441C20229BE800F6F59D /* AFSceneInputState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E1441B20229BE800F6F59D /* AFSceneInputState.swift */; };
-		D4F10925202C511D00342A79 /* AFBehaviorEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F10921202C511D00342A79 /* AFBehaviorEditor.swift */; };
 		D4F10926202C511D00342A79 /* AFCompositeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F10922202C511D00342A79 /* AFCompositeEditor.swift */; };
 		D4F10927202C511D00342A79 /* AFGoalEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F10923202C511D00342A79 /* AFGoalEditor.swift */; };
 		D4F10928202C511D00342A79 /* AFAgentEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F10924202C511D00342A79 /* AFAgentEditor.swift */; };
@@ -107,6 +121,16 @@
 		D4F10930202C5C0C00342A79 /* AFGraphNodeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F1092F202C5C0C00342A79 /* AFGraphNodeEditor.swift */; };
 		D4F779E320087057005179BA /* AFGraphNode2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F779E220087057005179BA /* AFGraphNode2D.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D489FF05202F2771004273FB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 744D8F181F91E38200D4B048 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 744D8F1F1F91E38300D4B048;
+			remoteInfo = AgentFlocks;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		744D8F201F91E38300D4B048 /* AgentFlocks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AgentFlocks.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -189,6 +213,10 @@
 		D472A36F1FFFD6850030ACA8 /* LogSliderController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogSliderController.swift; sourceTree = "<group>"; };
 		D472A3701FFFD6860030ACA8 /* LogSliderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LogSliderView.xib; sourceTree = "<group>"; };
 		D47BC1F31FECCFE600B3CE6B /* Round2.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Round2.txt; sourceTree = "<group>"; };
+		D489FEFA202E1DD3004273FB /* AFBehaviorEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFBehaviorEditor.swift; sourceTree = "<group>"; };
+		D489FF00202F2771004273FB /* AgentFlocksCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AgentFlocksCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D489FF02202F2771004273FB /* AgentFlocksCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentFlocksCoreTests.swift; sourceTree = "<group>"; };
+		D489FF04202F2771004273FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D49AD3C82020F21200ACFA65 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		D4AEE5F8200FD19400933852 /* AFContextMenuDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFContextMenuDelegate.swift; sourceTree = "<group>"; };
 		D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFCompositeBehavior.swift; sourceTree = "<group>"; };
@@ -203,7 +231,6 @@
 		D4E144152021952F00F6F59D /* AFSelectionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSelectionController.swift; sourceTree = "<group>"; };
 		D4E144192021F17A00F6F59D /* AFNodeAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFNodeAdapter.swift; sourceTree = "<group>"; };
 		D4E1441B20229BE800F6F59D /* AFSceneInputState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFSceneInputState.swift; sourceTree = "<group>"; };
-		D4F10921202C511D00342A79 /* AFBehaviorEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFBehaviorEditor.swift; sourceTree = "<group>"; };
 		D4F10922202C511D00342A79 /* AFCompositeEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFCompositeEditor.swift; sourceTree = "<group>"; };
 		D4F10923202C511D00342A79 /* AFGoalEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFGoalEditor.swift; sourceTree = "<group>"; };
 		D4F10924202C511D00342A79 /* AFAgentEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFAgentEditor.swift; sourceTree = "<group>"; };
@@ -222,6 +249,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D489FEFD202F2771004273FB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -230,6 +264,7 @@
 			children = (
 				D442562A1FE80FA000FC454B /* README.md */,
 				744D8F221F91E38300D4B048 /* AgentFlocks */,
+				D489FF01202F2771004273FB /* AgentFlocksCoreTests */,
 				744D8F211F91E38300D4B048 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -238,6 +273,7 @@
 			isa = PBXGroup;
 			children = (
 				744D8F201F91E38300D4B048 /* AgentFlocks.app */,
+				D489FF00202F2771004273FB /* AgentFlocksCoreTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -355,8 +391,8 @@
 		D44256211FE7F9DE00FC454B /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				D4F1091E202C50BA00342A79 /* Editors */,
 				D4D16562200D7F880065728D /* Delegates */,
+				D4F1091E202C50BA00342A79 /* Editors */,
 				D442B987201692810072EE5A /* AFAgent2D.swift */,
 				D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */,
 				D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */,
@@ -380,6 +416,15 @@
 			path = Source;
 			sourceTree = "<group>";
 		};
+		D489FF01202F2771004273FB /* AgentFlocksCoreTests */ = {
+			isa = PBXGroup;
+			children = (
+				D489FF02202F2771004273FB /* AgentFlocksCoreTests.swift */,
+				D489FF04202F2771004273FB /* Info.plist */,
+			);
+			path = AgentFlocksCoreTests;
+			sourceTree = "<group>";
+		};
 		D4D16562200D7F880065728D /* Delegates */ = {
 			isa = PBXGroup;
 			children = (
@@ -397,7 +442,7 @@
 			isa = PBXGroup;
 			children = (
 				D4F10924202C511D00342A79 /* AFAgentEditor.swift */,
-				D4F10921202C511D00342A79 /* AFBehaviorEditor.swift */,
+				D489FEFA202E1DD3004273FB /* AFBehaviorEditor.swift */,
 				D4F10922202C511D00342A79 /* AFCompositeEditor.swift */,
 				D4F10923202C511D00342A79 /* AFGoalEditor.swift */,
 				D4F1092F202C5C0C00342A79 /* AFGraphNodeEditor.swift */,
@@ -426,19 +471,42 @@
 			productReference = 744D8F201F91E38300D4B048 /* AgentFlocks.app */;
 			productType = "com.apple.product-type.application";
 		};
+		D489FEFF202F2771004273FB /* AgentFlocksCoreTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D489FF07202F2771004273FB /* Build configuration list for PBXNativeTarget "AgentFlocksCoreTests" */;
+			buildPhases = (
+				D489FEFC202F2771004273FB /* Sources */,
+				D489FEFD202F2771004273FB /* Frameworks */,
+				D489FEFE202F2771004273FB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D489FF06202F2771004273FB /* PBXTargetDependency */,
+			);
+			name = AgentFlocksCoreTests;
+			productName = AgentFlocksCoreTests;
+			productReference = D489FF00202F2771004273FB /* AgentFlocksCoreTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		744D8F181F91E38200D4B048 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0900;
+				LastSwiftUpdateCheck = 0920;
 				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = TriKatz;
 				TargetAttributes = {
 					744D8F1F1F91E38300D4B048 = {
 						CreatedOnToolsVersion = 9.0;
 						ProvisioningStyle = Automatic;
+					};
+					D489FEFF202F2771004273FB = {
+						CreatedOnToolsVersion = 9.2;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 744D8F1F1F91E38300D4B048;
 					};
 				};
 			};
@@ -456,6 +524,7 @@
 			projectRoot = "";
 			targets = (
 				744D8F1F1F91E38300D4B048 /* AgentFlocks */,
+				D489FEFF202F2771004273FB /* AgentFlocksCoreTests */,
 			);
 		};
 /* End PBXProject section */
@@ -520,6 +589,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D489FEFE202F2771004273FB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -550,6 +626,7 @@
 				D4F779E320087057005179BA /* AFGraphNode2D.swift in Sources */,
 				7493863B200145C700BAAF8E /* ActiveImageView.swift in Sources */,
 				D420D47E2012FC3B004A9B46 /* AFSceneState.swift in Sources */,
+				D489FEFB202E1DD3004273FB /* AFBehaviorEditor.swift in Sources */,
 				D442B990201774570072EE5A /* AFMotivatorsReader.swift in Sources */,
 				D4F10928202C511D00342A79 /* AFAgentEditor.swift in Sources */,
 				74ECDF621F9913260096468F /* AgentAttributesController.swift in Sources */,
@@ -570,14 +647,42 @@
 				D4F1092E202C5B2300342A79 /* AFPathEditor.swift in Sources */,
 				D4F10927202C511D00342A79 /* AFGoalEditor.swift in Sources */,
 				D442B98E20172AA40072EE5A /* AFSceneController.swift in Sources */,
-				D4F10925202C511D00342A79 /* AFBehaviorEditor.swift in Sources */,
 				D4E1441A2021F17A00F6F59D /* AFNodeAdapter.swift in Sources */,
 				D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */,
 				744D8F341F91E53A00D4B048 /* TopBarController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D489FEFC202F2771004273FB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D489FF0D202F28FC004273FB /* AFAgentGoalsDelegate.swift in Sources */,
+				D489FF12202F28FC004273FB /* AFTopBarDelegate.swift in Sources */,
+				D489FF0B202F2811004273FB /* AFData.swift in Sources */,
+				D489FF15202F2910004273FB /* AFOrderedMap.swift in Sources */,
+				D489FF0E202F28FC004273FB /* AFBrowserDelegate.swift in Sources */,
+				D489FF03202F2771004273FB /* AgentFlocksCoreTests.swift in Sources */,
+				D489FF0F202F28FC004273FB /* AFContextMenuDelegate.swift in Sources */,
+				D489FF11202F28FC004273FB /* AFMenuBarDelegate.swift in Sources */,
+				D489FF16202F2923004273FB /* GameScene.swift in Sources */,
+				D489FF17202F2950004273FB /* AFSceneController.swift in Sources */,
+				D489FF10202F28FC004273FB /* AFItemEditorDelegate.swift in Sources */,
+				D489FF14202F2909004273FB /* AFMotivatorsReader.swift in Sources */,
+				D489FF0A202F27EE004273FB /* AFCore.swift in Sources */,
+				D489FF0C202F281F004273FB /* SwiftyJSON.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D489FF06202F2771004273FB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 744D8F1F1F91E38300D4B048 /* AgentFlocks */;
+			targetProxy = D489FF05202F2771004273FB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		744D8F271F91E38300D4B048 /* MainMenu.xib */ = {
@@ -735,6 +840,38 @@
 			};
 			name = Release;
 		};
+		D489FF08202F2771004273FB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = DD983V4X84;
+				INFOPLIST_FILE = AgentFlocksCoreTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.BoringSoftware.AgentFlocksCoreTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AgentFlocks.app/Contents/MacOS/AgentFlocks";
+			};
+			name = Debug;
+		};
+		D489FF09202F2771004273FB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = DD983V4X84;
+				INFOPLIST_FILE = AgentFlocksCoreTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.BoringSoftware.AgentFlocksCoreTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AgentFlocks.app/Contents/MacOS/AgentFlocks";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -752,6 +889,15 @@
 			buildConfigurations = (
 				744D8F2F1F91E38300D4B048 /* Debug */,
 				744D8F301F91E38300D4B048 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D489FF07202F2771004273FB /* Build configuration list for PBXNativeTarget "AgentFlocksCoreTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D489FF08202F2771004273FB /* Debug */,
+				D489FF09202F2771004273FB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

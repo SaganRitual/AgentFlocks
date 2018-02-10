@@ -25,16 +25,6 @@
 import Foundation
 
 class AFGoalEditor: AFEditor {
-//    var angle: Float?
-//    var distance: Float?
-//    var forward: Bool?
-    var pathToHere: [JSONSubscriptType]
-//    var name: JSONSubscriptType
-//    var obstacles: [String]?
-//    var path: String?
-//    var speed: Float?
-//    var objectAgents: [String]?
-//    var time: TimeInterval?
     
     enum AFGoalType: String {
         case toAlignWith, toAvoidAgents, toAvoidObstacles, toCohereWith, toFleeAgent, toFollow,
@@ -54,47 +44,233 @@ class AFGoalEditor: AFEditor {
          .toSeekAgent: "toSeekAgent", .toSeparateFrom: "toSeparateFrom", .toStayOn: "toStayOn", .toWander: "toWander"]
 
     unowned var core: AFCore
-    
-    // Create a new, empty goal slot in the data tree.
+    var pathToHere: [JSONSubscriptType]
+
     init(_ pathToHere: [JSONSubscriptType], core: AFCore) {
         self.core  = core
         self.pathToHere = pathToHere
     }
 
-//    init(pathToBehavior: [JSONSubscriptType], core: AFCore) {
-//        self.core = core
-//        self.fullPath = pathToBehavior
-//        core.bigData.getNodeWriter(for: fullPath).write { core.bigData.data[pathToBehavior].arrayObject?.append(JSON([:])) }
-//        print("heckle", self.fullPath, core.bigData.data)
-//    }
-//
-//    init(_ goalName: String, pathToComposite: [JSONSubscriptType], core: AFCore) {
-//        self.core = core
-//        self.fullPath = pathToComposite + ["behavior"]
-//        self.name = goalName
-//    }
-//
-    /*
-     func makeGKGoal(theGoalType: AFGoalType) -> GKGoal {
-     switch theGoalType {
-     case .toFleeAgent: return GKGoal(toFleeAgent: objectAgents![0])
-     case .toSeekAgent: return GKGoal(toSeekAgent: objectAgents![0])
-     
-     case .toReachTargetSpeed: return GKGoal(toReachTargetSpeed: speed!)
-     case .toWander:           return GKGoal(toWander: speed!)
-     
-     case .toAvoidAgents:    return GKGoal(toAvoid: objectAgents!, maxPredictionTime: time!)
-     case .toInterceptAgent: return GKGoal(toInterceptAgent: objectAgents![0], maxPredictionTime: time!)
-     
-     case .toSeparateFrom: return GKGoal(toSeparateFrom: objectAgents!, maxDistance: distance!, maxAngle: angle!)
-     case .toAlignWith:    return GKGoal(toAlignWith: objectAgents!, maxDistance: distance!, maxAngle: angle!)
-     case .toCohereWith:   return GKGoal(toSeparateFrom: objectAgents!, maxDistance: distance!, maxAngle: angle!)
-     
-     case .toFollow: return GKGoal(toFollow: path!, maxPredictionTime: time!, forward: forward!)
-     case .toStayOn: return GKGoal(toStayOn: path!, maxPredictionTime: time!)
-     
-     default: fatalError()
-     }
-     }*/
+    func getNodeWriter(_ pathToParent: [JSONSubscriptType]) -> NodeWriter {
+        return NodeWriter(pathToParent, core: core)
+    }
 }
 
+// MARK: Functions for composing the different kinds of goals
+
+extension AFGoalEditor {
+    func composeGoal_toWander(speed: Float)             { _composeGoal_speed(.toWander, speed: speed) }
+    func composeGoal_toReachTargetSpeed(_ speed: Float) { _composeGoal_speed(.toReachTargetSpeed, speed: speed) }
+    
+    func _composeGoal_speed(_ type: AFGoalType, speed: Float) {
+        guard self.type == nil else { fatalError() }
+        self.type = type
+        self.speed = speed
+    }
+    
+    func composeGoal_toFollow(_ path: String, forward: Bool, time: TimeInterval) {
+        _composeGoal_path(.toFollow, path: path, time: time, forward: forward)
+    }
+    
+    func composeGoal_toStayOn(_ path: String, time: TimeInterval) {
+        _composeGoal_path(.toFollow, path: path, time: time)
+    }
+
+    func _composeGoal_path(_ type: AFGoalType, path: String, time: TimeInterval, forward: Bool? = nil) {
+        guard self.type == nil else { fatalError() }
+        self.type = type
+        self.path = path
+        self.time = time
+        
+        if let forward = forward { self.forward = forward }
+    }
+    
+    func composeGoal_toFleeAgent(_ agent: String) { _composeGoal_agent(.toFleeAgent, agent: agent) }
+    func composeGoal_toSeekAgent(_ agent: String) { _composeGoal_agent(.toSeekAgent, agent: agent) }
+    
+    func _composeGoal_agent(_ type: AFGoalType, agent: String) {
+        guard self.type == nil else { fatalError() }
+        self.type = type
+        self.agent = agent
+    }
+    
+    func composeGoal_toAlignWith(_ agents: [String], angle: Float, distance: Float) {
+        _composeGoal_flock(.toAlignWith, agents: agents, angle: angle, distance: distance)
+    }
+    
+    func composeGoal_toCohereWith(_ agents: [String], angle: Float, distance: Float) {
+        _composeGoal_flock(.toCohereWith, agents: agents, angle: angle, distance: distance)
+    }
+    
+    func composeGoal_toSeparateFrom(_ agents: [String], angle: Float, distance: Float) {
+        _composeGoal_flock(.toSeparateFrom, agents: agents, angle: angle, distance: distance)
+    }
+
+    func _composeGoal_flock(_ type: AFGoalType, agents: [String], angle: Float, distance: Float) {
+        guard self.type == nil else { fatalError() }
+        self.type = type
+        self.agents = agents
+        self.angle = angle
+        self.distance = distance
+    }
+
+    func composeGoal_toAvoidAgents(_ agents: [String], time: TimeInterval) {
+        guard self.type == nil else { fatalError() }
+        self.type = .toAvoidAgents
+        
+        self.agents = agents
+        self.time = time
+    }
+
+    func composeGoal_toAvoidObstacles(_ obstacles: [String], time: TimeInterval) {
+        guard self.type == nil else { fatalError() }
+        self.type = .toAvoidObstacles
+        
+        self.obstacles = obstacles
+        self.time = time
+    }
+    
+    func composeGoal_toInterceptAgent(_ agent: String, time: TimeInterval) {
+        guard self.type == nil else { fatalError() }
+        self.type = .toInterceptAgent
+        
+        self.agent = agent
+        self.time = time
+    }
+}
+
+// MARK: getters & setters
+
+extension AFGoalEditor {
+    enum GoalAttributes: String { case agent = "agent", agents = "agents", angle = "angle", distance = "distance", forward = "forward", name = "name",
+        obstacles = "obstacles", path = "path", speed = "speed", objectAgents = "objectAgents", time = "time", type = "type" }
+    
+    var agent: String {
+        get {
+            let ix: JSONSubscriptType = GoalAttributes.agent.rawValue
+            return JSON(core.bigData.data[pathToHere][ix]).stringValue
+        }
+        set {
+            let ix: JSONSubscriptType = GoalAttributes.agent.rawValue
+            getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
+        }
+    }
+    
+    var agents: [String] {
+        get {
+            let ix: JSONSubscriptType = GoalAttributes.agents.rawValue
+            return JSON(core.bigData.data[pathToHere][ix]).arrayValue.map { $0.stringValue }
+        }
+        set {
+            let ix: JSONSubscriptType = GoalAttributes.agents.rawValue
+            let jsonArray = newValue.map { JSON($0) }
+            getNodeWriter(pathToHere).write(this: JSON(jsonArray), to: ix)
+        }
+    }
+
+    var angle: Float {
+        get {
+            let ix: JSONSubscriptType = GoalAttributes.angle.rawValue
+            return JSON(core.bigData.data[pathToHere][ix]).floatValue
+        }
+        set {
+            let ix: JSONSubscriptType = GoalAttributes.angle.rawValue
+            getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
+        }
+    }
+    
+    var distance: Float {
+        get {
+            let ix: JSONSubscriptType = GoalAttributes.distance.rawValue
+            return JSON(core.bigData.data[pathToHere][ix]).floatValue
+        }
+        set {
+            let ix: JSONSubscriptType = GoalAttributes.distance.rawValue
+            getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
+        }
+    }
+    
+    var forward: Bool {
+        get {
+            let ix: JSONSubscriptType = GoalAttributes.forward.rawValue
+            return JSON(core.bigData.data[pathToHere][ix]).boolValue
+        }
+        set {
+            let ix: JSONSubscriptType = GoalAttributes.forward.rawValue
+            getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
+        }
+    }
+
+    var objectAgents: [JSON] {
+        get {
+            let ix: JSONSubscriptType = GoalAttributes.objectAgents.rawValue
+            return JSON(core.bigData.data[pathToHere][ix]).arrayValue
+        }
+        set {
+            let ix: JSONSubscriptType = GoalAttributes.objectAgents.rawValue
+            getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
+        }
+    }
+    
+    var obstacles: [String] {
+        get {
+            let ix: JSONSubscriptType = GoalAttributes.obstacles.rawValue
+            return JSON(core.bigData.data[pathToHere][ix]).arrayValue.map { $0.stringValue }
+        }
+        set {
+            let ix: JSONSubscriptType = GoalAttributes.obstacles.rawValue
+            let jsonArray = newValue.map { JSON($0) }
+            getNodeWriter(pathToHere).write(this: JSON(jsonArray), to: ix)
+        }
+    }
+
+    var path: String {
+        get {
+            let ix: JSONSubscriptType = GoalAttributes.path.rawValue
+            return JSON(core.bigData.data[pathToHere][ix]).stringValue
+        }
+        set {
+            let ix: JSONSubscriptType = GoalAttributes.path.rawValue
+            getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
+        }
+    }
+    
+    var speed: Float {
+        get {
+            let ix: JSONSubscriptType = GoalAttributes.speed.rawValue
+            return JSON(core.bigData.data[pathToHere][ix]).floatValue
+        }
+        set {
+            let ix: JSONSubscriptType = GoalAttributes.speed.rawValue
+            getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
+        }
+    }
+    
+    var time: TimeInterval {
+        get {
+            let ix: JSONSubscriptType = GoalAttributes.time.rawValue
+            return JSON(core.bigData.data[pathToHere][ix]).doubleValue
+        }
+        set {
+            let ix: JSONSubscriptType = GoalAttributes.time.rawValue
+            getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
+        }
+    }
+    
+    // type = nil means it has not been set, ie, the upper layers have created
+    // a skeletal goal structure that has not been filled out yet.
+    var type: AFGoalType? {
+        get {
+            let ix: JSONSubscriptType = GoalAttributes.type.rawValue
+            return AFGoalType(rawValue: JSON(core.bigData.data[pathToHere][ix]).stringValue)
+        }
+        set {
+            let ix: JSONSubscriptType = GoalAttributes.type.rawValue
+            if let newValue = newValue {
+                getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
+            } else {
+                fatalError()
+            }
+        }
+    }
+}

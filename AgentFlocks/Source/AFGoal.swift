@@ -28,41 +28,7 @@ enum AFGoalType: String {
     case toAlignWith, toAvoidAgents, toAvoidObstacles, toCohereWith, toFleeAgent, toFollow,
     toInterceptAgent, toReachTargetSpeed, toSeekAgent, toSeparateFrom, toStayOn, toWander
 }
-/*
-class AFGoal_Script: Codable {
-    var agentNames = [String]()
-    var enabled = true
-    var forward = true
-    let goalType: AFGoalType
-    let name: String
-    var obstacleNames = [String]()
-    let pathname: String
-    var weight: Float
-    
-    var angle: Float = 0
-    var distance: Float = 0
-    var speed: Float = 0
-    var time: Float = 0
-    
-    init(goal: AFGoal) {
-        name = goal.name
 
-        enabled = goal.enabled
-        forward = goal.forward
-        goalType = goal.goalType
-        obstacleNames = goal.obstacleNames
-        pathname = goal.pathname ?? ""
-        weight = goal.weight
-        
-        angle = goal.angle
-        distance = goal.distance
-        speed = goal.speed
-        time = goal.time
-
-        goal.agentNodes.forEach { agentNames.append($0.name!) }
-    }
-}
-*/
 class AFGoal {
     var agents: [String]?
     var enabled = true
@@ -83,22 +49,7 @@ class AFGoal {
     var time: TimeInterval?
     var speed: Float?
 
-    init(editor: AFGoalEditor, gameScene: SKScene) {
-//        self.agents = embryo.agents
-//        self.familyName = embryo.familyName
-//        self.goalType = embryo.goalType
-//        self.name = NSUUID().uuidString
-////        self.obstacles = embryo.obstacles
-//        self.gameScene = gameScene
-//        self.weight = embryo.weight
-//
-//        self.angle = embryo.angle
-//        self.distance = embryo.distance
-//        self.speed = embryo.speed
-//        self.time = embryo.time
-        
-//        self.gkGoal = AFGoal.makeGoal(embryo: embryo, gameScene: gameScene)
-    }
+    init(editor: AFGoalEditor, gameScene: SKScene) { }
     
 //    static func makeGoal(editor: AFGoalEditor, gameScene: SKScene) -> GKGoal {
 //        var gkGoal: GKGoal!
@@ -162,119 +113,6 @@ class AFGoal {
 //        }
 //    }
 /*
-    init(prototype: AFGoal_Script) {
-        enabled = prototype.enabled
-        
-        angle = prototype.angle
-        distance = prototype.distance
-        goalType = prototype.goalType
-        speed = prototype.speed
-        time = prototype.time
-        weight = prototype.weight
-        
-        name = prototype.name
-        pathname = prototype.pathname
-        
-        switch goalType {
-        case .toAlignWith:
-            var gkAgents = [GKAgent]()
-            for aligneeNode in agentNodes {
-                for entity in AFCore.data.entities {
-                    if entity.agent.sprite == aligneeNode {
-                        gkAgents.append(entity.agent)
-                    }
-                }
-            }
-            gkGoal = GKGoal(toAlignWith: gkAgents, maxDistance: distance, maxAngle: angle)
-
-        case .toAvoidAgents:
-            var gkAgents = [GKAgent]()
-            for avoideeNode in agentNodes {
-                for entity in AFCore.data.entities {
-                    if entity.agent.sprite == avoideeNode {
-                        gkAgents.append(entity.agent)
-                    }
-                }
-            }
-            gkGoal = GKGoal(toAvoid: gkAgents, maxPredictionTime: TimeInterval(time))
-            
-        case .toAvoidObstacles:
-            var obstacles = [GKPolygonObstacle]()
-
-            AFCore.data!.obstacles.forEach { obstacles.append($1.asObstacle()!) }
-            
-            gkGoal = GKGoal(toAvoid: obstacles, maxPredictionTime: TimeInterval(time))
-
-        case .toCohereWith:
-            var gkAgents = [GKAgent]()
-            for coheree in agentNodes {
-                for entity in AFCore.data.entities {
-                    if entity.agent.sprite == coheree {
-                        gkAgents.append(entity.agent)
-                    }
-                }
-            }
-            
-            gkGoal = GKGoal(toCohereWith: gkAgents, maxDistance: distance, maxAngle: angle)
-
-        case .toFleeAgent:
-            for agentNode in agentNodes {
-                for entity in AFCore.data.entities {
-                    if entity.agent.sprite == agentNode {
-                        gkGoal = GKGoal(toFleeAgent: entity.agent)
-                        break
-                    }
-                }
-            }
-
-        case .toFollow:
-            let afPath = AFCore.data.paths[pathname!]!
-            gkGoal = GKGoal(toFollow: afPath.gkPath, maxPredictionTime: TimeInterval(time), forward: forward)
-
-        case .toInterceptAgent:
-            for agentNode in agentNodes {
-                for entity in AFCore.data.entities {
-                    if entity.agent.sprite == agentNode {
-                        gkGoal = GKGoal(toInterceptAgent: entity.agent, maxPredictionTime: TimeInterval(time))
-                        break
-                    }
-                }
-            }
-
-        case .toReachTargetSpeed:
-            gkGoal = GKGoal(toReachTargetSpeed: speed)
-            
-        case .toSeekAgent:
-            for agentNode in agentNodes {
-                for entity in AFCore.data.entities {
-                    if entity.agent.sprite == agentNode {
-                        gkGoal = GKGoal(toSeekAgent: entity.agent)
-                        break
-                    }
-                }
-            }
-
-        case .toSeparateFrom:
-            var gkAgents = [GKAgent]()
-            for separatee in agentNodes {
-                for entity in AFCore.data.entities {
-                    if entity.agent.sprite == separatee {
-                        gkAgents.append(entity.agent)
-                    }
-                }
-            }
-            
-            gkGoal = GKGoal(toSeparateFrom: gkAgents, maxDistance: distance, maxAngle: angle)
-            
-        case .toStayOn:
-            let afPath = AFCore.data.paths[pathname!]!
-            gkGoal = GKGoal(toStayOn: afPath.gkPath, maxPredictionTime: TimeInterval(time))
-            
-        case .toWander:
-            gkGoal = GKGoal(toWander: speed)
-        }
-    }
-    */
     /*
      var agents: [String]?
      var enabled = true
@@ -639,7 +477,7 @@ extension AFGoal {
 //
 //        default: fatalError()
 //        }
-//    }
+//    }*/
 }
 
 

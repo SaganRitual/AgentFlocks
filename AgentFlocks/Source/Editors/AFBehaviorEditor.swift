@@ -48,6 +48,10 @@ class AFBehaviorEditor: AFEditor {
         return NodeWriter(pathToParent, core: core)
     }
 
+    // Why did I put this here? "Some of the UI views"? Then it should be done
+    // in the UI, I should think. Revisit this and the one in the composite editor,
+    // see if there's any good reason for the editors to be involved in this stuff.
+    
     // Some of the UI views need us to preserve the order -- or at least appear
     // to preserve the order -- of behaviors & goals. Our data is all tree-oriented,
     // so we have to do some juggling to keep the UI's desired order.
@@ -59,113 +63,8 @@ class AFBehaviorEditor: AFEditor {
         return goals[ix].0  // .0 is the name of the goal node
     }
 
-    /*
-    init(pathToComposite: [JSONSubscriptType], core: AFCore) {
-        self.core = core
-        
-        let nextSlot: JSONSubscriptType = core.bigData.data[pathToComposite].count
-        self.fullPath = pathToComposite + [nextSlot]
-
-        core.bigData.getNodeWriter(for: fullPath).write { core.bigData.data[pathToComposite].arrayObject?.append(JSON([:])) }
-        print("special", pathToComposite, self.fullPath, core.bigData.data)
+    func setWeight(forGoal name: String, to: Float) {
+        getNodeWriter(pathToHere + [name]).write(this: JSON(to), to: "weight")
     }
-    
-    init(_ behaviorName: String, pathToComposite: [JSONSubscriptType], core: AFCore) {
-        self.core = core
-        self.fullPath = pathToComposite + ["behavior"]
-        self.name = behaviorName
-        
-//        for (key, _) in core.bigData.data[self.fullPath] {
-//            let node: JSONSubscriptType = key
-//            let goal = AFGoalEditor(core: core, loadFrom: self.fullPath + [node])
-//            goals.append((goal, 42))
-//        }
-    }*/
-    /*
-    func createGoal() -> AFGoalEditor {
-        return AFGoalEditor(pathToBehavior: fullPath, core: core)
-    }
-    *//*
-    func createGoal() -> AFGoalEditor {
-        let nextSlot: JSONSubscriptType = core.bigData.data[fullPath].count
-        
-        let name = NSUUID().uuidString
-        let editor = AFGoalEditor(pathToBehavior: fullPath, core: core)
-        editor.name = name
-        
-        let writePath: [JSONSubscriptType] = Array(fullPath) + [nextSlot] + ["name"]
-        core.bigData.getNodeWriter(for: writePath).write {
-            core.bigData.data[fullPath].arrayObject?.append(JSON([:]))
-            core.bigData.data[writePath] = JSON(name)      // Fill in the name; other objects will fill it out further
-        }
-
-        print("After createGoal()", core.bigData.data)
-        return editor
-    }*/
-/*
-    func createGoal(_ name: String, pathToComposite: [JSONSubscriptType], core: AFCore) -> AFGoalEditor {
-        return AFGoalEditor(name, pathToComposite: self.fullPath, core: core)
-    }
-    
-//    func createGoal(type: AFGoalEditor.AFGoalType, weight: Float,
-//                    objectAgents: [String]? = nil, angle: Float? = nil, distance: Float? = nil,
-//                    speed: Float? = nil, time: TimeInterval? = nil, forward: Bool? = nil) -> AFGoalEditor {
-//        let arrayPath = self.fullPath + ["goals"]
-//
-//        let index = coreData.data[arrayPath].count
-//        let newGoalNode: JSON = [:]
-//
-//        coreData.data[arrayPath].arrayObject!.append(newGoalNode)
-//        let goalPath = arrayPath + [index]
-//        let editor = AFGoalEditor(core: core, fullPath: self.fullPath, type: type, objectAgents: objectAgents,
-//                                  angle: angle, distance: distance, speed: speed, time: time, forward: forward)
-//
-//        editor.name = NSUUID().uuidString
-//
-//        let newArrayNode: JSON = []
-//        coreData.data[goalPath]["objectAgents"] = newArrayNode
-//
-//        if let objectAgents = objectAgents {
-//            objectAgents.forEach { coreData.data[goalPath]["objectAgents"].arrayObject!.append($0) }
-//        }
-//
-//        coreData.data[goalPath]["angle"].float = angle
-//        coreData.data[goalPath]["distance"].float = distance
-//        coreData.data[goalPath]["speed"].float = speed
-//        coreData.data[goalPath]["time"].double = time
-//        coreData.data[goalPath]["forward"].bool = forward
-//        coreData.data[goalPath]["weight"].float = weight
-//        coreData.data[goalPath]["name"].string = editor.name
-//        coreData.data[goalPath]["type"].string = type.rawValue
-//
-//        announceNewGoal(goalName: self.name)
-//
-//        return editor
-//    }
-//
-//    func getGoal(name: String) -> (goal: AFGoalEditor, weight: Float) {
-//        let goals_ = JSON(coreData.data[fullPath]["goals"]).arrayObject!
-//        let goals = goals_ as! [(AFGoalEditor, Float)]
-//        for (goal, weight) in goals {
-//            if goal.name == name { return (goal, weight) }
-//        }
-//
-//        fatalError()
-//    }
-//
-//    func getIsEnabled(goal: String) -> Bool {
-//        return true
-//    }
-//
-//    func getWeight(forGoal name: String) -> Float {
-//        return getGoal(name: name).weight
-//    }
-//
-//    func setWeight(forGoal name: String, to: Float) {
-//        let goals_ = JSON(coreData.data[fullPath]["goals"]).arrayObject!
-//        let goals = goals_ as! [(goal: AFGoalEditor, weight: Float)]
-//        let ix = goals.filter { $0.goal.name == name }.count - 1
-//        coreData.data[fullPath]["goals"][ix]["weight"] = JSON(to)
-//    }*/
 }
 
