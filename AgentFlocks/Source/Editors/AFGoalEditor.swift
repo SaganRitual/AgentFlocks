@@ -42,18 +42,6 @@ class AFGoalEditor: AFEditor {
          .toCohereWith: "toCohereWith", .toFleeAgent: "toFleeAgent", .toFollow: "toFollow",
          .toInterceptAgent: "toInterceptAgent", .toReachTargetSpeed: "toReachTargetSpeed",
          .toSeekAgent: "toSeekAgent", .toSeparateFrom: "toSeparateFrom", .toStayOn: "toStayOn", .toWander: "toWander"]
-
-    unowned var core: AFCore
-    var pathToHere: [JSONSubscriptType]
-
-    init(_ pathToHere: [JSONSubscriptType], core: AFCore) {
-        self.core  = core
-        self.pathToHere = pathToHere
-    }
-
-    func getNodeWriter(_ pathToParent: [JSONSubscriptType]) -> NodeWriter {
-        return NodeWriter(pathToParent, core: core)
-    }
 }
 
 // MARK: Functions for composing the different kinds of goals

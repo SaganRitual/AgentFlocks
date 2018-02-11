@@ -1,5 +1,5 @@
 //
-// Created by Rob Bishop on 2/8/18
+// Created by Rob Bishop on 2/11/18
 //
 // Copyright © 2018 Rob Bishop
 //
@@ -22,9 +22,22 @@
 // IN THE SOFTWARE.
 //
 
-import Foundation
+class AFEditor {
+    unowned var core: AFCore
+    var pathToHere: [JSONSubscriptType]
+    
+    init(_ pathToHere: [JSONSubscriptType], core: AFCore) {
+        self.core  = core
+        self.pathToHere = pathToHere
+    }
 
-class AFPathEditor: AFEditor {
+    func getNodeWriter(_ pathToParent: [JSONSubscriptType]) -> NodeWriter {
+        return core.bigData.getNodeWriter(pathToParent)
+    }
 }
 
-
+extension AFEditor {
+    
+    var name: String { get { return JSON(pathToHere.last!).stringValue } }
+    
+}

@@ -98,6 +98,7 @@
 		D489FF15202F2910004273FB /* AFOrderedMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4422621200795070013A6E5 /* AFOrderedMap.swift */; };
 		D489FF16202F2923004273FB /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561F1FE7A41800FC454B /* GameScene.swift */; };
 		D489FF17202F2950004273FB /* AFSceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B98D20172AA40072EE5A /* AFSceneController.swift */; };
+		D4917D242030A31200CFA77D /* AFEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4917D232030A31200CFA77D /* AFEditor.swift */; };
 		D49AD3C92020F21200ACFA65 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49AD3C82020F21200ACFA65 /* SwiftyJSON.swift */; };
 		D4AEE5F9200FD19400933852 /* AFContextMenuDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4AEE5F8200FD19400933852 /* AFContextMenuDelegate.swift */; };
 		D4C7EADD1FFD01F40008FBCD /* AFCompositeBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */; };
@@ -217,6 +218,7 @@
 		D489FF00202F2771004273FB /* AgentFlocksCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AgentFlocksCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D489FF02202F2771004273FB /* AgentFlocksCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentFlocksCoreTests.swift; sourceTree = "<group>"; };
 		D489FF04202F2771004273FB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D4917D232030A31200CFA77D /* AFEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFEditor.swift; sourceTree = "<group>"; };
 		D49AD3C82020F21200ACFA65 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		D4AEE5F8200FD19400933852 /* AFContextMenuDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFContextMenuDelegate.swift; sourceTree = "<group>"; };
 		D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFCompositeBehavior.swift; sourceTree = "<group>"; };
@@ -444,6 +446,7 @@
 				D4F10924202C511D00342A79 /* AFAgentEditor.swift */,
 				D489FEFA202E1DD3004273FB /* AFBehaviorEditor.swift */,
 				D4F10922202C511D00342A79 /* AFCompositeEditor.swift */,
+				D4917D232030A31200CFA77D /* AFEditor.swift */,
 				D4F10923202C511D00342A79 /* AFGoalEditor.swift */,
 				D4F1092F202C5C0C00342A79 /* AFGraphNodeEditor.swift */,
 				D4F1092D202C5B2300342A79 /* AFPathEditor.swift */,
@@ -642,6 +645,7 @@
 				D49AD3C92020F21200ACFA65 /* SwiftyJSON.swift in Sources */,
 				74938643200AAAA000BAAF8E /* FlippedClipView.swift in Sources */,
 				D4F1092C202C519F00342A79 /* AFData.swift in Sources */,
+				D4917D242030A31200CFA77D /* AFEditor.swift in Sources */,
 				749386381FFFECC300BAAF8E /* PreferencesController.swift in Sources */,
 				D4C942D9200C39CD00A85BCB /* AFBrowserDelegate.swift in Sources */,
 				D4F1092E202C5B2300342A79 /* AFPathEditor.swift in Sources */,

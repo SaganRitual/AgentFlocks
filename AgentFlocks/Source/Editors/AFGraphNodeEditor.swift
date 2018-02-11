@@ -25,14 +25,6 @@
 import Foundation
 
 class AFGraphNodeEditor: AFEditor {
-    unowned var core: AFCore
-    var pathToHere: [JSONSubscriptType]
-    
-    // Create a new, empty graph node slot in the data tree.
-    init(_ pathToHere: [JSONSubscriptType], core: AFCore) {
-        self.core  = core
-        self.pathToHere = pathToHere
-    }
 }
 
 

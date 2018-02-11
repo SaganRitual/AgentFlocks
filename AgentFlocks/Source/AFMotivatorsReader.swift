@@ -49,7 +49,7 @@ class AFMotivatorsReader: AgentGoalsDataSource {
             }
             set {
                 let i: JSONSubscriptType = "indexSimulator"
-                core.bigData.getNodeWriter(for: fullPath).write(this: JSON(newValue), to: i)
+                core.bigData.getNodeWriter(fullPath).write(this: JSON(newValue), to: i)
             }
         }
     }
@@ -70,7 +70,7 @@ class AFMotivatorsReader: AgentGoalsDataSource {
             }
             set {
                 let w: JSONSubscriptType = "weight"
-                core.bigData.getNodeWriter(for: fullPath).write(this: JSON(newValue!), to: w)
+                core.bigData.getNodeWriter(fullPath).write(this: JSON(newValue!), to: w)
             }
         }
     }
@@ -88,7 +88,7 @@ class AFMotivatorsReader: AgentGoalsDataSource {
         
         var isEnabled: Bool {
             get { return JSON(core.bigData.data[fullPath][field]).boolValue }
-            set { core.bigData.getNodeWriter(for: fullPath).write(this: JSON(newValue), to: field) }
+            set { core.bigData.getNodeWriter(fullPath).write(this: JSON(newValue), to: field) }
         }
     }
 
@@ -197,8 +197,10 @@ class AFMotivatorsReader: AgentGoalsDataSource {
         // we get another notification before we can exit deinit. Seems like we generally
         // shouldn't be writing to the tree from within a notification. This seems the only
         // reasonable place to do this one, and the notifications are spurious anyway. Thus,
-        // I give myself permission to consider this good design.
-        core.getNodeWriter(pathToParent).suppressNotifications().write(this: JSON(["serialNumber" : arrayizer]), to: changedNode)
+        // I give myself permission to consider this reasonable design.
+        let nw_ = core.bigData.getNodeWriter(pathToParent)
+        let nw = nw_.suppressNotifications()
+        nw.write(this: JSON(["serialNumber" : arrayizer]), to: changedNode)
         
         arrayizer += 1
     }

@@ -237,8 +237,6 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     func startStateMachine() { enter(Default.self) }
 }
 
-protocol AFEditor { }
-
 extension AFSceneController {
     func getCoreAgentEditor(notification: Foundation.Notification) -> AFAgentEditor? {
         var editor: AFAgentEditor?

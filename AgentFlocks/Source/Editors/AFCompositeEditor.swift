@@ -25,17 +25,8 @@
 import Foundation
 
 class AFCompositeEditor: AFEditor {
-    unowned var core: AFCore
-    var pathToHere: [JSONSubscriptType]
-
     var count: Int { get { return core.bigData.data[pathToHere].count } }
 
-    // Create a new, empty composite slot in the data tree.
-    init(_ pathToHere: [JSONSubscriptType], core: AFCore) {
-        self.core  = core
-        self.pathToHere = pathToHere
-    }
-    
     func createBehavior() -> AFBehaviorEditor {
         let newBehaviorName: JSONSubscriptType = NSUUID().uuidString
         let pathToNewBehavior = pathToHere + [newBehaviorName]
@@ -53,8 +44,13 @@ class AFCompositeEditor: AFEditor {
         return AFBehaviorEditor(pathToNewBehavior, core: core)
     }
 
-    func getNodeWriter(_ pathToParent: [JSONSubscriptType]) -> NodeWriter {
-        return NodeWriter(pathToParent, core: core)
+    // Set behavior weight from here, with a big ugly function rather than a nice
+    // variable, as a reminder of the underlying GK architecture. I am the composite
+    // setting a weight for one of my component behaviors. The behavior weight is an
+    // external attribute, known by the composite but not by the child behavior. See
+    // also the setWeight() for goals in AFBehaviorEditor.
+    func setWeight(forGoal name: String, to: Float) {
+        getNodeWriter(pathToHere + [name]).write(this: JSON(to), to: "weight")
     }
 
     subscript(_ ix: Int) -> String {

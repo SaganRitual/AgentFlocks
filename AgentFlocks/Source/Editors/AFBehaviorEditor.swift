@@ -25,14 +25,6 @@
 import Foundation
 
 class AFBehaviorEditor: AFEditor {
-    unowned var core: AFCore
-    var pathToHere: [JSONSubscriptType]
-    
-    init(_ pathToHere: [JSONSubscriptType], core: AFCore) {
-        self.core  = core
-        self.pathToHere = pathToHere
-    }
-    
     func createGoal() -> AFGoalEditor {
         let goals: JSONSubscriptType = "goals"
         let newGoalName: JSONSubscriptType = NSUUID().uuidString
@@ -42,10 +34,6 @@ class AFBehaviorEditor: AFEditor {
         getNodeWriter(pathToGoals).write(this: JSON([:]), to: newGoalName)
 
         return AFGoalEditor(pathToNewGoal, core: core)
-    }
-
-    func getNodeWriter(_ pathToParent: [JSONSubscriptType]) -> NodeWriter {
-        return NodeWriter(pathToParent, core: core)
     }
 
     // Why did I put this here? "Some of the UI views"? Then it should be done
@@ -63,6 +51,11 @@ class AFBehaviorEditor: AFEditor {
         return goals[ix].0  // .0 is the name of the goal node
     }
 
+    // Set goal weight from here, with a big ugly function rather than a nice
+    // variable, as a reminder of the underlying GK architecture. I am the behavior
+    // setting a weight for one of my component goals. The goal weight is an external
+    // attribute, known by the behavior but not by the goal. See also the setWeight()
+    // for behavior in AFCompositeEditor.
     func setWeight(forGoal name: String, to: Float) {
         getNodeWriter(pathToHere + [name]).write(this: JSON(to), to: "weight")
     }

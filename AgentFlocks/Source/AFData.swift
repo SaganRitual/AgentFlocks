@@ -37,6 +37,9 @@ class NodeWriter {
     
     deinit {
         guard suppressNotifications_ == nil else {
+            // Tidiness or something; no one will ever set it to false.
+            // Also note, this is not javascript; don't read the "! ==" below
+            // as a javascript "!==", which I keep doing unconsciously.
             if suppressNotifications_! == false { fatalError() }
             return
         }
@@ -133,9 +136,9 @@ class AFData {
         
         return nil
     }
-
-    func getNodeWriter(for path: [JSONSubscriptType]) -> NodeWriter {
-        return NodeWriter(path, core: core)
+    
+    func getNodeWriter(_ pathToParent: [JSONSubscriptType]) -> NodeWriter {
+        return NodeWriter(pathToParent, core: core)
     }
 }
 

@@ -44,17 +44,13 @@ class AFCore {
         bigData.core = self
     }
     
-    func getNodeWriter(_ pathToParent: [JSONSubscriptType]) -> NodeWriter {
-        return NodeWriter(pathToParent, core: self)
-    }
-    
     func createAgent() -> AFAgentEditor {
         let agents: JSONSubscriptType = "agents"
         let newAgentName: JSONSubscriptType = NSUUID().uuidString
         let pathToHere = [agents]
         let pathToNewAgent = pathToHere + [newAgentName]
         
-        getNodeWriter(pathToHere).write(this: JSON([:]), to: newAgentName)
+        bigData.getNodeWriter(pathToHere).write(this: JSON([:]), to: newAgentName)
         
         return AFAgentEditor(pathToNewAgent, core: self)
     }
