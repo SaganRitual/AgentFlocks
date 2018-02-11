@@ -33,12 +33,16 @@ class AFCompositeEditor: AFMotivatorEditor {
         // don't generate a second, useless notification about the same update.
         let nodeWriter = getNodeWriter(pathToHere)
         nodeWriter.write(this: JSON([:]), to: newBehaviorName)
+        
+        // Motivators are enabled by default
+        let isEnabled: JSONSubscriptType = "isEnabled"
+        nodeWriter.write(this: JSON(true), to: newBehaviorName, under: isEnabled)
 
         // This does nothing of any programmatic use. I set the goals aside
         // in their own object only to make the JSON more readable.
         let goals: JSONSubscriptType = "goals"
         nodeWriter.write(this: JSON([:]), to: newBehaviorName, under: goals)
-        
+
         return AFBehaviorEditor(pathToNewBehavior, core: core)
     }
 }

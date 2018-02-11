@@ -30,6 +30,11 @@ class AFEditor {
         self.core  = core
         self.pathToHere = pathToHere
     }
+    
+    init(_ nodeName: String, core: AFCore) {
+        self.core = core
+        self.pathToHere = core.getPathTo(nodeName)!
+    }
 
     func getNodeWriter(_ pathToParent: [JSONSubscriptType]) -> NodeWriter {
         return core.bigData.getNodeWriter(pathToParent)

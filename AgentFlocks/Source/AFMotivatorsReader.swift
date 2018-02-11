@@ -33,65 +33,6 @@ class AFMotivatorsReader: AgentGoalsDataSource {
 
     init(_ injector: AFCore.AFDependencyInjector) {}
 
-    private struct EditorWithIndexSimulator {
-        unowned let core: AFCore
-        let fullPath: [JSONSubscriptType]
-        
-        init(_ nodeName: JSONSubscriptType, core: AFCore) {
-            self.core = core
-            fullPath = core.getPathTo(JSON(nodeName).stringValue)!
-        }
-        
-        var indexSimulator: Int {
-            get {
-                let i: JSONSubscriptType = "indexSimulator"
-                return JSON(core.bigData.data[fullPath][i]).intValue
-            }
-            set {
-                let i: JSONSubscriptType = "indexSimulator"
-                core.bigData.getNodeWriter(fullPath).write(this: JSON(newValue), to: i)
-            }
-        }
-    }
-
-    struct EditorWithWeightValue {
-        unowned let core: AFCore
-        let fullPath: [JSONSubscriptType]
-        
-        init(_ nodeName: JSONSubscriptType, core: AFCore) {
-            self.core = core
-            fullPath = core.getPathTo(JSON(nodeName).stringValue)!
-        }
-        
-        var weight: Float? {
-            get {
-                let w: JSONSubscriptType = "weight"
-                return JSON(core.bigData.data[fullPath][w]).float
-            }
-            set {
-                let w: JSONSubscriptType = "weight"
-                core.bigData.getNodeWriter(fullPath).write(this: JSON(newValue!), to: w)
-            }
-        }
-    }
-
-    struct EditorWithIsItemEnabled {
-        unowned let core: AFCore
-        let field: JSONSubscriptType = "isEnabled"
-        let fullPath: [JSONSubscriptType]
-        
-        init(_ nodeName: JSONSubscriptType, core: AFCore) {
-            self.core = core
-            print(core.bigData.data)
-            fullPath = core.getPathTo(JSON(nodeName).stringValue)!
-        }
-        
-        var isEnabled: Bool {
-            get { return JSON(core.bigData.data[fullPath][field]).boolValue }
-            set { core.bigData.getNodeWriter(fullPath).write(this: JSON(newValue), to: field) }
-        }
-    }
-
     // From the doc: The number of child items encompassed by item. ***If item is nil, this method should
     // return the number of children for the top-level item.***
     func agentGoals(_ agentGoalsController: AgentGoalsController, numberOfChildrenOfItem item: Any?) -> Int {
@@ -158,18 +99,13 @@ class AFMotivatorsReader: AgentGoalsDataSource {
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, weightOfItem item: Any) -> Float {
-        if let itemName = item as? JSONSubscriptType,
-            let weight = EditorWithWeightValue(itemName, core: core).weight {
-            return weight
-        }
+        if let itemName = item as? String { return AFMotivatorEditor(itemName, core: core).weight }
         
         return 0    // Not sure why I get nil items in this function
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemEnabled item: Any) -> Bool {
-        if let itemName = item as? String {
-            return EditorWithIsItemEnabled(itemName, core: core).isEnabled
-        }
+        if let itemName = item as? String { return AFMotivatorEditor(itemName, core: core).isEnabled }
             
         return false
     }
@@ -190,7 +126,8 @@ class AFMotivatorsReader: AgentGoalsDataSource {
         // of suppressing notifications, but it seems ok when we're talking about metadata.
         let nw_ = core.bigData.getNodeWriter(pathToParent)
         let nw = nw_.suppressNotifications()
-        nw.write(this: JSON(["serialNumber" : arrayizer]), to: changedNode)
+        let sn: JSONSubscriptType = "serialNumber"
+        nw.write(this: JSON(arrayizer), to: changedNode, under: sn)
         
         arrayizer += 1
     }

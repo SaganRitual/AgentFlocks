@@ -121,8 +121,7 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
         
         let c = agentEditor.createComposite()   // Add a complimentary behavior before we
         let b = c.createBehavior()              // send the new agent on his way
-        
-        c.setWeight(forBehavior: b.name, to: 1)
+        c.setWeight(forMotivator: b.name, to: 1)
 
         let agent = AFAgent2D(core: core, editor: agentEditor, image: image, position: currentPosition, gameScene: gameScene)
         selectionController.newAgentWasCreated(agent.name)

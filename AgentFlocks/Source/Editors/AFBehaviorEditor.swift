@@ -26,12 +26,21 @@ import Foundation
 
 class AFBehaviorEditor: AFMotivatorEditor {
     func createGoal() -> AFGoalEditor {
+        // Adding the "goals" dictionary does nothing of any programmatic use. I set the goals
+        // aside in their own object only to make the JSON more readable when debugging. See
+        // the setup in the composite editor's createBehavior() function.
         let goals: JSONSubscriptType = "goals"
+        
         let newGoalName: JSONSubscriptType = NSUUID().uuidString
         let pathToGoals = pathToHere + [goals]
         let pathToNewGoal = pathToGoals + [newGoalName]
         
-        getNodeWriter(pathToGoals).write(this: JSON([:]), to: newGoalName)
+        let nw = getNodeWriter(pathToGoals)
+        nw.write(this: JSON([:]), to: newGoalName)
+        
+        // Motivators are enabled by default
+        let isEnabled: JSONSubscriptType = "isEnabled"
+        nw.write(this: JSON(true), to: newGoalName, under: isEnabled)
 
         return AFGoalEditor(pathToNewGoal, core: core)
     }

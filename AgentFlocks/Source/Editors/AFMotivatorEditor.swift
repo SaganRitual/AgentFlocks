@@ -25,10 +25,15 @@
 class AFMotivatorEditor: AFEditor {
     var count: Int { get { return core.bigData.data[pathToHere].count } }
     
-    // Set motivator weight from here, with a big ugly function rather than a nice
-    // variable, as a reminder of the underlying GK architecture. I am the container
+    // Get/set motivator weight from here, with big ugly functions rather than nice
+    // variables, as a reminder of the underlying GK architecture. I am the container
     // setting a weight for one of my component motivators. The motivator weight is
     // not known by the motivator itself.
+    func getWeight(forMotivator name: String) -> Float {
+        let ix: JSONSubscriptType = "weight"
+        return JSON(core.bigData.data[pathToHere][ix]).floatValue
+    }
+
     func setWeight(forMotivator name: String, to: Float) {
         getNodeWriter(pathToHere + [name]).write(this: JSON(to), to: "weight")
     }
@@ -47,5 +52,27 @@ class AFMotivatorEditor: AFEditor {
         })
         
         return motivators[ix].0  // .0 is the name of the motivator node
+    }
+}
+
+extension AFMotivatorEditor {
+    var isEnabled: Bool {
+        get {
+            let ix: JSONSubscriptType = "isEnabled"
+            return JSON(core.bigData.data[pathToHere][ix]).boolValue
+        }
+        set {
+            let ix: JSONSubscriptType = "isEnabled"
+            getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
+        }
+    }
+    
+    // My own weight, not that of my children. Can't be set from here. Must be done from
+    // my parent.
+    var weight: Float {
+        get {
+            let ix: JSONSubscriptType = "weight"
+            return JSON(core.bigData.data[pathToHere][ix]).floatValue
+        }
     }
 }
