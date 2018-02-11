@@ -186,18 +186,8 @@ class AFMotivatorsReader: AgentGoalsDataSource {
         
         guard parentNode == "behaviors" || parentNode == "goals" else { return }
 
-        // Grab the behavior or goal, whichever it is at this level, and attach an
-        // ascending number to it. This allows us to maintain the order of behaviors
-        // and goals in the views.
-        //
-        // Not sure whether this is good design or a hack. Turn off notifications for this
-        // write. My hypothesis is that this is not actual project data, just temp stuff
-        // to enable the UI to operate properly. But then, it seems that it shouldn't hurt
-        // to have notifications here. It does, because I'm changing the tree here. So
-        // we get another notification before we can exit deinit. Seems like we generally
-        // shouldn't be writing to the tree from within a notification. This seems the only
-        // reasonable place to do this one, and the notifications are spurious anyway. Thus,
-        // I give myself permission to consider this reasonable design.
+        // I think these serial numbers count as metadata. I generally worry about the notion
+        // of suppressing notifications, but it seems ok when we're talking about metadata.
         let nw_ = core.bigData.getNodeWriter(pathToParent)
         let nw = nw_.suppressNotifications()
         nw.write(this: JSON(["serialNumber" : arrayizer]), to: changedNode)
