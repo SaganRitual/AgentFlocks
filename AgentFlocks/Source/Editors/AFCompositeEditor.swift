@@ -49,7 +49,7 @@ class AFCompositeEditor: AFEditor {
     // setting a weight for one of my component behaviors. The behavior weight is an
     // external attribute, known by the composite but not by the child behavior. See
     // also the setWeight() for goals in AFBehaviorEditor.
-    func setWeight(forGoal name: String, to: Float) {
+    func setWeight(forBehavior name: String, to: Float) {
         getNodeWriter(pathToHere + [name]).write(this: JSON(to), to: "weight")
     }
 
