@@ -25,6 +25,10 @@
 import Foundation
 
 class AFGoalEditor: AFMotivatorEditor {
+    override var parentEditor: AFMotivatorEditor {
+        let pathToParent = AFData.getPathToParent(pathToHere)
+        return AFBehaviorEditor(pathToParent, core: core)
+    }
     
     enum AFGoalType: String {
         case toAlignWith, toAvoidAgents, toAvoidObstacles, toCohereWith, toFleeAgent, toFollow,
@@ -42,6 +46,17 @@ class AFGoalEditor: AFMotivatorEditor {
          .toCohereWith: "toCohereWith", .toFleeAgent: "toFleeAgent", .toFollow: "toFollow",
          .toInterceptAgent: "toInterceptAgent", .toReachTargetSpeed: "toReachTargetSpeed",
          .toSeekAgent: "toSeekAgent", .toSeparateFrom: "toSeparateFrom", .toStayOn: "toStayOn", .toWander: "toWander"]
+    
+    override func setOptionalScalar(_ nodeName: String, to value: Float) {
+        switch nodeName {
+        case "angle":    angle = value
+        case "distance": distance = value
+        case "speed":    speed = value
+        case "time":     time = TimeInterval(value)
+        default:
+            fatalError()
+        }
+    }
 }
 
 // MARK: Functions for composing the different kinds of goals

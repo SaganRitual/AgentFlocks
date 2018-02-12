@@ -53,6 +53,7 @@ class ItemEditorController: NSViewController {
 			// Create slider controller
 			let sliderController = LogSliderController()
 			sliderController.sliderName = valueName
+            sliderController.delegate = AppDelegate.me
 			
 			// Add controller to our dictionary
 			// And key to the ordered array list (in order to preserve order)

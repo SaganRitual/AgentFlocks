@@ -25,6 +25,11 @@
 import Foundation
 
 class AFBehaviorEditor: AFMotivatorEditor {
+    override var parentEditor: AFMotivatorEditor {
+        let pathToParent = AFData.getPathToParent(pathToHere)
+        return AFCompositeEditor(pathToParent, core: core)
+    }
+    
     func createGoal() -> AFGoalEditor {
         // Adding the "goals" dictionary does nothing of any programmatic use. I set the goals
         // aside in their own object only to make the JSON more readable when debugging. See
@@ -43,6 +48,17 @@ class AFBehaviorEditor: AFMotivatorEditor {
         nw.write(this: JSON(true), to: newGoalName, under: isEnabled)
 
         return AFGoalEditor(pathToNewGoal, core: core)
+    }
+    
+    override func setOptionalScalar(_ nodeName: String, to value: Float) {
+        switch nodeName {
+        case "angle":    break
+        case "distance": break
+        case "speed":    break
+        case "time":     break
+        default:
+            fatalError()
+        }
     }
 }
 

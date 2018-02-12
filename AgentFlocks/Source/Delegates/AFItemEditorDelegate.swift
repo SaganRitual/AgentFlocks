@@ -192,6 +192,20 @@ class AFItemEditorDelegate {
     }
     
     func sliderChanged(state: ItemEditorSlidersState) {
-        refreshMotivators(state: state)
+        let (_, selectedAgent) = afSceneController.selectionController.getSelection()
+
+        if selectedAgent != nil {
+            let coreEditor = AFMotivatorEditor.getSpecificEditor(state.editedItem as! String, core: core)
+
+            if state.angle!.didChange    { coreEditor.setOptionalScalar("angle", to: Float(state.angle!.value))  }
+            if state.distance!.didChange { coreEditor.setOptionalScalar("distance", to: Float(state.distance!.value))  }
+            if state.speed!.didChange    { coreEditor.setOptionalScalar("speed", to: Float(state.speed!.value))  }
+            if state.time!.didChange     { coreEditor.setOptionalScalar("time", to: Float(state.time!.value))  }
+
+            if state.weight.didChange {
+                coreEditor.parentEditor.setWeight(forMotivator: coreEditor.name, to: Float(state.weight.value))
+            }
+
+        } else { fatalError() }
     }
 }

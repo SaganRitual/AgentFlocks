@@ -151,5 +151,15 @@ extension AFData {
     static func getAgent(_ path: [JSONSubscriptType]) -> JSONSubscriptType { return path[AFData.agentDepth] }
     static func getBehavior(_ path: [JSONSubscriptType]) -> JSONSubscriptType { return path[AFData.agentDepth] }
     static func getGoal(_ path: [JSONSubscriptType]) -> JSONSubscriptType { return path[AFData.agentDepth] }
+
+    static func getPathToParent(_ pathToHere: [JSONSubscriptType]) -> [JSONSubscriptType] {
+        let ixHere = pathToHere.count - 1
+        let ixParent = ixHere - 2
+        return Array(pathToHere.prefix(ixParent))
+    }
+
+    static func isAgent(_ path: [JSONSubscriptType]) -> Bool { return path.count == agentDepth + 1 }
+    static func isBehavior(_ path: [JSONSubscriptType]) -> Bool { return path.count == behaviorDepth + 1 }
+    static func isGoal(_ path: [JSONSubscriptType]) -> Bool { return path.count == goalDepth + 1 }
 }
 
