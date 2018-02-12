@@ -556,14 +556,14 @@ extension AppDelegate: AgentGoalsDelegate {
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemDoubleClicked item: Any, inRect rect: NSRect) {
         guard let mainView = window.contentView else { return }
         
-        let attributes = coreAgentGoalsDelegate.getEditableAttributes(for: item)
+        let attributeNames = ["Angle", "Distance", "Speed", "Time", "Weight"]
+        let attributes = coreAgentGoalsDelegate.getEditableAttributes(for: item, names: attributeNames)
         let editorController = ItemEditorController(withAttributes: Array(attributes.keys), agentEditorController: agentEditorController)
 
         editorController.delegate = self
         editorController.editedItem = item
 
-        let names = ["Angle", "Distance", "Speed", "Time", "Weight"]
-        names.forEach {
+        attributeNames.forEach {
             if attributes.contains($0) {
                 editorController.setValue(ofSlider: $0, to: attributes[$0]!, resetDirtyFlag: true)
             }
@@ -575,10 +575,12 @@ extension AppDelegate: AgentGoalsDelegate {
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, item: Any, setState state: NSControl.StateValue) {
         let parent = agentGoalsController.outlineView.parent(forItem: item)
-
-        if let updatedItems = coreAgentGoalsDelegate.enableItem(item, parent: parent, on: state == .on) {
-            updatedItems.forEach { agentGoalsController.outlineView!.reloadItem($0, reloadChildren: false) }
-        }
+        coreAgentGoalsDelegate.enableItem(item, parent: parent, on: state == .on)
+        
+//
+//        if let updatedItems = coreAgentGoalsDelegate.enableItem(item, parent: parent, on: state == .on) {
+//            updatedItems.forEach { agentGoalsController.outlineView!.reloadItem($0, reloadChildren: false) }
+//        }
     }
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, newBehaviorShowForRect rect: NSRect) {

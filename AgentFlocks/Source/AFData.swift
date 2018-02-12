@@ -142,3 +142,14 @@ class AFData {
     }
 }
 
+extension AFData {
+    // Some helpers for fishing around notification paths
+    private static let agentDepth = 1
+    private static let behaviorDepth = 3
+    private static let goalDepth = 5
+    
+    static func getAgent(_ path: [JSONSubscriptType]) -> JSONSubscriptType { return path[AFData.agentDepth] }
+    static func getBehavior(_ path: [JSONSubscriptType]) -> JSONSubscriptType { return path[AFData.agentDepth] }
+    static func getGoal(_ path: [JSONSubscriptType]) -> JSONSubscriptType { return path[AFData.agentDepth] }
+}
+

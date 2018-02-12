@@ -25,6 +25,15 @@
 class AFMotivatorEditor: AFEditor {
     var count: Int { get { return core.bigData.data[pathToHere].count } }
     
+    // Different motivators have different sets of scalar attributes. The UI
+    // can call down to get these by name; if this motivator doesn't have that
+    // attribute, we return nil.
+    func getOptionalScalar(_ name: String) -> Double? {
+        let n = name.lowercased()
+        if core.bigData.data[pathToHere][n].exists() { return core.bigData.data[pathToHere][n].doubleValue }
+        else { return nil }
+    }
+    
     // Get/set motivator weight from here, with big ugly functions rather than nice
     // variables, as a reminder of the underlying GK architecture. I am the container
     // setting a weight for one of my component motivators. The motivator weight is
@@ -56,6 +65,11 @@ class AFMotivatorEditor: AFEditor {
 }
 
 extension AFMotivatorEditor {
+    enum Attributes: String {
+        case agent = "agent", agents = "agents", angle = "angle", distance = "distance", forward = "forward", name = "name",
+        obstacles = "obstacles", path = "path", speed = "speed", objectAgents = "objectAgents", time = "time", type = "type"
+    }
+    
     var isEnabled: Bool {
         get {
             let ix: JSONSubscriptType = "isEnabled"
@@ -68,7 +82,7 @@ extension AFMotivatorEditor {
     }
     
     // My own weight, not that of my children. Can't be set from here. Must be done from
-    // my parent.
+    // my parent using setWeight().
     var weight: Float {
         get {
             let ix: JSONSubscriptType = "weight"

@@ -85,19 +85,8 @@
 		D47BC1F41FECCFE600B3CE6B /* Round2.txt in Resources */ = {isa = PBXBuildFile; fileRef = D47BC1F31FECCFE600B3CE6B /* Round2.txt */; };
 		D489FEFB202E1DD3004273FB /* AFBehaviorEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D489FEFA202E1DD3004273FB /* AFBehaviorEditor.swift */; };
 		D489FF03202F2771004273FB /* AgentFlocksCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D489FF02202F2771004273FB /* AgentFlocksCoreTests.swift */; };
-		D489FF0A202F27EE004273FB /* AFCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F10929202C519F00342A79 /* AFCore.swift */; };
-		D489FF0B202F2811004273FB /* AFData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F1092A202C519F00342A79 /* AFData.swift */; };
 		D489FF0C202F281F004273FB /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49AD3C82020F21200ACFA65 /* SwiftyJSON.swift */; };
-		D489FF0D202F28FC004273FB /* AFAgentGoalsDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D1655E200D45A40065728D /* AFAgentGoalsDelegate.swift */; };
-		D489FF0E202F28FC004273FB /* AFBrowserDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C942D8200C39CD00A85BCB /* AFBrowserDelegate.swift */; };
-		D489FF0F202F28FC004273FB /* AFContextMenuDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4AEE5F8200FD19400933852 /* AFContextMenuDelegate.swift */; };
-		D489FF10202F28FC004273FB /* AFItemEditorDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D16560200D61040065728D /* AFItemEditorDelegate.swift */; };
-		D489FF11202F28FC004273FB /* AFMenuBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D1655A200CA2B60065728D /* AFMenuBarDelegate.swift */; };
-		D489FF12202F28FC004273FB /* AFTopBarDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D1655C200D401E0065728D /* AFTopBarDelegate.swift */; };
-		D489FF14202F2909004273FB /* AFMotivatorsReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B98F201774570072EE5A /* AFMotivatorsReader.swift */; };
-		D489FF15202F2910004273FB /* AFOrderedMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4422621200795070013A6E5 /* AFOrderedMap.swift */; };
 		D489FF16202F2923004273FB /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442561F1FE7A41800FC454B /* GameScene.swift */; };
-		D489FF17202F2950004273FB /* AFSceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D442B98D20172AA40072EE5A /* AFSceneController.swift */; };
 		D4917D242030A31200CFA77D /* AFEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4917D232030A31200CFA77D /* AFEditor.swift */; };
 		D4917D262030E66800CFA77D /* AFMotivatorEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4917D252030E66800CFA77D /* AFMotivatorEditor.swift */; };
 		D49AD3C92020F21200ACFA65 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = D49AD3C82020F21200ACFA65 /* SwiftyJSON.swift */; };
@@ -665,19 +654,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D489FF0D202F28FC004273FB /* AFAgentGoalsDelegate.swift in Sources */,
-				D489FF12202F28FC004273FB /* AFTopBarDelegate.swift in Sources */,
-				D489FF0B202F2811004273FB /* AFData.swift in Sources */,
-				D489FF15202F2910004273FB /* AFOrderedMap.swift in Sources */,
-				D489FF0E202F28FC004273FB /* AFBrowserDelegate.swift in Sources */,
 				D489FF03202F2771004273FB /* AgentFlocksCoreTests.swift in Sources */,
-				D489FF0F202F28FC004273FB /* AFContextMenuDelegate.swift in Sources */,
-				D489FF11202F28FC004273FB /* AFMenuBarDelegate.swift in Sources */,
 				D489FF16202F2923004273FB /* GameScene.swift in Sources */,
-				D489FF17202F2950004273FB /* AFSceneController.swift in Sources */,
-				D489FF10202F28FC004273FB /* AFItemEditorDelegate.swift in Sources */,
-				D489FF14202F2909004273FB /* AFMotivatorsReader.swift in Sources */,
-				D489FF0A202F27EE004273FB /* AFCore.swift in Sources */,
 				D489FF0C202F281F004273FB /* SwiftyJSON.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -239,30 +239,6 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
 }
 
 extension AFSceneController {
-    func getCoreAgentEditor(notification: Foundation.Notification) -> AFAgentEditor? {
-        var editor: AFAgentEditor?
-        
-        guard AFData.Notifier.isDataNotifier(notification) else {
-            return AFSceneController.Notification.Decode(notification).editor as? AFAgentEditor
-        }
-        
-        let n = AFData.Notifier(notification)
-        let c = n.pathToNode.count
-        
-        // We'll need the editor, which is two nodes up from the attributes
-        // we're being notified about. If our notification path isn't at least
-        // that long, the notification has nothing to do with us.
-        guard c > 2 else { return nil }
-        
-        let thisNode = String(describing: n.pathToNode[c - 1])
-        guard AFAgentAttribute(rawValue: thisNode) != nil else { fatalError() }
-        
-        let pathToEditor = Array(n.pathToNode.prefix(upTo: c - 1))
-        editor = AFAgentEditor(pathToEditor, core: core)
-        
-        return editor
-    }
-
     struct Notification {
         struct Encode {
             var attribute: AFAgentAttribute?

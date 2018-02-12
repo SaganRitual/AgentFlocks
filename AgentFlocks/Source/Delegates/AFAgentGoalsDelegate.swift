@@ -40,6 +40,7 @@ class AFAgentGoalsDelegate {
     private unowned let afSceneController: AFSceneController
     private unowned let core: AFCore
     private var gameScene: GameScene!
+    private var selectedMotivator: String?
     
     var agent: String?
     
@@ -52,51 +53,13 @@ class AFAgentGoalsDelegate {
     
     func deselect() { self.agent = nil }
     
-    func getEditableAttributes(for motivator: Any) -> AFOrderedMap<String, Double> {
-        guard let n = afSceneController.primarySelection else { fatalError() }
+    func getEditableAttributes(for motivator: Any, names: [String]) -> AFOrderedMap<String, Double> {
+        let editor = AFMotivatorEditor(motivator as! String, core: core)
 
-        let agent = AFNodeAdapter(gameScene: afSceneController.gameScene, name: n).getAgent()!
-        let gkGoal: GKGoal? = motivator as? GKGoal
-        let composite = agent.behavior as! AFCompositeBehavior
-        let behavior = (gkGoal == nil) ? (motivator as! AFBehavior) : composite.findParent(of: gkGoal!)
-        let afGoal_: AFGoal? = behavior!.getAFGoalForGKGoal(gkGoal)
-        
-        var attributes_ = AFOrderedMap<String, Double>()
         var attributes = AFOrderedMap<String, Double>()
-
-        if let afGoal = afGoal_ {
-            attributes_.append(key: "Angle", value: Double(afGoal.angle ?? 0))
-            attributes_.append(key: "Distance", value: Double(afGoal.distance ?? 0))
-            attributes_.append(key: "Speed", value: Double(afGoal.speed ?? 0))
-            attributes_.append(key: "Time", value: Double(afGoal.time ?? 0))
-            attributes_.append(key: "Weight", value: Double(afGoal.weight ?? 0))
-
-            switch afGoal.goalType {
-            default: break
-//            case .toAlignWith:        fallthrough
-//            case .toCohereWith:       fallthrough
-//            case .toSeparateFrom:
-//                attributes.append(key: "Angle", value: attributes_["Angle"]!)
-//                attributes.append(key: "Distance", value: attributes_["Distance"]!)
-//
-//            case .toFleeAgent:        fallthrough
-//            case .toSeekAgent:        fallthrough
-//            case .toReachTargetSpeed: fallthrough
-//            case .toWander:
-//                attributes.append(key: "Speed", value: attributes_["Speed"]!)
-//
-//            case .toFollow:           fallthrough
-//            case .toStayOn:           fallthrough
-//            case .toAvoidAgents:      fallthrough
-//            case .toAvoidObstacles:   fallthrough
-//            case .toInterceptAgent:
-//                attributes.append(key: "Time", value: attributes_["Time"]!)
-            }
-        } else {
-//            attributes_.append(key: "Weight", value: behavior.weight)
-        }
         
-        attributes.append(key: "Weight", value: attributes_["Weight"]!)
+        names.forEach { if let value = editor.getOptionalScalar($0) { attributes.append(key: $0, value: value) } }
+
         return attributes
     }
     
@@ -111,43 +74,11 @@ class AFAgentGoalsDelegate {
         }
     }
     
-    func itemClicked(_ item: Any) {
-        if let motivator = item as? AFBehavior {
-            afSceneController.parentOfNewMotivator = motivator
-        } else if let motivator = item as? GKGoal {
-            guard let n = afSceneController.primarySelection else { fatalError() }
-            
-            let agent = AFNodeAdapter(gameScene: self.gameScene, name: n).getAgent()!
-            let composite = agent.behavior as! AFCompositeBehavior
-
-//            afSceneController.parentOfNewMotivator = composite.findParent(ofGoal: motivator)
-        }
-    }
+    func itemClicked(_ item: Any) { selectedMotivator = (item as! String) }
     
-    func enableItem(_ item: Any, parent: Any?, on: Bool) -> [Any]? {
-        if let behavior = item as? AFBehavior {
-            guard let n = afSceneController.primarySelection else { fatalError() }
-
-            let agent = AFNodeAdapter(gameScene: afSceneController.gameScene, name: n).getAgent()!
-            let composite = agent.behavior as! AFCompositeBehavior
-            
-            composite.enableBehavior(behavior, on: on)
-            
-            var itemsUpdated = [Any]()
-//            for gkGoal in behavior.goalsMap.keys {
-//                itemsUpdated.append(gkGoal)
-//            }
-            
-            return itemsUpdated
-        }
-//        else if let gkGoal = item as? GKGoal {
-//            let behavior = parent! as! AFBehavior
-//            let afGoal = behavior.goalsMap[gkGoal]!
-//
-//            behavior.enableGoal(afGoal, on: on)
-//        }
-
-        return nil
+    func enableItem(_ item: Any, parent: Any?, on: Bool) {
+        AFMotivatorEditor(item as! String, core: core).isEnabled = on
+        print("en", core.bigData.data)
     }
     
     func play(_ yesno: Bool) {

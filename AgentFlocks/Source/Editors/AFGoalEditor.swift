@@ -24,7 +24,7 @@
 
 import Foundation
 
-class AFGoalEditor: AFEditor {
+class AFGoalEditor: AFMotivatorEditor {
     
     enum AFGoalType: String {
         case toAlignWith, toAvoidAgents, toAvoidObstacles, toCohereWith, toFleeAgent, toFollow,
@@ -130,27 +130,24 @@ extension AFGoalEditor {
 // MARK: getters & setters
 
 extension AFGoalEditor {
-    enum GoalAttributes: String { case agent = "agent", agents = "agents", angle = "angle", distance = "distance", forward = "forward", name = "name",
-        obstacles = "obstacles", path = "path", speed = "speed", objectAgents = "objectAgents", time = "time", type = "type" }
-    
     var agent: String {
         get {
-            let ix: JSONSubscriptType = GoalAttributes.agent.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.agent.rawValue
             return JSON(core.bigData.data[pathToHere][ix]).stringValue
         }
         set {
-            let ix: JSONSubscriptType = GoalAttributes.agent.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.agent.rawValue
             getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
         }
     }
     
     var agents: [String] {
         get {
-            let ix: JSONSubscriptType = GoalAttributes.agents.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.agents.rawValue
             return JSON(core.bigData.data[pathToHere][ix]).arrayValue.map { $0.stringValue }
         }
         set {
-            let ix: JSONSubscriptType = GoalAttributes.agents.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.agents.rawValue
             let jsonArray = newValue.map { JSON($0) }
             getNodeWriter(pathToHere).write(this: JSON(jsonArray), to: ix)
         }
@@ -158,55 +155,55 @@ extension AFGoalEditor {
 
     var angle: Float {
         get {
-            let ix: JSONSubscriptType = GoalAttributes.angle.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.angle.rawValue
             return JSON(core.bigData.data[pathToHere][ix]).floatValue
         }
         set {
-            let ix: JSONSubscriptType = GoalAttributes.angle.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.angle.rawValue
             getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
         }
     }
     
     var distance: Float {
         get {
-            let ix: JSONSubscriptType = GoalAttributes.distance.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.distance.rawValue
             return JSON(core.bigData.data[pathToHere][ix]).floatValue
         }
         set {
-            let ix: JSONSubscriptType = GoalAttributes.distance.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.distance.rawValue
             getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
         }
     }
     
     var forward: Bool {
         get {
-            let ix: JSONSubscriptType = GoalAttributes.forward.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.forward.rawValue
             return JSON(core.bigData.data[pathToHere][ix]).boolValue
         }
         set {
-            let ix: JSONSubscriptType = GoalAttributes.forward.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.forward.rawValue
             getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
         }
     }
 
     var objectAgents: [JSON] {
         get {
-            let ix: JSONSubscriptType = GoalAttributes.objectAgents.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.objectAgents.rawValue
             return JSON(core.bigData.data[pathToHere][ix]).arrayValue
         }
         set {
-            let ix: JSONSubscriptType = GoalAttributes.objectAgents.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.objectAgents.rawValue
             getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
         }
     }
     
     var obstacles: [String] {
         get {
-            let ix: JSONSubscriptType = GoalAttributes.obstacles.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.obstacles.rawValue
             return JSON(core.bigData.data[pathToHere][ix]).arrayValue.map { $0.stringValue }
         }
         set {
-            let ix: JSONSubscriptType = GoalAttributes.obstacles.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.obstacles.rawValue
             let jsonArray = newValue.map { JSON($0) }
             getNodeWriter(pathToHere).write(this: JSON(jsonArray), to: ix)
         }
@@ -214,33 +211,33 @@ extension AFGoalEditor {
 
     var path: String {
         get {
-            let ix: JSONSubscriptType = GoalAttributes.path.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.path.rawValue
             return JSON(core.bigData.data[pathToHere][ix]).stringValue
         }
         set {
-            let ix: JSONSubscriptType = GoalAttributes.path.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.path.rawValue
             getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
         }
     }
     
     var speed: Float {
         get {
-            let ix: JSONSubscriptType = GoalAttributes.speed.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.speed.rawValue
             return JSON(core.bigData.data[pathToHere][ix]).floatValue
         }
         set {
-            let ix: JSONSubscriptType = GoalAttributes.speed.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.speed.rawValue
             getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
         }
     }
     
     var time: TimeInterval {
         get {
-            let ix: JSONSubscriptType = GoalAttributes.time.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.time.rawValue
             return JSON(core.bigData.data[pathToHere][ix]).doubleValue
         }
         set {
-            let ix: JSONSubscriptType = GoalAttributes.time.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.time.rawValue
             getNodeWriter(pathToHere).write(this: JSON(newValue), to: ix)
         }
     }
@@ -249,11 +246,11 @@ extension AFGoalEditor {
     // a skeletal goal structure that has not been filled out yet.
     var type: AFGoalType? {
         get {
-            let ix: JSONSubscriptType = GoalAttributes.type.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.type.rawValue
             return AFGoalType(rawValue: JSON(core.bigData.data[pathToHere][ix]).stringValue)
         }
         set {
-            let ix: JSONSubscriptType = GoalAttributes.type.rawValue
+            let ix: JSONSubscriptType = AFMotivatorEditor.Attributes.type.rawValue
             if let newValue = newValue {
                 getNodeWriter(pathToHere).write(this: JSON(newValue.rawValue), to: ix)
             } else {

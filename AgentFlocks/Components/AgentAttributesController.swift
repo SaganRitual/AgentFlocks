@@ -247,31 +247,18 @@ class AgentAttributesController: NSViewController {
 		self.init()
 	}
 
-    private func getCoreAgentEditor(notification: Foundation.Notification) -> AFAgentEditor? {
-        var editor: AFAgentEditor?
-
+    private func getAgentEditor(notification: Foundation.Notification) -> AFAgentEditor? {
         guard AFData.Notifier.isDataNotifier(notification) else {
             return AFSceneController.Notification.Decode(notification).editor as? AFAgentEditor
         }
         
         let n = AFData.Notifier(notification)
-        let c = n.pathToNode.count
-        
-        // We'll need the editor, which is one node up from the attribute
-        // we're being notified about. If our notification path isn't at least
-        // that long, the notification has nothing to do with us.
-        guard c > 2 else { return nil }
-        
-        let thisNode = String(describing: n.pathToNode[c - 1])
-        guard AFAgentAttribute(rawValue: thisNode) != nil else { fatalError() }
-        
-        let pathToEditor = Array(n.pathToNode.prefix(upTo: c - 1))
-        editor = AFAgentEditor(pathToEditor, core: core)
-        
-        return editor
+        return AFAgentEditor(n.pathToNode, core: core)
     }
     
     @objc func nodeChanged(notification: Foundation.Notification) {
+        func helper(_ lhs: JSONSubscriptType, _ rhs: String) -> Bool { return JSON(lhs).stringValue == rhs }
+        
         // Ignore the various notifications that we don't care about.
         
         // No agent selected
@@ -280,16 +267,18 @@ class AgentAttributesController: NSViewController {
         // If I (the agent) am not mentioned in the change path, then the notification
         // has nothing to do with me. Just ignore it.
         let n = AFData.Notifier(notification)
-        guard n.pathToNode.contains(where: { JSON($0).stringValue == targetAgent }) else { return }
-
-        // It involves me. I might still not care; let the editor chew on it
-        guard let editor = getCoreAgentEditor(notification: notification) else { fatalError() }
+        guard n.pathToNode.contains(where: { helper($0, targetAgent) }) else { return }
+        
+        // Something in the motivators below me has changed. I only care about agent attributes.
+        let ix_ = n.pathToNode.first(where: { helper($0, targetAgent) })!
+        let ix = JSON(ix_).intValue
+        guard n.pathToNode.count == (ix + 2) else { return }
 
         // If we don't recognize the attribute name, throw a spanner in it
-        let c = n.pathToNode.count
-        let thisNode = String(describing: n.pathToNode[c - 1])
+        let thisNode = String(describing: n.pathToNode.last!)
         guard let attribute = AFAgentAttribute(rawValue: thisNode) else { fatalError() }
         
+        let editor = AFAgentEditor(n.pathToNode, core: core)
         loadAttribute(attribute, from: editor)
     }
     
