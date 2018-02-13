@@ -226,18 +226,15 @@ class AgentAttributesController: NSViewController {
         if !iStillNeedSomething {
             self.core = injector.core
 
-            let aName = Foundation.Notification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
             let aSelector = #selector(hasBeenSelected(notification:))
-            self.uiNotifications.addObserver(self, selector: aSelector, name: aName, object: nil)
+            self.uiNotifications.addObserver(self, selector: aSelector, name: .Selected, object: nil)
 
-            let cName = Foundation.Notification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
             let cSelector = #selector(hasBeenDeselected(notification:))
-            self.uiNotifications.addObserver(self, selector: cSelector, name: cName, object: nil)
+            self.uiNotifications.addObserver(self, selector: cSelector, name: .Deselected, object: nil)
 
             // Data notifier
-            let bName = NSNotification.Name(rawValue: "ThereCanBeOnlyOne")
             let bSelector = #selector(nodeChanged(notification:))
-            self.dataNotifications.addObserver(self, selector: bSelector, name: bName, object: nil)
+            self.dataNotifications.addObserver(self, selector: bSelector, name: .CoreTreeUpdate, object: nil)
         }
         
         return iStillNeedSomething

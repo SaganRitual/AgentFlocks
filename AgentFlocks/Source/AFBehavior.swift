@@ -43,7 +43,7 @@ class AFBehavior: GKBehavior {
         
         super.init()
         
-        let n = NSNotification.Name(rawValue: AFCore.NotificationType.NewGoal.rawValue)
+        let n = Foundation.Notification.Name.CoreTreeUpdate
         self.notifications.addObserver(self, selector: #selector(aGoalHasBeenCreated(notification:)), name: n, object: nil)
     }
     

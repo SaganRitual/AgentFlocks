@@ -154,17 +154,14 @@ class AFMotivatorsReader: AgentGoalsDataSource {
         if !iStillNeedSomething {
             injector.agentGoalsDataSource = self
             
-            let s1 = Foundation.Notification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
             let ss1 = #selector(dataSourceHasBeenSelected(notification:))
-            self.uiNotifications.addObserver(self, selector: ss1, name: s1, object: nil)
+            self.uiNotifications.addObserver(self, selector: ss1, name: .Selected, object: nil)
             
-            let s2 = Foundation.Notification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
             let ss2 = #selector(dataSourceHasBeenDeselected(notification:))
-            self.uiNotifications.addObserver(self, selector: ss2, name: s2, object: nil)
+            self.uiNotifications.addObserver(self, selector: ss2, name: .Deselected, object: nil)
             
-            let s3 = Foundation.Notification.Name(rawValue: "ThereCanBeOnlyOne")
             let ss3 = #selector(coreDataChanged(notification:))
-            self.dataNotifications.addObserver(self, selector: ss3, name: s3, object: nil)
+            self.dataNotifications.addObserver(self, selector: ss3, name: .CoreTreeUpdate, object: nil)
         }
     }
 

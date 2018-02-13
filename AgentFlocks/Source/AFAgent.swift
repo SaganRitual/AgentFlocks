@@ -67,9 +67,8 @@ class AFAgent: GKAgent2D {
         core.ui.gameScene.entities.append(entity)
         
         // These notifications come from the data
-        let n1 = Foundation.Notification.Name.CoreDataChanged
         let s1 = #selector(coreDataChanged(notification:))
-        self.dataNotifications.addObserver(self, selector: s1, name: n1, object: nil)
+        self.dataNotifications.addObserver(self, selector: s1, name: .CoreTreeUpdate, object: nil)
         
         chargeMotivators()
     }

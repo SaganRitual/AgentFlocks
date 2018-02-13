@@ -37,7 +37,7 @@ class AFCompositeBehavior: GKCompositeBehavior {
         
         super.init()
         
-        let n = NSNotification.Name(rawValue: AFCore.NotificationType.NewBehavior.rawValue)
+        let n = Foundation.Notification.Name.CoreTreeUpdate
         self.notifications.addObserver(self, selector: #selector(aBehaviorHasBeenCreated(notification:)), name: n, object: core)
     }
     

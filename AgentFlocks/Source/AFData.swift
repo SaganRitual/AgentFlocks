@@ -103,8 +103,7 @@ class AFData {
     
     func announce(path toNode: [JSONSubscriptType]) {
         let u = AFData.Notifier(core, toNode).encode()
-        let n = Foundation.Notification.Name(rawValue: "ThereCanBeOnlyOne")
-        let nn = Foundation.Notification(name: n, object: nil, userInfo: u)
+        let nn = Foundation.Notification(name: .CoreTreeUpdate, object: nil, userInfo: u)
         notifier.post(nn)
     }
 
@@ -140,6 +139,16 @@ class AFData {
     func getNodeWriter(_ pathToParent: [JSONSubscriptType]) -> NodeWriter {
         return NodeWriter(pathToParent, core: core)
     }
+}
+
+extension Foundation.Notification.Name {
+    static let CoreNodeAdd = Foundation.Notification.Name("CoreNodeAdd")
+    static let CoreNodeDelete = Foundation.Notification.Name("CoreNodeDelete")
+    static let CoreNodeUpdate = Foundation.Notification.Name("CoreNodeUpdate")
+    static let CoreTreeUpdate = Foundation.Notification.Name("CoreTreeUpdate")
+    static let Deselected = Foundation.Notification.Name("Deselected")
+    static let Selected = Foundation.Notification.Name("Selected")
+    static let SelectionChanged = Foundation.Notification.Name("SelectionChanged")
 }
 
 extension AFData {

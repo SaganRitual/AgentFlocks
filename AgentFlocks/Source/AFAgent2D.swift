@@ -31,11 +31,6 @@ protocol AFAgentDelegate {
     func setAttribute(_ attribute: AFAgentAttribute, to value: Float, for agent: String)
 }
 
-extension Foundation.Notification.Name {
-    static let CoreDataChanged = Foundation.Notification.Name("CoreDataChanged")
-    static let SelectionChanged = Foundation.Notification.Name("SelectionChanged")
-}
-
 class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
     
     private unowned let core: AFCore
@@ -68,14 +63,12 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
         self.spriteSet = AFAgent2D.SpriteSet(owningAgent: self, image: image, name: editor.name, scale: editor.scale, gameScene: gameScene)
 
         // These notifications come from the data
-        let n1 = Foundation.Notification.Name.CoreDataChanged
         let s1 = #selector(coreDataChanged(notification:))
-        self.dataNotifications.addObserver(self, selector: s1, name: n1, object: nil)
+        self.dataNotifications.addObserver(self, selector: s1, name: .CoreTreeUpdate, object: nil)
         
         // These notifications come from the selection controller
-        let n2 = Foundation.Notification.Name.SelectionChanged
-        let s2 = #selector(coreDataChanged(notification:))
-        self.uiNotifications.addObserver(self, selector: s2, name: n2, object: nil)
+        let s2 = #selector(hasBeenSelected(notification:))
+        self.uiNotifications.addObserver(self, selector: s2, name: .Selected, object: nil)
 
         // Use self here, because we want to set the container position too.
         // But it has to happen after superclass init, because it talks to the superclass.
