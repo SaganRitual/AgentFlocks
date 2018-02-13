@@ -78,7 +78,6 @@ class AFAgentGoalsDelegate {
     
     func enableItem(_ item: Any, parent: Any?, on: Bool) {
         AFMotivatorEditor(item as! String, core: core).isEnabled = on
-        print("en", core.bigData.data)
     }
     
     func play(_ yesno: Bool) {

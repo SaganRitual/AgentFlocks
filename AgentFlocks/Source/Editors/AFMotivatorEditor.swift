@@ -25,6 +25,7 @@
 class AFMotivatorEditor: AFEditor {
     var count: Int { get { return core.bigData.data[pathToHere].count } }
     
+    var motivatorCategory: JSONSubscriptType { fatalError("Required in child classes") }
     var parentEditor: AFMotivatorEditor { fatalError("Required in child classes") }
     
     // Different motivators have different sets of scalar attributes. The UI
@@ -57,25 +58,7 @@ class AFMotivatorEditor: AFEditor {
         fatalError("Required in child classes")
     }
 
-    func setWeight(forMotivator name: String, to: Float) {
-        getNodeWriter(pathToHere + [name]).write(this: JSON(to), to: "weight")
-    }
-    
-    // Our underlying json has no arrays in it. I made it all dictionaries, mostly because
-    // it makes the json easier to read when debugging. But behaviors and goals, in
-    // the GameplayKit architecture, are arrays. So here, a bit of a hack to get them
-    // to be somewhat array-like (in particular, to remember the order in which elements
-    // are added to them). There's some corresponding hackery in the motivators reader,
-    // to assign these serial numbers to motivators as they're created. If I ever get to
-    // the point where I feel like saving and loading files again, I'll have to read the
-    // highest serial number in the incoming data and start the new serial numbers from there.
-    subscript(_ ix: Int) -> String {
-        let motivators = core.bigData.data[pathToHere].sorted(by: {
-            $0.1["serialNumber"].intValue < $1.1["serialNumber"].intValue
-        })
-        
-        return motivators[ix].0  // .0 is the name of the motivator node
-    }
+    func setWeight(forMotivator name: String, to: Float) { fatalError("Required in child classes") }
 }
 
 extension AFMotivatorEditor {

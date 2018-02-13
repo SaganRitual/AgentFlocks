@@ -46,6 +46,12 @@ class AFAgentEditor: AFEditor {
         
         return AFCompositeEditor(pathToNewComposite, core: core)
     }
+    
+    func getComposite() -> AFCompositeEditor {
+        let behaviors: JSONSubscriptType = "behaviors"
+        let pathToComposite = pathToHere + [behaviors]
+        return AFCompositeEditor(pathToComposite, core: core)
+    }
 }
 
 enum AFAgentAttribute: String { case isPaused, mass, maxAcceleration, maxSpeed, radius, scale }

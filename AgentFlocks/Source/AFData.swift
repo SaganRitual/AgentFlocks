@@ -161,5 +161,6 @@ extension AFData {
     static func isAgent(_ path: [JSONSubscriptType]) -> Bool { return path.count == agentDepth + 1 }
     static func isBehavior(_ path: [JSONSubscriptType]) -> Bool { return path.count == behaviorDepth + 1 }
     static func isGoal(_ path: [JSONSubscriptType]) -> Bool { return path.count == goalDepth + 1 }
+    static func isMotivator(_ path: [JSONSubscriptType]) -> Bool { return isBehavior(path) || isGoal(path) }
 }
 

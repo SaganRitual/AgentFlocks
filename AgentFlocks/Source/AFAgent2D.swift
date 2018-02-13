@@ -22,6 +22,7 @@
 // IN THE SOFTWARE.
 //
 
+import Foundation
 import GameplayKit
 
 protocol AFAgentDelegate {
@@ -33,11 +34,12 @@ protocol AFAgentDelegate {
 class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
     
     private unowned let core: AFCore
-    let name: String
+    private unowned let dataNotifications: Foundation.NotificationCenter
     private let gameScene: SKScene
-    private unowned let notifications: Foundation.NotificationCenter
+    let name: String
     private var savedBehaviorState: AFCompositeBehavior?
     private var spriteSet: AFAgent2D.SpriteSet!
+    private unowned let uiNotifications: Foundation.NotificationCenter
 
     var isPaused: Bool {
         get { return spriteSet.primaryContainer.isPaused }
@@ -52,7 +54,8 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
     init(core: AFCore, editor: AFAgentEditor, image: NSImage, position: CGPoint, gameScene: SKScene) {
         self.core = core
         self.name = editor.name
-        self.notifications = core.bigData.notifier
+        self.dataNotifications = core.bigData.notifier
+        self.uiNotifications = core.sceneController.uiNotifications
         self.gameScene = gameScene
 
         super.init()
@@ -60,11 +63,14 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
         self.spriteSet = AFAgent2D.SpriteSet(owningAgent: self, image: image, name: editor.name, scale: editor.scale, gameScene: gameScene)
 
         // These notifications come from the data
-        let n = NSNotification.Name(rawValue: AFCore.NotificationType.NewComposite.rawValue)
-        self.notifications.addObserver(self, selector: #selector(aCompositeHasBeenCreated(notification:)), name: n, object: nil)
-
-        let s = NSNotification.Name(rawValue: AFCore.NotificationType.SetAttribute.rawValue)
-        self.notifications.addObserver(self, selector: #selector(anAttributeHasChanged(notification:)), name: s, object: nil)
+        let n1 = Foundation.Notification.Name.CoreDataChanged
+        let s1 = #selector(coreDataChanged(notification:))
+        self.dataNotifications.addObserver(self, selector: s1, name: n1, object: nil)
+        
+        // These notifications come from the selection controller
+        let n2 = Foundation.Notification.Name.SelectionChanged
+        let s2 = #selector(coreDataChanged(notification:))
+        self.uiNotifications.addObserver(self, selector: s2, name: n2, object: nil)
 
         // Use self here, because we want to set the container position too.
         // But it has to happen after superclass init, because it talks to the superclass.
@@ -77,7 +83,8 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
     }
     
     deinit {
-        self.notifications.removeObserver(self)
+        self.dataNotifications.removeObserver(self)
+        self.uiNotifications.removeObserver(self)
     }
     
     func enableMotivators(_ on: Bool = true) {
@@ -232,10 +239,7 @@ extension AFAgent2D {
     // in order to conform to the delegate protocol.
     func newAgent(_ name: String) {}
 
-    @objc func aCompositeHasBeenCreated(notification: Foundation.Notification) {
-    }
-    
-    @objc func anAttributeHasChanged(notification: Foundation.Notification) {
+    @objc func coreDataChanged(notification: Foundation.Notification) {
     }
     
     func anAttributeHasChanged(_ asString: String, to value: Float, for agent: String) {
@@ -250,30 +254,6 @@ extension AFAgent2D {
         case .scale:           self.spriteSet.primaryContainer.setScale(CGFloat(value));
         }
     }
-}
-
-// MARK - most agent attributes talk directly to coreData
-
-extension AFAgent2D {
-//    override var mass: Float {
-//        get { return super.mass }
-//        set { coreData.setAttribute(.mass, to: newValue, for: self.name); super.mass = newValue }
-//    }
-//    
-//    override var maxAcceleration: Float {
-//        get { return super.maxAcceleration }
-//        set { coreData.setAttribute(.maxAcceleration, to: newValue, for: self.name); super.maxAcceleration = newValue }
-//    }
-//    
-//    override var maxSpeed: Float {
-//        get { return super.maxSpeed }
-//        set { coreData.setAttribute(.maxSpeed, to: newValue, for: self.name); super.maxSpeed = newValue }
-//    }
-//    
-//    override var radius: Float {
-//        get { return super.radius }
-//        set { coreData.setAttribute(.radius, to: newValue, for: self.name); super.radius = newValue }
-//    }
 }
 
 extension AFAgent2D {

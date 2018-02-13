@@ -128,11 +128,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             coreMenuBarDelegate = injector.menuBarDelegate
             coreTopBarDelegate = injector.topBarDelegate
             
+            // Ignore selections until I can get the new agent up and running
+            
+            /*
             let select = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
             self.uiNotifications.addObserver(self, selector: #selector(itemSelected(notification:)), name: select, object: nil)
             
             let deselect = NSNotification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
             self.uiNotifications.addObserver(self, selector: #selector(itemDeselected(notification:)), name: deselect, object: nil)
+ */
 
             // Strange, I had to paste this line from removeAgentFrames() in order to
             // get the agent editing panels to display. I could take some guesses

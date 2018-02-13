@@ -56,6 +56,7 @@ protocol AFSceneControllerDelegate {
 
 class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
 //    var activePath: AFPath!     // The one we're doing stuff to, whether it's selected or not (like dragging handles)
+    var agentsMap = [String: AFAgent]()
     var browserDelegate: AFBrowserDelegate!
     let contextMenu: AFContextMenu
     var core: AFCore!
@@ -94,12 +95,12 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
 //    func addNodeToPath(at position: CGPoint) { activePath.addGraphNode(at: position) }
 
     func bringToTop(_ name: String) {
-        let count = compressZOrder()
+//        let count = compressZOrder()
 //        AFNodeAdapter(name).setZPosition(above: count - 1)
     }
    
     func cloneAgent() {
-        guard let copyFrom = primarySelection else { return }
+//        guard let copyFrom = primarySelection else { return }
 //        core.core.sceneController.cloneAgent()
     }
 
@@ -121,10 +122,17 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
         
         let c = agentEditor.createComposite()   // Add a complimentary behavior before we
         let b = c.createBehavior()              // send the new agent on his way
-        c.setWeight(forMotivator: b.name, to: 1)
+        c.setWeight(forMotivator: b.name, to: 100)
+        
+        let g = b.createGoal()
+        b.setWeight(forMotivator: g.name, to: 100)
+        g.composeGoal_toWander(speed: 200)
 
-        let agent = AFAgent2D(core: core, editor: agentEditor, image: image, position: currentPosition, gameScene: gameScene)
-        selectionController.newAgentWasCreated(agent.name)
+        let agent = AFAgent(agentEditor.name, core: core, position: currentPosition)
+        agentsMap[agentEditor.name] = agent
+
+//        let agent = AFAgent2D(core: core, editor: agentEditor, image: image, position: currentPosition, gameScene: gameScene)
+//        selectionController.newAgentWasCreated(agent.name)
     }
     
     func dragEnd(_ info: AFSceneInputState.InputInfo) {
@@ -148,6 +156,12 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
         drone.flagsChanged(to: newFlags)
     }
     
+    func getAgent(_ name: String) -> AFAgent { return agentsMap[name]! }
+    
+    func getAgents(_ names: [String]) -> [AFAgent] {
+        return agentsMap.filter({ names.contains($0.key) }).map { (_, value) in return value }
+    }
+
     func getNextZPosition() -> Int { return gameScene.children.count }
     
     @objc func hasBeenSelected(notification: Foundation.Notification) {

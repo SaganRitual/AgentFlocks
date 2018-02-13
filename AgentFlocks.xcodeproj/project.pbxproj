@@ -111,6 +111,7 @@
 		D4F1092E202C5B2300342A79 /* AFPathEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F1092D202C5B2300342A79 /* AFPathEditor.swift */; };
 		D4F10930202C5C0C00342A79 /* AFGraphNodeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F1092F202C5C0C00342A79 /* AFGraphNodeEditor.swift */; };
 		D4F779E320087057005179BA /* AFGraphNode2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F779E220087057005179BA /* AFGraphNode2D.swift */; };
+		D4FA2EAB203223FB0067C1B1 /* AFAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4FA2EAA203223FB0067C1B1 /* AFAgent.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -232,6 +233,7 @@
 		D4F1092D202C5B2300342A79 /* AFPathEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFPathEditor.swift; sourceTree = "<group>"; };
 		D4F1092F202C5C0C00342A79 /* AFGraphNodeEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFGraphNodeEditor.swift; sourceTree = "<group>"; };
 		D4F779E220087057005179BA /* AFGraphNode2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFGraphNode2D.swift; sourceTree = "<group>"; };
+		D4FA2EAA203223FB0067C1B1 /* AFAgent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AFAgent.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -386,6 +388,7 @@
 			children = (
 				D4D16562200D7F880065728D /* Delegates */,
 				D4F1091E202C50BA00342A79 /* Editors */,
+				D4FA2EAA203223FB0067C1B1 /* AFAgent.swift */,
 				D442B987201692810072EE5A /* AFAgent2D.swift */,
 				D4C7EADE1FFD04730008FBCD /* AFBehavior.swift */,
 				D4C7EADC1FFD01F40008FBCD /* AFCompositeBehavior.swift */,
@@ -618,6 +621,7 @@
 				D40E7E702013E06700FD953C /* AFSceneState_Default.swift in Sources */,
 				D4E1441C20229BE800F6F59D /* AFSceneInputState.swift in Sources */,
 				D4D1655F200D45A40065728D /* AFAgentGoalsDelegate.swift in Sources */,
+				D4FA2EAB203223FB0067C1B1 /* AFAgent.swift in Sources */,
 				74622E7B1F9249CA00690C3C /* ImagesListController.swift in Sources */,
 				D4F779E320087057005179BA /* AFGraphNode2D.swift in Sources */,
 				7493863B200145C700BAAF8E /* ActiveImageView.swift in Sources */,

@@ -30,14 +30,18 @@ enum AFKeyCodes: UInt {
     case escape = 53
 }
 
+class AFEntity: GKEntity {
+    
+}
+
 class GameScene: SKScene, SKViewDelegate {
+    var entities = [GKEntity]()
+    var agents = GKComponentSystem(componentClass: AFAgent.self)
+    var gameSceneDelegate: AFGameSceneDelegate!
+    var lastUpdateTime: TimeInterval = 0
     static var me: GameScene!
     var sceneController: AFSceneController!
 
-    var lastUpdateTime: TimeInterval = 0
-    
-    var gameSceneDelegate: AFGameSceneDelegate!
-    
     func pause() { isPaused = true }
     func play() { isPaused = false; lastUpdateTime = 0 }
 
@@ -58,8 +62,9 @@ class GameScene: SKScene, SKViewDelegate {
         // Calculate time since last update
         let dt = currentTime - self.lastUpdateTime
         
-        // Update core
-        gameSceneDelegate?.update(deltaTime: dt)
+        entities.forEach { $0.update(deltaTime: dt) }
+
+        agents.update(deltaTime: dt)
         
         self.lastUpdateTime = currentTime
     }

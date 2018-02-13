@@ -82,6 +82,7 @@ class AFCore {
     
     static func makeCore(ui: AppDelegate, gameScene: GameScene) -> AFGameSceneDelegate {
         let c = AFCore()
+        c.ui = ui
         
         c.sceneController = AFSceneController(gameScene: gameScene, ui: ui, contextMenu: AFContextMenu(ui: ui))
         
