@@ -31,6 +31,11 @@ protocol AFAgentDelegate {
     func setAttribute(_ attribute: AFAgentAttribute, to value: Float, for agent: String)
 }
 
+extension Foundation.Notification.Name {
+    static let CoreDataChanged = Foundation.Notification.Name("CoreDataChanged")
+    static let SelectionChanged = Foundation.Notification.Name("SelectionChanged")
+}
+
 class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
     
     private unowned let core: AFCore
