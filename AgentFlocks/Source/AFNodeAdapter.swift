@@ -42,15 +42,14 @@ struct AFNodeAdapter {
             }
         }
         
-        func getAgent() -> AFAgent2D { return userData["agent"] as! AFAgent2D }
-        func move(to position: CGPoint) { getAgent().move(to: position) }
+        func move(to position: CGPoint) { /*getAgent().move(to: position)*/ }
 
         var isAgent:      Bool { return userData["isAgent"] as! Bool }
         var isClickable:  Bool { return userData["isClickable"] as! Bool }
         var isPath:       Bool { return userData["isPath"] as! Bool }
         var isPathHandle: Bool { return userData["isPathHandle"] as! Bool }
-        var name:       String { return getAgent().name }
-        var position:  CGPoint { return CGPoint(getAgent().position) }
+        var name:       String { return node!.name! }
+        var position:  CGPoint { return node!.position }
 
         // These have a default value, because we don't set them right away, because
         // they're set and cleared all the time. So we allow for agents and other
@@ -68,14 +67,14 @@ struct AFNodeAdapter {
         func deselect() {
             setUserData("isSelected", to: true)
             setUserData("isPrimarySelection", to: false)
-            getAgent().hasBeenDeselected(getAgent().name)
+//            getAgent().hasBeenDeselected(getAgent().name)
         }
 
         func select(primary: Bool) {
             setUserData("isSelected", to: true)
             setUserData("isPrimarySelection", to: primary)
-            let nener = getAgent().name
-            getAgent().hasBeenSelected(nener, primary: primary)
+            let nener = node!.name!
+//            getAgent().hasBeenSelected(nener, primary: primary)
         }
         
         func setUserData(_ key: String, to value: Bool) { userData[key] = value }
@@ -89,7 +88,6 @@ struct AFNodeAdapter {
         else { impl = nil }
     }
     
-    func getAgent() -> AFAgent2D? { return impl?.getAgent() }
     func move(to position: CGPoint) { impl?.move(to: position) }
 
     var isAgent:     Bool { return impl?.isAgent ?? false }

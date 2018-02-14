@@ -64,7 +64,6 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     unowned let gameScene: GameScene
     var goalSetupInputMode = GoalSetupInputMode.NoSelect
     var mouseState = MouseStates.up
-    var uiNotifications: Foundation.NotificationCenter!
     var obstacleCloneStamp = String()
     var parentOfNewMotivator: AFBehavior?
     var pathForNextPathGoal = 0
@@ -130,9 +129,15 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
 
         let agent = AFAgent(agentEditor.name, core: core, position: currentPosition)
         agentsMap[agentEditor.name] = agent
-
-//        let agent = AFAgent2D(core: core, editor: agentEditor, image: image, position: currentPosition, gameScene: gameScene)
-//        selectionController.newAgentWasCreated(agent.name)
+        
+        // The final step: hand the Avatar over to the sprite. From here on,
+        // agents and avatars basically take care of themselves. We can almost
+        // pretend they're not there.
+        let agentAvatar = AFAgentAvatar(agent.name, core: core, image: image, position: currentPosition)
+        agent.handoffToGameplayKit(avatar: agentAvatar)
+        agentAvatar.handoffToSprite()
+        
+        selectionController.newAgentWasCreated(agent.name)
     }
     
     func dragEnd(_ info: AFSceneInputState.InputInfo) {
@@ -228,9 +233,9 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     }
     
     func recallAgents() {
-        let n = Foundation.Notification.Name(rawValue: NotificationType.Recalled.rawValue)
-        let nn = Foundation.Notification(name: n, object: nil, userInfo: nil)
-        uiNotifications.post(nn)
+//        let n = Foundation.Notification.Name(rawValue: NotificationType.Recalled.rawValue)
+//        let nn = Foundation.Notification(name: n, object: nil, userInfo: nil)
+//        uiNotifications.post(nn)
     }
 
     func rightMouseDown(_ info: AFSceneInputState.InputInfo) { }

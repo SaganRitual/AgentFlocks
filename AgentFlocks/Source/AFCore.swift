@@ -31,7 +31,6 @@ class AFCore {
     var agentGoalsDelegate: AFAgentGoalsDelegate!
     var browserDelegate: AFBrowserDelegate!
     var contextMenuDelegate: AFContextMenuDelegate!
-    var scene: GameScene!
     var sceneController: AFSceneController!
     var sceneInputState: AFSceneInputState!
     var itemEditorDelegate: AFItemEditorDelegate!

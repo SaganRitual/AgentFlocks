@@ -49,23 +49,6 @@ class AFAgent: GKAgent2D {
         // Hook up to the entity/component mechanism, which provides us our tick.
         core.ui.gameScene.agents.addComponent(self)
         
-        // Dummy sprite
-        let sprite = SKShapeNode(circleOfRadius: 25)
-        sprite.name = NSUUID().uuidString
-        core.ui.gameScene.addChild(sprite)
-        
-        // I'm the Agent. The node component becomes my delegate here. It keeps
-        // the sprite in sync with my movements, which are driven by the goals.
-        let nc = GKSKNodeComponent(node: sprite)
-        self.delegate = nc
-
-        // Compose ourselves, and subscribe to the tick
-        let entity = GKEntity()
-        entity.addComponent(self)
-        entity.addComponent(nc)
-
-        core.ui.gameScene.entities.append(entity)
-        
         // These notifications come from the data
         let s1 = #selector(coreNodeAdd(notification:))
         self.dataNotifications.addObserver(self, selector: s1, name: .CoreNodeAdd, object: nil)
@@ -106,6 +89,22 @@ class AFAgent: GKAgent2D {
                 gkBehavior.setWeight(goalEditor.weight, for: gkGoal)
             }
         }
+    }
+    
+    func handoffToGameplayKit(avatar: AFAgentAvatar) {
+        // I'm the Agent. The node component becomes my delegate here. It keeps
+        // the sprite in sync with my movements, which are driven by the goals.
+        let nc = avatar.makeNodeComponent()
+        self.delegate = nc
+        
+        // Compose ourselves, and subscribe to the tick, after which, the entity will
+        // own the memory reference to the agent, and via the node component, the
+        // sprite as well. I think.
+        let entity = GKEntity()
+        entity.addComponent(self)
+        entity.addComponent(nc)
+        
+        core.ui.gameScene.entities.append(entity)
     }
     
     required init?(coder aDecoder: NSCoder) {

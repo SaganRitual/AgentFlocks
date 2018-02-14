@@ -108,7 +108,6 @@ extension AFSelectionController {
     func newAgentWasCreated(_ name: String) {
         deselectAll()
         select(name, primary: true)
-        announceSelect(name, primary: true)
     }
     
     func newPathWasCreated(_ name: String) {
@@ -221,11 +220,11 @@ private extension AFSelectionController {
         uiNotifications.post(nn)
     }
 
-    func deselect(_ name: String, primary: Bool) { getNodeAdapter(name).deselect(); announceDeselect(name) }
+    func deselect(_ name: String, primary: Bool) { /*getNodeAdapter(name).deselect();*/ announceDeselect(name) }
     
-    func deselectAll() { gameScene.children.forEach { getNodeAdapter($0.name).deselect(); announceDeselect($0.name!) } }
+    func deselectAll() { gameScene.children.forEach { /*getNodeAdapter($0.name).deselect();*/ announceDeselect($0.name!) } }
     
-    func select(_ name: String, primary: Bool) { getNodeAdapter(name).select(primary: primary); announceSelect(name, primary: primary) }
+    func select(_ name: String, primary: Bool) { /*getNodeAdapter(name).select(primary: primary);*/ announceSelect(name, primary: primary) }
     
     func toggleSelection(_ name: String) {}
 }

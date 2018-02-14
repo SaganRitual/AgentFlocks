@@ -130,7 +130,7 @@ class AFItemEditorDelegate {
         
     }
     
-    private func refreshBehavior(agent: AFAgent2D, behavior: AFBehavior, weight: Double) {
+    private func refreshBehavior(agent: AFAgent, behavior: AFBehavior, weight: Double) {
         print("i don't know")
 //        (agent.behavior! as! AFCompositeBehavior).setWeight(behavior.weight, for: behavior)
     }
@@ -159,19 +159,19 @@ class AFItemEditorDelegate {
     }
     
     func refreshMotivators(state: ItemEditorSlidersState) {
-        let selectedNodes = afSceneController.selectedNodes
-        guard selectedNodes.count > 0 else { return }
-        
-        let name = afSceneController.primarySelection!
-        let agent = AFNodeAdapter(gameScene: afSceneController.gameScene, name: name).getAgent()!
-        
-        if let behavior = state.editedItem as? AFBehavior {
-            refreshBehavior(agent: agent, behavior: behavior, weight: state.weight.value)
-        } else if let gkGoal = state.editedItem as? GKGoal {
-            refreshGoal(gkGoal: gkGoal, state: state)
-        } else {
-//            addMotivator(entity: entity, state: state)
-        }
+//        let selectedNodes = afSceneController.selectedNodes
+//        guard selectedNodes.count > 0 else { return }
+//        
+//        let name = afSceneController.primarySelection!
+//        let agent = AFNodeAdapter(gameScene: afSceneController.gameScene, name: name).getAgent()!
+//        
+//        if let behavior = state.editedItem as? AFBehavior {
+//            refreshBehavior(agent: agent, behavior: behavior, weight: state.weight.value)
+//        } else if let gkGoal = state.editedItem as? GKGoal {
+//            refreshGoal(gkGoal: gkGoal, state: state)
+//        } else {
+////            addMotivator(entity: entity, state: state)
+//        }
     }
     
     func retransmitGoal(afGoal: AFGoal, state: ItemEditorSlidersState) {

@@ -55,7 +55,7 @@ class AFAgent2D: GKAgent2D, AgentAttributesDelegate, AFSceneControllerDelegate {
         self.core = core
         self.name = editor.name
         self.dataNotifications = core.bigData.notifier
-        self.uiNotifications = core.sceneController.uiNotifications
+        self.uiNotifications = core.ui.uiNotifications
         self.gameScene = gameScene
 
         super.init()

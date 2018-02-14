@@ -146,7 +146,7 @@ extension AFGraphNode2D {
 
             isSelected = true
             
-            selectionIndicator = AFAgent2D.makeRing(radius: 40, isForSelector: true, primary: primary)
+            selectionIndicator = AFAgentAvatar.makeRing(radius: 40, isForSelector: true, primary: primary)
             primaryContainer.addChild(selectionIndicator)
         }
         
@@ -157,7 +157,7 @@ extension AFGraphNode2D {
             sprite.position = position
 //            sprite.zPosition = CGFloat(coreData.core.sceneController.getNextZPosition())
             
-            let selectionIndicator = AFAgent2D.makeRing(radius: Float(selectionIndicatorRadius), isForSelector: true, primary: true)
+            let selectionIndicator = AFAgentAvatar.makeRing(radius: Float(selectionIndicatorRadius), isForSelector: true, primary: true)
             
             return (sprite, selectionIndicator)
         }
