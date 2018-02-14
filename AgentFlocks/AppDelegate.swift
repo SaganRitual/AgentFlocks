@@ -128,13 +128,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             coreMenuBarDelegate = injector.menuBarDelegate
             coreTopBarDelegate = injector.topBarDelegate
             
-            // Ignore selections until I can get the new agent up and running
-            
-            let select = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
-            self.uiNotifications.addObserver(self, selector: #selector(itemSelected(notification:)), name: select, object: nil)
-            
-            let deselect = NSNotification.Name(rawValue: AFSceneController.NotificationType.Deselected.rawValue)
-            self.uiNotifications.addObserver(self, selector: #selector(itemDeselected(notification:)), name: deselect, object: nil)
+            self.uiNotifications.addObserver(self, selector: #selector(itemSelected(notification:)), name: .Selected, object: nil)
+            self.uiNotifications.addObserver(self, selector: #selector(itemDeselected(notification:)), name: .Deselected, object: nil)
 
             // Strange, I had to paste this line from removeAgentFrames() in order to
             // get the agent editing panels to display. I could take some guesses
@@ -150,9 +145,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let name = AFSceneController.Notification.Decode(notification).name,
             let isPrimarySelection = decoded.isPrimarySelection,
             isPrimarySelection == true {
-
+            
             let adapter = AFNodeAdapter(gameScene: gameScene, name: name)
             placeAgentFrames(node: adapter.node)
+            
+            if let outlineView = agentEditorController.goalsController.outlineView {
+                let indexSet = IndexSet(integer: 0)
+                outlineView.selectRowIndexes(indexSet, byExtendingSelection: false)
+                
+                let zeroItem = outlineView.item(atRow: 0)
+                outlineView.expandItem(zeroItem)
+            }
         }
     }
     

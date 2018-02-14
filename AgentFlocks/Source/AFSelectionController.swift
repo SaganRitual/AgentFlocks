@@ -208,15 +208,13 @@ extension AFSelectionController {
 private extension AFSelectionController {
     func announceDeselect(_ name: String) {
         let e = AFSceneController.Notification.Encode(name)
-        let n = Foundation.Notification.Name.Deselected
-        let nn = Foundation.Notification(name: n, object: nil, userInfo: e.encode())
+        let nn = Foundation.Notification(name: .Deselected, object: nil, userInfo: e.encode())
         uiNotifications.post(nn)
     }
     
     func announceSelect(_ name: String, primary: Bool) {
         let e = AFSceneController.Notification.Encode(name, isPrimarySelection: primary)
-        let n = Foundation.Notification.Name.Selected
-        let nn = Foundation.Notification(name: n, object: nil, userInfo: e.encode())
+        let nn = Foundation.Notification(name: .Selected, object: nil, userInfo: e.encode())
         uiNotifications.post(nn)
     }
 
