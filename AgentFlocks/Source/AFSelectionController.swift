@@ -75,7 +75,7 @@ extension AFSelectionController {
         
         gameScene.children.forEach { if getNodeAdapter($0.name).isSelected { selection.append($0.name!) } }
         
-        let primary = gameScene.children.filter { return getNodeAdapter($0.name).isPrimarySelection }
+        let primary = gameScene.children.filter { let n = getNodeAdapter($0.name); return n.isPrimarySelection }
         
         if selection.count > 0 { return (selection, primary.first!.name!) } else { return (nil, nil) }
     }
@@ -91,15 +91,15 @@ extension AFSelectionController {
         }
     }
     
-    func isNodeSelected(_ name: String) -> (isSelected: Bool, isPrimary: Bool) {
+    func isNodeSelected(_ name: String) -> (isSelected: Bool, isPrimarySelection: Bool) {
         let (selectionSet, nameOfPrimary) = getSelection()
         
-        var isPrimary = false
+        var isPrimarySelection = false
         if let selectionSet = selectionSet {
             let inThere = selectionSet.contains(name)
-            isPrimary = (nameOfPrimary ?? "") == name
+            isPrimarySelection = (nameOfPrimary ?? "") == name
             
-            return (inThere, isPrimary)
+            return (inThere, isPrimarySelection)
         } else {
             return (false, false)
         }
@@ -214,17 +214,15 @@ private extension AFSelectionController {
     }
     
     func announceSelect(_ name: String, primary: Bool) {
-        let e = AFSceneController.Notification.Encode(name, isPrimary: primary)
+        let e = AFSceneController.Notification.Encode(name, isPrimarySelection: primary)
         let n = Foundation.Notification.Name.Selected
         let nn = Foundation.Notification(name: n, object: nil, userInfo: e.encode())
         uiNotifications.post(nn)
     }
 
-    func deselect(_ name: String, primary: Bool) { /*getNodeAdapter(name).deselect();*/ announceDeselect(name) }
-    
-    func deselectAll() { gameScene.children.forEach { /*getNodeAdapter($0.name).deselect();*/ announceDeselect($0.name!) } }
-    
-    func select(_ name: String, primary: Bool) { /*getNodeAdapter(name).select(primary: primary);*/ announceSelect(name, primary: primary) }
+    func deselect(_ name: String, primary: Bool) { var a = getNodeAdapter(name); a.deselect(); announceDeselect(name) }
+    func deselectAll() { gameScene.children.forEach { var a = getNodeAdapter($0.name); a.deselect(); announceDeselect($0.name!) } }
+    func select(_ name: String, primary: Bool) { var a = getNodeAdapter(name); a.select(primary: primary); announceSelect(name, primary: primary) }
     
     func toggleSelection(_ name: String) {}
 }
@@ -244,7 +242,6 @@ fileprivate extension AFSelectionController {
             let candidate = AFNodeAdapter(gameScene: gameScene, name: name)
             let standard = AFNodeAdapter(gameScene: gameScene, name: selectedItems.first!)
 
-            if standard.isAgent { return candidate.isAgent }
             if standard.isPath { return candidate.isPath }
             if standard.isPathHandle { return candidate.isPathHandle }
         }
@@ -313,7 +310,6 @@ fileprivate class AFSelectionState_AgentsGoal: AFSelectionState_Base {
         guard !(flags?.contains(.control) ?? false) else { return } // Ignore ctrl+click
         guard !(flags?.contains(.option) ?? false) else { return }  // Ignore opt+click
         guard leavingMouseState == .down else { return }            // Ignore mouse up after dragging in the black
-        guard AFNodeAdapter(gameScene: gameScene, name: name).isAgent else { return }           // Ignore clicks on paths or handles
         
         if flags?.contains(.command) ?? false {
             afStateMachine?.toggleSelection(name)

@@ -300,10 +300,7 @@ class AgentAttributesController: NSViewController {
         }
     }
     
-    @objc func hasBeenDeselected(notification: Foundation.Notification) {
-        print("AgentAttributesController gets hasBeenDeselected")
-        targetAgent = nil
-    }
+    @objc func hasBeenDeselected(notification: Foundation.Notification) { targetAgent = nil }
 	
     override func viewDidLoad() {
         super.viewDidLoad()

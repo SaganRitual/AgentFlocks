@@ -38,8 +38,7 @@ class AFAgentAvatar {
     }
 }
 
-private extension AFAgentAvatar {
-
+extension AFAgentAvatar {
     class SpriteContainerNode: SKNode {
         init(_ name: String) {
             super.init()
@@ -49,31 +48,50 @@ private extension AFAgentAvatar {
             
             // Set these fields directly rather than using an adapter, because
             // in the adapter, these fields are read-only.
-            userData!["isAgent"] = true
-            userData!["isClickable"] = true
-            userData!["isPath"] = false
-            userData!["isPathHandle"] = false
-            userData!["isPrimarySelection"] = false
-            userData!["isSelected"] = false
-            userData!["isShowingRadius"] = false
+            backdoorSet(.isClickable, to: true)
+            backdoorSet(.isPath, to: false)
+            backdoorSet(.isPathHandle, to: false)
+            backdoorSet(.isPrimarySelection, to: false)
+            backdoorSet(.isSelected, to: false)
+            backdoorSet(.isShowingRadius, to: false)
             
-            userData!["scale"] = CGFloat(1.0)
+            backdoorSet(.scale, to: CGFloat(1.0))
         }
-
-        var isAgent: Bool { return userData!["isAgent"] as! Bool }
-        var isClickable: Bool { return userData!["isClickable"] as! Bool }
-        var isPath: Bool { return userData!["isPath"] as! Bool }
-        var isPathHandle: Bool { return userData!["isPathHandle"] as! Bool }
-        var isPrimarySelection: Bool { get { return userData!["isPrimarySelection"] as! Bool } set { userData!["isPrimarySelection"] = newValue } }
-        var isSelected: Bool { get { return userData!["isSelected"] as! Bool }  set { userData!["isSelected"] = newValue } }
-        var isShowingRadius: Bool { get { return userData!["isShowingRadius"] as! Bool } set { userData!["isShowingRadius"] = newValue } }
-        
-        var scale: CGFloat { get { return userData!["scale"] as! CGFloat} set { userData!["scale"] = newValue } }
         
         required init?(coder aDecoder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
         }
     }
+}
+        
+private extension AFAgentAvatar.SpriteContainerNode {
+    func backdoorSet(_ field: State, to: Any) { setField(field, to: to) }
+    
+    func getBool(_ field: State) -> Bool { return getField(field) as! Bool }
+    func setBool(_ field: State, to: Bool) { setField(field, to: to) }
+    
+    func getCGFloat(_ field: State) -> CGFloat { return getField(field) as! CGFloat }
+    func setCGFloat(_ field: State, to: CGFloat) { setField(field, to: to) }
+
+    func getField(_ field: State) -> Any { return userData![field]! }
+    func setField(_ field: State, to: Any) { userData![field] = to }
+}
+
+// MARK: Public functions for the sprite container node
+
+extension AFAgentAvatar.SpriteContainerNode {
+    public enum State {
+        case isClickable, isPath, isPathHandle, isPrimarySelection, isSelected, isShowingRadius, scale
+    }
+
+    var isClickable: Bool { return getBool(.isClickable) }
+    var isPath: Bool { return getBool(.isPath) }
+    var isPathHandle: Bool { return getBool(.isPathHandle) }
+    var isPrimarySelection: Bool { get { return getBool(.isPrimarySelection) } set { setBool(.isPrimarySelection, to: newValue) } }
+    var isSelected: Bool { get { return getBool(.isSelected) }  set { setBool(.isSelected, to: newValue) } }
+    var isShowingRadius: Bool { get { return getBool(.isShowingRadius) } set { setBool(.isShowingRadius, to: newValue) } }
+    
+    var scale: CGFloat { get { return getCGFloat(.scale) } set { setCGFloat(.scale, to: newValue) } }
 }
 
 private extension AFAgentAvatar {
@@ -129,10 +147,11 @@ private extension AFAgentAvatar {
             // it might be someone else being deselected, so I
             // have to check whose name is being called.
             if name == nil || name! == primaryContainer.name! {
+                primaryContainer.isPrimarySelection = false
                 primaryContainer.isSelected = false
                 primaryContainer.isShowingRadius = false
-                if let r = radiusIndicator { r.removeFromParent() }
-                if let s = selectionIndicator { s.removeFromParent() }
+                if let r = radiusIndicator { r.removeFromParent(); radiusIndicator = nil }
+                if let s = selectionIndicator { s.removeFromParent(); selectionIndicator = nil }
             }
         }
         
@@ -140,12 +159,16 @@ private extension AFAgentAvatar {
             let decoded = AFSceneController.Notification.Decode(notification)
             guard decoded.name == primaryContainer.name! else { return }
 
-            hasBeenSelected(primary: decoded.isPrimary!)
+            hasBeenSelected(primary: decoded.isPrimarySelection!)
         }
 
         func hasBeenSelected(primary: Bool) {
-            guard !primaryContainer.isSelected else { fatalError() }
+            // If we're already in the primary on/off state specified by our `primary` parameter,
+            // then there's nothing to do here. The notifier blasts out selection state
+            // indiscriminately, so we have to check whether we've already taken care of it.
+            guard primaryContainer.isPrimarySelection != primary else { return }
             
+            primaryContainer.isPrimarySelection = primary
             primaryContainer.isSelected = true
             primaryContainer.isShowingRadius = true
             

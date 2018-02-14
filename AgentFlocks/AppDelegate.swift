@@ -145,9 +145,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc func itemSelected(notification: Foundation.Notification) {
+        let decoded = AFSceneController.Notification.Decode(notification)
+
         if let name = AFSceneController.Notification.Decode(notification).name,
-            let isPrimary = AFSceneController.Notification.Decode(notification).isPrimary,
-            isPrimary == true {
+            let isPrimarySelection = decoded.isPrimarySelection,
+            isPrimarySelection == true {
 
             let adapter = AFNodeAdapter(gameScene: gameScene, name: name)
             placeAgentFrames(node: adapter.node)
