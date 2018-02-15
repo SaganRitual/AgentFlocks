@@ -51,7 +51,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var coreAgentGoalsDelegate: AFAgentGoalsDelegate!
     var coreBrowserDelegate: AFBrowserDelegate!
     var coreContextMenuDelegate: AFContextMenuDelegate!
-    var coreItemEditorDelegate: AFItemEditorDelegate!
+    var motivatorsController: AFMotivatorsController!
     var coreMenuBarDelegate: AFMenuBarDelegate!
     var coreTopBarDelegate: AFTopBarDelegate!
     
@@ -124,7 +124,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             coreAgentGoalsDelegate = injector.agentGoalsDelegate
             coreBrowserDelegate = injector.browserDelegate
             coreContextMenuDelegate = injector.contextMenuDelegate
-            coreItemEditorDelegate = injector.itemEditorDelegate
+            motivatorsController = injector.motivatorsController
             coreMenuBarDelegate = injector.menuBarDelegate
             coreTopBarDelegate = injector.topBarDelegate
             
@@ -705,7 +705,7 @@ class ItemEditorSlidersState {
 extension AppDelegate: ItemEditorDelegate {
    
     func itemEditorApplyPressed(_ controller: ItemEditorController) {
-        coreItemEditorDelegate.refreshMotivators(state: ItemEditorSlidersState(controller))
+        motivatorsController.refreshMotivators(state: ItemEditorSlidersState(controller))
         controller.refreshAffectedControllers()
         activePopover?.close()
     }
@@ -718,11 +718,11 @@ extension AppDelegate: ItemEditorDelegate {
         let state = ItemEditorSlidersState(controller)
         let type = state.newItemType
         
-        coreItemEditorDelegate.itemEditorActivated(goalType: type)
+        motivatorsController.itemEditorActivated(goalType: type)
     }
 	
     func itemEditorDeactivated(_ controller: ItemEditorController) {
-        coreItemEditorDelegate.itemEditorDeactivated()
+        motivatorsController.itemEditorDeactivated()
     }
 }
 
@@ -742,7 +742,7 @@ extension AppDelegate: LogSliderDelegate {
                 default: fatalError()
                 }
 
-                coreItemEditorDelegate.sliderChanged(state: ItemEditorSlidersState(itemEditorController))
+                motivatorsController.sliderChanged(state: ItemEditorSlidersState(itemEditorController))
             }
         }
     }

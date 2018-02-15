@@ -33,7 +33,7 @@ class AFCore {
     var contextMenuDelegate: AFContextMenuDelegate!
     var sceneController: AFSceneController!
     var sceneInputState: AFSceneInputState!
-    var itemEditorDelegate: AFItemEditorDelegate!
+    var motivatorsController: AFMotivatorsController!
     var menuBarDelegate: AFMenuBarDelegate!
     var topBarDelegate: AFTopBarDelegate!
     
@@ -93,7 +93,7 @@ class AFCore {
         c.agentGoalsDataSource = AFMotivatorsReader(injector)
         c.browserDelegate = AFBrowserDelegate(injector)
         c.contextMenuDelegate = AFContextMenuDelegate(injector)
-        c.itemEditorDelegate = AFItemEditorDelegate(injector)
+        c.motivatorsController = AFMotivatorsController(injector)
         c.menuBarDelegate = AFMenuBarDelegate(injector)
         
         c.sceneInputState = AFSceneInputState(injector)
@@ -110,7 +110,7 @@ class AFCore {
             c.agentGoalsDelegate.inject(injector)
             c.browserDelegate.inject(injector)
             c.contextMenuDelegate.inject(injector)
-            c.itemEditorDelegate.inject(injector)
+            c.motivatorsController.inject(injector)
             c.menuBarDelegate.inject(injector)
             c.sceneController.inject(injector)
             c.topBarDelegate.inject(injector)
@@ -153,7 +153,7 @@ extension AFCore {
         var gameScene: GameScene?
         var sceneInputState: AFSceneInputState?
         var selectionController: AFSelectionController?
-        var itemEditorDelegate: AFItemEditorDelegate?
+        var motivatorsController: AFMotivatorsController?
         var menuBarDelegate: AFMenuBarDelegate?
         var topBarDelegate: AFTopBarDelegate?
         var uiNotifications: Foundation.NotificationCenter?

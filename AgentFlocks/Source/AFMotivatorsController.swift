@@ -24,14 +24,14 @@
 
 import GameplayKit
 
-class AFItemEditorDelegate {
+class AFMotivatorsController {
     unowned let core: AFCore
     unowned let afSceneController: AFSceneController
     
     init(_ injector: AFCore.AFDependencyInjector) {
         self.core = injector.core!
         self.afSceneController = injector.afSceneController!
-        injector.itemEditorDelegate = self
+        injector.motivatorsController = self
     }
     
     private func addMotivator(to agent: String, state: ItemEditorSlidersState) {
