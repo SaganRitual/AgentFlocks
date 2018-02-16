@@ -22,6 +22,37 @@
 // IN THE SOFTWARE.
 //
 
+class AFMotivatorContainerEditor: AFEditor {
+    let pathToContainer: [JSONSubscriptType]
+    
+    override init(_ nodeName: String, core: AFCore) {
+        var p = core.getPathTo(nodeName)!
+        
+        if String(describing: AFData.getPathToParent(p).last!) == "agents" {
+            p.append("behaviors")
+        } else {
+            p.append("goals")
+        }
+        
+        pathToContainer = p
+
+        super.init(nodeName, core: core)
+    }
+    
+    var count: Int {
+        print("count for", pathToContainer, "=", core.bigData.data[pathToContainer].count)
+        return core.bigData.data[pathToContainer].count
+    }
+
+    subscript(_ ix: Int) -> String {
+        let motivators = core.bigData.data[pathToContainer].sorted(by: {
+            $0.1["serialNumber"].intValue < $1.1["serialNumber"].intValue
+        })
+        
+        return motivators[ix].0  // .0 is the name of the motivator node
+    }
+}
+
 class AFMotivatorEditor: AFEditor {
     var count: Int { get { return core.bigData.data[pathToHere].count } }
     

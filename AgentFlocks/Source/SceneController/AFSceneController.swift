@@ -67,7 +67,6 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     var obstacleCloneStamp = String()
     var parentOfNewMotivator: AFBehavior?
     var pathForNextPathGoal = 0
-    var primarySelection: String?
     var sceneInputState: AFSceneInputState!
     var selectionController: AFSelectionController!
     var selectedNodes = Set<String>()
@@ -163,6 +162,10 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     
     func getAgent(_ name: String) -> AFAgent { return agentsMap[name]! }
     
+    func getAgentEditor(_ name: String) -> AFAgentEditor {
+        return AFAgentEditor(name, core: core)
+    }
+
     func getAgents(_ names: [String]) -> [AFAgent] {
         return agentsMap.filter({ names.contains($0.key) }).map { (_, value) in return value }
     }

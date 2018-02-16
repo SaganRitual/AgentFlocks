@@ -113,16 +113,13 @@ class AFData {
     }
     
     func getChildCount(for nodeName: String) -> Int {
-        if let path = core.getPathTo(nodeName) { return data[path][nodeName].count }
+        if let path = core.getPathTo(nodeName) { return data[path].count }
         else { fatalError() }
     }
     
     func getChildren(of nodeName: String) -> [JSON]? {
-        if let path = core.getPathTo(nodeName) {
-            return data[path][nodeName].arrayObject as? [JSON]
-        }
-        
-        return nil
+        if let path = core.getPathTo(nodeName) { return data[path].arrayObject as? [JSON] }
+        else { return nil }
     }
     
     // Here, nodeName will be "behaviors" or "goals". We need to figure
@@ -163,8 +160,7 @@ extension AFData {
 
     static func getPathToParent(_ pathToHere: [JSONSubscriptType]) -> [JSONSubscriptType] {
         let ixHere = pathToHere.count - 1
-        let ixParent = ixHere - 2
-        return Array(pathToHere.prefix(ixParent))
+        return Array(pathToHere.prefix(ixHere))
     }
 
     static func isAgent(_ path: [JSONSubscriptType]) -> Bool { return path.count == agentDepth + 1 }

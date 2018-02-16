@@ -40,19 +40,18 @@ class AFMotivatorsReader: AgentGoalsDataSource {
         // It's so eager to go that it will call us here before the outline view even
         // appears on the screen. That's UI stuff for you.
         guard selectedAgent != nil else { return 0 }
-
-        if let itemName = item as? String {
-            return core.bigData.getChildCount(for: itemName)
-        } else {
-            let pathToBehaviors = core.getPathTo(selectedAgent!)! + ["behaviors"]
-            let behaviors = AFCompositeEditor(pathToBehaviors, core: core)
-            return behaviors.count
-        }
+        
+        let itemName = item as? String ?? selectedAgent!
+        let containerEditor = AFMotivatorContainerEditor(itemName, core: core)
+        print("\(itemName) has \(containerEditor.count) children")
+        return containerEditor.count
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemExpandable item: Any) -> Bool {
         if let itemName = item as? String {
-            return core.bigData.getChildCount(for: itemName) > 0
+            let containerEditor = AFMotivatorContainerEditor(itemName, core: core)
+            print("expandable? \(containerEditor.count > 0): \(itemName) has \(containerEditor.count) children")
+            return containerEditor.count > 0
         } else { return false }
     }
     
@@ -61,21 +60,14 @@ class AFMotivatorsReader: AgentGoalsDataSource {
     // We can also come here for goals, hence using the mini-editor for access to the fake index.
     func agentGoals(_ agentGoalsController: AgentGoalsController, child index: Int, ofItem item: Any?) -> Any {
         if item == nil {
+            print("asking for index \(index) of nil")
             let pathToComposite: [JSONSubscriptType] = ["agents", selectedAgent!, "behaviors"]
             let behaviors = AFCompositeEditor(pathToComposite, core: core)
             return behaviors[index]
         } else if let itemName = item as? String {
-            let pathToItem = core.getPathTo(itemName)!
-            let pathToDictionary = Array(pathToItem.prefix(pathToItem.count))
-            if pathToDictionary.contains(where: { String(describing: $0) == "behaviors" }) {
-                // A kludgey way of determining whether we're talking to a
-                // behavior or a goal. Figure out a better way.
-                let goals = AFBehaviorEditor(pathToDictionary, core: core)
-                return goals[index]
-            } else {
-                let behaviors = AFCompositeEditor(pathToDictionary, core: core)
-                return behaviors[index]
-            }
+            print("asking for index \(index) of \(itemName)")
+            let containerEditor = AFMotivatorContainerEditor(itemName, core: core)
+            return containerEditor[index]
         }
         
         fatalError()
@@ -90,22 +82,29 @@ class AFMotivatorsReader: AgentGoalsDataSource {
                 return "Behavior \(core.nickname(item))"
             } else if parent == "goals" {
                 return "Goal \(core.nickname(item))"
-            } else {
-                return "The agent goals controller is a noisy contraption. Ignore stuff like this."
             }
-        } else {
-            return "And this."
         }
+        
+        print(core.bigData.data)
+        return "Unknown item \(item)"
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, weightOfItem item: Any) -> Float {
-        if let itemName = item as? String { return AFMotivatorEditor(itemName, core: core).weight }
+        if let itemName = item as? String {
+            let weight = AFMotivatorEditor(itemName, core: core).weight
+            print(weight)
+            return weight
+        }
         
         return 0    // Not sure why I get nil items in this function
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemEnabled item: Any) -> Bool {
-        if let itemName = item as? String { return AFMotivatorEditor(itemName, core: core).isEnabled }
+        if let itemName = item as? String {
+            let isEnabled = AFMotivatorEditor(itemName, core: core).isEnabled;
+            print(isEnabled)
+            return isEnabled
+        }
             
         return false
     }

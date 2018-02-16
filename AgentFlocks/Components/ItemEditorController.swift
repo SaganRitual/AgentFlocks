@@ -24,6 +24,7 @@ class ItemEditorController: NSViewController {
     var editedAFGoal:AFGoal?
     var followPathForward = true
     var newItemType:AgentGoalsController.GoalType?
+    var isNewItem = true
 	
 	@objc dynamic var preview:Bool = false
 	

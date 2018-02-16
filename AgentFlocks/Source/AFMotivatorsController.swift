@@ -34,7 +34,40 @@ class AFMotivatorsController {
         injector.motivatorsController = self
     }
     
-    private func addMotivator(to agent: String, state: ItemEditorSlidersState) {
+    func commit(_ attributes: MotivatorAttributes) {
+        let agentName = afSceneController.selectionController.primarySelection!
+        let agentEditor = afSceneController.getAgentEditor(agentName)
+        let compositeEditor = agentEditor.getComposite()
+
+        let (targetAgents, _) = afSceneController.selectionController.getSelection()
+
+        if let goalType = attributes.newItemType {
+            // If it has a new item type, it's a goal. What an ugly kludge.
+            // Especially with a totally different field saying whether we're
+            // creating a new item or editing an existing one.
+            if attributes.isNewItem {
+                let index = core.ui.agentEditorController.goalsController.outlineView!.selectedRow
+                let behaviorEditor = compositeEditor.getBehaviorEditor(index)
+                let goalEditor = behaviorEditor.createGoal()
+                
+                goalEditor.composeGoal(attributes: attributes, targetAgents: targetAgents)
+            } else {
+                
+            }
+        } else {
+            // If it doesn't have a new item type, it's a behavior. See above.
+            if attributes.isNewItem {
+                let behaviorEditor = compositeEditor.createBehavior()
+                compositeEditor.setWeight(forMotivator: behaviorEditor.name, to: Float(attributes.weight.value))
+            } else {
+
+            }
+        }
+        
+        print(core.bigData.data)
+    }
+    
+    private func addMotivator(to agent: String, state: MotivatorAttributes) {
         let weight = Float(state.weight.value)
 
 //        if state.newItemType == nil { coreData.newBehavior(for: agent, weight: weight); return }
@@ -42,7 +75,7 @@ class AFMotivatorsController {
         let type = state.newItemType!
         var goal: AFGoal?
         let selectedNames = Array(afSceneController.selectedNodes)
-        var primaryNode = afSceneController.primarySelection!
+        var primaryNode = afSceneController.selectionController.primarySelection!
         
         let angle = Float(state.angle?.value ?? 0)
         let distance = Float(state.distance?.value ?? 0)
@@ -62,7 +95,7 @@ class AFMotivatorsController {
             
         case .toAvoidAgents:
             // Make sure we're not trying to avoid ourselves too
-            let sansSelf = selectedNames.filter { $0 != afSceneController.primarySelection! }
+            let sansSelf = selectedNames.filter { $0 != afSceneController.selectionController.primarySelection! }
             
 //            coreData.newGoal(type, for: coreData.afSceneController.primarySelection!.name!, parentBehavior: nil, weight: weight,
 //                            targets: sansSelf, angle: angle, distance: distance, speed: speed,
@@ -75,7 +108,7 @@ class AFMotivatorsController {
             // exclude from the selection. I think I was trying to prevent the subject
             // of the goal from being added to his own goal. But now I'm tired and it's
             // harder to think about it.
-            let sansTarget = selectedNames.filter { $0 != afSceneController.primarySelection! }
+            let sansTarget = selectedNames.filter { $0 != afSceneController.selectionController.primarySelection! }
 //            coreData.newGoal(type, for: sansTarget, weight, weight, targets: [selectedNames.first!],
 //                            angle: angle, distance: distance, speed: speed,time: time, forward: true)
             
@@ -135,7 +168,7 @@ class AFMotivatorsController {
 //        (agent.behavior! as! AFCompositeBehavior).setWeight(behavior.weight, for: behavior)
     }
     
-    private func refreshGoal(gkGoal: GKGoal, state: ItemEditorSlidersState) {
+    private func refreshGoal(gkGoal: GKGoal, state: MotivatorAttributes) {
 //        let afGoal = afSceneController.parentOfNewMotivator!.goalsMap[gkGoal]!
         
         // Edit existing goal -- note AFBehavior doesn't give us a way
@@ -158,7 +191,7 @@ class AFMotivatorsController {
 //        }
     }
     
-    func refreshMotivators(state: ItemEditorSlidersState) {
+    func refreshMotivators(state: MotivatorAttributes) {
 //        let selectedNodes = afSceneController.selectedNodes
 //        guard selectedNodes.count > 0 else { return }
 //        
@@ -174,7 +207,7 @@ class AFMotivatorsController {
 //        }
     }
     
-    func retransmitGoal(afGoal: AFGoal, state: ItemEditorSlidersState) {
+    func retransmitGoal(afGoal: AFGoal, state: MotivatorAttributes) {
 //        let newGoal = AFGoal.makeGoal(copyFrom: afGoal, weight: afGoal.weight)
         
         // Everyone has a weight
@@ -191,7 +224,7 @@ class AFMotivatorsController {
 //        afSceneController.parentOfNewMotivator!.setWeightage(weight, for: newGoal)
     }
     
-    func sliderChanged(state: ItemEditorSlidersState) {
+    func sliderChanged(_ state: MotivatorAttributes) {
         let (_, selectedAgent) = afSceneController.selectionController.getSelection()
 
         if selectedAgent != nil {

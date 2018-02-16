@@ -35,18 +35,6 @@ class AFGoalEditor: AFMotivatorEditor {
         toInterceptAgent, toReachTargetSpeed, toSeekAgent, toSeparateFrom, toStayOn, toWander
     }
     
-    let stringToType: [String : AFGoalType] =
-        ["toAlignWith" : .toAlignWith, "toAvoidAgents": .toAvoidAgents, "toAvoidObstacles": .toAvoidObstacles,
-         "toCohereWith": .toCohereWith, "toFleeAgent": .toFleeAgent, "toFollow": .toFollow,
-         "toInterceptAgent": .toInterceptAgent, "toReachTargetSpeed": .toReachTargetSpeed,
-         "toSeekAgent": .toSeekAgent, "toSeparateFrom": .toSeparateFrom, "toStayOn": .toStayOn, "toWander": .toWander]
-    
-    let typeToString: [AFGoalType : String] =
-        [.toAlignWith: "toAlignWith", .toAvoidAgents: "toAvoidAgents", .toAvoidObstacles: "toAvoidObstacles",
-         .toCohereWith: "toCohereWith", .toFleeAgent: "toFleeAgent", .toFollow: "toFollow",
-         .toInterceptAgent: "toInterceptAgent", .toReachTargetSpeed: "toReachTargetSpeed",
-         .toSeekAgent: "toSeekAgent", .toSeparateFrom: "toSeparateFrom", .toStayOn: "toStayOn", .toWander: "toWander"]
-    
     override func setOptionalScalar(_ nodeName: String, to value: Float) {
         switch nodeName {
         case "angle":    angle = value
@@ -62,6 +50,30 @@ class AFGoalEditor: AFMotivatorEditor {
 // MARK: Functions for composing the different kinds of goals
 
 extension AFGoalEditor {
+    func composeGoal(attributes: MotivatorAttributes, targetAgents: [String]?) {
+        switch attributes.newItemType! {
+        case .toAlignWith:    composeGoal_toAlignWith(targetAgents!, angle: Float(attributes.angle!.value), distance: Float(attributes.distance!.value))
+        case .toCohereWith:   composeGoal_toCohereWith(targetAgents!, angle: Float(attributes.angle!.value), distance: Float(attributes.distance!.value))
+        case .toSeparateFrom: composeGoal_toSeparateFrom(targetAgents!, angle: Float(attributes.angle!.value), distance: Float(attributes.distance!.value))
+
+        case .toAvoidAgents:    composeGoal_toAvoidAgents(targetAgents!, time: attributes.time!.value)
+        case .toInterceptAgent: composeGoal_toInterceptAgent(targetAgents![0], time: attributes.time!.value)
+
+        case .toFleeAgent: composeGoal_toFleeAgent(targetAgents![0])
+        case .toSeekAgent: composeGoal_toSeekAgent(targetAgents![0])
+
+        case .toReachTargetSpeed: composeGoal_toReachTargetSpeed(Float(attributes.speed!.value))
+        case .toWander:           composeGoal_toWander(speed: Float(attributes.speed!.value))
+
+        case .toAvoidObstacles: fatalError("Not implemented")
+        case .toFollow: fatalError("Not implmeentdd")
+        case .toStayOn: fatalError("Not implemented")
+        }
+    }
+}
+
+extension AFGoalEditor {
+
     func composeGoal_toWander(speed: Float)             { _composeGoal_speed(.toWander, speed: speed) }
     func composeGoal_toReachTargetSpeed(_ speed: Float) { _composeGoal_speed(.toReachTargetSpeed, speed: speed) }
     

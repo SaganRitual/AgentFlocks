@@ -31,6 +31,11 @@ class AFSelectionController: GKStateMachine {
     private unowned let gameScene: GameScene
     
     private var drone: AFSelectionState_Base? { return currentState as? AFSelectionState_Base }
+    
+    var primarySelection: String? {
+        let primary = gameScene.children.filter { let n = getNodeAdapter($0.name); return n.isPrimarySelection }
+        return primary.first?.name
+    }
 
     init(gameScene: GameScene) {
         self.gameScene = gameScene

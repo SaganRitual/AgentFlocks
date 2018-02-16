@@ -42,7 +42,7 @@ struct AFNodeAdapter {
             }
         }
         
-        func move(to position: CGPoint) { /*getAgent().move(to: position)*/ }
+        func move(to position: CGPoint) { node!.position = position }
 
         var isClickable:  Bool { return spriteContainerNode.isClickable }
         var isPath:       Bool { return spriteContainerNode.isPath }

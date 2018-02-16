@@ -38,6 +38,10 @@ class AFAgentEditor: AFEditor {
         }
     }
     
+    override init(_ path: String, core: AFCore) {
+        super.init(path, core: core)
+    }
+    
     func createComposite() -> AFCompositeEditor {
         let newCompositeName: JSONSubscriptType = "behaviors"
         let pathToNewComposite = pathToHere + [newCompositeName]

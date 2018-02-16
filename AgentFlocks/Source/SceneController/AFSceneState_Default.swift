@@ -41,7 +41,7 @@ extension AFSceneController {
             } else if flags?.contains(.control) ?? false {
                 // ctrl-click gives a clone of the selected guy, goals and all.
                 // If no one is selected, we don't do anything.
-                guard let selected = afSceneController.primarySelection else { return }
+                guard let selected = afSceneController.selectionController.primarySelection else { return }
                 
                 clone(selected, position: afSceneController.currentPosition)
             } else {
