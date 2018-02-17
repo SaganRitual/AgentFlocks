@@ -234,7 +234,7 @@ class AgentAttributesController: NSViewController {
 
             // Data notifier
             let bSelector = #selector(nodeChanged(notification:))
-            self.dataNotifications.addObserver(self, selector: bSelector, name: .CoreTreeUpdate, object: nil)
+            self.dataNotifications.addObserver(self, selector: bSelector, name: .CoreNodeUpdate, object: nil)
         }
         
         return iStillNeedSomething

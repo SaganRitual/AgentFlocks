@@ -84,14 +84,12 @@
 		D45DC1E72032B9FF00F81418 /* AFCompositeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1DF2032B9FE00F81418 /* AFCompositeEditor.swift */; };
 		D45DC1E82032B9FF00F81418 /* AFGraphNodeEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1E02032B9FE00F81418 /* AFGraphNodeEditor.swift */; };
 		D45DC1E92032B9FF00F81418 /* AFMotivatorEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1E12032B9FE00F81418 /* AFMotivatorEditor.swift */; };
-		D45DC2012032BA0D00F81418 /* AFCompositeBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1EA2032BA0A00F81418 /* AFCompositeBehavior.swift */; };
 		D45DC2022032BA0D00F81418 /* AFContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1EB2032BA0A00F81418 /* AFContextMenu.swift */; };
 		D45DC2032032BA0D00F81418 /* AFData.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1EC2032BA0A00F81418 /* AFData.swift */; };
 		D45DC2042032BA0D00F81418 /* AFNodeAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1ED2032BA0A00F81418 /* AFNodeAdapter.swift */; };
 		D45DC2062032BA0D00F81418 /* AFSceneInputState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1EF2032BA0A00F81418 /* AFSceneInputState.swift */; };
 		D45DC2072032BA0D00F81418 /* AFSceneState_Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1F02032BA0B00F81418 /* AFSceneState_Draw.swift */; };
 		D45DC2082032BA0D00F81418 /* AFSelectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1F12032BA0B00F81418 /* AFSelectionController.swift */; };
-		D45DC20A2032BA0D00F81418 /* AFBehavior.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1F32032BA0B00F81418 /* AFBehavior.swift */; };
 		D45DC20B2032BA0D00F81418 /* AFSceneState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1F42032BA0B00F81418 /* AFSceneState.swift */; };
 		D45DC20D2032BA0D00F81418 /* AFMotivatorsReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1F62032BA0C00F81418 /* AFMotivatorsReader.swift */; };
 		D45DC20E2032BA0D00F81418 /* AFSceneState_Default.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1F72032BA0C00F81418 /* AFSceneState_Default.swift */; };
@@ -99,7 +97,6 @@
 		D45DC2112032BA0D00F81418 /* AFSceneState_GoalSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1FA2032BA0C00F81418 /* AFSceneState_GoalSetup.swift */; };
 		D45DC2122032BA0D00F81418 /* AFAgent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1FB2032BA0C00F81418 /* AFAgent.swift */; };
 		D45DC2132032BA0D00F81418 /* AFOrderedMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1FC2032BA0D00F81418 /* AFOrderedMap.swift */; };
-		D45DC2152032BA0D00F81418 /* AFGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1FE2032BA0D00F81418 /* AFGoal.swift */; };
 		D45DC2162032BA0D00F81418 /* AFGraphNode2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC1FF2032BA0D00F81418 /* AFGraphNode2D.swift */; };
 		D45DC2172032BA0D00F81418 /* AFSceneController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC2002032BA0D00F81418 /* AFSceneController.swift */; };
 		D45DC2192032BA4700F81418 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = D45DC2182032BA4700F81418 /* SwiftyJSON.swift */; };
@@ -204,7 +201,6 @@
 		D45DC1DF2032B9FE00F81418 /* AFCompositeEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFCompositeEditor.swift; sourceTree = "<group>"; };
 		D45DC1E02032B9FE00F81418 /* AFGraphNodeEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFGraphNodeEditor.swift; sourceTree = "<group>"; };
 		D45DC1E12032B9FE00F81418 /* AFMotivatorEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFMotivatorEditor.swift; sourceTree = "<group>"; };
-		D45DC1EA2032BA0A00F81418 /* AFCompositeBehavior.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFCompositeBehavior.swift; sourceTree = "<group>"; };
 		D45DC1EB2032BA0A00F81418 /* AFContextMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFContextMenu.swift; sourceTree = "<group>"; };
 		D45DC1EC2032BA0A00F81418 /* AFData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFData.swift; sourceTree = "<group>"; };
 		D45DC1ED2032BA0A00F81418 /* AFNodeAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFNodeAdapter.swift; sourceTree = "<group>"; };
@@ -212,7 +208,6 @@
 		D45DC1EF2032BA0A00F81418 /* AFSceneInputState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSceneInputState.swift; sourceTree = "<group>"; };
 		D45DC1F02032BA0B00F81418 /* AFSceneState_Draw.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSceneState_Draw.swift; sourceTree = "<group>"; };
 		D45DC1F12032BA0B00F81418 /* AFSelectionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSelectionController.swift; sourceTree = "<group>"; };
-		D45DC1F32032BA0B00F81418 /* AFBehavior.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFBehavior.swift; sourceTree = "<group>"; };
 		D45DC1F42032BA0B00F81418 /* AFSceneState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSceneState.swift; sourceTree = "<group>"; };
 		D45DC1F62032BA0C00F81418 /* AFMotivatorsReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFMotivatorsReader.swift; sourceTree = "<group>"; };
 		D45DC1F72032BA0C00F81418 /* AFSceneState_Default.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSceneState_Default.swift; sourceTree = "<group>"; };
@@ -220,7 +215,6 @@
 		D45DC1FA2032BA0C00F81418 /* AFSceneState_GoalSetup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSceneState_GoalSetup.swift; sourceTree = "<group>"; };
 		D45DC1FB2032BA0C00F81418 /* AFAgent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFAgent.swift; sourceTree = "<group>"; };
 		D45DC1FC2032BA0D00F81418 /* AFOrderedMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFOrderedMap.swift; sourceTree = "<group>"; };
-		D45DC1FE2032BA0D00F81418 /* AFGoal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFGoal.swift; sourceTree = "<group>"; };
 		D45DC1FF2032BA0D00F81418 /* AFGraphNode2D.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFGraphNode2D.swift; sourceTree = "<group>"; };
 		D45DC2002032BA0D00F81418 /* AFSceneController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AFSceneController.swift; sourceTree = "<group>"; };
 		D45DC2182032BA4700F81418 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
@@ -390,12 +384,9 @@
 				D4C12BD4203506C700B47664 /* SceneController */,
 				D45DC1FB2032BA0C00F81418 /* AFAgent.swift */,
 				D4C12BD1203391A200B47664 /* AFAgentAvatar.swift */,
-				D45DC1F32032BA0B00F81418 /* AFBehavior.swift */,
-				D45DC1EA2032BA0A00F81418 /* AFCompositeBehavior.swift */,
 				D45DC1EB2032BA0A00F81418 /* AFContextMenu.swift */,
 				D45DC1F92032BA0C00F81418 /* AFCore.swift */,
 				D45DC1EC2032BA0A00F81418 /* AFData.swift */,
-				D45DC1FE2032BA0D00F81418 /* AFGoal.swift */,
 				D45DC1FF2032BA0D00F81418 /* AFGraphNode2D.swift */,
 				D4C12BD5203507B700B47664 /* AFMotivatorsController.swift */,
 				D45DC1F62032BA0C00F81418 /* AFMotivatorsReader.swift */,
@@ -610,7 +601,6 @@
 			files = (
 				D45DC1E32032B9FF00F81418 /* AFPathEditor.swift in Sources */,
 				D45DC1E52032B9FF00F81418 /* AFAgentEditor.swift in Sources */,
-				D45DC2012032BA0D00F81418 /* AFCompositeBehavior.swift in Sources */,
 				D44256201FE7A41800FC454B /* GameScene.swift in Sources */,
 				D45DC2062032BA0D00F81418 /* AFSceneInputState.swift in Sources */,
 				D45DC2082032BA0D00F81418 /* AFSelectionController.swift in Sources */,
@@ -627,7 +617,6 @@
 				744D8F241F91E38300D4B048 /* AppDelegate.swift in Sources */,
 				D442561E1FE7A2F000FC454B /* SceneController.swift in Sources */,
 				749386412007C9F700BAAF8E /* WindowContentView.swift in Sources */,
-				D45DC20A2032BA0D00F81418 /* AFBehavior.swift in Sources */,
 				74ECDF661F9B132C0096468F /* AgentGoalsController.swift in Sources */,
 				D45DC2172032BA0D00F81418 /* AFSceneController.swift in Sources */,
 				D45DC1E92032B9FF00F81418 /* AFMotivatorEditor.swift in Sources */,
@@ -650,7 +639,6 @@
 				7493863D20052B3900BAAF8E /* CursorView.swift in Sources */,
 				D45DC1E42032B9FF00F81418 /* AFGoalEditor.swift in Sources */,
 				D472A3711FFFD6860030ACA8 /* LogSliderController.swift in Sources */,
-				D45DC2152032BA0D00F81418 /* AFGoal.swift in Sources */,
 				D45DC1D62032B9F400F81418 /* AFTopBarDelegate.swift in Sources */,
 				D45DC1E72032B9FF00F81418 /* AFCompositeEditor.swift in Sources */,
 				D45DC1E22032B9FF00F81418 /* AFEditor.swift in Sources */,

@@ -24,15 +24,31 @@
 
 import Foundation
 
+class NodeWriterDeferrer {
+    var nodeWriter: NodeWriter!
+}
+
 class NodeWriter {
-    let bigData: AFData
-    var key: JSONSubscriptType?
-    let pathToParent: [JSONSubscriptType]
+    private let bigData: AFData
+    private var key: JSONSubscriptType?
+    private let pathToParent: [JSONSubscriptType]
+    private var notificationsSet = [[JSONSubscriptType]]()
+    private var writeMode = Foundation.Notification.Name.CoreNodeUpdate
     private var suppressNotifications_: Bool?
-    
+    private var trackingPath: [JSONSubscriptType]
+
     init(_ pathToParent: [JSONSubscriptType], core: AFCore) {
         self.bigData = core.bigData
         self.pathToParent = pathToParent
+        
+        // Here we figure out whether we'll have to create new nodes when
+        // write() is called. We need to know whethere we're creating new
+        // nodes or just modifying existing ones, so we'll know what kind
+        // of notification to publish.
+        trackingPath = pathToParent
+        while !bigData.data[trackingPath].exists() {
+            trackingPath = Array(trackingPath.prefix(trackingPath.count - 1))
+        }
     }
     
     deinit {
@@ -45,10 +61,26 @@ class NodeWriter {
         }
         
         if let key = key {    // That is, if we actually wrote something
-            bigData.announce(path: pathToParent + [key])
+            // One "add" notification for every new node added to the path
+            for i in trackingPath.count ..< pathToParent.count {
+                writeMode = .CoreNodeAdd
+                trackingPath.append(pathToParent[i])
+                bigData.announce(path: trackingPath, writeMode: writeMode)
+            }
+
+            // If anything in the path is new, the final key will be a new node
+            // too. We catch that in the loop above. If there are no new path
+            // elements, but the key represents a single new node, we catch it
+            // in the write() function. If nothing is new, we just announce
+            // an update.
+            bigData.announce(path: pathToParent + [key], writeMode: writeMode)
         }
     }
-    
+}
+
+// MARK: Public interface
+
+extension NodeWriter {
     // Making it really stand out when we need to suppress notifications, so I don't
     // overlook it while chasing down bugs.
     func suppressNotifications() -> NodeWriter {
@@ -58,6 +90,8 @@ class NodeWriter {
     }
     
     func write(this value: JSON, to key: JSONSubscriptType) {
+        if !bigData.data[pathToParent][key].exists() { self.writeMode = .CoreNodeAdd }
+        
         self.key = key  // Remember that we wrote something so we'll announce to listeners
         bigData.data[pathToParent][key] = value
     }
@@ -101,9 +135,9 @@ class AFData {
         }
     }
     
-    func announce(path toNode: [JSONSubscriptType]) {
+    func announce(path toNode: [JSONSubscriptType], writeMode: Foundation.Notification.Name) {
         let u = AFData.Notifier(core, toNode).encode()
-        let nn = Foundation.Notification(name: .CoreTreeUpdate, object: nil, userInfo: u)
+        let nn = Foundation.Notification(name: writeMode, object: nil, userInfo: u)
         notifier.post(nn)
     }
 
@@ -142,7 +176,6 @@ extension Foundation.Notification.Name {
     static let CoreNodeAdd = Foundation.Notification.Name("CoreNodeAdd")
     static let CoreNodeDelete = Foundation.Notification.Name("CoreNodeDelete")
     static let CoreNodeUpdate = Foundation.Notification.Name("CoreNodeUpdate")
-    static let CoreTreeUpdate = Foundation.Notification.Name("CoreTreeUpdate")
     static let Deselected = Foundation.Notification.Name("Deselected")
     static let Selected = Foundation.Notification.Name("Selected")
     static let SelectionChanged = Foundation.Notification.Name("SelectionChanged")
@@ -155,12 +188,33 @@ extension AFData {
     private static let goalDepth = 5
     
     static func getAgent(_ path: [JSONSubscriptType]) -> JSONSubscriptType { return path[AFData.agentDepth] }
-    static func getBehavior(_ path: [JSONSubscriptType]) -> JSONSubscriptType { return path[AFData.agentDepth] }
-    static func getGoal(_ path: [JSONSubscriptType]) -> JSONSubscriptType { return path[AFData.agentDepth] }
+    static func getBehavior(_ path: [JSONSubscriptType]) -> JSONSubscriptType { return path[AFData.behaviorDepth] }
+    static func getGoal(_ path: [JSONSubscriptType]) -> JSONSubscriptType { return path[AFData.goalDepth] }
 
     static func getPathToParent(_ pathToHere: [JSONSubscriptType]) -> [JSONSubscriptType] {
         let ixHere = pathToHere.count - 1
         return Array(pathToHere.prefix(ixHere))
+    }
+    
+    static func getPathToContainingBehavior(_ pathToGoal: [JSONSubscriptType]) -> [JSONSubscriptType] {
+        var theBehavior: JSONSubscriptType?
+        var shrinkingPath = pathToGoal
+        
+        while shrinkingPath.count > 0 {
+            let temp: JSONSubscriptType = shrinkingPath.last!
+            if JSON(temp) == JSON("behaviors") { break }
+            
+            shrinkingPath = Array(shrinkingPath.prefix(shrinkingPath.count - 1))
+            
+            theBehavior = temp
+        }
+        
+        return shrinkingPath + [theBehavior!]
+    }
+    
+    static func getContainingBehaviorName(pathToGoal: [JSONSubscriptType]) -> JSONSubscriptType {
+        let pathToBehavior = getPathToContainingBehavior(pathToGoal)
+        return pathToBehavior.last!
     }
 
     static func isAgent(_ path: [JSONSubscriptType]) -> Bool { return path.count == agentDepth + 1 }

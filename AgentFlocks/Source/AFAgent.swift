@@ -122,7 +122,7 @@ private extension AFAgent {
         // An empty behavior, ready for goals
         if AFData.isBehavior(n.pathToNode) {
             
-            let weight = AFCompositeEditor(n.pathToNode, core: core).getWeight(forMotivator: last)
+            let weight = AFBehaviorEditor(n.pathToNode, core: core).weight
             let behavior = GKBehavior()
             
             knownMotivators[last] = behavior
@@ -132,9 +132,8 @@ private extension AFAgent {
             
             let behaviorName = JSON(AFData.getBehavior(n.pathToNode)).stringValue
             let gkBehavior = knownMotivators[behaviorName] as! GKBehavior
-            let behaviorEditor = AFBehaviorEditor(n.pathToNode, core: core)
-            let weight = behaviorEditor.getWeight(forMotivator: last)
             let goalEditor = AFGoalEditor(n.pathToNode, core: core)
+            let weight = goalEditor.weight
             let gkGoal = composeGkGoal(goalEditor)
             
             knownMotivators[last] = gkGoal
@@ -233,12 +232,9 @@ private extension AFAgent {
             // goal and create a new one.
             guard AFData.isGoal(n.pathToNode) else { fatalError() }
             
-            let pathToGoal = Array(n.pathToNode.prefix(n.pathToNode.count - 1))
+            let pathToGoal = Array(n.pathToNode.prefix(n.pathToNode.count))
             let goalName = JSON(pathToGoal.last!).stringValue
-            
-            let pathToBehavior = AFData.getPathToParent(n.pathToNode)
-            let behaviorName = JSON(pathToBehavior.last!).stringValue
-            
+            let behaviorName = JSON(AFData.getContainingBehaviorName(pathToGoal: pathToGoal)).stringValue
             let gkBehavior = knownMotivators[behaviorName]! as! GKBehavior
             let gkGoal = knownMotivators[goalName]! as! GKGoal
             

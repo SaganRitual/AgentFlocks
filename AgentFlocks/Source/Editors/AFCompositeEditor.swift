@@ -54,10 +54,6 @@ class AFCompositeEditor: AFMotivatorEditor {
         return AFBehaviorEditor(pathToBehavior, core: core)
     }
 
-    override func setWeight(forMotivator name: String, to: Float) {
-        getNodeWriter(pathToHere + [name]).write(this: JSON(to), to: "weight")
-    }
-
     // Our underlying json has no arrays in it. I made it all dictionaries, mostly because
     // it makes the json easier to read when debugging. But behaviors and goals, in
     // the GameplayKit architecture, are arrays. So here, a bit of a hack to get them

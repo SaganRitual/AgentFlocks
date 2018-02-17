@@ -557,12 +557,10 @@ extension AppDelegate: AgentGoalsDelegate {
     }
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemClicked item: Any, inRect rect: NSRect) {
-        print("seven")
         coreAgentGoalsDelegate.itemClicked(item)
     }
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, itemDoubleClicked item: Any, inRect rect: NSRect) {
-        print("six")
         guard let mainView = window.contentView else { return }
         
         let attributeNames = ["Angle", "Distance", "Speed", "Time", "Weight"]
@@ -594,7 +592,6 @@ extension AppDelegate: AgentGoalsDelegate {
     }
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, newBehaviorShowForRect rect: NSRect) {
-        print("four")
         guard let mainView = window.contentView else { return }
     
         let editorController = ItemEditorController(withAttributes: ["Weight"], agentEditorController: agentEditorController)
@@ -607,7 +604,6 @@ extension AppDelegate: AgentGoalsDelegate {
     }
 
     func agentGoals(_ agentGoalsController: AgentGoalsController, newGoalShowForRect rect: NSRect, goalType type: AgentGoalsController.GoalType) {
-        print("five")
         guard let mainView = window.contentView else { return }
     
         var attributeList = ["Weight"]
@@ -714,19 +710,16 @@ class MotivatorAttributes {
 extension AppDelegate: ItemEditorDelegate {
    
     func itemEditorApplyPressed(_ controller: ItemEditorController) {
-        print("one")
         motivatorsController.commit(MotivatorAttributes(controller))
         controller.refreshAffectedControllers()
         activePopover?.close()
     }
 	
 	func itemEditorCancelPressed(_ controller: ItemEditorController) {
-        print("two")
 		activePopover?.close()
 	}
     
     func itemEditorActivated(_ controller: ItemEditorController) {
-        print("two.five")
         let attributes = MotivatorAttributes(controller)
         let type = attributes.newItemType
         
@@ -734,18 +727,14 @@ extension AppDelegate: ItemEditorDelegate {
     }
 	
     func itemEditorDeactivated(_ controller: ItemEditorController) {
-        print("two.six")
         motivatorsController.itemEditorDeactivated()
     }
 }
 
 extension AppDelegate: LogSliderDelegate {
     func logSlider(_ controller: LogSliderController, newValue value: Double) {
-        print("one.nine")
         if let itemEditorController = controller.parentItemEditorController {
-            print("two.pi")
             if itemEditorController.preview {
-                print("three.e")
                 let attributes = MotivatorAttributes(itemEditorController)
                 let newSetting = (value: value, didChange: true)
                 

@@ -65,7 +65,6 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     var goalSetupInputMode = GoalSetupInputMode.NoSelect
     var mouseState = MouseStates.up
     var obstacleCloneStamp = String()
-    var parentOfNewMotivator: AFBehavior?
     var pathForNextPathGoal = 0
     var sceneInputState: AFSceneInputState!
     var selectionController: AFSelectionController!
@@ -120,11 +119,7 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
         
         let c = agentEditor.createComposite()   // Add a complimentary behavior before we
         let b = c.createBehavior()              // send the new agent on his way
-        c.setWeight(forMotivator: b.name, to: 100)
-        
-//        let g = b.createGoal()
-//        b.setWeight(forMotivator: g.name, to: 100)
-//        g.composeGoal_toWander(speed: 200)
+        b.weight = 100
 
         let agent = AFAgent(agentEditor.name, core: core, position: currentPosition)
         agentsMap[agentEditor.name] = agent

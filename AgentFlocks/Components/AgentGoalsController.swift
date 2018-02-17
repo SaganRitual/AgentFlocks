@@ -23,6 +23,7 @@ protocol AgentGoalsDelegate {
 }
 
 protocol AgentGoalsDataSource {
+    func agentGoals(_ agentGoalsController: AgentGoalsController, getEditorFor item: Any?) -> AFMotivatorEditor
     func agentGoals(_ agentGoalsController: AgentGoalsController, numberOfChildrenOfItem item: Any?) -> Int
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemExpandable item: Any) -> Bool
     func agentGoals(_ agentGoalsController: AgentGoalsController, child index: Int, ofItem item: Any?) -> Any
@@ -32,7 +33,7 @@ protocol AgentGoalsDataSource {
 }
 
 class AgentGoalsController: NSViewController {
-    typealias GoalType = AFGoalType
+    typealias GoalType = AFGoalEditor.AFGoalType
 
 	// MARK: - Attributes (public)
 	
@@ -184,6 +185,10 @@ extension AgentGoalsController: NSOutlineViewDataSource {
 	}
 	
 	func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
+        guard let editor = dataSource?.agentGoals(self, getEditorFor: item as? String) else { return nil }
+        
+        let isEnabled = editor.isEnabled
+        
 		if (tableColumn?.title ?? "") == "Name" {
 			if let cellView = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "GoalNameCellView"), owner: self) as? AgentGoalsCellView {
 				cellView.textField?.stringValue = dataSource?.agentGoals(self, labelOfItem: item) ?? ""
@@ -191,35 +196,20 @@ extension AgentGoalsController: NSOutlineViewDataSource {
 				cellView.checkButton.action = #selector(onItemChecked(_:))
 				cellView.checkButton.target = self
 				cellView.checkButton.item = item
-				if let enabled = dataSource?.agentGoals(self, isItemEnabled: item) {
-					cellView.checkButton.state = enabled ? .on : .off
-				}
-				else {
-					cellView.checkButton.state = .off
-				}
-				
-				if let parent = outlineView.parent(forItem: item) as? AFBehavior,
-					let enabled = dataSource?.agentGoals(self, isItemEnabled: parent)
-				{
-					cellView.textField?.textColor = enabled ? NSColor.textColor : NSColor.lightGray
-					cellView.checkButton?.isEnabled = enabled
-				}
+                cellView.checkButton.state = isEnabled ? .on : .off
+                cellView.textField?.textColor = isEnabled ? NSColor.textColor : NSColor.lightGray
+                cellView.checkButton?.isEnabled = isEnabled
 				
 				return cellView
 			}
 		}
 		else if (tableColumn?.title ?? "") == "Weight" {
 			if let cellView = outlineView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "GoalWeightCellView"), owner: self) as? NSTableCellView {
-        let w = (dataSource?.agentGoals(self, weightOfItem: item) ?? 0)
-        
-        let formatString = (w > pow(10, 4)) ? "%.f" : (w > pow(10, 2) ? "%.1f" : "%.2f")
-        cellView.textField?.stringValue = String(format: formatString, "", w)
-				
-				if let parent = outlineView.parent(forItem: item) as? AFBehavior,
-					let enabled = dataSource?.agentGoals(self, isItemEnabled: parent)
-				{
-					cellView.textField?.textColor = enabled ? NSColor.textColor : NSColor.lightGray
-				}
+                let w = editor.weight
+                let formatString = (w > pow(10, 4)) ? "%.f" : (w > pow(10, 2) ? "%.1f" : "%.2f")
+                cellView.textField?.stringValue = String(format: formatString, "", w)
+                
+                cellView.textField?.textColor = isEnabled ? NSColor.textColor : NSColor.lightGray
 				
 				return cellView
 			}

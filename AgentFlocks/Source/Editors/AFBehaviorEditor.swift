@@ -34,7 +34,7 @@ class AFBehaviorEditor: AFMotivatorEditor {
         return AFCompositeEditor(pathToParent, core: core)
     }
     
-    func createGoal() -> AFGoalEditor {
+    func createGoal(nodeWriterDeferrer: NodeWriterDeferrer? = nil) -> AFGoalEditor {
         // Adding the "goals" dictionary does nothing of any programmatic use. I set the goals
         // aside in their own object only to make the JSON more readable when debugging. See
         // the setup in the composite editor's createBehavior() function.
@@ -50,6 +50,11 @@ class AFBehaviorEditor: AFMotivatorEditor {
         // Motivators are enabled by default
         let isEnabled: JSONSubscriptType = "isEnabled"
         nw.write(this: JSON(true), to: newGoalName, under: isEnabled)
+        
+        // Caller wants to defer notifications, which are driven by NodeWriter's deinit.
+        // So we store the nodeWriter here so we don't hit deinit until caller decides
+        // it's a more fortuitous time.
+        if var nwd = nodeWriterDeferrer { nwd.nodeWriter = nw }
 
         return AFGoalEditor(pathToNewGoal, core: core)
     }
@@ -69,10 +74,6 @@ class AFBehaviorEditor: AFMotivatorEditor {
         default:
             fatalError()
         }
-    }
-
-    override func setWeight(forMotivator name: String, to: Float) {
-        getNodeWriter(pathToHere + [motivatorCategory, name]).write(this: JSON(to), to: "weight")
     }
 
     // Our underlying json has no arrays in it. I made it all dictionaries, mostly because

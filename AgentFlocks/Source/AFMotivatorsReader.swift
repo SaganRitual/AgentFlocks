@@ -32,6 +32,10 @@ class AFMotivatorsReader: AgentGoalsDataSource {
     var uiNotifications: Foundation.NotificationCenter!
 
     init(_ injector: AFCore.AFDependencyInjector) {}
+    
+    func agentGoals(_ agentGoalsController: AgentGoalsController, getEditorFor item: Any?) -> AFMotivatorEditor {
+        return AFMotivatorEditor(item! as! String, core: core)
+    }
 
     // From the doc: The number of child items encompassed by item. ***If item is nil, this method should
     // return the number of children for the top-level item.***
@@ -43,14 +47,12 @@ class AFMotivatorsReader: AgentGoalsDataSource {
         
         let itemName = item as? String ?? selectedAgent!
         let containerEditor = AFMotivatorContainerEditor(itemName, core: core)
-        print("\(itemName) has \(containerEditor.count) children")
         return containerEditor.count
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemExpandable item: Any) -> Bool {
         if let itemName = item as? String {
             let containerEditor = AFMotivatorContainerEditor(itemName, core: core)
-            print("expandable? \(containerEditor.count > 0): \(itemName) has \(containerEditor.count) children")
             return containerEditor.count > 0
         } else { return false }
     }
@@ -60,12 +62,10 @@ class AFMotivatorsReader: AgentGoalsDataSource {
     // We can also come here for goals, hence using the mini-editor for access to the fake index.
     func agentGoals(_ agentGoalsController: AgentGoalsController, child index: Int, ofItem item: Any?) -> Any {
         if item == nil {
-            print("asking for index \(index) of nil")
             let pathToComposite: [JSONSubscriptType] = ["agents", selectedAgent!, "behaviors"]
             let behaviors = AFCompositeEditor(pathToComposite, core: core)
             return behaviors[index]
         } else if let itemName = item as? String {
-            print("asking for index \(index) of \(itemName)")
             let containerEditor = AFMotivatorContainerEditor(itemName, core: core)
             return containerEditor[index]
         }
@@ -85,27 +85,17 @@ class AFMotivatorsReader: AgentGoalsDataSource {
             }
         }
         
-        print(core.bigData.data)
         return "Unknown item \(item)"
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, weightOfItem item: Any) -> Float {
-        if let itemName = item as? String {
-            let weight = AFMotivatorEditor(itemName, core: core).weight
-            print(weight)
-            return weight
-        }
+        if let itemName = item as? String { return  AFMotivatorEditor(itemName, core: core).weight }
         
         return 0    // Not sure why I get nil items in this function
     }
     
     func agentGoals(_ agentGoalsController: AgentGoalsController, isItemEnabled item: Any) -> Bool {
-        if let itemName = item as? String {
-            let isEnabled = AFMotivatorEditor(itemName, core: core).isEnabled;
-            print(isEnabled)
-            return isEnabled
-        }
-            
+        if let itemName = item as? String { return AFMotivatorEditor(itemName, core: core).isEnabled }
         return false
     }
     
@@ -160,7 +150,7 @@ class AFMotivatorsReader: AgentGoalsDataSource {
             self.uiNotifications.addObserver(self, selector: ss2, name: .Deselected, object: nil)
             
             let ss3 = #selector(coreDataChanged(notification:))
-            self.dataNotifications.addObserver(self, selector: ss3, name: .CoreTreeUpdate, object: nil)
+            self.dataNotifications.addObserver(self, selector: ss3, name: .CoreNodeUpdate, object: nil)
         }
     }
 

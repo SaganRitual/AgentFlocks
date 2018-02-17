@@ -41,94 +41,32 @@ class AFMotivatorsController {
 
         let (targetAgents, _) = afSceneController.selectionController.getSelection()
 
-        if let goalType = attributes.newItemType {
+        if attributes.newItemType == nil {
+            // If it doesn't have a new item type, it's a behavior. See above.
+            if attributes.isNewItem {
+                let behaviorEditor = compositeEditor.createBehavior()
+                behaviorEditor.weight = Float(attributes.weight.value)
+            } else {
+                
+            }
+        } else {
             // If it has a new item type, it's a goal. What an ugly kludge.
             // Especially with a totally different field saying whether we're
             // creating a new item or editing an existing one.
             if attributes.isNewItem {
                 let index = core.ui.agentEditorController.goalsController.outlineView!.selectedRow
                 let behaviorEditor = compositeEditor.getBehaviorEditor(index)
-                let goalEditor = behaviorEditor.createGoal()
                 
+                // Hold the notifications until we go out of scope; we don't want anyone to
+                // start processing the new data until we get the goal fully committed to the agent.
+                let nodeWriterDeferrer = NodeWriterDeferrer()
+                let goalEditor = behaviorEditor.createGoal(nodeWriterDeferrer: nodeWriterDeferrer)
+                
+                goalEditor.weight = Float(attributes.weight.value)
                 goalEditor.composeGoal(attributes: attributes, targetAgents: targetAgents)
             } else {
                 
             }
-        } else {
-            // If it doesn't have a new item type, it's a behavior. See above.
-            if attributes.isNewItem {
-                let behaviorEditor = compositeEditor.createBehavior()
-                compositeEditor.setWeight(forMotivator: behaviorEditor.name, to: Float(attributes.weight.value))
-            } else {
-
-            }
-        }
-        
-        print(core.bigData.data)
-    }
-    
-    private func addMotivator(to agent: String, state: MotivatorAttributes) {
-        let weight = Float(state.weight.value)
-
-//        if state.newItemType == nil { coreData.newBehavior(for: agent, weight: weight); return }
-
-        let type = state.newItemType!
-        var goal: AFGoal?
-        let selectedNames = Array(afSceneController.selectedNodes)
-        var primaryNode = afSceneController.selectionController.primarySelection!
-        
-        let angle = Float(state.angle?.value ?? 0)
-        let distance = Float(state.distance?.value ?? 0)
-        let speed = Float(state.speed?.value ?? 0)
-        let time = TimeInterval(state.time?.value ?? 0)
-
-        switch type {
-        case .toAlignWith:    fallthrough
-        case .toCohereWith:   fallthrough
-        case .toSeparateFrom: break
-//            coreData.newGoal(type, for: [agent], parentBehavior: nil, weight: weight, targets: selectedNames,
-//                            angle: angle, distance: distance, speed: speed, time: time, forward: true)
-            
-        case .toAvoidObstacles:break
-//            coreData.newGoal(type, for: nodes, targets: Array(coreData.obstacles.keys), parentBehavior: nil, weight: weight)
-//            goal = AFGoal(toAvoidObstacles: Array(data.obstacles.keys), time: time, weight: weight)
-            
-        case .toAvoidAgents:
-            // Make sure we're not trying to avoid ourselves too
-            let sansSelf = selectedNames.filter { $0 != afSceneController.selectionController.primarySelection! }
-            
-//            coreData.newGoal(type, for: coreData.afSceneController.primarySelection!.name!, parentBehavior: nil, weight: weight,
-//                            targets: sansSelf, angle: angle, distance: distance, speed: speed,
-//                            time: time, forward: nil)
-
-        case .toFleeAgent:      fallthrough
-        case .toInterceptAgent: fallthrough
-        case .toSeekAgent:
-            // Ugly, come back to it. The UI is telling us a specific node he wants to
-            // exclude from the selection. I think I was trying to prevent the subject
-            // of the goal from being added to his own goal. But now I'm tired and it's
-            // harder to think about it.
-            let sansTarget = selectedNames.filter { $0 != afSceneController.selectionController.primarySelection! }
-//            coreData.newGoal(type, for: sansTarget, weight, weight, targets: [selectedNames.first!],
-//                            angle: angle, distance: distance, speed: speed,time: time, forward: true)
-            
-        case .toFollow:  fallthrough
-        case .toStayOn:/*
-            coreData.newGoal(type, for: primaryNode.name!, targets: [pathName], parentBehavior: nil,
-                            time: Float(time), angle: angle, distance: distance, speed: speed,
-                            time: time, weight: weight, forward: state.forward)
-            
-            let pathIndex = AFCore.afSceneController.pathForNextPathGoal
-            let pathname = coreData.paths[pathIndex].name
-            goal = AFGoal(toStayOn: pathname, time: Float(time), weight: weight)
-            
-            goal!.pathname = pathname*/
-            break
-            
-        case .toReachTargetSpeed:  fallthrough
-        case .toWander: break
-//            coreData.newGoal(type, for: primaryNode.name!, time: time, weight: weight,
-//                            angle: angle, distance: distance, speed: speed, forward: true)
         }
     }
     
@@ -136,7 +74,7 @@ class AFMotivatorsController {
         
     }
 
-    func itemEditorActivated(goalType: AFGoalType?) {
+    func itemEditorActivated(goalType: AFGoalEditor.AFGoalType?) {
         guard let goalType = goalType else { return }
         
         switch goalType {
@@ -161,11 +99,6 @@ class AFMotivatorsController {
     
     func itemEditorDeactivated() {
         
-    }
-    
-    private func refreshBehavior(agent: AFAgent, behavior: AFBehavior, weight: Double) {
-        print("i don't know")
-//        (agent.behavior! as! AFCompositeBehavior).setWeight(behavior.weight, for: behavior)
     }
     
     private func refreshGoal(gkGoal: GKGoal, state: MotivatorAttributes) {
@@ -207,23 +140,6 @@ class AFMotivatorsController {
 //        }
     }
     
-    func retransmitGoal(afGoal: AFGoal, state: MotivatorAttributes) {
-//        let newGoal = AFGoal.makeGoal(copyFrom: afGoal, weight: afGoal.weight)
-        
-        // Everyone has a weight
-        let weight = Float(state.weight.value)
-        
-//        if let angleState = state.angle { newGoal.angle = Float(angleState.value) }
-//        if let distanceState = state.distance { newGoal.distance = Float(distanceState.value) }
-//        if let speedState = state.speed { newGoal.speed = Float(speedState.value) }
-//        if let timeState = state.time { newGoal.time = Float(timeState.value) }
-//        
-//        newGoal.weight = weight
-//        
-////        afSceneController.parentOfNewMotivator!.remove(afGoal)
-//        afSceneController.parentOfNewMotivator!.setWeightage(weight, for: newGoal)
-    }
-    
     func sliderChanged(_ state: MotivatorAttributes) {
         let (_, selectedAgent) = afSceneController.selectionController.getSelection()
 
@@ -236,7 +152,7 @@ class AFMotivatorsController {
             if state.time!.didChange     { coreEditor.setOptionalScalar("time", to: Float(state.time!.value))  }
 
             if state.weight.didChange {
-                coreEditor.parentEditor.setWeight(forMotivator: coreEditor.name, to: Float(state.weight.value))
+                coreEditor.weight = Float(state.weight.value)
             }
 
         } else { fatalError() }

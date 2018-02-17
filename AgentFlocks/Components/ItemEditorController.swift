@@ -21,7 +21,6 @@ class ItemEditorController: NSViewController {
 	
 	var delegate:ItemEditorDelegate?
 	var editedItem:Any?
-    var editedAFGoal:AFGoal?
     var followPathForward = true
     var newItemType:AgentGoalsController.GoalType?
     var isNewItem = true
