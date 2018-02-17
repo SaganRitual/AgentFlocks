@@ -47,7 +47,7 @@ class AFGoalEditor: AFMotivatorEditor {
     }
 }
 
-// MARK: Functions for composing the different kinds of goals
+// MARK: Main entry point for composing goals
 
 extension AFGoalEditor {
     func composeGoal(attributes: MotivatorAttributes, targetAgents: [String]?) {
@@ -72,7 +72,9 @@ extension AFGoalEditor {
     }
 }
 
-extension AFGoalEditor {
+// MARK: Goal-specific composition functions
+
+private extension AFGoalEditor {
 
     func composeGoal_toWander(speed: Float)             { _composeGoal_speed(.toWander, speed: speed) }
     func composeGoal_toReachTargetSpeed(_ speed: Float) { _composeGoal_speed(.toReachTargetSpeed, speed: speed) }
@@ -121,7 +123,7 @@ extension AFGoalEditor {
         _composeGoal_flock(.toSeparateFrom, agents: agents, angle: angle, distance: distance)
     }
 
-    private func _composeGoal_flock(_ type: AFGoalType, agents: [String], angle: Float, distance: Float) {
+    func _composeGoal_flock(_ type: AFGoalType, agents: [String], angle: Float, distance: Float) {
         guard self.type == nil else { fatalError() }
         self.type = type
         self.agents = agents

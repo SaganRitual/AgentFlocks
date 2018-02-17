@@ -223,11 +223,28 @@ private extension AFSelectionController {
         uiNotifications.post(nn)
     }
 
-    func deselect(_ name: String, primary: Bool) { var a = getNodeAdapter(name); a.deselect(); announceDeselect(name) }
+    func deselect(_ name: String) { var a = getNodeAdapter(name); a.deselect(); announceDeselect(name) }
     func deselectAll() { gameScene.children.forEach { var a = getNodeAdapter($0.name); a.deselect(); announceDeselect($0.name!) } }
     func select(_ name: String, primary: Bool) { var a = getNodeAdapter(name); a.select(primary: primary); announceSelect(name, primary: primary) }
     
-    func toggleSelection(_ name: String) {}
+    func toggleSelection(_ name: String) {
+        let (selectedAgents, primarySelection) = getSelection()
+        let a = getNodeAdapter(name)
+
+        if a.isSelected {
+            
+            // I'm being deselected. If I'm currently the primary selection,
+            // someone else needs to become the primary. Unless there's no
+            // one else selected, that is.
+            let setNewPrimarySelection = ((primarySelection ?? "") == name) && (selectedAgents!.count > 1)
+            deselect(name);
+
+            if setNewPrimarySelection { select(selectedAgents!.first!, primary: setNewPrimarySelection) }
+        } else {
+            let isNewPrimarySelection = selectedAgents == nil || selectedAgents!.count == 0
+            select(name, primary: isNewPrimarySelection)
+        }
+    }
 }
 
 // MARK: Miscellaney

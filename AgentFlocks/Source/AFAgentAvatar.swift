@@ -163,10 +163,10 @@ private extension AFAgentAvatar {
         }
 
         func hasBeenSelected(primary: Bool) {
-            // If we're already in the primary on/off state specified by our `primary` parameter,
+            // If we're already in the desired selection state,
             // then there's nothing to do here. The notifier blasts out selection state
             // indiscriminately, so we have to check whether we've already taken care of it.
-            guard primaryContainer.isPrimarySelection != primary else { return }
+            guard !(primaryContainer.isSelected && primaryContainer.isPrimarySelection == primary) else { return }
             
             primaryContainer.isPrimarySelection = primary
             primaryContainer.isSelected = true
