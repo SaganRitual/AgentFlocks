@@ -41,7 +41,7 @@ class AFTopBarDelegate {
     }
     
     func getActiveAgentImages() -> [NSImage] {
-        var agentImages = [NSImage]()
+//        var agentImages = [NSImage]()
         
 //        coreData.entities.forEach {
 //            let sprite = $0.agent.sprite
@@ -50,18 +50,18 @@ class AFTopBarDelegate {
 //            agentImages.append(nsImage)
 //        }
         
-        return agentImages
+        return []//agentImages
     }
     
     func getActivePathImages() -> [NSImage] {
-        var pathImages = [NSImage]()
+//        var pathImages = [NSImage]()
         
 //        coreData.paths.forEach {
 //            let s = CGSize(width: 50, height: 50)
 //            pathImages.append($0.getImageData(size: s))
 //        }
         
-        return pathImages
+        return []//pathImages
     }
     
     func inject(_ injector: AFCore.AFDependencyInjector) {

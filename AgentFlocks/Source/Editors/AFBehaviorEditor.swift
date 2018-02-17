@@ -54,7 +54,7 @@ class AFBehaviorEditor: AFMotivatorEditor {
         // Caller wants to defer notifications, which are driven by NodeWriter's deinit.
         // So we store the nodeWriter here so we don't hit deinit until caller decides
         // it's a more fortuitous time.
-        if var nwd = nodeWriterDeferrer { nwd.nodeWriter = nw }
+        if let nwd = nodeWriterDeferrer { nwd.nodeWriter = nw }
 
         return AFGoalEditor(pathToNewGoal, core: core)
     }

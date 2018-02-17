@@ -376,7 +376,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         if dialog.runModal() == NSApplication.ModalResponse.OK {
             if let result = dialog.url {
-//                AFCore.menuBarDelegate.fileOpen(result)
+                coreMenuBarDelegate.fileOpen(result)
             } else {
                 return
             }

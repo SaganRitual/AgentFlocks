@@ -101,45 +101,6 @@ class AFMotivatorsController {
         
     }
     
-    private func refreshGoal(gkGoal: GKGoal, state: MotivatorAttributes) {
-//        let afGoal = afSceneController.parentOfNewMotivator!.goalsMap[gkGoal]!
-        
-        // Edit existing goal -- note AFBehavior doesn't give us a way
-        // to update the goal. If we want to assign any new values to
-        // this goal, we just have to throw it away and make a new one.
-        let replacementGoalRequired = (
-            state.angle?.didChange ?? false ||
-            state.distance?.didChange ?? false ||
-            state.speed?.didChange ?? false ||
-            state.time?.didChange ?? false
-        )
-        
-        // However, the weight of the goal is managed by the behavior.
-        // So if all we're updating is the weight, we can just change that
-        // directly in the behavior, without creating a new goal.
-//        if replacementGoalRequired {
-//            retransmitGoal(afGoal: afGoal, state: state)
-//        } else {
-//            afSceneController.parentOfNewMotivator!.setWeight(Float(state.weight.value), for: afGoal)
-//        }
-    }
-    
-    func refreshMotivators(state: MotivatorAttributes) {
-//        let selectedNodes = afSceneController.selectedNodes
-//        guard selectedNodes.count > 0 else { return }
-//        
-//        let name = afSceneController.primarySelection!
-//        let agent = AFNodeAdapter(gameScene: afSceneController.gameScene, name: name).getAgent()!
-//        
-//        if let behavior = state.editedItem as? AFBehavior {
-//            refreshBehavior(agent: agent, behavior: behavior, weight: state.weight.value)
-//        } else if let gkGoal = state.editedItem as? GKGoal {
-//            refreshGoal(gkGoal: gkGoal, state: state)
-//        } else {
-////            addMotivator(entity: entity, state: state)
-//        }
-    }
-    
     func sliderChanged(_ state: MotivatorAttributes) {
         let (_, selectedAgent) = afSceneController.selectionController.getSelection()
 
