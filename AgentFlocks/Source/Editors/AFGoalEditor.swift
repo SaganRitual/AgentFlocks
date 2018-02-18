@@ -50,6 +50,31 @@ class AFGoalEditor: AFMotivatorEditor {
 // MARK: Main entry point for composing goals
 
 extension AFGoalEditor {
+    enum GoalTargetCategory {
+        case allSelectedAgents, none, obstacles, path, singleAgent
+    }
+    
+    static func getTargetCategory(for goalType: AFGoalType) -> GoalTargetCategory {
+        switch goalType {
+        case .toAlignWith:        fallthrough
+        case .toAvoidAgents:      fallthrough
+        case .toCohereWith:       fallthrough
+        case .toSeparateFrom:     return .allSelectedAgents
+            
+        case .toFleeAgent:        fallthrough
+        case .toInterceptAgent:   fallthrough
+        case .toSeekAgent:        return .singleAgent
+            
+        case .toReachTargetSpeed: fallthrough
+        case .toWander:           return .none
+            
+        case .toFollow:           fallthrough
+        case .toStayOn:           return .path
+
+        case .toAvoidObstacles:   return .obstacles
+        }
+    }
+    
     func composeGoal(attributes: MotivatorAttributes, targetAgents: [String]?) {
         switch attributes.newItemType! {
         case .toAlignWith:    composeGoal_toAlignWith(targetAgents!, angle: Float(attributes.angle!.value), distance: Float(attributes.distance!.value))

@@ -283,7 +283,10 @@ private extension AFAgent {
         case .toSeekAgent:        return GKGoal(toSeekAgent: core.sceneController.getAgent(editor.name))
             
         case .toAlignWith:        return GKGoal(toAlignWith: core.sceneController.getAgents(editor.agents), maxDistance: editor.distance, maxAngle: editor.angle)
-        case .toCohereWith:       return GKGoal(toCohereWith: core.sceneController.getAgents(editor.agents), maxDistance: editor.distance, maxAngle: editor.angle)
+        case .toCohereWith:
+            let eagents = Array(editor.agents)
+            let agents = core.sceneController.getAgents(eagents)
+            return GKGoal(toCohereWith: agents, maxDistance: editor.distance, maxAngle: editor.angle)
         case .toSeparateFrom:     return GKGoal(toSeparateFrom: core.sceneController.getAgents(editor.agents), maxDistance: editor.distance, maxAngle: editor.angle)
 
         case .toAvoidAgents:      return GKGoal(toAvoid: core.sceneController.getAgents(editor.agents), maxPredictionTime: editor.time)

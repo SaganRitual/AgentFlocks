@@ -34,6 +34,54 @@ class AFMotivatorsController {
         injector.motivatorsController = self
     }
     
+    private func buildGoalFromScratch(attributes: MotivatorAttributes) {
+        // If it has a new item type, it's a goal. What an ugly kludge.
+        // Especially with a totally different field saying whether we're
+        // creating a new item or editing an existing one.
+        let targetCategory = AFGoalEditor.getTargetCategory(for: attributes.newItemType!)
+        switch targetCategory {
+        case .allSelectedAgents:   fallthrough
+        case .singleAgent:
+            let tuple = afSceneController.selectionController.getSelection()
+            let primarySelection = tuple.1!
+
+            // Exclude myself from the target agents if the new goal isn't an "all agents" goal
+            let targetAgents = (targetCategory == .allSelectedAgents) ? (tuple.0!) : tuple.0!.filter { $0 != primarySelection }
+            
+            // The "all agents" category is for the flocking goals, so everyone involved needs to
+            // be assigned the same goal. The other categories require only that the primary
+            // selection guy get the goal.
+            let subjectAgents = (targetCategory == .allSelectedAgents) ? (tuple.0!) : [primarySelection]
+            
+            // This holds onto all the NodeWriters so no notifications will happen until we get
+            // all the pieces in place.
+            var toDeferNotifications = [NodeWriter]()
+            for name in subjectAgents {
+                // Index is for when I figure out a good way to assign new goals to subjects
+                // that aren't the primary selection
+                // let index = core.ui.agentEditorController.goalsController.outlineView!.selectedRow
+                let subjectAgent = AFEditor(name, core: core)
+                let behaviorEditor = subjectAgent.getCompositeEditor().getBehaviorEditor(0)
+                
+                let nodeWriterDeferrer = NodeWriterDeferrer()
+                let goalEditor = behaviorEditor.createGoal(nodeWriterDeferrer: nodeWriterDeferrer)
+                
+                toDeferNotifications.append(nodeWriterDeferrer.nodeWriter!) // Defer notifications until we're finished
+                
+                goalEditor.weight = Float(attributes.weight.value)
+                
+                let targetAgentsSansMe = targetAgents.filter { $0 != name }
+                goalEditor.composeGoal(attributes: attributes, targetAgents: targetAgentsSansMe)
+            }
+            
+            print("pre notification", core.bigData.data)
+            
+        case .none:      break
+        case .obstacles: fatalError()
+        case .path:      fatalError()
+        }   // Now the node writers go out of scope. I wonder if we'll survive the barrage of notifications.
+    }
+    
     func commit(_ attributes: MotivatorAttributes) {
         let agentName = afSceneController.selectionController.primarySelection!
         let agentEditor = afSceneController.getAgentEditor(agentName)
@@ -50,23 +98,10 @@ class AFMotivatorsController {
                 
             }
         } else {
-            // If it has a new item type, it's a goal. What an ugly kludge.
-            // Especially with a totally different field saying whether we're
-            // creating a new item or editing an existing one.
-            if attributes.isNewItem {
-                let index = core.ui.agentEditorController.goalsController.outlineView!.selectedRow
-                let behaviorEditor = compositeEditor.getBehaviorEditor(index)
-                
-                // Hold the notifications until we go out of scope; we don't want anyone to
-                // start processing the new data until we get the goal fully committed to the agent.
-                let nodeWriterDeferrer = NodeWriterDeferrer()
-                let goalEditor = behaviorEditor.createGoal(nodeWriterDeferrer: nodeWriterDeferrer)
-                
-                goalEditor.weight = Float(attributes.weight.value)
-                goalEditor.composeGoal(attributes: attributes, targetAgents: targetAgents)
-            } else {
-                
-            }
+            if attributes.isNewItem { buildGoalFromScratch(attributes: attributes) }
+            else { /*updateGoal(attributes)*/ }
+            
+            print("post(?) notification", core.bigData.data)
         }
     }
     

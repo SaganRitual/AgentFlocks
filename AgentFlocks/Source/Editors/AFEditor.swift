@@ -35,6 +35,11 @@ class AFEditor {
         self.core = core
         self.pathToHere = core.getPathTo(nodeName)!
     }
+    
+    func getCompositeEditor() -> AFCompositeEditor {
+        let pathToComposite = pathToHere + ["behaviors"]
+        return AFCompositeEditor(pathToComposite, core: core)
+    }
 
     func getNodeWriter(_ pathToParent: [JSONSubscriptType]) -> NodeWriter {
         return core.bigData.getNodeWriter(pathToParent)
