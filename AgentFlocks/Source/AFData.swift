@@ -35,20 +35,10 @@ class NodeWriter {
     private var notificationsSet = [[JSONSubscriptType]]()
     private var writeMode = Foundation.Notification.Name.CoreNodeUpdate
     private var suppressNotifications_: Bool?
-    private var trackingPath: [JSONSubscriptType]
 
     init(_ pathToParent: [JSONSubscriptType], core: AFCore) {
         self.bigData = core.bigData
         self.pathToParent = pathToParent
-        
-        // Here we figure out whether we'll have to create new nodes when
-        // write() is called. We need to know whethere we're creating new
-        // nodes or just modifying existing ones, so we'll know what kind
-        // of notification to publish.
-        trackingPath = pathToParent
-        while !bigData.data[trackingPath].exists() {
-            trackingPath = Array(trackingPath.prefix(trackingPath.count - 1))
-        }
     }
     
     deinit {
@@ -61,18 +51,6 @@ class NodeWriter {
         }
         
         if let key = key {    // That is, if we actually wrote something
-            // One "add" notification for every new node added to the path
-            for i in trackingPath.count ..< pathToParent.count {
-                writeMode = .CoreNodeAdd
-                trackingPath.append(pathToParent[i])
-                bigData.announce(path: trackingPath, writeMode: writeMode)
-            }
-
-            // If anything in the path is new, the final key will be a new node
-            // too. We catch that in the loop above. If there are no new path
-            // elements, but the key represents a single new node, we catch it
-            // in the write() function. If nothing is new, we just announce
-            // an update.
             bigData.announce(path: pathToParent + [key], writeMode: writeMode)
         }
     }
