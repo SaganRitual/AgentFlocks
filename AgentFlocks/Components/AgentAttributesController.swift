@@ -227,14 +227,14 @@ class AgentAttributesController: NSViewController {
             self.core = injector.core
 
             let aSelector = #selector(hasBeenSelected(notification:))
-            self.uiNotifications.addObserver(self, selector: aSelector, name: .Selected, object: nil)
+            self.uiNotifications.addObserver(self, selector: aSelector, name: Foundation.Notification.Name.ScenoidSelected, object: nil)
 
             let cSelector = #selector(hasBeenDeselected(notification:))
-            self.uiNotifications.addObserver(self, selector: cSelector, name: .Deselected, object: nil)
+            self.uiNotifications.addObserver(self, selector: cSelector, name: Foundation.Notification.Name.ScenoidDeselected, object: nil)
 
             // Data notifier
             let bSelector = #selector(nodeChanged(notification:))
-            self.dataNotifications.addObserver(self, selector: bSelector, name: .CoreNodeUpdate, object: nil)
+            self.dataNotifications.addObserver(self, selector: bSelector, name: Foundation.Notification.Name.CoreNodeUpdate, object: nil)
         }
         
         return iStillNeedSomething
@@ -243,15 +243,6 @@ class AgentAttributesController: NSViewController {
 	required convenience init?(coder: NSCoder) {
 		self.init()
 	}
-
-    private func getAgentEditor(notification: Foundation.Notification) -> AFAgentEditor? {
-        guard AFData.Notifier.isDataNotifier(notification) else {
-            return AFSceneController.Notification.Decode(notification).editor as? AFAgentEditor
-        }
-        
-        let n = AFData.Notifier(notification)
-        return AFAgentEditor(n.pathToNode, core: core)
-    }
     
     @objc func nodeChanged(notification: Foundation.Notification) {
         func helper(_ lhs: JSONSubscriptType, _ rhs: String) -> Bool { return JSON(lhs).stringValue == rhs }
@@ -261,21 +252,25 @@ class AgentAttributesController: NSViewController {
         // No agent selected
         guard let targetAgent = self.targetAgent else { return }
         
+        let packet = AFNotificationPacket.unpack(notification)
+        
+        // Shim for now, until I can see whether the overall mechanism works
+        guard case let .CoreNodeUpdate(path) = packet else { fatalError("Bad arg to notification handler") }
+
         // If I (the agent) am not mentioned in the change path, then the notification
         // has nothing to do with me. Just ignore it.
-        let n = AFData.Notifier(notification)
-        guard n.pathToNode.contains(where: { helper($0, targetAgent) }) else { return }
+        guard path.contains(where: { helper($0, targetAgent) }) else { return }
         
         // Something in the motivators below me has changed. I only care about agent attributes.
-        let ix_ = n.pathToNode.first(where: { helper($0, targetAgent) })!
+        let ix_ = path.first(where: { helper($0, targetAgent) })!
         let ix = JSON(ix_).intValue
-        guard n.pathToNode.count == (ix + 2) else { return }
+        guard path.count == (ix + 2) else { return }
 
         // If we don't recognize the attribute name, throw a spanner in it
-        let thisNode = String(describing: n.pathToNode.last!)
+        let thisNode = String(describing: path.last!)
         guard let attribute = AFAgentAttribute(rawValue: thisNode) else { fatalError() }
         
-        let editor = AFAgentEditor(n.pathToNode, core: core)
+        let editor = AFAgentEditor(path, core: core)
         loadAttribute(attribute, from: editor)
     }
     
@@ -291,7 +286,12 @@ class AgentAttributesController: NSViewController {
     }
     
     @objc func hasBeenSelected(notification: Foundation.Notification) {
-        guard let name = AFSceneController.Notification.Decode(notification).name else { fatalError() }
+        let packet = AFNotificationPacket.unpack(notification)
+        
+        guard case let .ScenoidSelected(name, _) = packet else {
+            fatalError("Bad arg to notification handler")
+        }
+
         targetAgent = name
         
         let editor = core.getAgentEditor(for: JSON(name))

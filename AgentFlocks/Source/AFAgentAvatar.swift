@@ -122,10 +122,10 @@ private extension AFAgentAvatar {
 
             // These notifications come from the selection controller
             let s1 = #selector(hasBeenDeselected(notification:))
-            self.uiNotifications.addObserver(self, selector: s1, name: .Deselected, object: nil)
+            self.uiNotifications.addObserver(self, selector: s1, name: Foundation.Notification.Name.ScenoidDeselected, object: nil)
             
             let s2 = #selector(hasBeenSelected(notification:))
-            self.uiNotifications.addObserver(self, selector: s2, name: .Selected, object: nil)
+            self.uiNotifications.addObserver(self, selector: s2, name: Foundation.Notification.Name.ScenoidSelected, object: nil)
         }
 
         deinit {
@@ -138,8 +138,13 @@ private extension AFAgentAvatar {
         }
         
         @objc func hasBeenDeselected(notification: Foundation.Notification) {
-            let decoded = AFSceneController.Notification.Decode(notification)
-            hasBeenDeselected(decoded.name)
+            let packet = AFNotificationPacket.unpack(notification)
+            
+            guard case let .ScenoidDeselected(name) = packet else {
+                fatalError("Bad arg to notification handler")
+            }
+
+            hasBeenDeselected(name)
         }
 
         func hasBeenDeselected(_ name: String?) {
@@ -156,10 +161,15 @@ private extension AFAgentAvatar {
         }
         
         @objc func hasBeenSelected(notification: Foundation.Notification) {
-            let decoded = AFSceneController.Notification.Decode(notification)
-            guard decoded.name == primaryContainer.name! else { return }
+            let packet = AFNotificationPacket.unpack(notification)
+            
+            guard case let .ScenoidSelected(name, isPrimarySelection) = packet else {
+                fatalError("Bad arg to notification handler")
+            }
 
-            hasBeenSelected(primary: decoded.isPrimarySelection!)
+            guard name == primaryContainer.name! else { return }
+
+            hasBeenSelected(primary: isPrimarySelection)
         }
 
         func hasBeenSelected(primary: Bool) {

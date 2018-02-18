@@ -8,18 +8,10 @@
 
 import Cocoa
 
-protocol ItemEditorDelegate {
-	func itemEditorApplyPressed(_ controller: ItemEditorController)
-	func itemEditorCancelPressed(_ controller: ItemEditorController)
-    func itemEditorActivated(_ controller: ItemEditorController)
-    func itemEditorDeactivated(_ controller: ItemEditorController)
-}
-
 class ItemEditorController: NSViewController {
 	
 	// MARK: - Attributes (public)
 	
-	var delegate:ItemEditorDelegate?
 	var editedItem:Any?
     var followPathForward = true
     var newItemType:AgentGoalsController.GoalType?
@@ -125,15 +117,21 @@ class ItemEditorController: NSViewController {
             if resetDirtyFlag { sliderController.valueChanged = false }
 		}
 	}
-	
+
 	// MARK: - Actions and methods (private)
 	
 	@IBAction private func applyButtonPressed(_ sender: NSButton) {
-		delegate?.itemEditorApplyPressed(self)
+        let p = AFNotificationPacket.GoalsControlPanelApply(self)
+        let q = AFNotificationPacket.pack(p)
+        let n = Foundation.Notification(name: .GoalsControlPanelApply, object: nil, userInfo: q)
+        AppDelegate.me.uiNotifications.post(n)
 	}
 	
 	@IBAction func cancelButtonPressed(_ sender: NSButton) {
-		delegate?.itemEditorCancelPressed(self)
+        let p = AFNotificationPacket.GoalsControlPanelCancel(self)
+        let q = AFNotificationPacket.pack(p)
+        let n = Foundation.Notification(name: .GoalsControlPanelCancel, object: nil, userInfo: q)
+        AppDelegate.me.uiNotifications.post(n)
 	}
 	
 }

@@ -30,6 +30,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 	let rightBarWidth:CGFloat = 300.0
 
     var sceneController = SceneController()
+    var afSceneController: AFSceneController!
 	
 	// Data
 	typealias AgentGoalType = (name:String, enabled:Bool)
@@ -113,6 +114,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         if let mr = injector.agentGoalsDataSource { self.agentEditorController.goalsController.dataSource = mr }
         else { injector.someoneStillNeedsSomething = true; iStillNeedSomething = true }
+        
+        if let sc = injector.afSceneController { self.afSceneController = sc }
+        else { injector.someoneStillNeedsSomething = true; iStillNeedSomething = true }
 
         iStillNeedSomething = agentEditorController.attributesController.inject(injector) || iStillNeedSomething
         
@@ -128,8 +132,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             coreMenuBarDelegate = injector.menuBarDelegate
             coreTopBarDelegate = injector.topBarDelegate
             
-            self.uiNotifications.addObserver(self, selector: #selector(itemSelected(notification:)), name: .Selected, object: nil)
-            self.uiNotifications.addObserver(self, selector: #selector(itemDeselected(notification:)), name: .Deselected, object: nil)
+            let s1 = #selector(itemSelected(notification:))
+            self.uiNotifications.addObserver(self, selector: s1, name: Foundation.Notification.Name.ScenoidSelected, object: nil)
+            
+            let s2 = #selector(itemDeselected(notification:))
+            self.uiNotifications.addObserver(self, selector: s2, name: Foundation.Notification.Name.ScenoidDeselected, object: nil)
+            
+            // Notifications for the goals control panel, formerly known as ItemEditorController.
+            let s3 = #selector(goalsControlPanelApply(notification:))
+            self.uiNotifications.addObserver(self, selector: s3, name: Foundation.Notification.Name.GoalsControlPanelApply, object: nil)
+
+            let s4 = #selector(goalsControlPanelCancel(notification:))
+            self.uiNotifications.addObserver(self, selector: s4, name: Foundation.Notification.Name.GoalsControlPanelCancel, object: nil)
 
             // Strange, I had to paste this line from removeAgentFrames() in order to
             // get the agent editing panels to display. I could take some guesses
@@ -140,12 +154,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc func itemSelected(notification: Foundation.Notification) {
-        let decoded = AFSceneController.Notification.Decode(notification)
+        let packet = AFNotificationPacket.unpack(notification)
+        guard case let .ScenoidSelected(name, isPrimarySelection) = packet else { fatalError("Bad arg to notification handler") }
 
-        if let name = AFSceneController.Notification.Decode(notification).name,
-            let isPrimarySelection = decoded.isPrimarySelection,
-            isPrimarySelection == true {
-            
+        if isPrimarySelection {
             let adapter = AFNodeAdapter(gameScene: gameScene, name: name)
             placeAgentFrames(node: adapter.node)
             
@@ -160,12 +172,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc func itemDeselected(notification: Foundation.Notification) {
-        if let name = AFSceneController.Notification.Decode(notification).name {
-            if AFNodeAdapter(gameScene: gameScene, name: name).isPrimarySelection {
-                agentEditorController.attributesController.resetSliderControllers()
-                removeAgentFrames()
-            }
-        } else { fatalError("Notification missing name field") }
+        let packet = AFNotificationPacket.unpack(notification)
+        
+        guard case let .ScenoidDeselected(name) = packet else { fatalError("Bad arg to notification handler") }
+
+        let (_, ps) = afSceneController.selectionController.getSelection()
+        if let primarySelection = ps, primarySelection == name {
+            agentEditorController.attributesController.resetSliderControllers()
+            removeAgentFrames()
+        }
     }
     
     func setupSceneView() {
@@ -567,7 +582,6 @@ extension AppDelegate: AgentGoalsDelegate {
         let attributes = coreAgentGoalsDelegate.getEditableAttributes(for: item, names: attributeNames)
         let editorController = ItemEditorController(withAttributes: Array(attributes.keys), agentEditorController: agentEditorController)
 
-        editorController.delegate = self
         editorController.editedItem = item
         editorController.isNewItem = false
 
@@ -595,7 +609,6 @@ extension AppDelegate: AgentGoalsDelegate {
         guard let mainView = window.contentView else { return }
     
         let editorController = ItemEditorController(withAttributes: ["Weight"], agentEditorController: agentEditorController)
-        editorController.delegate = self
         editorController.newItemType = nil
         editorController.isNewItem = true
 
@@ -627,7 +640,6 @@ extension AppDelegate: AgentGoalsDelegate {
         }
     
         let editorController = ItemEditorController(withAttributes: attributeList, agentEditorController: agentEditorController)
-        editorController.delegate = self
         editorController.newItemType = type
         editorController.isNewItem = true
 
@@ -707,15 +719,29 @@ class MotivatorAttributes {
     }
 }
 
-extension AppDelegate: ItemEditorDelegate {
+// MARK: Notifications for the goals control panel, formerly known as ItemEditorController.
+
+extension AppDelegate {
    
-    func itemEditorApplyPressed(_ controller: ItemEditorController) {
+    @objc func goalsControlPanelApply(notification: Foundation.Notification) {
+        let packet = AFNotificationPacket.unpack(notification)
+        
+        guard case let .GoalsControlPanelApply(controller) = packet else {
+            fatalError("Bad arg to notification handler")
+        }
+
         motivatorsController.commit(MotivatorAttributes(controller))
         controller.refreshAffectedControllers()
         activePopover?.close()
     }
 	
-	func itemEditorCancelPressed(_ controller: ItemEditorController) {
+	@objc func goalsControlPanelCancel(notification: Foundation.Notification) {
+        let packet = AFNotificationPacket.unpack(notification)
+        
+        guard case .GoalsControlPanelCancel = packet else {
+            fatalError("Bad arg to notification handler")
+        }
+        
 		activePopover?.close()
 	}
     

@@ -44,17 +44,17 @@ class AFPath: Equatable {
         self.gameScene = gameScene
         self.spriteSet = SpriteSet(name: name, gameScene: gameScene)
 
-        let newGraphNode = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewGraphNode.rawValue)
-        let aSelector = #selector(newGraphNodeHasBeenCreated(_:))
-        self.notifications.addObserver(self, selector: aSelector, name: newGraphNode, object: coreData)
-
-        let select = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
-        let bSelector = #selector(hasBeenSelected(_:primary:))
-        self.notifications.addObserver(self, selector: bSelector, name: select, object: coreData)
-
-        let deleteGraphNode = NSNotification.Name(rawValue: AFCoreData.NotificationType.DeletedGraphNode.rawValue)
-        let cSelector = #selector(graphNodeHasBeenDeleted(_:))
-        self.notifications.addObserver(self, selector: cSelector, name: deleteGraphNode, object: coreData)
+//        let newGraphNode = NSNotification.Name(rawValue: AFCoreData.NotificationType.NewGraphNode.rawValue)
+//        let aSelector = #selector(newGraphNodeHasBeenCreated(_:))
+//        self.notifications.addObserver(self, selector: aSelector, name: newGraphNode, object: coreData)
+//
+//        let select = NSNotification.Name(rawValue: AFSceneController.NotificationType.Selected.rawValue)
+//        let bSelector = #selector(hasBeenSelected(_:primary:))
+//        self.notifications.addObserver(self, selector: bSelector, name: select, object: coreData)
+//
+//        let deleteGraphNode = NSNotification.Name(rawValue: AFCoreData.NotificationType.DeletedGraphNode.rawValue)
+//        let cSelector = #selector(graphNodeHasBeenDeleted(_:))
+//        self.notifications.addObserver(self, selector: cSelector, name: deleteGraphNode, object: coreData)
     }
 
     static func ==(lhs: AFPath, rhs: AFPath) -> Bool {

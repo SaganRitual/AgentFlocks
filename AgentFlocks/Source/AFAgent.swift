@@ -51,13 +51,13 @@ class AFAgent: GKAgent2D {
         
         // These notifications come from the data
         let s1 = #selector(coreNodeAdd(notification:))
-        self.dataNotifications.addObserver(self, selector: s1, name: .CoreNodeAdd, object: nil)
+        self.dataNotifications.addObserver(self, selector: s1, name: Foundation.Notification.Name.CoreNodeAdd, object: nil)
 
         let s2 = #selector(coreNodeDelete(notification:))
-        self.dataNotifications.addObserver(self, selector: s2, name: .CoreNodeDelete, object: nil)
+        self.dataNotifications.addObserver(self, selector: s2, name: Foundation.Notification.Name.CoreNodeDelete, object: nil)
 
         let s3 = #selector(coreNodeUpdate(notification:))
-        self.dataNotifications.addObserver(self, selector: s3, name: .CoreNodeUpdate, object: nil)
+        self.dataNotifications.addObserver(self, selector: s3, name: Foundation.Notification.Name.CoreNodeUpdate, object: nil)
 
         chargeMotivators()
     }
@@ -113,26 +113,38 @@ class AFAgent: GKAgent2D {
 }
 
 // MARK: track updates to the tree
+/*
+ let path = pathToParent + [key]
+ let p: AFNotificationPacket = (writeMode == .CoreNodeAdd) ? .CoreNodeAdd(path) : .CoreNodeUpdate(path)
+ let q = AFNotificationPacket.pack(p)
+ let n = Foundation.Notification(name: writeMode, object: nil, userInfo: q)
+ bigData.notifier.post(n)
+ */
 
 private extension AFAgent {
     func addGoal(notification: Foundation.Notification) {
-        let n = AFData.Notifier(notification)
-        let last = JSON(n.pathToNode.last!).stringValue
+        let packet = AFNotificationPacket.unpack(notification)
+        
+        var path = [JSONSubscriptType]()
+        if case let AFNotificationPacket.CoreNodeAdd(path_) = packet { path = path_ }
+        else if case let AFNotificationPacket.CoreNodeAdd(path_) = packet { path = path_ }
+        
+        let last = JSON(path.last!).stringValue
         
         // An empty behavior, ready for goals
-        if AFData.isBehavior(n.pathToNode) {
+        if AFData.isBehavior(path) {
             
-            let weight = AFBehaviorEditor(n.pathToNode, core: core).weight
+            let weight = AFBehaviorEditor(path, core: core).weight
             let behavior = GKBehavior()
             
             knownMotivators[last] = behavior
             composite.setWeight(weight, for: behavior)
             
-        } else if AFData.isGoal(n.pathToNode) {
+        } else if AFData.isGoal(path) {
             
-            let behaviorName = JSON(AFData.getBehavior(n.pathToNode)).stringValue
+            let behaviorName = JSON(AFData.getBehavior(path)).stringValue
             let gkBehavior = knownMotivators[behaviorName] as! GKBehavior
-            let goalEditor = AFGoalEditor(n.pathToNode, core: core)
+            let goalEditor = AFGoalEditor(path, core: core)
             let weight = goalEditor.weight
             let gkGoal = composeGkGoal(goalEditor)
             
@@ -146,12 +158,18 @@ private extension AFAgent {
     }
     
     func iCareAboutThisNotification(notification: Foundation.Notification) -> Bool {
+        let packet = AFNotificationPacket.unpack(notification)
+        
+        var path = [JSONSubscriptType]()
+        if case let .CoreNodeAdd(path_) = packet { path = path_ }
+        else if case let .CoreNodeDelete(path_) = packet { path = path_ }
+        else if case let .CoreNodeUpdate(path_) = packet { path = path_ }
+        
         // I'm not mentioned at all. The nerve.
-        let n = AFData.Notifier(notification)
-        guard n.pathToNode.contains(where: { JSON($0) == JSON(self.name) }) else { return false }
+        guard path.contains(where: { JSON($0) == JSON(self.name) }) else { return false }
         
         // Don't care about anything but the motivators themselves.
-        guard AFData.isBehavior(n.pathToNode) || AFData.isGoal(n.pathToNode) else { return false }
+        guard AFData.isBehavior(path) || AFData.isGoal(path) else { return false }
         
         return true
     }
@@ -162,15 +180,17 @@ private extension AFAgent {
     }
 
     @objc func coreNodeDelete(notification: Foundation.Notification) {
-        guard iCareAboutThisNotification(notification: notification) else { return }
-        
-        let n = AFData.Notifier(notification)
-        let last = JSON(n.pathToNode.last!).stringValue
+        let packet = AFNotificationPacket.unpack(notification)
 
-        if AFData.isBehavior(n.pathToNode) {
+        guard case let .CoreNodeAdd(path) = packet else { fatalError() }
+        guard iCareAboutThisNotification(notification: notification) else { return }
+
+        let last = JSON(path).stringValue
+
+        if AFData.isBehavior(path) {
             self.composite.remove(knownMotivators[last] as! GKBehavior)
-        } else if AFData.isGoal(n.pathToNode) {
-            let pathToBehavior = AFData.getPathToParent(n.pathToNode)
+        } else if AFData.isGoal(path) {
+            let pathToBehavior = AFData.getPathToParent(path)
             let behaviorName = JSON(pathToBehavior.last!).stringValue
             let theGkBehaviorToFind = knownMotivators[behaviorName]!
             let theGkGoalToFind = knownMotivators[last]!
@@ -199,29 +219,30 @@ private extension AFAgent {
     }
     
     @objc func coreNodeUpdate(notification: Foundation.Notification) {
+        let packet = AFNotificationPacket.unpack(notification)
+
+        guard case let .CoreNodeUpdate(path) = packet else { fatalError() }
         guard iCareAboutThisNotification(notification: notification) else { return }
-        
-        let n = AFData.Notifier(notification)
-        let last = JSON(n.pathToNode.last!).stringValue
-        
+
         // The gk machinery allows us to set the weight for a motivator independently
         // of its other attributes, and it gives us direct access to the weight. So
         // if the user is only changing the weight, we can just change it here, as
         // opposed to recharging the motivators, as we must do for updates on other
         // goal attributes.
+        let last = JSON(path.last!).stringValue
         if last == "weight" {
-            if AFData.isBehavior(n.pathToNode) {
-                let editor = AFBehaviorEditor(n.pathToNode, core: core)
+            if AFData.isBehavior(path) {
+                let editor = AFBehaviorEditor(path, core: core)
                 let gkBehavior = knownMotivators[editor.name]!
                 self.composite.setWeight(editor.weight, for: gkBehavior as! GKBehavior)
-            } else if AFData.isGoal(n.pathToNode) {
-                let pathToBehavior = AFData.getPathToParent(n.pathToNode)
+            } else if AFData.isGoal(path) {
+                let pathToBehavior = AFData.getPathToParent(path)
                 let behaviorName = JSON(pathToBehavior.last!).stringValue
 
                 let gkBehavior = knownMotivators[behaviorName]! as! GKBehavior
                 let gkGoal = knownMotivators[last]! as! GKGoal
                 
-                let editor = AFGoalEditor(n.pathToNode, core: core)
+                let editor = AFGoalEditor(path, core: core)
                 gkBehavior.setWeight(editor.weight, for: gkGoal)
             } else {
                 fatalError()
@@ -230,9 +251,9 @@ private extension AFAgent {
             // Updating something other than weight. This happens only for goals, as
             // behaviors don't have any other attributes. We have to discard the existing
             // goal and create a new one.
-            guard AFData.isGoal(n.pathToNode) else { fatalError() }
+            guard AFData.isGoal(path) else { fatalError() }
             
-            let pathToGoal = Array(n.pathToNode.prefix(n.pathToNode.count))
+            let pathToGoal = Array(path.prefix(path.count))
             let goalName = JSON(pathToGoal.last!).stringValue
             let behaviorName = JSON(AFData.getContainingBehaviorName(pathToGoal: pathToGoal)).stringValue
             let gkBehavior = knownMotivators[behaviorName]! as! GKBehavior

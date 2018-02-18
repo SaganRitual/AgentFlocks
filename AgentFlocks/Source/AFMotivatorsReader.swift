@@ -104,7 +104,9 @@ class AFMotivatorsReader: AgentGoalsDataSource {
     // moment, that means behaviors and goals. So whenever a behavior or goal is created,
     // we grab it as it goes by and stamp the number on it.
     @objc func coreDataChanged(notification: Foundation.Notification) {
-        let pathToChangedNode = AFData.Notifier(notification).pathToNode
+        let packet = AFNotificationPacket.unpack(notification)
+        guard case let AFNotificationPacket.CoreNodeUpdate(pathToChangedNode) = packet else { fatalError() }
+
         let changedNode = pathToChangedNode.last!
         let pathToParent = Array(pathToChangedNode.prefix(upTo: pathToChangedNode.count - 1))
         let parentNode = String(describing: pathToParent.last!)
@@ -122,7 +124,13 @@ class AFMotivatorsReader: AgentGoalsDataSource {
     }
     
     @objc func dataSourceHasBeenSelected(notification: Foundation.Notification) {
-        selectedAgent = AFSceneController.Notification.Decode(notification).name
+        let packet = AFNotificationPacket.unpack(notification)
+        
+        guard case let .ScenoidSelected(name, _) = packet else {
+            fatalError("Bad arg to notification handler")
+        }
+
+        selectedAgent = name
     }
     
     @objc func dataSourceHasBeenDeselected(notification: Foundation.Notification) {
@@ -144,13 +152,13 @@ class AFMotivatorsReader: AgentGoalsDataSource {
             injector.agentGoalsDataSource = self
             
             let ss1 = #selector(dataSourceHasBeenSelected(notification:))
-            self.uiNotifications.addObserver(self, selector: ss1, name: .Selected, object: nil)
+            self.uiNotifications.addObserver(self, selector: ss1, name: Foundation.Notification.Name.ScenoidSelected, object: nil)
             
             let ss2 = #selector(dataSourceHasBeenDeselected(notification:))
-            self.uiNotifications.addObserver(self, selector: ss2, name: .Deselected, object: nil)
+            self.uiNotifications.addObserver(self, selector: ss2, name: Foundation.Notification.Name.ScenoidDeselected, object: nil)
             
             let ss3 = #selector(coreDataChanged(notification:))
-            self.dataNotifications.addObserver(self, selector: ss3, name: .CoreNodeUpdate, object: nil)
+            self.dataNotifications.addObserver(self, selector: ss3, name: Foundation.Notification.Name.CoreNodeUpdate, object: nil)
         }
     }
 

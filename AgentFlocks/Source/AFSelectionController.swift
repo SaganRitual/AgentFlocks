@@ -212,15 +212,17 @@ extension AFSelectionController {
 
 private extension AFSelectionController {
     func announceDeselect(_ name: String) {
-        let e = AFSceneController.Notification.Encode(name)
-        let nn = Foundation.Notification(name: .Deselected, object: nil, userInfo: e.encode())
-        uiNotifications.post(nn)
+        let p = AFNotificationPacket.ScenoidDeselected(name)
+        let q = AFNotificationPacket.pack(p)
+        let n = Foundation.Notification(name: .ScenoidDeselected, object: nil, userInfo: q)
+        AppDelegate.me.uiNotifications.post(n)
     }
     
     func announceSelect(_ name: String, primary: Bool) {
-        let e = AFSceneController.Notification.Encode(name, isPrimarySelection: primary)
-        let nn = Foundation.Notification(name: .Selected, object: nil, userInfo: e.encode())
-        uiNotifications.post(nn)
+        let p = AFNotificationPacket.ScenoidSelected(name, primary)
+        let q = AFNotificationPacket.pack(p)
+        let n = Foundation.Notification(name: .ScenoidSelected, object: nil, userInfo: q)
+        AppDelegate.me.uiNotifications.post(n)
     }
 
     func deselect(_ name: String) { var a = getNodeAdapter(name); a.deselect(); announceDeselect(name) }

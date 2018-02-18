@@ -231,9 +231,6 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     }
     
     func recallAgents() {
-//        let n = Foundation.Notification.Name(rawValue: NotificationType.Recalled.rawValue)
-//        let nn = Foundation.Notification(name: n, object: nil, userInfo: nil)
-//        uiNotifications.post(nn)
     }
 
     func rightMouseDown(_ info: AFSceneInputState.InputInfo) { }
@@ -245,73 +242,8 @@ class AFSceneController: GKStateMachine, AFSceneInputStateDelegate {
     }
     
     func stampObstacle() {
-//        let offset = currentPosition - CGPoint(activePath.graphNodes[0].position)
-//        let newPath = AFPath.init(gameScene: gameScene, copyFrom: activePath, offset: offset)
-//
-//        newPath.stampObstacle()
-//        data.obstacles[newPath.name] = newPath
     }
     
     func startStateMachine() { enter(Default.self) }
 }
 
-extension AFSceneController {
-    struct Notification {
-        enum Field {
-            case attribute, core, editor, gameScene, isPrimarySelection, name, value, weight
-        }
-    
-        struct Encode {
-            var attribute: AFAgentAttribute?
-            var core: AFCore?
-            var editor: AFEditor?
-            var gameScene: GameScene?
-            var isPrimarySelection: Bool?
-            var name: String?
-            var value: Any?
-            var weight: Float?
-            
-            init(_ name: String, attribute: AFAgentAttribute? = nil, core: AFCore? = nil,
-                 editor: AFEditor? = nil, gameScene: GameScene? = nil, isPrimarySelection: Bool? = nil, value: Any? = nil,
-                 weight: Float? = nil) {
-                self.attribute = attribute
-                self.core = core
-                self.editor = editor
-                self.gameScene = gameScene
-                self.isPrimarySelection = isPrimarySelection
-                self.name = name
-                self.value = value
-                self.weight = weight
-            }
-            
-            func encode() -> [AFSceneController.Notification.Field : Any] {
-                return [.attribute : attribute ?? "<no attributes>",
-                        .core      : core ?? "<no core>",
-                        .editor    : editor ?? "<no editor>",
-                        .gameScene : gameScene ?? "<no game scene>",
-                        .isPrimarySelection : self.isPrimarySelection ?? "<no primary selection indicator>",
-                        .name      : self.name ?? "<missing name>",
-                        .value     : self.value ?? "<missing value>",
-                        .weight    : self.weight ?? "<missing weight>" ]
-            }
-        }
-        
-        struct Decode {
-            var attribute: AFAgentAttribute? { return getField(.attribute) as? AFAgentAttribute }
-            var core: AFCore? { return getField(.core) as? AFCore }
-            var editor: AFEditor? { return getField(.editor) as? AFEditor }
-            var gameScene: GameScene? { return getField(.gameScene) as? GameScene }
-            var isPrimarySelection: Bool? { return getBool(.isPrimarySelection) }
-            let foundationNotification: Foundation.Notification
-            var name: String? { return getField(.name) as? String }
-            var value: Any? { return getField(.value) }
-            var weight: Float? { return getFloat(.weight) }
-            
-            init(_ foundationNotification: Foundation.Notification) { self.foundationNotification = foundationNotification }
-            func getField(_ key: AFSceneController.Notification.Field) -> Any? { return foundationNotification.userInfo![key] }
-            
-            func getBool(_ key: AFSceneController.Notification.Field) -> Bool? { return getField(key) as? Bool }
-            func getFloat(_ key: AFSceneController.Notification.Field) -> Float? { return getField(key) as? Float }
-        }
-    }
-}

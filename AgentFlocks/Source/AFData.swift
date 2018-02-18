@@ -42,16 +42,14 @@ class NodeWriter {
     }
     
     deinit {
-        guard suppressNotifications_ == nil else {
-            // Tidiness or something; no one will ever set it to false.
-            // Also note, this is not javascript; don't read the "! ==" below
-            // as a javascript "!==", which I keep doing unconsciously.
-            if suppressNotifications_! == false { fatalError() }
-            return
-        }
+        guard suppressNotifications_ == nil else { return }
         
         if let key = key {    // That is, if we actually wrote something
-            bigData.announce(path: pathToParent + [key], writeMode: writeMode)
+            let path = pathToParent + [key]
+            let p: AFNotificationPacket = (writeMode == .CoreNodeAdd) ? .CoreNodeAdd(path) : .CoreNodeUpdate(path)
+            let q = AFNotificationPacket.pack(p)
+            let n = Foundation.Notification(name: writeMode, object: nil, userInfo: q)
+            bigData.notifier.post(n)
         }
     }
 }
@@ -88,36 +86,6 @@ class AFData {
     var notifier = Foundation.NotificationCenter()
     
     init() {  }
-    
-    struct Notifier {
-        let core: AFCore
-        let pathToNode: [JSONSubscriptType]
-        
-        init(_ core: AFCore, _ pathToNode: [JSONSubscriptType]) {
-            self.core = core
-            self.pathToNode = pathToNode
-        }
-        
-        init(_ notification: Foundation.Notification) {
-            let userInfo = notification.userInfo!
-            self.core = userInfo["core"] as! AFCore
-            self.pathToNode = userInfo["pathToNode"] as! [JSONSubscriptType]
-        }
-        
-        func encode() -> [String : Any] { return ["type": "data", "core": core, "pathToNode": pathToNode] }
-        
-        static func isDataNotifier(_ notifier: Foundation.Notification) -> Bool {
-            if let userInfo = notifier.userInfo, let type = userInfo["type"] as? String {
-                return type == "data"
-            } else { return false }
-        }
-    }
-    
-    func announce(path toNode: [JSONSubscriptType], writeMode: Foundation.Notification.Name) {
-        let u = AFData.Notifier(core, toNode).encode()
-        let nn = Foundation.Notification(name: writeMode, object: nil, userInfo: u)
-        notifier.post(nn)
-    }
 
     func dump() -> String {
         if let rs = data.rawString(.utf8, options: .sortedKeys) { return rs }
@@ -154,9 +122,34 @@ extension Foundation.Notification.Name {
     static let CoreNodeAdd = Foundation.Notification.Name("CoreNodeAdd")
     static let CoreNodeDelete = Foundation.Notification.Name("CoreNodeDelete")
     static let CoreNodeUpdate = Foundation.Notification.Name("CoreNodeUpdate")
-    static let Deselected = Foundation.Notification.Name("Deselected")
-    static let Selected = Foundation.Notification.Name("Selected")
-    static let SelectionChanged = Foundation.Notification.Name("SelectionChanged")
+    static let ScenoidDeselected = Foundation.Notification.Name("ScenoidDeselected")
+    static let GoalsControlPanelActivate = Foundation.Notification.Name("GoalsControlPanelActivate")
+    static let GoalsControlPanelApply = Foundation.Notification.Name("GoalsControlPanelApply")
+    static let GoalsControlPanelCancel = Foundation.Notification.Name("GoalsControlPanelCancel")
+    static let GoalsControlPanelDeactivate = Foundation.Notification.Name("GoalsControlPanelDeactivate")
+    static let ScenoidSelected = Foundation.Notification.Name("ScenoidSelected")
+}
+
+enum AFNotificationPacket {
+    case CoreNodeAdd([JSONSubscriptType])
+    case CoreNodeDelete([JSONSubscriptType])
+    case CoreNodeUpdate([JSONSubscriptType])
+    case ScenoidSelected(String, Bool)
+    case GoalsControlPanelActivate(ItemEditorController)
+    case GoalsControlPanelApply(ItemEditorController)
+    case GoalsControlPanelCancel(ItemEditorController)
+    case GoalsControlPanelDeactivate(ItemEditorController)
+    case ScenoidDeselected(String)
+    
+    private static let packetName = "NotificationPacket"
+    
+    static func unpack(_ bigNotification: Foundation.Notification) -> AFNotificationPacket {
+        return bigNotification.userInfo![packetName]! as! AFNotificationPacket
+    }
+    
+    static func pack(_ afNotification: AFNotificationPacket) -> [String: Any] {
+        return [packetName: afNotification]
+    }
 }
 
 extension AFData {
