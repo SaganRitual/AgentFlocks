@@ -113,21 +113,14 @@ class AFAgent: GKAgent2D {
 }
 
 // MARK: track updates to the tree
-/*
- let path = pathToParent + [key]
- let p: AFNotificationPacket = (writeMode == .CoreNodeAdd) ? .CoreNodeAdd(path) : .CoreNodeUpdate(path)
- let q = AFNotificationPacket.pack(p)
- let n = Foundation.Notification(name: writeMode, object: nil, userInfo: q)
- bigData.notifier.post(n)
- */
 
 private extension AFAgent {
-    func addGoal(notification: Foundation.Notification) {
+    func addMotivator(notification: Foundation.Notification) {
         let packet = AFNotificationPacket.unpack(notification)
         
         var path = [JSONSubscriptType]()
         if case let AFNotificationPacket.CoreNodeAdd(path_) = packet { path = path_ }
-        else if case let AFNotificationPacket.CoreNodeAdd(path_) = packet { path = path_ }
+        else if case let AFNotificationPacket.CoreNodeUpdate(path_) = packet { path = path_ }
         
         let last = JSON(path.last!).stringValue
         
@@ -153,8 +146,6 @@ private extension AFAgent {
         } else {
             fatalError()
         }
-        
-        chargeMotivators()
     }
     
     func iCareAboutThisNotification(notification: Foundation.Notification) -> Bool {
@@ -176,7 +167,7 @@ private extension AFAgent {
     
     @objc func coreNodeAdd(notification: Foundation.Notification) {
         guard iCareAboutThisNotification(notification: notification) else { return }
-        addGoal(notification: notification)
+        addMotivator(notification: notification)
     }
 
     @objc func coreNodeDelete(notification: Foundation.Notification) {
@@ -215,7 +206,7 @@ private extension AFAgent {
             fatalError()
         }
         
-        chargeMotivators()
+        chargeMotivators()  // Overkill --- come back to this when we start implementing delete
     }
     
     @objc func coreNodeUpdate(notification: Foundation.Notification) {
@@ -250,20 +241,12 @@ private extension AFAgent {
         } else {
             // Updating something other than weight. This happens only for goals, as
             // behaviors don't have any other attributes. We have to discard the existing
-            // goal and create a new one.
+            // gkGoal and create a new one. But we use the original name on the new
+            // gkGoal--we're supposed to be updating here, not discarding and replacing.
+            // We do that only because the gk architecture forces it on us.
             guard AFData.isGoal(path) else { fatalError() }
             
-            let pathToGoal = Array(path.prefix(path.count))
-            let goalName = JSON(pathToGoal.last!).stringValue
-            let behaviorName = JSON(AFData.getContainingBehaviorName(pathToGoal: pathToGoal)).stringValue
-            let gkBehavior = knownMotivators[behaviorName]! as! GKBehavior
-            let gkGoal = knownMotivators[goalName]! as! GKGoal
-            
-            // Discard the existing goal
-            gkBehavior.remove(gkGoal)
-            knownMotivators.removeValue(forKey: last)
-            
-            addGoal(notification: notification)
+            addMotivator(notification: notification)
         }
     }
 }
@@ -279,14 +262,11 @@ private extension AFAgent {
         case .toFollow:           fatalError()
         case .toStayOn:           fatalError()
             
-        case .toFleeAgent:        return GKGoal(toFleeAgent: core.sceneController.getAgent(editor.name))
-        case .toSeekAgent:        return GKGoal(toSeekAgent: core.sceneController.getAgent(editor.name))
+        case .toFleeAgent:        return GKGoal(toFleeAgent: core.sceneController.getAgent(editor.agent))
+        case .toSeekAgent:        return GKGoal(toSeekAgent: core.sceneController.getAgent(editor.agent))
             
         case .toAlignWith:        return GKGoal(toAlignWith: core.sceneController.getAgents(editor.agents), maxDistance: editor.distance, maxAngle: editor.angle)
-        case .toCohereWith:
-            let eagents = Array(editor.agents)
-            let agents = core.sceneController.getAgents(eagents)
-            return GKGoal(toCohereWith: agents, maxDistance: editor.distance, maxAngle: editor.angle)
+        case .toCohereWith:       return GKGoal(toCohereWith: core.sceneController.getAgents(editor.agents), maxDistance: editor.distance, maxAngle: editor.angle)
         case .toSeparateFrom:     return GKGoal(toSeparateFrom: core.sceneController.getAgents(editor.agents), maxDistance: editor.distance, maxAngle: editor.angle)
 
         case .toAvoidAgents:      return GKGoal(toAvoid: core.sceneController.getAgents(editor.agents), maxPredictionTime: editor.time)

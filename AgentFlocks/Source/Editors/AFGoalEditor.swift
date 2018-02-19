@@ -51,19 +51,20 @@ class AFGoalEditor: AFMotivatorEditor {
 
 extension AFGoalEditor {
     enum GoalTargetCategory {
-        case allSelectedAgents, none, obstacles, path, singleAgent
+        case allSecondarySelectedAgents, allSelectedAgents, none, obstacles, path, singleSecondarySelectedAgent
     }
     
     static func getTargetCategory(for goalType: AFGoalType) -> GoalTargetCategory {
         switch goalType {
         case .toAlignWith:        fallthrough
-        case .toAvoidAgents:      fallthrough
         case .toCohereWith:       fallthrough
         case .toSeparateFrom:     return .allSelectedAgents
-            
+
+        case .toAvoidAgents:      return .allSecondarySelectedAgents
+
         case .toFleeAgent:        fallthrough
         case .toInterceptAgent:   fallthrough
-        case .toSeekAgent:        return .singleAgent
+        case .toSeekAgent:        return .singleSecondarySelectedAgent
             
         case .toReachTargetSpeed: fallthrough
         case .toWander:           return .none

@@ -34,19 +34,30 @@ class AFMotivatorsController {
         injector.motivatorsController = self
     }
     
+    private func extractTargets(for targetCategory: AFGoalEditor.GoalTargetCategory, from fullSet: [String], primarySelection: String) -> [String] {
+        switch targetCategory {
+        case .allSelectedAgents:            return fullSet
+        case .allSecondarySelectedAgents:   return fullSet.filter{ $0 != primarySelection }
+        case .singleSecondarySelectedAgent: return [fullSet.first(where: { $0 != primarySelection })!]
+        default:
+            fatalError()
+        }
+    }
+    
     private func buildGoalFromScratch(attributes: MotivatorAttributes) {
         // If it has a new item type, it's a goal. What an ugly kludge.
         // Especially with a totally different field saying whether we're
         // creating a new item or editing an existing one.
         let targetCategory = AFGoalEditor.getTargetCategory(for: attributes.newItemType!)
         switch targetCategory {
-        case .allSelectedAgents:   fallthrough
-        case .singleAgent:
+        case .allSelectedAgents:            fallthrough
+        case .allSecondarySelectedAgents:   fallthrough
+        case .singleSecondarySelectedAgent:
             let tuple = afSceneController.selectionController.getSelection()
             let primarySelection = tuple.1!
 
-            // Exclude myself from the target agents if the new goal isn't an "all agents" goal
-            let targetAgents = (targetCategory == .allSelectedAgents) ? (tuple.0!) : tuple.0!.filter { $0 != primarySelection }
+            // Figure out which agents from the selection set will become targets of the goal
+            let targetAgents = extractTargets(for: targetCategory, from: tuple.0!, primarySelection: primarySelection)
             
             // The "all agents" category is for the flocking goals, so everyone involved needs to
             // be assigned the same goal. The other categories require only that the primary
@@ -74,8 +85,6 @@ class AFMotivatorsController {
                 goalEditor.composeGoal(attributes: attributes, targetAgents: targetAgentsSansMe)
             }
             
-            print("pre notification", core.bigData.data)
-            
         case .none:      break
         case .obstacles: fatalError()
         case .path:      fatalError()
@@ -86,8 +95,6 @@ class AFMotivatorsController {
         let agentName = afSceneController.selectionController.primarySelection!
         let agentEditor = afSceneController.getAgentEditor(agentName)
         let compositeEditor = agentEditor.getComposite()
-
-        let (targetAgents, _) = afSceneController.selectionController.getSelection()
 
         if attributes.newItemType == nil {
             // If it doesn't have a new item type, it's a behavior. See above.
@@ -100,8 +107,6 @@ class AFMotivatorsController {
         } else {
             if attributes.isNewItem { buildGoalFromScratch(attributes: attributes) }
             else { /*updateGoal(attributes)*/ }
-            
-            print("post(?) notification", core.bigData.data)
         }
     }
     
